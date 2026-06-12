@@ -1,0 +1,29 @@
+name: Overleaf Webhook Receiver
+
+# This workflow can be triggered by Overleaf's Git sync push
+# or manually to pull and compile the latest Overleaf state.
+on:
+  workflow_dispatch:
+    inputs:
+      overleaf_project_id:
+        description: 'Overleaf project ID (from URL)'
+        required: false
+        default: '6a2b01cb84399b5bfcf760d9'
+      case_name:
+        description: 'Case name for tagging'
+        required: false
+        default: 'Hosanna-Tabor v EEOC'
+
+jobs:
+  trigger-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log Overleaf project
+        run: |
+          echo "Overleaf project: ${{ github.event.inputs.overleaf_project_id }}"
+          echo "Case: ${{ github.event.inputs.case_name }}"
+          echo "To connect Overleaf Git sync:"
+          echo "  1. In Overleaf: Menu → Git → Clone with Git"
+          echo "  2. git remote add github https://github.com/GlacierEQ/public-actions-runner-host"
+          echo "  3. git push github main"
+          echo "This triggers the main legal-brief-pipeline.yml automatically."

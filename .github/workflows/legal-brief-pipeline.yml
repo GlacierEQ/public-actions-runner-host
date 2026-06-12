@@ -1,0 +1,257 @@
+name: Legal Brief Pipeline
+
+on:
+  push:
+    paths:
+      - '**.tex'
+      - '**.sty'
+      - '**.bib'
+  workflow_dispatch:
+    inputs:
+      tex_file:
+        description: 'Main .tex file to compile (relative path)'
+        required: false
+        default: 'main.tex'
+      case_name:
+        description: 'Case name for Notion/Supabase tagging'
+        required: false
+        default: ''
+  repository_dispatch:
+    types: [overleaf-sync]
+
+jobs:
+  compile-and-deploy:
+    runs-on: ubuntu-latest
+    name: Compile LaTeX → Upload PDF → Sync Notion
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # ── 2. Detect .tex files ─────────────────────────────────────────────
+      - name: Find main TeX file
+        id: find_tex
+        run: |
+          INPUT="${{ github.event.inputs.tex_file }}"
+          if [ -n "$INPUT" ] && [ -f "$INPUT" ]; then
+            TEX_FILE="$INPUT"
+          elif [ -f "main.tex" ]; then
+            TEX_FILE="main.tex"
+          else
+            TEX_FILE=$(find . -name "*.tex" -not -path "*/node_modules/*" | head -1)
+          fi
+          echo "tex_file=$TEX_FILE" >> $GITHUB_OUTPUT
+          echo "tex_dir=$(dirname $TEX_FILE)" >> $GITHUB_OUTPUT
+          echo "tex_base=$(basename $TEX_FILE .tex)" >> $GITHUB_OUTPUT
+          echo "Found: $TEX_FILE"
+
+      # ── 3. Install Tectonic (fast LaTeX engine) ──────────────────────────
+      - name: Install Tectonic
+        run: |
+          curl --proto '=https' --tlsv1.2 -fsSL \
+            https://drop.yannick.io/tectonic.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # ── 4. Compile LaTeX → PDF ───────────────────────────────────────────
+      - name: Compile LaTeX
+        id: compile
+        working-directory: ${{ steps.find_tex.outputs.tex_dir }}
+        run: |
+          BASE="${{ steps.find_tex.outputs.tex_base }}"
+          tectonic -X compile "${BASE}.tex" --outdir ./output 2>&1 | tee compile.log
+          if [ ! -f "./output/${BASE}.pdf" ]; then
+            echo "ERROR: PDF not generated"
+            cat compile.log
+            exit 1
+          fi
+          echo "pdf_path=${{ steps.find_tex.outputs.tex_dir }}/output/${BASE}.pdf" >> $GITHUB_OUTPUT
+          echo "pdf_name=${BASE}.pdf" >> $GITHUB_OUTPUT
+          echo "compile_log=$(cat compile.log | tail -20 | base64 -w0)" >> $GITHUB_OUTPUT
+          echo "word_count=$(pdftotext ./output/${BASE}.pdf - 2>/dev/null | wc -w || echo 0)" >> $GITHUB_OUTPUT
+
+      # ── 5. Install poppler for pdftotext ─────────────────────────────────
+      - name: Install poppler-utils
+        run: sudo apt-get install -y poppler-utils
+
+      # ── 6. Upload PDF to Supabase Storage ────────────────────────────────
+      - name: Upload to Supabase
+        id: supabase_upload
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          REPO_NAME="${{ github.repository }}"
+          BRANCH="${{ github.ref_name }}"
+          PDF_NAME="${{ steps.compile.outputs.pdf_name }}"
+          PDF_PATH="${{ steps.compile.outputs.pdf_path }}"
+          STORAGE_PATH="case-briefs/${REPO_NAME}/${BRANCH}/${PDF_NAME}"
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          # Upload via Supabase Storage REST API
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            "${SUPABASE_URL}/storage/v1/object/${STORAGE_PATH}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}" \
+            -H "Content-Type: application/pdf" \
+            --data-binary @"${PDF_PATH}")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          
+          # If file exists, update (upsert)
+          if [ "$HTTP_CODE" = "400" ]; then
+            curl -s \
+              -X PUT \
+              "${SUPABASE_URL}/storage/v1/object/${STORAGE_PATH}" \
+              -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}" \
+              -H "Content-Type: application/pdf" \
+              --data-binary @"${PDF_PATH}"
+          fi
+          
+          PDF_URL="${SUPABASE_URL}/storage/v1/object/public/${STORAGE_PATH}"
+          echo "pdf_url=${PDF_URL}" >> $GITHUB_OUTPUT
+          echo "storage_path=${STORAGE_PATH}" >> $GITHUB_OUTPUT
+          echo "timestamp=${TIMESTAMP}" >> $GITHUB_OUTPUT
+          echo "Uploaded: ${PDF_URL}"
+
+      # ── 7. Sync to Notion case database ──────────────────────────────────
+      - name: Sync to Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: |
+          CASE_NAME="${{ github.event.inputs.case_name }}"
+          if [ -z "$CASE_NAME" ]; then
+            CASE_NAME="${{ steps.compile.outputs.pdf_name }}"
+            CASE_NAME="${CASE_NAME%.pdf}"
+          fi
+          PDF_URL="${{ steps.supabase_upload.outputs.pdf_url }}"
+          TIMESTAMP="${{ steps.supabase_upload.outputs.timestamp }}"
+          BRANCH="${{ github.ref_name }}"
+          WORD_COUNT="${{ steps.compile.outputs.word_count }}"
+          COMMIT="${{ github.sha }}"
+          SHORT_COMMIT="${COMMIT:0:7}"
+          REPO="${{ github.repository }}"
+          COMMIT_URL="https://github.com/${REPO}/commit/${COMMIT}"
+          
+          # Search for existing page with this case name
+          SEARCH_RESPONSE=$(curl -s \
+            -X POST \
+            "https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query" \
+            -H "Authorization: Bearer ${NOTION_TOKEN}" \
+            -H "Notion-Version: 2022-06-28" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"filter\": {
+                \"property\": \"Name\",
+                \"title\": { \"equals\": \"${CASE_NAME}\" }
+              }
+            }")
+          
+          PAGE_ID=$(echo "$SEARCH_RESPONSE" | python3 -c \
+            "import sys,json; r=json.load(sys.stdin)['results']; print(r[0]['id'] if r else '')" 2>/dev/null)
+          
+          if [ -n "$PAGE_ID" ]; then
+            # Update existing page
+            curl -s \
+              -X PATCH \
+              "https://api.notion.com/v1/pages/${PAGE_ID}" \
+              -H "Authorization: Bearer ${NOTION_TOKEN}" \
+              -H "Notion-Version: 2022-06-28" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"properties\": {
+                  \"PDF URL\": { \"url\": \"${PDF_URL}\" },
+                  \"Last Built\": { \"date\": { \"start\": \"${TIMESTAMP}\" } },
+                  \"Branch\": { \"rich_text\": [{ \"text\": { \"content\": \"${BRANCH}\" } }] },
+                  \"Word Count\": { \"number\": ${WORD_COUNT} },
+                  \"Commit\": { \"url\": \"${COMMIT_URL}\" },
+                  \"Status\": { \"select\": { \"name\": \"Built\" } }
+                }
+              }"
+            echo "Updated Notion page: $PAGE_ID"
+          else
+            # Create new page
+            curl -s \
+              -X POST \
+              "https://api.notion.com/v1/pages" \
+              -H "Authorization: Bearer ${NOTION_TOKEN}" \
+              -H "Notion-Version: 2022-06-28" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"parent\": { \"database_id\": \"${NOTION_DATABASE_ID}\" },
+                \"properties\": {
+                  \"Name\": { \"title\": [{ \"text\": { \"content\": \"${CASE_NAME}\" } }] },
+                  \"PDF URL\": { \"url\": \"${PDF_URL}\" },
+                  \"Last Built\": { \"date\": { \"start\": \"${TIMESTAMP}\" } },
+                  \"Branch\": { \"rich_text\": [{ \"text\": { \"content\": \"${BRANCH}\" } }] },
+                  \"Word Count\": { \"number\": ${WORD_COUNT} },
+                  \"Commit\": { \"url\": \"${COMMIT_URL}\" },
+                  \"Repository\": { \"rich_text\": [{ \"text\": { \"content\": \"${REPO}\" } }] },
+                  \"Status\": { \"select\": { \"name\": \"Built\" } }
+                }
+              }"
+            echo "Created new Notion page for: ${CASE_NAME}"
+          fi
+
+      # ── 8. MotherDuck analytics ───────────────────────────────────────────
+      - name: Log metrics to MotherDuck
+        env:
+          MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+        run: |
+          pip install duckdb --quiet
+          python3 << 'EOF'
+          import duckdb, os, datetime
+          
+          token = os.environ.get('MOTHERDUCK_TOKEN', '')
+          if not token:
+              print('No MOTHERDUCK_TOKEN set, skipping analytics')
+              exit(0)
+          
+          con = duckdb.connect(f'md:legal_briefs?motherduck_token={token}')
+          
+          con.execute("""
+              CREATE TABLE IF NOT EXISTS brief_builds (
+                  build_id      VARCHAR,
+                  repo          VARCHAR,
+                  branch        VARCHAR,
+                  pdf_name      VARCHAR,
+                  pdf_url       VARCHAR,
+                  word_count    INTEGER,
+                  built_at      TIMESTAMP,
+                  commit_sha    VARCHAR
+              )
+          """)
+          
+          con.execute("""
+              INSERT INTO brief_builds VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          """, [
+              os.environ.get('GITHUB_RUN_ID', ''),
+              os.environ.get('GITHUB_REPOSITORY', ''),
+              os.environ.get('GITHUB_REF_NAME', ''),
+              '${{ steps.compile.outputs.pdf_name }}',
+              '${{ steps.supabase_upload.outputs.pdf_url }}',
+              int('${{ steps.compile.outputs.word_count }}' or 0),
+              datetime.datetime.utcnow(),
+              os.environ.get('GITHUB_SHA', '')
+          ])
+          
+          print('Logged to MotherDuck: legal_briefs.brief_builds')
+          con.close()
+          EOF
+
+      # ── 9. Summary ────────────────────────────────────────────────────────
+      - name: Job Summary
+        run: |
+          echo "## ✅ Legal Brief Pipeline Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **PDF** | [${{ steps.compile.outputs.pdf_name }}](${{ steps.supabase_upload.outputs.pdf_url }}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Words** | ${{ steps.compile.outputs.word_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Built** | ${{ steps.supabase_upload.outputs.timestamp }} |" >> $GITHUB_STEP_SUMMARY
