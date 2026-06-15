@@ -13,7 +13,7 @@ on:
 jobs:
   security-gate:
     name: Security Quality Gate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v4
       - name: Security validation
@@ -22,7 +22,7 @@ jobs:
 
   code-quality-gate:
     name: Code Quality Gate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v4
       - name: Quality checks
@@ -31,7 +31,7 @@ jobs:
 
   compliance-check:
     name: Compliance & Audit
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     needs: [security-gate, code-quality-gate]
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
 
   notification:
     name: Status Notification
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     needs: compliance-check
     if: always()
     steps:
