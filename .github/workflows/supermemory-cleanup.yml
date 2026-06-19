@@ -1,6 +1,8 @@
 name: Supermemory Space Cleanup
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -18,7 +20,7 @@ jobs:
     env:
       SM_KEY: sm_tdpNTGLMbKRFCDjruaivZr_MhyVWbyEkrOhqKYpCWxiZyojMYMjqmlKiHtLUtcFsFybJujCmwxZJYpjZQIqvtNw
       BASE: https://api.supermemory.ai
-      DRY_RUN: ${{ inputs.dry_run }}
+      DRY_RUN: ${{ inputs.dry_run || 'false' }}
 
     steps:
       - name: Install jq
