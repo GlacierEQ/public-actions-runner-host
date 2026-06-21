@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import tempfile
 from pathlib import Path
 
 import apex_pillar_runner as runner
 
 
-def main() -> int:
-    event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
-    changed = set()
+def changed_paths(event: dict) -> set[str]:
+    changed: set[str] = set()
     commit = event.get("head_commit") or {}
     for key in ("added", "modified"):
         changed.update(commit.get(key) or [])
@@ -20,7 +20,22 @@ def main() -> int:
         for key in ("added", "modified"):
             changed.update(item.get(key) or [])
 
-    jobs = sorted(path for path in changed if path.startswith("jobs/") and path.endswith(".json"))
+    if not changed:
+        output = subprocess.check_output(
+            ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"],
+            text=True,
+        )
+        changed.update(line.strip() for line in output.splitlines() if line.strip())
+    return changed
+
+
+def main() -> int:
+    event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
+    jobs = sorted(
+        path
+        for path in changed_paths(event)
+        if path.startswith("jobs/") and path.endswith(".json")
+    )
     if len(jobs) != 1:
         runner.fail("a queue commit must add or modify exactly one jobs/*.json file")
 
