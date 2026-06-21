@@ -6,16 +6,7 @@ on:
   push:
     branches: [main]
   repository_dispatch:
-    types:
-      - case-evidence
-      - document-processing
-      - coding-deploy
-      - evolution-optimize
-      - memory-sync
-      - infra-gateway
-      - case-ops
-      - orchestrate
-      - intl-case-ops
+    types: [case-evidence, document-processing, coding-deploy, evolution-optimize, memory-sync, infra-gateway, case-ops, orchestrate, intl-case-ops]
   workflow_dispatch:
     inputs:
       pillar:
@@ -24,7 +15,7 @@ on:
         type: choice
         options: [A, B, C, D, E, F, G, H, I]
       job_id:
-        description: Opaque job identifier (8-64 safe characters)
+        description: Opaque job identifier
         required: true
         type: string
       source_repo:
@@ -38,13 +29,13 @@ on:
         default: main
         type: string
       task:
-        description: Allowlisted operation
+        description: Allowlisted base operation
         required: true
         default: validate
         type: choice
         options: [validate, hash-manifest, test, build, audit]
       approval_id:
-        description: Private approval record ID required for pillars G and I
+        description: Private approval ID required for pillars G and I
         required: false
         type: string
 
@@ -59,7 +50,6 @@ concurrency:
 jobs:
   execute:
     if: github.event_name != 'push' || startsWith(github.event.head_commit.message, 'dispatch:')
-    name: APEX public execution
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -110,13 +100,14 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Execute allowlisted pillar task
+      - name: Execute pillar adapter
         id: runner
         continue-on-error: true
         run: |
-          python3 scripts/apex_pillar_runner.py run \
-            --workspace workload \
-            --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
+          python3 scripts/apex_catalog_runner.py \
+            .apex-plan.json \
+            workload \
+            ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
       - name: Return result to private control plane
         if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped' && env.APEX_CONTROL_TOKEN != ''
@@ -137,6 +128,7 @@ jobs:
         env:
           JOB_ID: ${{ steps.plan.outputs.job_id }}
           PILLAR: ${{ steps.plan.outputs.pillar }}
+          ACTION_NAME: ${{ steps.plan.outputs.action }}
           TASK: ${{ steps.plan.outputs.task }}
           RUNNER_OUTCOME: ${{ steps.runner.outcome }}
         with:
@@ -147,24 +139,16 @@ jobs:
               '',
               `- Job: ${process.env.JOB_ID}`,
               `- Pillar: ${process.env.PILLAR}`,
+              `- Action: ${process.env.ACTION_NAME || 'base-task'}`,
               `- Task: ${process.env.TASK}`,
               `- Outcome: ${outcome}`,
               `- Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
               '',
               'Detailed output was not published to this public issue.'
             ].join('\n');
-            await github.rest.issues.createComment({
-              ...context.repo,
-              issue_number: context.issue.number,
-              body
-            });
+            await github.rest.issues.createComment({...context.repo, issue_number: context.issue.number, body});
             if (outcome === 'success') {
-              await github.rest.issues.update({
-                ...context.repo,
-                issue_number: context.issue.number,
-                state: 'closed',
-                state_reason: 'completed'
-              });
+              await github.rest.issues.update({...context.repo, issue_number: context.issue.number, state: 'closed', state_reason: 'completed'});
             }
 
       - name: Enforce task result
