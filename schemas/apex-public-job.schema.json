@@ -4,7 +4,24 @@
   "title": "APEX Public Runner Job",
   "type": "object",
   "additionalProperties": false,
-  "required": ["job_id", "pillar", "source_repo", "source_ref", "task"],
+  "required": [
+    "job_id",
+    "pillar",
+    "source_repo",
+    "source_ref"
+  ],
+  "anyOf": [
+    {
+      "required": [
+        "action"
+      ]
+    },
+    {
+      "required": [
+        "task"
+      ]
+    }
+  ],
   "properties": {
     "job_id": {
       "type": "string",
@@ -12,7 +29,21 @@
     },
     "pillar": {
       "type": "string",
-      "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,63}$"
     },
     "source_repo": {
       "type": "string",
@@ -25,7 +56,13 @@
     },
     "task": {
       "type": "string",
-      "enum": ["validate", "hash-manifest", "test", "build", "audit"]
+      "enum": [
+        "validate",
+        "hash-manifest",
+        "test",
+        "build",
+        "audit"
+      ]
     },
     "approval_id": {
       "type": "string",
