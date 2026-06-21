@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -19,6 +20,13 @@ def changed_paths(event: dict) -> set[str]:
     for item in event.get("commits") or []:
         for key in ("added", "modified"):
             changed.update(item.get(key) or [])
+
+    message = str(commit.get("message", ""))
+    match = re.search(r"^dispatch: ([A-Za-z0-9][A-Za-z0-9._-]{7,63})\b", message)
+    if match:
+        candidate = f"jobs/{match.group(1)}.json"
+        if Path(candidate).is_file():
+            changed.add(candidate)
 
     if not changed:
         output = subprocess.check_output(
@@ -37,7 +45,7 @@ def main() -> int:
         if path.startswith("jobs/") and path.endswith(".json")
     )
     if len(jobs) != 1:
-        runner.fail("a queue commit must add or modify exactly one jobs/*.json file")
+        runner.fail("a queue commit must identify exactly one jobs/*.json file")
 
     payload = json.loads(Path(jobs[0]).read_text())
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
