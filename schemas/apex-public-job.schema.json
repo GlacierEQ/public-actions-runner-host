@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GlacierEQ/public-actions-runner-host/schemas/apex-public-job.schema.json",
+  "title": "APEX Public Runner Job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["job_id", "pillar", "source_repo", "source_ref", "task"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"
+    },
+    "pillar": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+    },
+    "source_repo": {
+      "type": "string",
+      "pattern": "^GlacierEQ/[A-Za-z0-9_.-]+$"
+    },
+    "source_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "task": {
+      "type": "string",
+      "enum": ["validate", "hash-manifest", "test", "build", "audit"]
+    },
+    "approval_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"
+    }
+  }
+}
