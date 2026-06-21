@@ -1,0 +1,117 @@
+name: APEX Public Pillar Runner
+
+on:
+  repository_dispatch:
+    types:
+      - case-evidence
+      - document-processing
+      - coding-deploy
+      - evolution-optimize
+      - memory-sync
+      - infra-gateway
+      - case-ops
+      - orchestrate
+      - intl-case-ops
+  workflow_dispatch:
+    inputs:
+      pillar:
+        description: Pillar A-I
+        required: true
+        type: choice
+        options: [A, B, C, D, E, F, G, H, I]
+      job_id:
+        description: Opaque job identifier (8-64 safe characters)
+        required: true
+        type: string
+      source_repo:
+        description: GlacierEQ repository to process
+        required: true
+        default: GlacierEQ/public-actions-runner-host
+        type: string
+      source_ref:
+        description: Source branch, tag, or commit
+        required: true
+        default: main
+        type: string
+      task:
+        description: Allowlisted operation
+        required: true
+        default: validate
+        type: choice
+        options: [validate, hash-manifest, test, build, audit]
+      approval_id:
+        description: Private approval record ID required for pillars G and I
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apex-public-${{ github.event.client_payload.job_id || inputs.job_id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    name: Pillar ${{ github.event.client_payload.pillar || inputs.pillar || 'dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
+      APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
+
+    steps:
+      - name: Checkout public runner
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate and normalize opaque job
+        id: plan
+        shell: bash
+        run: |
+          python3 scripts/apex_pillar_runner.py plan \
+            --event "$GITHUB_EVENT_PATH" \
+            --pillar "${{ inputs.pillar }}" \
+            --job-id "${{ inputs.job_id }}" \
+            --source-repo "${{ inputs.source_repo }}" \
+            --source-ref "${{ inputs.source_ref }}" \
+            --task "${{ inputs.task }}" \
+            --approval-id "${{ inputs.approval_id }}"
+
+      - name: Verify private dual-confirmation record
+        if: steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I'
+        run: |
+          python3 scripts/apex_pillar_runner.py verify-approval \
+            --job-id "${{ steps.plan.outputs.job_id }}" \
+            --pillar "${{ steps.plan.outputs.pillar }}" \
+            --approval-id "${{ steps.plan.outputs.approval_id }}"
+
+      - name: Checkout workload without persisting credentials
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.plan.outputs.source_repo }}
+          ref: ${{ steps.plan.outputs.source_ref }}
+          token: ${{ secrets.APEX_PRIVATE_READ_TOKEN || github.token }}
+          path: workload
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Execute allowlisted pillar task
+        id: runner
+        continue-on-error: true
+        run: |
+          python3 scripts/apex_pillar_runner.py run \
+            --workspace workload \
+            --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
+
+      - name: Return result to private control plane
+        if: always() && steps.plan.outcome == 'success'
+        run: |
+          python3 scripts/apex_pillar_runner.py publish \
+            --job-id "${{ steps.plan.outputs.job_id }}" \
+            --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
+
+      - name: Enforce task result
+        if: steps.runner.outcome == 'failure'
+        run: exit 1
