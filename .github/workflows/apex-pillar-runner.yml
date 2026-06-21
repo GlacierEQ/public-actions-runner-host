@@ -2,8 +2,7 @@ name: APEX Public Pillar Runner
 
 on:
   push:
-    paths:
-      - jobs/*.json
+    branches: [main]
   repository_dispatch:
     types:
       - case-evidence
@@ -56,6 +55,7 @@ concurrency:
 
 jobs:
   execute:
+    if: github.event_name != 'push' || startsWith(github.event.head_commit.message, 'dispatch:')
     name: APEX public execution
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -68,6 +68,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 2
 
       - name: Validate and normalize job
         id: plan
@@ -113,11 +114,17 @@ jobs:
             --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
       - name: Return result to private control plane
-        if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped'
+        if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped' && env.APEX_CONTROL_TOKEN != ''
         run: |
           python3 scripts/apex_pillar_runner.py publish \
             --job-id "${{ steps.plan.outputs.job_id }}" \
             --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
+
+      - name: Report unavailable private sink
+        if: always() && steps.plan.outcome == 'success' && env.APEX_CONTROL_TOKEN == ''
+        run: |
+          echo "Private result return is gated until APEX_CONTROL_TOKEN is installed."
+          echo "Detailed result was not published publicly."
 
       - name: Enforce task result
         if: steps.runner.outcome == 'failure'
