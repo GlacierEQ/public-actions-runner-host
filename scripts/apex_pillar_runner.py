@@ -41,10 +41,38 @@ REPO = re.compile(r"^GlacierEQ/[A-Za-z0-9_.-]+$")
 REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$")
 SKIP = {".git", "node_modules", ".next", "dist", "build", "__pycache__", ".venv", "venv"}
 CONTROL_REPO = os.environ.get("APEX_CONTROL_REPO", "GlacierEQ/llm-runner-teams")
+CATALOG = Path("config/pillar-actions.json")
+ADAPTER_TASK = {
+    "hash-manifest": "hash-manifest",
+    "validate": "validate",
+    "test": "test",
+    "audit": "audit",
+    "document-validate": "validate",
+    "latex": "validate",
+    "pdf-analyze": "validate",
+    "notion-sync": "validate",
+    "media-queue": "validate",
+    "whisperx": "validate",
+    "railway": "validate",
+    "xcode": "validate",
+    "browser-scan": "validate",
+    "health-check": "validate",
+}
 
 
 def fail(message: str) -> None:
     raise SystemExit(message)
+
+
+def resolve_action(payload: dict, pillar: str) -> dict | None:
+    action = str(payload.get("action", ""))
+    if not action:
+        return None
+    catalog = json.loads(CATALOG.read_text())
+    matches = [item for item in catalog["actions"] if item["action"] == action and item["pillar"] == pillar]
+    if len(matches) != 1:
+        fail("action is not registered to the requested pillar")
+    return matches[0]
 
 
 def load_plan(event_path: str, manual: dict[str, str]) -> dict:
@@ -56,13 +84,17 @@ def load_plan(event_path: str, manual: dict[str, str]) -> dict:
         payload = manual
         pillar = str(payload.get("pillar", "")).upper()
 
+    entry = resolve_action(payload, pillar)
     plan = {
         "job_id": str(payload.get("job_id", "")),
         "pillar": pillar,
-        "source_repo": str(payload.get("source_repo", "GlacierEQ/public-actions-runner-host")),
-        "source_ref": str(payload.get("source_ref", "main")),
-        "task": str(payload.get("task", "validate")),
+        "source_repo": entry["target_repo"] if entry else str(payload.get("source_repo") or "GlacierEQ/public-actions-runner-host"),
+        "source_ref": str(payload.get("source_ref") or "main"),
+        "task": ADAPTER_TASK[entry["adapter"]] if entry else str(payload.get("task") or "validate"),
         "approval_id": str(payload.get("approval_id", "")),
+        "action": entry["action"] if entry else "",
+        "adapter": entry["adapter"] if entry else "",
+        "target_repo": entry["target_repo"] if entry else "",
     }
     if not JOB_ID.fullmatch(plan["job_id"]):
         fail("job_id must be 8-64 safe characters")
@@ -214,7 +246,7 @@ def main() -> int:
 
     plan_cmd = sub.add_parser("plan")
     plan_cmd.add_argument("--event", required=True)
-    for name in ("pillar", "job-id", "source-repo", "source-ref", "task", "approval-id"):
+    for name in ("pillar", "job-id", "source-repo", "source-ref", "task", "approval-id", "action"):
         plan_cmd.add_argument(f"--{name}", default="")
 
     verify = sub.add_parser("verify-approval")
@@ -240,6 +272,7 @@ def main() -> int:
             "source_ref": args.source_ref,
             "task": args.task,
             "approval_id": args.approval_id,
+            "action": args.action,
         }
         plan = load_plan(args.event, manual)
         emit_outputs(plan)
