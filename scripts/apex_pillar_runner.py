@@ -208,6 +208,7 @@ def execute(plan: dict, root: Path, result_path: Path) -> int:
         if command is None:
             result["status"] = "skipped"
             result["reason"] = "No allowlisted command applies to this repository"
+            exit_code = 2
         else:
             proc = subprocess.run(command, cwd=root, text=True, capture_output=True, timeout=1800)
             combined = (proc.stdout + "\n" + proc.stderr)[-100_000:]
