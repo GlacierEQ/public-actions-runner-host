@@ -1,6 +1,9 @@
 name: APEX Public Pillar Runner
 
 on:
+  push:
+    paths:
+      - jobs/*.json
   repository_dispatch:
     types:
       - case-evidence
@@ -48,12 +51,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: apex-public-${{ github.event.client_payload.job_id || inputs.job_id || github.run_id }}
+  group: apex-public-${{ github.event.client_payload.job_id || inputs.job_id || github.sha }}
   cancel-in-progress: false
 
 jobs:
   execute:
-    name: Pillar ${{ github.event.client_payload.pillar || inputs.pillar || 'dispatch' }}
+    name: APEX public execution
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -66,18 +69,22 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Validate and normalize opaque job
+      - name: Validate and normalize job
         id: plan
         shell: bash
         run: |
-          python3 scripts/apex_pillar_runner.py plan \
-            --event "$GITHUB_EVENT_PATH" \
-            --pillar "${{ inputs.pillar }}" \
-            --job-id "${{ inputs.job_id }}" \
-            --source-repo "${{ inputs.source_repo }}" \
-            --source-ref "${{ inputs.source_ref }}" \
-            --task "${{ inputs.task }}" \
-            --approval-id "${{ inputs.approval_id }}"
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            python3 scripts/apex_push_plan.py
+          else
+            python3 scripts/apex_pillar_runner.py plan \
+              --event "$GITHUB_EVENT_PATH" \
+              --pillar "${{ inputs.pillar }}" \
+              --job-id "${{ inputs.job_id }}" \
+              --source-repo "${{ inputs.source_repo }}" \
+              --source-ref "${{ inputs.source_ref }}" \
+              --task "${{ inputs.task }}" \
+              --approval-id "${{ inputs.approval_id }}"
+          fi
 
       - name: Verify private dual-confirmation record
         if: steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I'
@@ -106,7 +113,7 @@ jobs:
             --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
       - name: Return result to private control plane
-        if: always() && steps.plan.outcome == 'success'
+        if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped'
         run: |
           python3 scripts/apex_pillar_runner.py publish \
             --job-id "${{ steps.plan.outputs.job_id }}" \
