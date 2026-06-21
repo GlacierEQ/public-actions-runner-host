@@ -1,0 +1,322 @@
+{
+  "schema_version": "1.0",
+  "control_plane": "GlacierEQ/llm-runner-teams",
+  "execution_plane": "GlacierEQ/public-actions-runner-host",
+  "actions": [
+    {
+      "pillar": "A",
+      "action": "evidence-ingest",
+      "source_event": "case-evidence",
+      "target_repo": "GlacierEQ/Pro-Evidence",
+      "legacy_event": "evidence-ingest",
+      "adapter": "hash-manifest",
+      "gate": "standard"
+    },
+    {
+      "pillar": "A",
+      "action": "forensic-repair",
+      "source_event": "case-evidence",
+      "target_repo": "GlacierEQ/Z-BACKUP-FEDERAL-FORENSIC-REPAIR-OMNIBUS",
+      "legacy_event": "forensic-repair",
+      "adapter": "validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "A",
+      "action": "chain-of-custody",
+      "source_event": "case-evidence",
+      "target_repo": "GlacierEQ/Pro-Forensics",
+      "legacy_event": "chain-of-custody",
+      "adapter": "hash-manifest",
+      "gate": "standard"
+    },
+    {
+      "pillar": "A",
+      "action": "media-queue",
+      "source_event": "media-queue",
+      "target_repo": "GlacierEQ/public-actions-runner-host",
+      "legacy_event": "media-queue",
+      "adapter": "media-queue",
+      "gate": "standard"
+    },
+    {
+      "pillar": "A",
+      "action": "whisperx-exec",
+      "source_event": "whisperx-exec",
+      "target_repo": "GlacierEQ/public-actions-runner-host",
+      "legacy_event": "whisperx-exec",
+      "adapter": "whisperx",
+      "gate": "standard"
+    },
+    {
+      "pillar": "B",
+      "action": "latex-compile",
+      "source_event": "document-processing",
+      "target_repo": "GlacierEQ/legal-brief-pipeline",
+      "legacy_event": "compile-latex",
+      "adapter": "latex",
+      "gate": "standard"
+    },
+    {
+      "pillar": "B",
+      "action": "pdf-analyze",
+      "source_event": "document-processing",
+      "target_repo": "GlacierEQ/MEGA-PDF-INTELLIGENT-DOCUMENT-SYSTEM",
+      "legacy_event": "pdf-analyze",
+      "adapter": "pdf-analyze",
+      "gate": "standard"
+    },
+    {
+      "pillar": "B",
+      "action": "notion-sync",
+      "source_event": "document-processing",
+      "target_repo": "GlacierEQ/legal-brief-system",
+      "legacy_event": "notion-sync",
+      "adapter": "notion-sync",
+      "gate": "standard"
+    },
+    {
+      "pillar": "B",
+      "action": "office-doc",
+      "source_event": "document-processing",
+      "target_repo": "GlacierEQ/JUGGERNAUT-OFFICE",
+      "legacy_event": "process-doc",
+      "adapter": "document-validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "C",
+      "action": "lint",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/pro-code",
+      "legacy_event": "run-lint",
+      "adapter": "test",
+      "gate": "standard"
+    },
+    {
+      "pillar": "C",
+      "action": "deploy-railway",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/comet-agent",
+      "legacy_event": "deploy-railway",
+      "adapter": "railway",
+      "gate": "standard"
+    },
+    {
+      "pillar": "C",
+      "action": "ios-build",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/Pro-iOS",
+      "legacy_event": "xcode-build",
+      "adapter": "xcode",
+      "gate": "standard"
+    },
+    {
+      "pillar": "C",
+      "action": "auth-validate",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/comet-agent",
+      "legacy_event": "auth-validate",
+      "adapter": "test",
+      "gate": "standard"
+    },
+    {
+      "pillar": "D",
+      "action": "dependency-audit",
+      "source_event": "evolution-optimize",
+      "target_repo": "GlacierEQ/Pro_Code",
+      "legacy_event": "dep-audit",
+      "adapter": "audit",
+      "gate": "standard"
+    },
+    {
+      "pillar": "D",
+      "action": "browser-scan",
+      "source_event": "evolution-optimize",
+      "target_repo": "GlacierEQ/unified-browser-automation",
+      "legacy_event": "run-scan",
+      "adapter": "browser-scan",
+      "gate": "standard"
+    },
+    {
+      "pillar": "E",
+      "action": "memory-ingest",
+      "source_event": "memory-sync",
+      "target_repo": "GlacierEQ/Pro-Memory",
+      "legacy_event": "memory-ingest",
+      "adapter": "hash-manifest",
+      "gate": "standard"
+    },
+    {
+      "pillar": "E",
+      "action": "aeon-trigger",
+      "source_event": "memory-sync",
+      "target_repo": "GlacierEQ/AEON-BRAIN-777",
+      "legacy_event": "aeon-trigger",
+      "adapter": "validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "E",
+      "action": "session-boot",
+      "source_event": "memory-sync",
+      "target_repo": "GlacierEQ/apex-boot-core",
+      "legacy_event": "boot-session",
+      "adapter": "validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "E",
+      "action": "soul-sync",
+      "source_event": "memory-sync",
+      "target_repo": "GlacierEQ/matrix-soul",
+      "legacy_event": "soul-sync",
+      "adapter": "hash-manifest",
+      "gate": "standard"
+    },
+    {
+      "pillar": "F",
+      "action": "gateway-health",
+      "source_event": "infra-gateway",
+      "target_repo": "GlacierEQ/Pro-Gateway",
+      "legacy_event": "health-check",
+      "adapter": "health-check",
+      "gate": "standard"
+    },
+    {
+      "pillar": "F",
+      "action": "kai-sync",
+      "source_event": "infra-gateway",
+      "target_repo": "GlacierEQ/kai-linux-custom",
+      "legacy_event": "device-sync",
+      "adapter": "validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "F",
+      "action": "ish-bootstrap",
+      "source_event": "infra-gateway",
+      "target_repo": "GlacierEQ/ish-install",
+      "legacy_event": "bootstrap",
+      "adapter": "test",
+      "gate": "standard"
+    },
+    {
+      "pillar": "F",
+      "action": "runner-update",
+      "source_event": "infra-gateway",
+      "target_repo": "GlacierEQ/public-actions-runner-host",
+      "legacy_event": "runner-update",
+      "adapter": "validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "G",
+      "action": "federal-case-action",
+      "source_event": "case-ops",
+      "target_repo": "GlacierEQ/1FDV-23-0001009-FEDERAL-WARFARE",
+      "legacy_event": "case-action",
+      "adapter": "validate",
+      "gate": "dual"
+    },
+    {
+      "pillar": "G",
+      "action": "case-matrix",
+      "source_event": "case-ops",
+      "target_repo": "GlacierEQ/SUPERLUMINAL_CASE_MATRIX",
+      "legacy_event": "matrix-update",
+      "adapter": "hash-manifest",
+      "gate": "dual"
+    },
+    {
+      "pillar": "G",
+      "action": "email-archive",
+      "source_event": "case-ops",
+      "target_repo": "GlacierEQ/THE_CATACLYSM",
+      "legacy_event": "archive-ingest",
+      "adapter": "hash-manifest",
+      "gate": "dual"
+    },
+    {
+      "pillar": "G",
+      "action": "docket-sync",
+      "source_event": "case-ops",
+      "target_repo": "GlacierEQ/DOCKETS",
+      "legacy_event": "docket-sync",
+      "adapter": "validate",
+      "gate": "dual"
+    },
+    {
+      "pillar": "H",
+      "action": "generate-service",
+      "source_event": "orchestrate",
+      "target_repo": "GlacierEQ/mastermind",
+      "legacy_event": "generate-service",
+      "adapter": "validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "H",
+      "action": "orchestrate",
+      "source_event": "orchestrate",
+      "target_repo": "GlacierEQ/Pro-Mastermind",
+      "legacy_event": "orchestrate",
+      "adapter": "validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "H",
+      "action": "gemma-inference",
+      "source_event": "orchestrate",
+      "target_repo": "GlacierEQ/Apex-Gemma4",
+      "legacy_event": "run-inference",
+      "adapter": "validate",
+      "gate": "standard"
+    },
+    {
+      "pillar": "I",
+      "action": "international-filing",
+      "source_event": "intl-case-ops",
+      "target_repo": "GlacierEQ/1FDV-23-0001009-FEDERAL-WARFARE",
+      "legacy_event": "intl-filing-prep",
+      "adapter": "validate",
+      "gate": "dual"
+    },
+    {
+      "pillar": "I",
+      "action": "hague-package",
+      "source_event": "intl-case-ops",
+      "target_repo": "GlacierEQ/legal-brief-pipeline",
+      "legacy_event": "hague-package",
+      "adapter": "latex",
+      "gate": "dual"
+    },
+    {
+      "pillar": "I",
+      "action": "international-body-submission",
+      "source_event": "intl-case-ops",
+      "target_repo": "GlacierEQ/SUPERLUMINAL_CASE_MATRIX",
+      "legacy_event": "intl-body-submission",
+      "adapter": "validate",
+      "gate": "dual"
+    },
+    {
+      "pillar": "I",
+      "action": "multilingual-brief",
+      "source_event": "intl-case-ops",
+      "target_repo": "GlacierEQ/legal-brief-system",
+      "legacy_event": "multilingual-brief",
+      "adapter": "document-validate",
+      "gate": "dual"
+    },
+    {
+      "pillar": "I",
+      "action": "asset-trace",
+      "source_event": "intl-case-ops",
+      "target_repo": "GlacierEQ/SUPERLUMINAL_CASE_MATRIX",
+      "legacy_event": "asset-trace",
+      "adapter": "validate",
+      "gate": "dual"
+    }
+  ]
+}
