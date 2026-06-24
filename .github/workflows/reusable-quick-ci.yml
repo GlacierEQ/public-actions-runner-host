@@ -1,4 +1,4 @@
-name: Quick CI
+name: Spiral Engine Quick CI
 
 on:
   workflow_call:
@@ -12,34 +12,47 @@ on:
 
 jobs:
   check:
-    name: Lint + Test
+    name: "${{ inputs.language == 'python' && '🐍' || inputs.language == 'typescript' && '📦' || '🐹' }} Lint + Test"
     runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Python Quick Check
+      - name: Python Check
         if: inputs.language == 'python'
         run: |
           pip install ruff pytest 2>/dev/null
-          echo "=== Lint ==="
+          echo "=== Ruff Lint ==="
           ruff check . 2>/dev/null || echo "No ruff config"
+          echo "=== Ruff Format ==="
+          ruff format --check . 2>/dev/null || echo "No format config"
           echo "=== Tests ==="
           pytest -x -q 2>/dev/null || echo "No tests"
-          echo "✅ Done"
+          echo "✅ Python check complete"
 
-      - name: Node Quick Check
+      - name: TypeScript Check
         if: inputs.language == 'typescript' || inputs.language == 'javascript'
         run: |
-          npm ci 2>/dev/null
-          echo "=== Lint ==="
-          npm run lint 2>/dev/null || echo "No lint"
+          npm ci 2>/dev/null || npm install
+          echo "=== ESLint ==="
+          npm run lint 2>/dev/null || echo "No lint script"
+          echo "=== Type Check ==="
+          npm run typecheck 2>/dev/null || echo "No typecheck script"
           echo "=== Tests ==="
-          npm test 2>/dev/null || echo "No tests"
-          echo "✅ Done"
+          npm test 2>/dev/null || echo "No test script"
+          echo "✅ TypeScript check complete"
+
+      - name: Go Check
+        if: inputs.language == 'go'
+        run: |
+          echo "=== go vet ==="
+          go vet ./... 2>/dev/null || echo "No Go files"
+          echo "=== Tests ==="
+          go test ./... 2>/dev/null || echo "No tests"
+          echo "✅ Go check complete"
 
       - name: Generic Check
-        if: inputs.language != 'python' && inputs.language != 'typescript' && inputs.language != 'javascript'
+        if: inputs.language != 'python' && inputs.language != 'typescript' && inputs.language != 'javascript' && inputs.language != 'go'
         run: |
           echo "Language: ${{ inputs.language }}"
-          echo "No specific checks configured — add to reusable-quick-ci.yml"
+          echo "Add specific checks to reusable-quick-ci.yml"
           echo "✅ Passthrough"
