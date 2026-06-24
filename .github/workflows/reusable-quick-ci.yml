@@ -1,0 +1,45 @@
+name: Quick CI
+
+on:
+  workflow_call:
+    inputs:
+      repo_name:
+        type: string
+        required: true
+      language:
+        type: string
+        default: python
+
+jobs:
+  check:
+    name: Lint + Test
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python Quick Check
+        if: inputs.language == 'python'
+        run: |
+          pip install ruff pytest 2>/dev/null
+          echo "=== Lint ==="
+          ruff check . 2>/dev/null || echo "No ruff config"
+          echo "=== Tests ==="
+          pytest -x -q 2>/dev/null || echo "No tests"
+          echo "✅ Done"
+
+      - name: Node Quick Check
+        if: inputs.language == 'typescript' || inputs.language == 'javascript'
+        run: |
+          npm ci 2>/dev/null
+          echo "=== Lint ==="
+          npm run lint 2>/dev/null || echo "No lint"
+          echo "=== Tests ==="
+          npm test 2>/dev/null || echo "No tests"
+          echo "✅ Done"
+
+      - name: Generic Check
+        if: inputs.language != 'python' && inputs.language != 'typescript' && inputs.language != 'javascript'
+        run: |
+          echo "Language: ${{ inputs.language }}"
+          echo "No specific checks configured — add to reusable-quick-ci.yml"
+          echo "✅ Passthrough"

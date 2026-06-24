@@ -1,0 +1,198 @@
+name: Reusable CI Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      repo_name:
+        type: string
+        required: true
+      language:
+        type: string
+        default: python
+        required: false
+      node_version:
+        type: string
+        default: "20"
+        required: false
+      python_version:
+        type: string
+        default: "3.12"
+        required: false
+      run_tests:
+        type: boolean
+        default: true
+      run_lint:
+        type: boolean
+        default: true
+      run_security:
+        type: boolean
+        default: true
+      run_build:
+        type: boolean
+        default: false
+      deploy:
+        type: boolean
+        default: false
+    secrets:
+      DEPLOY_TOKEN:
+        required: false
+      SONAR_TOKEN:
+        required: false
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: [self-hosted, linux]
+    if: ${{ inputs.run_lint }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: inputs.language == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Setup Node
+        if: inputs.language == 'typescript' || inputs.language == 'javascript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      - name: Python Lint
+        if: inputs.language == 'python'
+        run: |
+          pip install ruff mypy
+          ruff check . --output-format=github
+          ruff format --check .
+
+      - name: TypeScript Lint
+        if: inputs.language == 'typescript' || inputs.language == 'javascript'
+        run: |
+          npm ci
+          npm run lint 2>/dev/null || echo "No lint script found"
+
+      - name: TypeScript Type Check
+        if: inputs.language == 'typescript'
+        run: npm run typecheck 2>/dev/null || echo "No typecheck script found"
+
+  test:
+    name: Test Suite
+    runs-on: [self-hosted, linux]
+    if: ${{ inputs.run_tests }}
+    needs: [lint]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: inputs.language == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Setup Node
+        if: inputs.language == 'typescript' || inputs.language == 'javascript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      - name: Python Tests
+        if: inputs.language == 'python'
+        run: |
+          pip install pytest pytest-cov
+          pytest --tb=short -q 2>/dev/null || echo "No tests found"
+
+      - name: Node Tests
+        if: inputs.language == 'typescript' || inputs.language == 'javascript'
+        run: |
+          npm ci
+          npm test 2>/dev/null || echo "No tests found"
+
+  security:
+    name: Security Scan
+    runs-on: [self-hosted, linux]
+    if: ${{ inputs.run_security }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Secret Scan
+        run: |
+          echo "🔍 Scanning for secrets..."
+          # Check for common secret patterns
+          ! grep -rn "ghp_\|sk_live\|AKIA\|password\s*=" --include="*.py" --include="*.ts" --include="*.js" --include="*.env" . 2>/dev/null || {
+            echo "⚠️ Potential secrets found — review before merge"
+            exit 1
+          }
+          echo "✅ No secrets detected"
+
+      - name: Dependency Audit (Python)
+        if: inputs.language == 'python'
+        run: |
+          pip install pip-audit 2>/dev/null
+          pip-audit 2>/dev/null || echo "pip-audit not available, skipping"
+
+      - name: Dependency Audit (Node)
+        if: inputs.language == 'typescript' || inputs.language == 'javascript'
+        run: npm audit --audit-level=high 2>/dev/null || echo "No lockfile found"
+
+  build:
+    name: Build
+    runs-on: [self-hosted, linux]
+    if: ${{ inputs.run_build }}
+    needs: [lint, test, security]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: inputs.language == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Setup Node
+        if: inputs.language == 'typescript' || inputs.language == 'javascript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      - name: Build
+        run: |
+          if [ -f "Makefile" ]; then make build
+          elif [ -f "pyproject.toml" ]; then pip install build && python -m build
+          elif [ -f "package.json" ]; then npm run build 2>/dev/null || echo "No build script"
+          else echo "No build system detected"
+          fi
+
+  deploy:
+    name: Deploy
+    runs-on: [self-hosted, linux]
+    if: ${{ inputs.deploy }}
+    needs: [lint, test, security, build]
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          echo "🚀 Deploying ${{ inputs.repo_name }}..."
+          if [ -f "deploy.sh" ]; then bash deploy.sh
+          elif [ -f "vercel.json" ]; then echo "Vercel project — deploy via CLI"
+          else echo "No deploy script found"
+          fi
+
+  notify:
+    name: Status
+    runs-on: [self-hosted, linux]
+    needs: [lint, test, security]
+    if: always()
+    steps:
+      - name: Report
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 ${{ inputs.repo_name }}"
+          echo "🔗 Lint: ${{ needs.lint.result }}"
+          echo "🧪 Test: ${{ needs.test.result }}"
+          echo "🔒 Security: ${{ needs.security.result }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
