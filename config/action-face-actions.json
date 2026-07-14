@@ -18,7 +18,7 @@
       "source_event": "gateway-ci",
       "target_repo": "GlacierEQ/Pro-Gateway",
       "legacy_event": "gateway-ci",
-      "adapter": "test",
+      "adapter": "python-ci",
       "gate": "standard"
     },
     {
@@ -27,7 +27,7 @@
       "source_event": "comet-agent-ci",
       "target_repo": "GlacierEQ/Pro-comet-agent",
       "legacy_event": "comet-agent-ci",
-      "adapter": "test",
+      "adapter": "node-ci",
       "gate": "standard"
     }
   ]
