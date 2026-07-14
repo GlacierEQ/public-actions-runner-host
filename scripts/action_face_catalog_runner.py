@@ -12,6 +12,8 @@ import apex_catalog_runner as catalog
 
 
 def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
+    workspace = workspace.resolve()
+    result_path = result_path.resolve()
     script = workspace / "apex-mastermind" / "scripts" / "verify" / "apex-verify.py"
     if not script.exists():
         return catalog.write_result(
