@@ -74,7 +74,7 @@ jobs:
       APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
       APEX_EXPECTED_VISIBILITY: public
       APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
-      APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN || secrets.GH_PAT }}
+      APEX_CONTROL_AVAILABLE: ${{ (secrets.APEX_CONTROL_TOKEN != '' || secrets.GH_PAT != '') && 'true' || 'false' }}
 
     steps:
       - name: Checkout public action face
@@ -110,6 +110,8 @@ jobs:
 
       - name: Verify private dual-confirmation record
         if: steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I'
+        env:
+          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN || secrets.GH_PAT }}
         run: |
           python3 scripts/apex_pillar_runner.py verify-approval \
             --job-id "${{ steps.plan.outputs.job_id }}" \
@@ -136,14 +138,16 @@ jobs:
             ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
       - name: Return detailed result to private control plane
-        if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped' && env.APEX_CONTROL_TOKEN != ''
+        if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped' && env.APEX_CONTROL_AVAILABLE == 'true'
+        env:
+          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN || secrets.GH_PAT }}
         run: |
           python3 scripts/apex_pillar_runner.py publish \
             --job-id "${{ steps.plan.outputs.job_id }}" \
             --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
       - name: Report unavailable private sink
-        if: always() && steps.plan.outcome == 'success' && env.APEX_CONTROL_TOKEN == ''
+        if: always() && steps.plan.outcome == 'success' && env.APEX_CONTROL_AVAILABLE != 'true'
         run: |
           echo "Private result return is gated until APEX_CONTROL_TOKEN or GH_PAT is installed."
           echo "Detailed result was not published publicly."
