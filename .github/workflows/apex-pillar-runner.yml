@@ -1,4 +1,4 @@
-name: APEX Public Pillar Runner
+name: APEX Public Action Face
 
 on:
   issues:
@@ -6,7 +6,21 @@ on:
   push:
     branches: [main]
   repository_dispatch:
-    types: [case-evidence, document-processing, coding-deploy, evolution-optimize, memory-sync, infra-gateway, case-ops, orchestrate, intl-case-ops]
+    types:
+      - case-evidence
+      - document-processing
+      - coding-deploy
+      - evolution-optimize
+      - memory-sync
+      - infra-gateway
+      - case-ops
+      - orchestrate
+      - intl-case-ops
+      - media-queue
+      - whisperx-exec
+      - gateway-ci
+      - comet-agent-ci
+      - apex-verification
   workflow_dispatch:
     inputs:
       pillar:
@@ -15,7 +29,7 @@ on:
         type: choice
         options: [A, B, C, D, E, F, G, H, I]
       action:
-        description: Cataloged pillar action; leave blank for a base task
+        description: Cataloged public action; leave blank for an allowlisted base task
         required: false
         type: string
       job_id:
@@ -23,7 +37,7 @@ on:
         required: true
         type: string
       source_repo:
-        description: GlacierEQ repository for a base task; catalog actions use their registered target
+        description: Approved GlacierEQ workload repository for a base task
         required: false
         default: ""
         type: string
@@ -54,29 +68,36 @@ concurrency:
 jobs:
   execute:
     if: github.event_name != 'push' || startsWith(github.event.head_commit.message, 'dispatch:')
-    runs-on: [self-hosted, linux]
-    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
+      APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
+      APEX_EXPECTED_VISIBILITY: public
       APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
       APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN || secrets.GH_PAT }}
 
     steps:
-      - name: Checkout public runner
+      - name: Checkout public action face
         uses: actions/checkout@v4
         with:
           persist-credentials: false
           fetch-depth: 2
+
+      - name: Assert canonical public action face
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/action_face_guard.py
 
       - name: Validate and normalize job
         id: plan
         shell: bash
         run: |
           if [ "$GITHUB_EVENT_NAME" = "issues" ]; then
-            python3 scripts/apex_issue_plan.py
+            python3 scripts/action_face_issue_plan.py
           elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            python3 scripts/apex_push_plan.py
+            python3 scripts/action_face_push_plan.py
           else
-            python3 scripts/apex_pillar_runner.py plan \
+            python3 scripts/action_face_plan.py \
               --event "$GITHUB_EVENT_PATH" \
               --pillar "${{ inputs.pillar }}" \
               --action "${{ inputs.action }}" \
@@ -105,16 +126,16 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Execute pillar adapter
+      - name: Execute public action adapter
         id: runner
         continue-on-error: true
         run: |
-          python3 scripts/apex_catalog_runner.py \
+          python3 scripts/action_face_catalog_runner.py \
             .apex-plan.json \
             workload \
             ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
-      - name: Return result to private control plane
+      - name: Return detailed result to private control plane
         if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped' && env.APEX_CONTROL_TOKEN != ''
         run: |
           python3 scripts/apex_pillar_runner.py publish \
@@ -127,7 +148,7 @@ jobs:
           echo "Private result return is gated until APEX_CONTROL_TOKEN or GH_PAT is installed."
           echo "Detailed result was not published publicly."
 
-      - name: Update issue with sanitized status
+      - name: Update public issue with sanitized status
         if: always() && github.event_name == 'issues' && steps.plan.outcome == 'success'
         uses: actions/github-script@v7
         env:
@@ -140,7 +161,7 @@ jobs:
           script: |
             const outcome = process.env.RUNNER_OUTCOME;
             const body = [
-              'APEX public runner finished.',
+              'APEX public action face finished.',
               '',
               `- Job: ${process.env.JOB_ID}`,
               `- Pillar: ${process.env.PILLAR}`,
@@ -149,7 +170,7 @@ jobs:
               `- Outcome: ${outcome}`,
               `- Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
               '',
-              'Detailed output was not published to this public issue.'
+              'Detailed output was returned to the private control plane and was not published here.'
             ].join('\n');
             await github.rest.issues.createComment({...context.repo, issue_number: context.issue.number, body});
             if (outcome === 'success') {
