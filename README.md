@@ -1,12 +1,30 @@
-# public-actions-runner-host
+# APEX Public Action Face
 
-Public GitHub-hosted execution plane for the private APEX/GlacierEQ control system.
+`GlacierEQ/public-actions-runner-host` is the **only GitHub Actions execution face** for the APEX/GlacierEQ runner system.
 
-The private `GlacierEQ/llm-runner-teams` repository defines policy and nine specialized pillars. This public repository performs allowlisted legwork on `ubuntu-latest`.
+```text
+external dispatcher / public issue / public repository_dispatch
+  -> public-actions-runner-host
+  -> GitHub-hosted ubuntu-latest
+  -> approved workload checkout
+  -> allowlisted adapter
+  -> sanitized public status
+  -> detailed private result in llm-runner-teams
+```
 
-## Pillars
+## Canonical split
 
-| Pillar | Domain | Event |
+| Plane | Repository | Responsibility | GitHub Actions |
+|---|---|---|---|
+| Public execution / action face | `GlacierEQ/public-actions-runner-host` | Workflows, runs, badges, sanitized status, allowlisted execution | Required |
+| Private control / runner teams | `GlacierEQ/llm-runner-teams` | Policy, nine pillars, approvals, private receipts, result history | Forbidden |
+| Canonical architecture | `GlacierEQ/AKOS` | Governing policy and routing truth | Policy only |
+
+The action-face guard fails closed unless GitHub reports this repository as **public**. Changing this repository to private blocks execution by design.
+
+## Supported lanes
+
+| Pillar | Domain | Primary event |
 |---|---|---|
 | A | Case and Evidence | `case-evidence` |
 | B | Document Processing | `document-processing` |
@@ -18,40 +36,40 @@ The private `GlacierEQ/llm-runner-teams` repository defines policy and nine spec
 | H | Orchestration and Swarm | `orchestrate` |
 | I | International Case Operations | `intl-case-ops` |
 
-## Zapier issue queue
+Migrated execution events also include `media-queue`, `whisperx-exec`, `gateway-ci`, `comet-agent-ci`, and `apex-verification`.
 
-Zapier opens an issue titled `[APEX JOB] <job_id>`. The issue body is metadata-only JSON:
+## Public issue queue
+
+Open an issue titled `[APEX JOB] <job_id>` with a metadata-only JSON body:
 
 ```json
 {
-  "job_id": "code-20260620-001",
+  "job_id": "code-20260714-001",
   "pillar": "C",
-  "source_repo": "GlacierEQ/Omni_Engine",
-  "source_ref": "main",
-  "task": "test"
+  "action": "apex-verification",
+  "source_ref": "main"
 }
 ```
 
-The public workflow validates the contract, executes only allowlisted operations, posts sanitized status to the issue, and closes successful jobs.
-
-Never include evidence, legal narratives, credentials, source text, prompts, messages, email content, or document contents in the public issue.
+Never include evidence, legal narratives, source text, prompts, messages, credentials, document contents, or private logs in a public issue.
 
 ## Private bridge
 
-Private workload checkout and private result return use:
-
-| Secret | Purpose |
+| Secret | Minimum purpose |
 |---|---|
-| `APEX_PRIVATE_READ_TOKEN` | Contents-read access to approved private workload repositories |
+| `APEX_PRIVATE_READ_TOKEN` | Read approved private workload repositories |
 | `APEX_CONTROL_TOKEN` | Read approvals and write detailed results in `GlacierEQ/llm-runner-teams` |
-| `GH_PAT` | Supported fallback when already installed with both minimum scopes |
+| `GH_PAT` | Approved minimum-scope fallback only |
 
-Without one of these private-access secrets, public-repository workloads run normally and private-repository jobs remain gated.
+Private checkout uses `persist-credentials: false`. Detailed results are never posted publicly. Pillars G and I require a matching private approval record.
 
-Pillars G and I additionally require a matching private approval record.
+## Core files
 
-See [Public Runner Security Contract](docs/PUBLIC_RUNNER_SECURITY.md), [job schema](schemas/apex-public-job.schema.json), and [workflow](.github/workflows/apex-pillar-runner.yml).
+- [Action Face Contract](docs/ACTION_FACE_CONTRACT.md)
+- [Public Runner Security Contract](docs/PUBLIC_RUNNER_SECURITY.md)
+- [Action Catalog](config/pillar-actions.json)
+- [Migrated Action Catalog](config/action-face-actions.json)
+- [Canonical Workflow](.github/workflows/apex-pillar-runner.yml)
+- [Visibility Guard](scripts/action_face_guard.py)
 
-## Legal brief pipeline
-
-The existing [legal brief workflow](.github/workflows/legal-brief-pipeline.yml) remains available for LaTeX compilation, Supabase upload, Notion synchronization, and MotherDuck metrics.
+The existing legal brief workflow remains a public execution lane. It does not transfer control-plane ownership into a private repository.
