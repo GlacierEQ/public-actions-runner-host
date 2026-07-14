@@ -13,6 +13,13 @@ from pathlib import Path
 import apex_catalog_runner as catalog
 
 
+def executable_available(executable: str) -> bool:
+    path = Path(executable)
+    if path.is_absolute():
+        return path.exists() and path.is_file()
+    return shutil.which(executable) is not None
+
+
 def run_sequence(plan: dict, workspace: Path, result_path: Path, commands: list[list[str]], timeout: int = 1800) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -23,29 +30,49 @@ def run_sequence(plan: dict, workspace: Path, result_path: Path, commands: list[
 
     for command in commands:
         executable = command[0]
-        if not Path(executable).is_absolute() and not shutil.which(executable):
+        if not executable_available(executable):
             steps.append({"command": command, "status": "blocked", "reason": f"{executable} is unavailable"})
             failed = True
             break
-        proc = subprocess.run(
-            command,
-            cwd=workspace,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            timeout=timeout,
-            check=False,
-            env=env,
-        )
-        output = proc.stdout[-100_000:]
-        steps.append({
-            "command": command,
-            "exit_code": proc.returncode,
-            "status": "completed" if proc.returncode == 0 else "failed",
-            "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
-            "output_tail": output[-24_000:],
-        })
-        if proc.returncode != 0:
+        try:
+            proc = subprocess.run(
+                command,
+                cwd=workspace,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=timeout,
+                check=False,
+                env=env,
+            )
+            output = proc.stdout[-100_000:]
+            steps.append({
+                "command": command,
+                "exit_code": proc.returncode,
+                "status": "completed" if proc.returncode == 0 else "failed",
+                "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
+                "output_tail": output[-24_000:],
+            })
+            if proc.returncode != 0:
+                failed = True
+                break
+        except subprocess.TimeoutExpired as exc:
+            output = exc.stdout if isinstance(exc.stdout, str) else ""
+            steps.append({
+                "command": command,
+                "status": "failed",
+                "reason": f"timeout after {timeout} seconds",
+                "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
+                "output_tail": output[-24_000:],
+            })
+            failed = True
+            break
+        except OSError as exc:
+            steps.append({
+                "command": command,
+                "status": "failed",
+                "reason": f"process start failed: {type(exc).__name__}: {exc}",
+            })
             failed = True
             break
 
@@ -65,19 +92,20 @@ def node_ci(plan: dict, workspace: Path, result_path: Path) -> int:
 
     package = json.loads(package_path.read_text(encoding="utf-8"))
     scripts = package.get("scripts") if isinstance(package.get("scripts"), dict) else {}
-    commands: list[list[str]] = []
+    install_commands: list[list[str]] = []
+    check_commands: list[list[str]] = []
 
     if (workspace / "package-lock.json").exists():
-        commands.append(["npm", "ci"])
+        install_commands.append(["npm", "ci"])
         runner = "npm"
     elif (workspace / "pnpm-lock.yaml").exists():
-        commands.extend([["corepack", "enable"], ["pnpm", "install", "--frozen-lockfile"]])
+        install_commands.extend([["corepack", "enable"], ["pnpm", "install", "--frozen-lockfile"]])
         runner = "pnpm"
     elif (workspace / "yarn.lock").exists():
-        commands.extend([["corepack", "enable"], ["yarn", "install", "--frozen-lockfile"]])
+        install_commands.extend([["corepack", "enable"], ["yarn", "install", "--frozen-lockfile"]])
         runner = "yarn"
     else:
-        commands.append(["npm", "install"])
+        install_commands.append(["npm", "install"])
         runner = "npm"
 
     def script_command(name: str) -> list[str]:
@@ -88,20 +116,20 @@ def node_ci(plan: dict, workspace: Path, result_path: Path) -> int:
         return ["yarn", name]
 
     if "typecheck" in scripts:
-        commands.append(script_command("typecheck"))
+        check_commands.append(script_command("typecheck"))
     elif (workspace / "tsconfig.json").exists():
         local_tsc = workspace / "node_modules" / ".bin" / "tsc"
-        commands.append([str(local_tsc), "--noEmit"])
+        check_commands.append([str(local_tsc), "--noEmit"])
     if "lint" in scripts:
-        commands.append(script_command("lint"))
+        check_commands.append(script_command("lint"))
     if "test" in scripts:
-        commands.append(script_command("test"))
+        check_commands.append(script_command("test"))
     if "build" in scripts:
-        commands.append(script_command("build"))
+        check_commands.append(script_command("build"))
 
-    if len(commands) == 1:
-        return catalog.write_result(plan, result_path.resolve(), "blocked", reason="no CI scripts were found")
-    return run_sequence(plan, workspace, result_path, commands)
+    if not check_commands:
+        return catalog.write_result(plan, result_path.resolve(), "blocked", reason="no CI scripts or TypeScript config were found")
+    return run_sequence(plan, workspace, result_path, install_commands + check_commands)
 
 
 def python_ci(plan: dict, workspace: Path, result_path: Path) -> int:
@@ -135,17 +163,39 @@ def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
 
     report_path = result_path.parent / f"{plan['job_id']}.apex-verification.json"
     command = [sys.executable, str(script), str(workspace), "--out", str(report_path)]
-    proc = subprocess.run(
-        command,
-        cwd=workspace,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        timeout=3600,
-        check=False,
-        env={**os.environ, "CI": "true"},
-    )
-    output = proc.stdout[-100_000:]
+    try:
+        proc = subprocess.run(
+            command,
+            cwd=workspace,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=3600,
+            check=False,
+            env={**os.environ, "CI": "true"},
+        )
+        output = proc.stdout[-100_000:]
+        exit_code = proc.returncode
+    except subprocess.TimeoutExpired as exc:
+        output = exc.stdout if isinstance(exc.stdout, str) else ""
+        return catalog.write_result(
+            plan,
+            result_path,
+            "failed",
+            command=command,
+            reason="APEX verification timed out after 3600 seconds",
+            output_sha256=hashlib.sha256(output.encode()).hexdigest(),
+            output_tail=output[-32_000:],
+        )
+    except OSError as exc:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "failed",
+            command=command,
+            reason=f"APEX verification failed to start: {type(exc).__name__}: {exc}",
+        )
+
     report = None
     if report_path.exists():
         try:
@@ -154,13 +204,13 @@ def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
             report = {"release_state": "Block", "reason": "verification report was not valid JSON"}
 
     release_state = report.get("release_state") if isinstance(report, dict) else None
-    status = "completed" if proc.returncode == 0 and release_state != "Block" else "failed"
+    status = "completed" if exit_code == 0 and release_state != "Block" else "failed"
     return catalog.write_result(
         plan,
         result_path,
         status,
         command=command,
-        exit_code=proc.returncode,
+        exit_code=exit_code,
         release_state=release_state,
         verification_report=report,
         output_sha256=hashlib.sha256(output.encode()).hexdigest(),
