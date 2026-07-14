@@ -33,6 +33,8 @@ CATALOGS = [
 ADAPTER_TASK = {
     **base.ADAPTER_TASK,
     "apex-verify": "validate",
+    "python-ci": "test",
+    "node-ci": "test",
 }
 
 
