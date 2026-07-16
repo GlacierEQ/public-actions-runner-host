@@ -47,6 +47,7 @@ def main() -> int:
     api_root = f"https://api.github.com/repos/{repository}/issues/{issue_number}"
 
     close = False
+    close_reason = "completed"
     if mode == "rejected":
         reason = clean("reason", os.environ.get("AUTH_REASON", "unauthorized ingress"))
         body = "\n".join([
@@ -58,6 +59,7 @@ def main() -> int:
             "No workload was checked out or executed.",
         ])
         close = True
+        close_reason = "not_planned"
     else:
         job_id = clean("job", os.environ.get("JOB_ID", ""))
         pillar = clean("pillar", os.environ.get("PILLAR", ""))
@@ -68,11 +70,14 @@ def main() -> int:
 
         if runner_outcome == "success" and publish_outcome == "success":
             public_state = "completed"
-            private_sink = "recorded privately"
+            private_sink = "success recorded privately"
             close = True
-        elif runner_outcome != "success":
+        elif runner_outcome == "failure" and publish_outcome == "success":
             public_state = "execution failed"
-            private_sink = "publication attempted after governed failure"
+            private_sink = "failure recorded privately"
+        elif runner_outcome == "skipped":
+            public_state = "execution did not start"
+            private_sink = "no detailed execution result was created"
         else:
             public_state = "blocked"
             private_sink = "private result publication failed"
@@ -93,7 +98,7 @@ def main() -> int:
 
     api(f"{api_root}/comments", token, "POST", {"body": body})
     if close:
-        api(api_root, token, "PATCH", {"state": "closed", "state_reason": "completed"})
+        api(api_root, token, "PATCH", {"state": "closed", "state_reason": close_reason})
     print("PUBLIC_STATUS_OK")
     return 0
 
