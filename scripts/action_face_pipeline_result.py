@@ -51,6 +51,7 @@ def main() -> int:
         "claim": outcome("CLAIM_OUTCOME"),
         "approval": outcome("APPROVAL_OUTCOME"),
         "checkout": outcome("CHECKOUT_OUTCOME"),
+        "checkout_binding": outcome("BIND_OUTCOME"),
         "runner": outcome("RUNNER_OUTCOME"),
     }
     failed_stages = [name for name, state in stages.items() if state in {"failure", "cancelled", "invalid"}]
@@ -79,6 +80,7 @@ def main() -> int:
         "task": plan.get("task", ""),
         "source_repo": plan.get("source_repo"),
         "source_ref": plan.get("source_ref"),
+        "resolved_source_sha": os.environ.get("APEX_RESOLVED_SOURCE_SHA", ""),
         "target_repo": plan.get("target_repo", ""),
         "provenance": {key: plan.get(key, "") for key in provenance_keys if plan.get(key, "")},
         "status": "blocked",
