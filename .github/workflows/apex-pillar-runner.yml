@@ -5,6 +5,8 @@ on:
     types: [opened]
   push:
     branches: [main]
+    paths:
+      - jobs/*.json
   repository_dispatch:
     types:
       - case-evidence
@@ -21,6 +23,7 @@ on:
       - gateway-ci
       - comet-agent-ci
       - apex-verification
+      - action-face-canary
   workflow_dispatch:
     inputs:
       pillar:
@@ -37,7 +40,7 @@ on:
         required: true
         type: string
       source_repo:
-        description: Approved GlacierEQ workload repository for a base task
+        description: Catalog-approved workload repository for a base task
         required: false
         default: ""
         type: string
@@ -53,7 +56,7 @@ on:
         type: choice
         options: [validate, hash-manifest, test, build, audit]
       approval_id:
-        description: Private approval ID required for pillars G and I
+        description: Private approval ID required only for pillars G and I
         required: false
         type: string
 
@@ -62,34 +65,54 @@ permissions:
   issues: write
 
 concurrency:
-  group: apex-public-${{ github.event.client_payload.job_id || inputs.job_id || github.event.issue.number || github.sha }}
+  group: apex-public-${{ github.event_name }}-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false
 
 jobs:
   execute:
-    if: github.event_name != 'push' || startsWith(github.event.head_commit.message, 'dispatch:')
+    if: >-
+      github.event_name != 'issues' ||
+      (github.event.issue.user.login == github.repository_owner &&
+       github.event.issue.author_association == 'OWNER')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
       APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
       APEX_EXPECTED_VISIBILITY: public
       APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
-      APEX_CONTROL_AVAILABLE: ${{ (secrets.APEX_CONTROL_TOKEN != '' || secrets.GH_PAT != '') && 'true' || 'false' }}
 
     steps:
       - name: Checkout public action face
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
           fetch-depth: 2
+
+      - name: Authorize ingress principal
+        id: authorize
+        run: python3 scripts/action_face_authorize.py
 
       - name: Assert canonical public action face
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python3 scripts/action_face_guard.py
 
-      - name: Validate and normalize job
+      - name: Require dedicated bridge credentials
+        env:
+          APEX_PRIVATE_READ_TOKEN: ${{ secrets.APEX_PRIVATE_READ_TOKEN }}
+          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
+        run: |
+          test -n "$APEX_PRIVATE_READ_TOKEN" || { echo "APEX_PRIVATE_READ_TOKEN is required" >&2; exit 1; }
+          test -n "$APEX_CONTROL_TOKEN" || { echo "APEX_CONTROL_TOKEN is required" >&2; exit 1; }
+
+      - name: Assert private non-executing control plane
+        env:
+          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
+        run: python3 scripts/action_face_control_plane_guard.py
+
+      - name: Validate and normalize strict job envelope
         id: plan
+        continue-on-error: true
         shell: bash
         run: |
           if [ "$GITHUB_EVENT_NAME" = "issues" ]; then
@@ -108,27 +131,38 @@ jobs:
               --approval-id "${{ inputs.approval_id }}"
           fi
 
-      - name: Verify private dual-confirmation record
-        if: steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I'
+      - name: Close invalid public issue without execution
+        if: always() && github.event_name == 'issues' && steps.plan.outcome == 'failure'
         env:
-          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN || secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          STATUS_MODE: rejected
+          AUTH_REASON: strict metadata envelope validation failed
+        run: python3 scripts/action_face_issue_status.py
+
+      - name: Verify private dual-confirmation record
+        if: steps.plan.outcome == 'success' && (steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I')
+        env:
+          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
         run: |
           python3 scripts/apex_pillar_runner.py verify-approval \
             --job-id "${{ steps.plan.outputs.job_id }}" \
             --pillar "${{ steps.plan.outputs.pillar }}" \
             --approval-id "${{ steps.plan.outputs.approval_id }}"
 
-      - name: Checkout workload without persisting credentials
-        uses: actions/checkout@v4
+      - name: Checkout catalog-approved workload without persisting credentials
+        if: steps.plan.outcome == 'success'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: ${{ steps.plan.outputs.source_repo }}
           ref: ${{ steps.plan.outputs.source_ref }}
-          token: ${{ secrets.APEX_PRIVATE_READ_TOKEN || secrets.GH_PAT || github.token }}
+          token: ${{ secrets.APEX_PRIVATE_READ_TOKEN }}
           path: workload
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Execute public action adapter
+      - name: Execute isolated public action adapter
+        if: steps.plan.outcome == 'success'
         id: runner
         continue-on-error: true
         run: |
@@ -138,49 +172,34 @@ jobs:
             ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
       - name: Return detailed result to private control plane
-        if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped' && env.APEX_CONTROL_AVAILABLE == 'true'
+        if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped'
+        id: publish
+        continue-on-error: true
         env:
-          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN || secrets.GH_PAT }}
+          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
         run: |
           python3 scripts/apex_pillar_runner.py publish \
             --job-id "${{ steps.plan.outputs.job_id }}" \
             --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
-      - name: Report unavailable private sink
-        if: always() && steps.plan.outcome == 'success' && env.APEX_CONTROL_AVAILABLE != 'true'
-        run: |
-          echo "Private result return is gated until APEX_CONTROL_TOKEN or GH_PAT is installed."
-          echo "Detailed result was not published publicly."
-
-      - name: Update public issue with sanitized status
+      - name: Publish truthful sanitized issue status
         if: always() && github.event_name == 'issues' && steps.plan.outcome == 'success'
-        uses: actions/github-script@v7
         env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          STATUS_MODE: result
           JOB_ID: ${{ steps.plan.outputs.job_id }}
           PILLAR: ${{ steps.plan.outputs.pillar }}
           ACTION_NAME: ${{ steps.plan.outputs.action }}
           TASK: ${{ steps.plan.outputs.task }}
           RUNNER_OUTCOME: ${{ steps.runner.outcome }}
-        with:
-          script: |
-            const outcome = process.env.RUNNER_OUTCOME;
-            const body = [
-              'APEX public action face finished.',
-              '',
-              `- Job: ${process.env.JOB_ID}`,
-              `- Pillar: ${process.env.PILLAR}`,
-              `- Action: ${process.env.ACTION_NAME || 'base-task'}`,
-              `- Task: ${process.env.TASK}`,
-              `- Outcome: ${outcome}`,
-              `- Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-              '',
-              'Detailed output was returned to the private control plane and was not published here.'
-            ].join('\n');
-            await github.rest.issues.createComment({...context.repo, issue_number: context.issue.number, body});
-            if (outcome === 'success') {
-              await github.rest.issues.update({...context.repo, issue_number: context.issue.number, state: 'closed', state_reason: 'completed'});
-            }
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+        run: python3 scripts/action_face_issue_status.py
 
-      - name: Enforce task result
-        if: steps.runner.outcome == 'failure'
+      - name: Enforce governed release result
+        if: >-
+          always() &&
+          (steps.plan.outcome == 'failure' ||
+           steps.runner.outcome == 'failure' ||
+           steps.publish.outcome == 'failure')
         run: exit 1
