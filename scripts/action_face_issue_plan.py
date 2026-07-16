@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Normalize a metadata-only public issue into the canonical action-face plan."""
+"""Normalize a bounded metadata-only public issue into the canonical action-face plan."""
 from __future__ import annotations
 
 import json
@@ -10,13 +10,23 @@ from pathlib import Path
 import action_face_plan as planner
 import apex_pillar_runner as base
 
+MAX_BODY_BYTES = 4096
+
 
 def main() -> int:
     event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
     issue = event.get("issue") or {}
-    if not str(issue.get("title", "")).startswith("[APEX JOB] "):
+    title = str(issue.get("title", ""))
+    if not title.startswith("[APEX JOB] "):
         base.fail("issue is not an APEX job")
-    payload = json.loads(str(issue.get("body", "")))
+
+    body = str(issue.get("body", ""))
+    if len(body.encode("utf-8")) > MAX_BODY_BYTES:
+        base.fail(f"public issue job envelope exceeds {MAX_BODY_BYTES} bytes")
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError as exc:
+        base.fail(f"public issue body is not valid JSON: line {exc.lineno} column {exc.colno}")
 
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
         json.dump({}, handle)
