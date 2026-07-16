@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Safe public execution adapter and immutable private receipt bridge."""
+"""Safe public execution adapter and immutable private claim/receipt bridge."""
 from __future__ import annotations
 
 import argparse
@@ -59,6 +59,15 @@ ADAPTER_TASK = {
     "xcode": "validate",
     "browser-scan": "validate",
     "health-check": "validate",
+}
+PROVENANCE_FIELDS = {
+    "workflow_run_id",
+    "workflow_run_attempt",
+    "trigger_actor",
+    "trigger_actor_id",
+    "event_name",
+    "execution_repo",
+    "public_runner_sha",
 }
 
 
@@ -161,14 +170,20 @@ def control_token() -> str:
     return token
 
 
-def verify_approval(job_id: str, pillar: str, approval_id: str) -> None:
-    record = api(f"approvals/{approval_id}.json", control_token())
+def decode_content(record: object, label: str) -> tuple[dict, str]:
     if not isinstance(record, dict) or "content" not in record:
-        fail("approval record is malformed")
+        fail(f"{label} is malformed")
     try:
-        content = json.loads(base64.b64decode(record["content"]).decode("utf-8"))
+        data = json.loads(base64.b64decode(record["content"]).decode("utf-8"))
     except Exception as exc:  # noqa: BLE001
-        fail(f"approval record is invalid: {type(exc).__name__}")
+        fail(f"{label} is invalid: {type(exc).__name__}")
+    if not isinstance(data, dict):
+        fail(f"{label} must contain a JSON object")
+    return data, str(record.get("sha", ""))
+
+
+def verify_approval(job_id: str, pillar: str, approval_id: str) -> None:
+    content, _ = decode_content(api(f"approvals/{approval_id}.json", control_token()), "approval record")
     if content.get("approved") is not True:
         fail("approval is not active")
     if content.get("job_id") != job_id or content.get("pillar") != pillar:
@@ -176,13 +191,77 @@ def verify_approval(job_id: str, pillar: str, approval_id: str) -> None:
     print("Private dual-confirmation record verified.")
 
 
+def validate_plan(plan: object) -> dict:
+    if not isinstance(plan, dict):
+        fail("plan must be a JSON object")
+    job_id = str(plan.get("job_id", ""))
+    if not JOB_ID.fullmatch(job_id):
+        fail("invalid job_id")
+    if plan.get("pillar") not in ALLOWED_TASKS:
+        fail("invalid plan pillar")
+    if not REPO.fullmatch(str(plan.get("source_repo", ""))):
+        fail("invalid plan source repository")
+    if not REF.fullmatch(str(plan.get("source_ref", ""))):
+        fail("invalid plan source ref")
+    missing_provenance = sorted(field for field in PROVENANCE_FIELDS if not str(plan.get(field, "")))
+    if missing_provenance:
+        fail(f"plan provenance is incomplete: {', '.join(missing_provenance)}")
+    return plan
+
+
+def canonical_sha256(value: object) -> str:
+    encoded = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def assert_new_result(job_id: str) -> None:
     if not JOB_ID.fullmatch(job_id):
         fail("invalid job_id")
-    existing = api(f"results/{job_id}.json", control_token(), allow_not_found=True)
-    if existing is not None:
+    token = control_token()
+    if api(f"claims/{job_id}.json", token, allow_not_found=True) is not None:
+        fail("an immutable claim already exists for this job_id")
+    if api(f"results/{job_id}.json", token, allow_not_found=True) is not None:
         fail("an immutable private result already exists for this job_id")
-    print("Replay guard passed: job_id has no prior private result.")
+    print("Replay guard passed: job_id has no prior claim or result.")
+
+
+def claim_job(plan_path: Path) -> None:
+    plan_path = plan_path.resolve()
+    if not plan_path.is_file():
+        fail("plan file does not exist")
+    try:
+        plan = validate_plan(json.loads(plan_path.read_text(encoding="utf-8")))
+    except json.JSONDecodeError as exc:
+        fail(f"plan file is invalid JSON at line {exc.lineno}")
+
+    job_id = str(plan["job_id"])
+    token = control_token()
+    if api(f"results/{job_id}.json", token, allow_not_found=True) is not None:
+        fail("an immutable private result already exists for this job_id")
+    if api(f"claims/{job_id}.json", token, allow_not_found=True) is not None:
+        fail("an immutable claim already exists for this job_id")
+
+    claim = {
+        "schema_version": "1.0",
+        "job_id": job_id,
+        "state": "claimed",
+        "claimed_at": datetime.now(timezone.utc).isoformat(),
+        "plan_sha256": canonical_sha256(plan),
+        "pillar": plan["pillar"],
+        "action": plan.get("action", ""),
+        "adapter": plan.get("adapter", ""),
+        "task": plan.get("task", ""),
+        "source_repo": plan["source_repo"],
+        "source_ref": plan["source_ref"],
+        "provenance": provenance(plan),
+    }
+    encoded = json.dumps(claim, indent=2, sort_keys=True).encode("utf-8") + b"\n"
+    payload = {
+        "message": f"runner: claim immutable job {job_id}",
+        "content": base64.b64encode(encoded).decode("ascii"),
+    }
+    api(f"claims/{job_id}.json", token, method="PUT", payload=payload)
+    print("Immutable private job claim created.")
 
 
 def files(root: Path):
@@ -205,16 +284,7 @@ def command_for(task: str, root: Path) -> list[str] | None:
 
 
 def provenance(plan: dict) -> dict:
-    keys = (
-        "workflow_run_id",
-        "workflow_run_attempt",
-        "trigger_actor",
-        "trigger_actor_id",
-        "event_name",
-        "execution_repo",
-        "public_runner_sha",
-    )
-    return {key: plan.get(key, "") for key in keys if plan.get(key, "")}
+    return {key: plan.get(key, "") for key in sorted(PROVENANCE_FIELDS) if plan.get(key, "")}
 
 
 def execute(plan: dict, root: Path, result_path: Path) -> int:
@@ -288,18 +358,40 @@ def publish(job_id: str, result_path: Path) -> None:
         fail(f"result file is invalid JSON: {type(exc).__name__}")
     if not isinstance(result, dict) or result.get("job_id") != job_id:
         fail("result job_id does not match the publish request")
+    if "receipt" in result:
+        fail("untrusted result already contains a receipt")
     if not isinstance(result.get("status"), str):
         fail("result status is missing")
+    result_provenance = result.get("provenance")
+    if not isinstance(result_provenance, dict):
+        fail("result provenance is missing")
+    missing_provenance = sorted(field for field in PROVENANCE_FIELDS if not str(result_provenance.get(field, "")))
+    if missing_provenance:
+        fail(f"result provenance is incomplete: {', '.join(missing_provenance)}")
 
     token = control_token()
-    path = f"results/{job_id}.json"
-    if api(path, token, allow_not_found=True) is not None:
+    result_path_remote = f"results/{job_id}.json"
+    if api(result_path_remote, token, allow_not_found=True) is not None:
         fail("immutable result path already exists")
+
+    claim_record = api(f"claims/{job_id}.json", token)
+    claim, claim_blob_sha = decode_content(claim_record, "immutable claim")
+    if claim.get("job_id") != job_id or claim.get("state") != "claimed":
+        fail("immutable claim does not match the result")
+    for field in ("pillar", "source_repo", "source_ref"):
+        if claim.get(field) != result.get(field):
+            fail(f"immutable claim {field} does not match the result")
+    claim_provenance = claim.get("provenance")
+    if not isinstance(claim_provenance, dict) or claim_provenance != result_provenance:
+        fail("immutable claim provenance does not match the result")
 
     canonical = json.dumps(result, sort_keys=True, separators=(",", ":")).encode("utf-8")
     result["receipt"] = {
         "published_at": datetime.now(timezone.utc).isoformat(),
         "payload_sha256": hashlib.sha256(canonical).hexdigest(),
+        "claim_path": f"claims/{job_id}.json",
+        "claim_blob_sha": claim_blob_sha,
+        "plan_sha256": claim.get("plan_sha256", ""),
         "workflow_run_id": os.environ.get("GITHUB_RUN_ID", ""),
         "workflow_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
         "public_runner_sha": os.environ.get("GITHUB_SHA", ""),
@@ -310,7 +402,7 @@ def publish(job_id: str, result_path: Path) -> None:
         "message": f"runner: record immutable result {job_id}",
         "content": base64.b64encode(published).decode("ascii"),
     }
-    api(path, token, method="PUT", payload=payload)
+    api(result_path_remote, token, method="PUT", payload=payload)
     print("Immutable result published to the private control plane.")
 
 
@@ -330,6 +422,9 @@ def main() -> int:
 
     replay = sub.add_parser("assert-new-result")
     replay.add_argument("--job-id", required=True)
+
+    claim = sub.add_parser("claim-job")
+    claim.add_argument("--plan", default=".apex-plan.json")
 
     run = sub.add_parser("run")
     run.add_argument("--plan", default=".apex-plan.json")
@@ -358,6 +453,9 @@ def main() -> int:
         return 0
     if args.command == "assert-new-result":
         assert_new_result(args.job_id)
+        return 0
+    if args.command == "claim-job":
+        claim_job(Path(args.plan))
         return 0
     if args.command == "run":
         return execute(json.loads(Path(args.plan).read_text(encoding="utf-8")), Path(args.workspace), Path(args.result))
