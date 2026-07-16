@@ -56,7 +56,7 @@ def main() -> int:
             f"- Reason: {reason}",
             f"- Run: {server}/{repository}/actions/runs/{run_id}",
             "",
-            "No workload was checked out or executed.",
+            "No job claim was created and no workload was checked out.",
         ])
         close = True
         close_reason = "not_planned"
@@ -67,11 +67,12 @@ def main() -> int:
         task = clean("task", os.environ.get("TASK", ""))
         replay_outcome = clean("replay", os.environ.get("REPLAY_OUTCOME", ""))
         runner_outcome = clean("runner", os.environ.get("RUNNER_OUTCOME", ""))
+        pipeline_result_outcome = clean("pipeline", os.environ.get("PIPELINE_RESULT_OUTCOME", ""))
         publish_outcome = clean("publish", os.environ.get("PUBLISH_OUTCOME", ""))
 
         if replay_outcome == "failure":
             public_state = "replay blocked"
-            private_sink = "existing immutable result preserved"
+            private_sink = "existing immutable claim or result preserved"
             close = True
             close_reason = "not_planned"
         elif runner_outcome == "success" and publish_outcome == "success":
@@ -81,9 +82,12 @@ def main() -> int:
         elif runner_outcome == "failure" and publish_outcome == "success":
             public_state = "execution failed"
             private_sink = "failure recorded privately"
-        elif runner_outcome == "skipped":
-            public_state = "execution did not start"
-            private_sink = "no detailed execution result was created"
+        elif runner_outcome == "skipped" and pipeline_result_outcome == "success" and publish_outcome == "success":
+            public_state = "execution blocked before adapter"
+            private_sink = "blocked lifecycle result recorded privately"
+        elif pipeline_result_outcome == "failure":
+            public_state = "result synthesis failed"
+            private_sink = "claim preserved but no complete result receipt was published"
         else:
             public_state = "blocked"
             private_sink = "private result publication failed"
@@ -96,7 +100,7 @@ def main() -> int:
             f"- Action: {action}",
             f"- Task: {task}",
             f"- State: {public_state}",
-            f"- Detailed result: {private_sink}",
+            f"- Private ledger: {private_sink}",
             f"- Run: {server}/{repository}/actions/runs/{run_id}",
             "",
             "Protected workload output was not published here.",
