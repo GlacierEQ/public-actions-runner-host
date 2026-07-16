@@ -1,11 +1,16 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "repository_owner": "GlacierEQ",
+  "repository_owner_id": 194243768,
   "authorized_actors": [
-    "GlacierEQ"
+    {
+      "login": "GlacierEQ",
+      "id": 194243768,
+      "roles": ["issues", "repository_dispatch", "workflow_dispatch", "push"]
+    }
   ],
   "authorized_issue_associations": [
     "OWNER"
   ],
-  "policy": "Both actor identity and event-specific authorization must pass. Anonymous public issue authors are never execution principals."
+  "policy": "Both actor login and immutable numeric identity must match when GitHub supplies an actor ID. Anonymous public issue authors are never execution principals."
 }
