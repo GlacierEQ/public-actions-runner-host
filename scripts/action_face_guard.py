@@ -7,9 +7,9 @@ import os
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 
-EXPECTED_REPO = os.environ.get("APEX_EXECUTION_REPO", "GlacierEQ/public-actions-runner-host")
-EXPECTED_VISIBILITY = os.environ.get("APEX_EXPECTED_VISIBILITY", "public")
+IDENTITY = Path("config/action-face-identity.json")
 
 
 def fail(message: str) -> None:
@@ -18,9 +18,10 @@ def fail(message: str) -> None:
 
 
 def main() -> int:
+    expected = json.loads(IDENTITY.read_text(encoding="utf-8"))
     repository = os.environ.get("GITHUB_REPOSITORY", "")
-    if repository != EXPECTED_REPO:
-        fail(f"workflow repository is {repository or '<unset>'}; expected {EXPECTED_REPO}")
+    if repository != expected.get("repository"):
+        fail(f"workflow repository is {repository or '<unset>'}; expected {expected.get('repository')}")
 
     request = urllib.request.Request(
         f"https://api.github.com/repos/{repository}",
@@ -38,16 +39,32 @@ def main() -> int:
         with urllib.request.urlopen(request, timeout=30) as response:
             metadata = json.load(response)
     except urllib.error.HTTPError as exc:
-        fail(f"repository visibility lookup failed with status {exc.code}")
+        fail(f"repository identity lookup failed with status {exc.code}")
     except Exception as exc:  # noqa: BLE001
-        fail(f"repository visibility lookup failed: {type(exc).__name__}")
+        fail(f"repository identity lookup failed: {type(exc).__name__}")
 
-    visibility = metadata.get("visibility")
-    is_private = bool(metadata.get("private"))
-    if is_private or visibility != EXPECTED_VISIBILITY:
-        fail(f"execution repository visibility is {visibility!r}; expected {EXPECTED_VISIBILITY!r}")
+    owner = metadata.get("owner") or {}
+    checks = {
+        "full_name": metadata.get("full_name") == expected.get("repository"),
+        "repository_id": metadata.get("id") == expected.get("repository_id"),
+        "owner_login": owner.get("login") == expected.get("owner"),
+        "owner_id": owner.get("id") == expected.get("owner_id"),
+        "visibility": metadata.get("visibility") == expected.get("required_visibility"),
+        "private": metadata.get("private") is False,
+        "default_branch": metadata.get("default_branch") == expected.get("required_default_branch"),
+        "archived": metadata.get("archived") is expected.get("required_archived"),
+        "disabled": metadata.get("disabled") is expected.get("required_disabled"),
+        "fork": metadata.get("fork") is expected.get("required_fork"),
+    }
+    failed = sorted(name for name, passed in checks.items() if not passed)
+    if failed:
+        fail(f"execution repository identity/state mismatch: {', '.join(failed)}")
 
-    print(f"ACTION_FACE_OK: {repository} is the canonical {visibility} execution plane")
+    env_repo_id = os.environ.get("GITHUB_REPOSITORY_ID", "")
+    if env_repo_id and env_repo_id != str(expected.get("repository_id")):
+        fail("GITHUB_REPOSITORY_ID does not match the bound action-face identity")
+
+    print(f"ACTION_FACE_OK: {repository} identity and public execution state verified")
     return 0
 
 
