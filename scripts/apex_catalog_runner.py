@@ -24,18 +24,35 @@ OFFICE_SUFFIXES = {".docx", ".odt", ".ods", ".odp", ".pptx", ".xlsx"}
 
 def write_result(plan: dict, result_path: Path, status: str, **details) -> int:
     result = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "job_id": plan["job_id"],
         "pillar": plan["pillar"],
         "action": plan.get("action"),
         "adapter": plan.get("adapter"),
+        "task": plan.get("task"),
+        "source_repo": plan.get("source_repo"),
+        "source_ref": plan.get("source_ref"),
+        "target_repo": plan.get("target_repo"),
+        "provenance": base.provenance(plan),
         "status": status,
         **details,
     }
+    result_path = result_path.resolve()
     result_path.parent.mkdir(parents=True, exist_ok=True)
-    result_path.write_text(json.dumps(result, indent=2) + "\n")
+    result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"Action {plan.get('action') or plan.get('task')} finished with status {status}.")
     return 0 if status == "completed" else 2
+
+
+def bounded_process(command: list[str], cwd: Path, timeout: int) -> tuple[int | None, str, str]:
+    try:
+        proc = subprocess.run(command, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout, check=False)
+        return proc.returncode, proc.stdout[-32_000:], ""
+    except subprocess.TimeoutExpired as exc:
+        output = exc.stdout if isinstance(exc.stdout, str) else ""
+        return None, output[-32_000:], f"timeout after {timeout} seconds"
+    except OSError as exc:
+        return None, "", f"process start failed: {type(exc).__name__}: {exc}"
 
 
 def media_queue(plan: dict, workspace: Path, result_path: Path) -> int:
@@ -66,7 +83,7 @@ def pdf_analyze(plan: dict, workspace: Path, result_path: Path) -> int:
         documents.append(item)
         if not item["valid_header"]:
             invalid.append(item["path"])
-    status = "completed" if documents and not invalid else "failed"
+    status = "completed" if documents and not invalid else "blocked" if not documents else "failed"
     return write_result(
         plan,
         result_path,
@@ -95,7 +112,7 @@ def document_validate(plan: dict, workspace: Path, result_path: Path) -> int:
         documents.append(item)
         if not valid:
             invalid.append(item["path"])
-    status = "completed" if not invalid else "failed"
+    status = "completed" if documents and not invalid else "blocked" if not documents else "failed"
     return write_result(
         plan,
         result_path,
@@ -103,6 +120,7 @@ def document_validate(plan: dict, workspace: Path, result_path: Path) -> int:
         document_count=len(documents),
         invalid_containers=invalid,
         documents=documents,
+        reason="No supported office documents found" if not documents else "",
     )
 
 
@@ -114,18 +132,16 @@ def latex_compile(plan: dict, workspace: Path, result_path: Path) -> int:
     if not engine:
         return write_result(plan, result_path, "blocked", reason="Tectonic or latexmk runtime is not installed")
     source = sources[0]
-    if Path(engine).name == "tectonic":
-        command = [engine, source.name]
-    else:
-        command = [engine, "-pdf", "-interaction=nonstopmode", source.name]
-    proc = subprocess.run(command, cwd=source.parent, text=True, capture_output=True, timeout=1800)
-    output = (proc.stdout + "\n" + proc.stderr)[-32000:]
+    command = [engine, source.name] if Path(engine).name == "tectonic" else [engine, "-pdf", "-interaction=nonstopmode", source.name]
+    exit_code, output, error = bounded_process(command, source.parent, 1800)
+    status = "completed" if exit_code == 0 and not error else "failed"
     return write_result(
         plan,
         result_path,
-        "completed" if proc.returncode == 0 else "failed",
+        status,
         source=source.relative_to(workspace).as_posix(),
-        exit_code=proc.returncode,
+        exit_code=exit_code,
+        reason=error,
         output_sha256=hashlib.sha256(output.encode()).hexdigest(),
         output_tail=output,
     )
@@ -141,14 +157,16 @@ def xcode_validate(plan: dict, workspace: Path, result_path: Path) -> int:
     if target is None:
         return write_result(plan, result_path, "blocked", reason="No Xcode project or workspace found")
     flag = "-workspace" if target.suffix == ".xcworkspace" else "-project"
-    proc = subprocess.run([xcodebuild, flag, str(target), "-list"], cwd=workspace, text=True, capture_output=True, timeout=900)
-    output = (proc.stdout + "\n" + proc.stderr)[-32000:]
+    command = [xcodebuild, flag, str(target), "-list"]
+    exit_code, output, error = bounded_process(command, workspace, 900)
+    status = "completed" if exit_code == 0 and not error else "failed"
     return write_result(
         plan,
         result_path,
-        "completed" if proc.returncode == 0 else "failed",
+        status,
         target=target.relative_to(workspace).as_posix(),
-        exit_code=proc.returncode,
+        exit_code=exit_code,
+        reason=error,
         output_sha256=hashlib.sha256(output.encode()).hexdigest(),
         output_tail=output,
     )
@@ -158,7 +176,7 @@ def main() -> int:
     if len(sys.argv) != 4:
         raise SystemExit("usage: apex_catalog_runner.py PLAN WORKSPACE RESULT")
     plan_path, workspace, result_path = map(Path, sys.argv[1:])
-    plan = json.loads(plan_path.read_text())
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
     adapter = plan.get("adapter")
     if not adapter:
         return base.execute(plan, workspace, result_path)
@@ -192,12 +210,7 @@ def main() -> int:
         "whisperx": "WhisperX model runtime and a private media artifact reference",
         "railway": "RAILWAY_TOKEN, Railway CLI, and deployment approval",
     }
-    return write_result(
-        plan,
-        result_path,
-        "blocked",
-        reason=f"Adapter requires {requirements.get(adapter, 'a dedicated runtime contract')}",
-    )
+    return write_result(plan, result_path, "blocked", reason=f"Adapter requires {requirements.get(adapter, 'a dedicated runtime contract')}")
 
 
 if __name__ == "__main__":
