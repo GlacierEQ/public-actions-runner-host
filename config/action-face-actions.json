@@ -29,6 +29,15 @@
       "legacy_event": "comet-agent-ci",
       "adapter": "node-ci",
       "gate": "standard"
+    },
+    {
+      "pillar": "F",
+      "action": "action-face-canary",
+      "source_event": "action-face-canary",
+      "target_repo": "GlacierEQ/public-actions-runner-host",
+      "legacy_event": "action-face-canary",
+      "adapter": "action-face-selftest",
+      "gate": "standard"
     }
   ]
 }
