@@ -236,6 +236,7 @@ jobs:
           REPLAY_OUTCOME: ${{ steps.replay.outcome }}
           RUNNER_OUTCOME: ${{ steps.runner.outcome }}
           PIPELINE_RESULT_OUTCOME: ${{ steps.synthesize.outcome }}
+          PIPELINE_RESULT_SYNTHESIZED: ${{ steps.synthesize.outputs.synthesized }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
         run: python3 scripts/action_face_issue_status.py
 
@@ -248,5 +249,6 @@ jobs:
            steps.checkout.outcome == 'failure' ||
            steps.runner.outcome != 'success' ||
            steps.synthesize.outcome == 'failure' ||
+           steps.synthesize.outputs.synthesized == 'true' ||
            steps.publish.outcome == 'failure')
         run: exit 1
