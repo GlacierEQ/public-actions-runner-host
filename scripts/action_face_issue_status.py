@@ -65,10 +65,16 @@ def main() -> int:
         pillar = clean("pillar", os.environ.get("PILLAR", ""))
         action = clean("action", os.environ.get("ACTION_NAME", "")) or "base-task"
         task = clean("task", os.environ.get("TASK", ""))
+        replay_outcome = clean("replay", os.environ.get("REPLAY_OUTCOME", ""))
         runner_outcome = clean("runner", os.environ.get("RUNNER_OUTCOME", ""))
         publish_outcome = clean("publish", os.environ.get("PUBLISH_OUTCOME", ""))
 
-        if runner_outcome == "success" and publish_outcome == "success":
+        if replay_outcome == "failure":
+            public_state = "replay blocked"
+            private_sink = "existing immutable result preserved"
+            close = True
+            close_reason = "not_planned"
+        elif runner_outcome == "success" and publish_outcome == "success":
             public_state = "completed"
             private_sink = "success recorded privately"
             close = True
