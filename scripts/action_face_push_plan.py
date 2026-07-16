@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Normalize one metadata-only public queue job through the action-face planner."""
+"""Normalize one bounded metadata-only public queue job through the action-face planner."""
 from __future__ import annotations
 
 import json
@@ -12,15 +12,18 @@ from pathlib import Path
 import action_face_plan as planner
 import apex_pillar_runner as base
 
+JOB_PATH = re.compile(r"^jobs/([A-Za-z0-9][A-Za-z0-9._-]{7,63})\.json$")
+MAX_JOB_BYTES = 4096
+
 
 def changed_paths(event: dict) -> set[str]:
     changed: set[str] = set()
     commit = event.get("head_commit") or {}
     for key in ("added", "modified"):
-        changed.update(commit.get(key) or [])
+        changed.update(str(path) for path in (commit.get(key) or []))
     for item in event.get("commits") or []:
         for key in ("added", "modified"):
-            changed.update(item.get(key) or [])
+            changed.update(str(path) for path in (item.get(key) or []))
 
     message = str(commit.get("message", ""))
     match = re.search(r"^dispatch: ([A-Za-z0-9][A-Za-z0-9._-]{7,63})\b", message)
@@ -40,11 +43,30 @@ def changed_paths(event: dict) -> set[str]:
 
 def main() -> int:
     event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
-    jobs = sorted(path for path in changed_paths(event) if path.startswith("jobs/") and path.endswith(".json"))
+    matched = [(path, JOB_PATH.fullmatch(path)) for path in changed_paths(event)]
+    jobs = [(path, match) for path, match in matched if match]
     if len(jobs) != 1:
-        base.fail("a queue commit must identify exactly one jobs/*.json file")
+        base.fail("a queue commit must identify exactly one jobs/<job_id>.json file")
 
-    payload = json.loads(Path(jobs[0]).read_text(encoding="utf-8"))
+    relative, match = jobs[0]
+    job_id_from_path = match.group(1)
+    path = Path(relative)
+    jobs_root = Path("jobs").resolve()
+    resolved = path.resolve()
+    if path.is_symlink() or resolved.parent != jobs_root:
+        base.fail("queue job path is not a regular file directly under jobs/")
+    if not resolved.is_file():
+        base.fail("queue job file does not exist")
+    if resolved.stat().st_size > MAX_JOB_BYTES:
+        base.fail(f"queue job envelope exceeds {MAX_JOB_BYTES} bytes")
+
+    try:
+        payload = json.loads(resolved.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        base.fail(f"queue job file is not valid JSON: line {exc.lineno} column {exc.colno}")
+    if isinstance(payload, dict) and payload.get("job_id") != job_id_from_path:
+        base.fail("queue job_id must match the jobs/<job_id>.json filename")
+
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as handle:
         json.dump({}, handle)
         empty_event = handle.name
