@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "repository_owner": "GlacierEQ",
+  "authorized_actors": [
+    "GlacierEQ"
+  ],
+  "authorized_issue_associations": [
+    "OWNER"
+  ],
+  "policy": "Both actor identity and event-specific authorization must pass. Anonymous public issue authors are never execution principals."
+}
