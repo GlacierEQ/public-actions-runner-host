@@ -59,7 +59,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "scripts/action_face_authorize.py",
         "scripts/action_face_guard.py",
         "scripts/action_face_control_plane_guard.py",
-        "assert-new-result",
+        "claim-job",
+        "REPLAY_OUTCOME",
         CHECKOUT_PIN,
     ]
     forbidden_fragments = [
@@ -67,10 +68,23 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "secrets.GH_PAT",
         "actions/github-script@",
         "actions/checkout@v",
+        "assert-new-result",
     ]
     missing = [fragment for fragment in required_fragments if fragment not in workflow]
     forbidden = [fragment for fragment in forbidden_fragments if fragment in workflow]
     record("workflow-invariants", bool(workflow) and not missing and not forbidden, f"missing={missing}; forbidden={forbidden}")
+
+    pillar_runner = (workspace / "scripts" / "apex_pillar_runner.py").read_text(encoding="utf-8")
+    receipt_fragments = [
+        "claims/{job_id}.json",
+        "results/{job_id}.json",
+        "immutable result path already exists",
+        "untrusted result already contains a receipt",
+        "claim_blob_sha",
+        "payload_sha256",
+    ]
+    missing_receipt = [fragment for fragment in receipt_fragments if fragment not in pillar_runner]
+    record("claim-receipt-invariants", not missing_receipt, f"missing={missing_receipt}")
 
     catalog_entries: list[dict] = []
     for name in ("pillar-actions.json", "action-face-actions.json"):
