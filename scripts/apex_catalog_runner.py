@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -32,6 +33,7 @@ def write_result(plan: dict, result_path: Path, status: str, **details) -> int:
         "task": plan.get("task"),
         "source_repo": plan.get("source_repo"),
         "source_ref": plan.get("source_ref"),
+        "resolved_source_sha": os.environ.get("APEX_RESOLVED_SOURCE_SHA", ""),
         "target_repo": plan.get("target_repo"),
         "provenance": base.provenance(plan),
         "status": status,
