@@ -66,7 +66,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: apex-public-${{ github.event_name }}-${{ github.event.issue.number || github.run_id }}
+  group: apex-public-${{ github.event_name }}-${{ github.event.client_payload.job_id || inputs.job_id || github.event.issue.number || github.sha }}
   cancel-in-progress: false
 
 jobs:
@@ -141,14 +141,14 @@ jobs:
           AUTH_REASON: strict metadata envelope validation failed
         run: python3 scripts/action_face_issue_status.py
 
-      - name: Reject duplicate immutable job ID
+      - name: Atomically claim immutable job ID
         if: steps.plan.outcome == 'success'
         id: replay
         env:
           APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
         run: |
-          python3 scripts/apex_pillar_runner.py assert-new-result \
-            --job-id "${{ steps.plan.outputs.job_id }}"
+          python3 scripts/apex_pillar_runner.py claim-job \
+            --plan .apex-plan.json
 
       - name: Verify private dual-confirmation record
         if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && (steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I')
