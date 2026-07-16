@@ -94,11 +94,13 @@ jobs:
         run: python3 scripts/action_face_authorize.py
 
       - name: Assert canonical public action face
+        id: identity
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python3 scripts/action_face_guard.py
 
       - name: Require dedicated bridge credentials
+        id: credentials
         env:
           APEX_PRIVATE_READ_TOKEN: ${{ secrets.APEX_PRIVATE_READ_TOKEN }}
           APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
@@ -107,6 +109,7 @@ jobs:
           test -n "$APEX_CONTROL_TOKEN" || { echo "APEX_CONTROL_TOKEN is required" >&2; exit 1; }
 
       - name: Assert private non-executing control plane
+        id: control
         env:
           APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
         run: python3 scripts/action_face_control_plane_guard.py
@@ -144,6 +147,7 @@ jobs:
       - name: Atomically claim immutable job ID
         if: steps.plan.outcome == 'success'
         id: replay
+        continue-on-error: true
         env:
           APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
         run: |
@@ -152,6 +156,8 @@ jobs:
 
       - name: Verify private dual-confirmation record
         if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && (steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I')
+        id: approval
+        continue-on-error: true
         env:
           APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
         run: |
@@ -161,7 +167,13 @@ jobs:
             --approval-id "${{ steps.plan.outputs.approval_id }}"
 
       - name: Checkout catalog-approved workload without persisting credentials
-        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success'
+        if: >-
+          steps.plan.outcome == 'success' &&
+          steps.replay.outcome == 'success' &&
+          ((steps.plan.outputs.pillar != 'G' && steps.plan.outputs.pillar != 'I') ||
+           steps.approval.outcome == 'success')
+        id: checkout
+        continue-on-error: true
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: ${{ steps.plan.outputs.source_repo }}
@@ -172,7 +184,7 @@ jobs:
           persist-credentials: false
 
       - name: Execute isolated public action adapter
-        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success'
+        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.checkout.outcome == 'success'
         id: runner
         continue-on-error: true
         run: |
@@ -181,8 +193,27 @@ jobs:
             workload \
             ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
+      - name: Synthesize governed result when execution did not produce one
+        if: always() && steps.plan.outcome == 'success' && steps.replay.outcome == 'success'
+        id: synthesize
+        continue-on-error: true
+        env:
+          AUTHORIZATION_OUTCOME: ${{ steps.authorize.outcome }}
+          IDENTITY_OUTCOME: ${{ steps.identity.outcome }}
+          CREDENTIAL_OUTCOME: ${{ steps.credentials.outcome }}
+          CONTROL_PLANE_OUTCOME: ${{ steps.control.outcome }}
+          PLAN_OUTCOME: ${{ steps.plan.outcome }}
+          CLAIM_OUTCOME: ${{ steps.replay.outcome }}
+          APPROVAL_OUTCOME: ${{ steps.approval.outcome }}
+          CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          RUNNER_OUTCOME: ${{ steps.runner.outcome }}
+        run: |
+          python3 scripts/action_face_pipeline_result.py \
+            --plan .apex-plan.json \
+            --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
+
       - name: Return detailed result to private control plane
-        if: always() && steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.runner.outcome != 'skipped'
+        if: always() && steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.synthesize.outcome == 'success'
         id: publish
         continue-on-error: true
         env:
@@ -204,6 +235,7 @@ jobs:
           TASK: ${{ steps.plan.outputs.task }}
           REPLAY_OUTCOME: ${{ steps.replay.outcome }}
           RUNNER_OUTCOME: ${{ steps.runner.outcome }}
+          PIPELINE_RESULT_OUTCOME: ${{ steps.synthesize.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
         run: python3 scripts/action_face_issue_status.py
 
@@ -212,6 +244,9 @@ jobs:
           always() &&
           (steps.plan.outcome == 'failure' ||
            steps.replay.outcome == 'failure' ||
-           steps.runner.outcome == 'failure' ||
+           steps.approval.outcome == 'failure' ||
+           steps.checkout.outcome == 'failure' ||
+           steps.runner.outcome != 'success' ||
+           steps.synthesize.outcome == 'failure' ||
            steps.publish.outcome == 'failure')
         run: exit 1
