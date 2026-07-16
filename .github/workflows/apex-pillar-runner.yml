@@ -141,8 +141,17 @@ jobs:
           AUTH_REASON: strict metadata envelope validation failed
         run: python3 scripts/action_face_issue_status.py
 
+      - name: Reject duplicate immutable job ID
+        if: steps.plan.outcome == 'success'
+        id: replay
+        env:
+          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
+        run: |
+          python3 scripts/apex_pillar_runner.py assert-new-result \
+            --job-id "${{ steps.plan.outputs.job_id }}"
+
       - name: Verify private dual-confirmation record
-        if: steps.plan.outcome == 'success' && (steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I')
+        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && (steps.plan.outputs.pillar == 'G' || steps.plan.outputs.pillar == 'I')
         env:
           APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
         run: |
@@ -152,7 +161,7 @@ jobs:
             --approval-id "${{ steps.plan.outputs.approval_id }}"
 
       - name: Checkout catalog-approved workload without persisting credentials
-        if: steps.plan.outcome == 'success'
+        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: ${{ steps.plan.outputs.source_repo }}
@@ -163,7 +172,7 @@ jobs:
           persist-credentials: false
 
       - name: Execute isolated public action adapter
-        if: steps.plan.outcome == 'success'
+        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success'
         id: runner
         continue-on-error: true
         run: |
@@ -173,7 +182,7 @@ jobs:
             ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
       - name: Return detailed result to private control plane
-        if: always() && steps.plan.outcome == 'success' && steps.runner.outcome != 'skipped'
+        if: always() && steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.runner.outcome != 'skipped'
         id: publish
         continue-on-error: true
         env:
@@ -201,6 +210,7 @@ jobs:
         if: >-
           always() &&
           (steps.plan.outcome == 'failure' ||
+           steps.replay.outcome == 'failure' ||
            steps.runner.outcome == 'failure' ||
            steps.publish.outcome == 'failure')
         run: exit 1
