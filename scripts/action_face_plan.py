@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 from pathlib import Path
 
@@ -28,11 +29,7 @@ EVENT_DEFAULT_ACTION = {
     "action-face-canary": "action-face-canary",
 }
 
-CATALOGS = [
-    Path("config/pillar-actions.json"),
-    Path("config/action-face-actions.json"),
-]
-
+CATALOGS = [Path("config/pillar-actions.json"), Path("config/action-face-actions.json")]
 ADAPTER_TASK = {
     **base.ADAPTER_TASK,
     "apex-verify": "validate",
@@ -40,16 +37,7 @@ ADAPTER_TASK = {
     "node-ci": "test",
     "action-face-selftest": "validate",
 }
-
-ALLOWED_KEYS = {
-    "job_id",
-    "pillar",
-    "action",
-    "source_repo",
-    "source_ref",
-    "task",
-    "approval_id",
-}
+ALLOWED_KEYS = {"job_id", "pillar", "action", "source_repo", "source_ref", "task", "approval_id"}
 MAX_ENVELOPE_BYTES = 4096
 MAX_LENGTH = {
     "job_id": 64,
@@ -79,10 +67,7 @@ def catalog_actions() -> list[dict]:
 
 
 def approved_workloads() -> set[str]:
-    return {
-        "GlacierEQ/public-actions-runner-host",
-        *(str(item.get("target_repo", "")) for item in catalog_actions()),
-    }
+    return {"GlacierEQ/public-actions-runner-host", *(str(item.get("target_repo", "")) for item in catalog_actions())}
 
 
 def validate_shape(payload: object) -> dict[str, str]:
@@ -91,7 +76,6 @@ def validate_shape(payload: object) -> dict[str, str]:
     encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
     if len(encoded) > MAX_ENVELOPE_BYTES:
         fail(f"job envelope exceeds {MAX_ENVELOPE_BYTES} bytes")
-
     unknown = sorted(set(payload) - ALLOWED_KEYS)
     if unknown:
         fail(f"job envelope contains unknown fields: {', '.join(unknown)}")
@@ -128,6 +112,18 @@ def validate_ref(value: str) -> None:
         fail("invalid source_ref")
     if value.startswith("/") or value.endswith("/") or value.endswith(".") or value.endswith(".lock"):
         fail("invalid source_ref")
+
+
+def execution_provenance() -> dict[str, str]:
+    return {
+        "workflow_run_id": os.environ.get("GITHUB_RUN_ID", ""),
+        "workflow_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
+        "trigger_actor": os.environ.get("GITHUB_ACTOR", ""),
+        "trigger_actor_id": os.environ.get("GITHUB_ACTOR_ID", ""),
+        "event_name": os.environ.get("GITHUB_EVENT_NAME", ""),
+        "execution_repo": os.environ.get("GITHUB_REPOSITORY", ""),
+        "public_runner_sha": os.environ.get("GITHUB_SHA", ""),
+    }
 
 
 def build_plan(event_path: str, manual: dict[str, str]) -> dict:
@@ -185,7 +181,7 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
     if pillar not in {"G", "I"} and approval_id:
         fail("approval_id is accepted only for pillars G and I")
 
-    return {
+    plan = {
         "job_id": job_id,
         "pillar": pillar,
         "source_repo": source_repo,
@@ -196,6 +192,8 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
         "adapter": str(entry["adapter"]) if entry else "",
         "target_repo": str(entry["target_repo"]) if entry else "",
     }
+    plan.update(execution_provenance())
+    return plan
 
 
 def main() -> int:
@@ -204,7 +202,6 @@ def main() -> int:
     for name in ("pillar", "job-id", "source-repo", "source-ref", "task", "approval-id", "action"):
         parser.add_argument(f"--{name}", default="")
     args = parser.parse_args()
-
     manual = {
         "pillar": args.pillar,
         "job_id": args.job_id,
