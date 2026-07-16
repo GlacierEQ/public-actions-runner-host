@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "repository": "GlacierEQ/public-actions-runner-host",
+  "repository_id": 1265621488,
+  "owner": "GlacierEQ",
+  "owner_id": 194243768,
+  "required_visibility": "public",
+  "required_default_branch": "main",
+  "required_archived": false,
+  "required_disabled": false,
+  "required_fork": false
+}
