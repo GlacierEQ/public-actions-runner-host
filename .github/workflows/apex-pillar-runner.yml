@@ -202,6 +202,7 @@ jobs:
           PILLAR: ${{ steps.plan.outputs.pillar }}
           ACTION_NAME: ${{ steps.plan.outputs.action }}
           TASK: ${{ steps.plan.outputs.task }}
+          REPLAY_OUTCOME: ${{ steps.replay.outcome }}
           RUNNER_OUTCOME: ${{ steps.runner.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
         run: python3 scripts/action_face_issue_status.py
