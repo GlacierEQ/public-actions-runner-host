@@ -59,8 +59,11 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "scripts/action_face_authorize.py",
         "scripts/action_face_guard.py",
         "scripts/action_face_control_plane_guard.py",
+        "scripts/action_face_pipeline_result.py",
         "claim-job",
         "REPLAY_OUTCOME",
+        "PIPELINE_RESULT_SYNTHESIZED",
+        "steps.synthesize.outputs.synthesized == 'true'",
         CHECKOUT_PIN,
     ]
     forbidden_fragments = [
@@ -85,6 +88,16 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     ]
     missing_receipt = [fragment for fragment in receipt_fragments if fragment not in pillar_runner]
     record("claim-receipt-invariants", not missing_receipt, f"missing={missing_receipt}")
+
+    pipeline_result = (workspace / "scripts" / "action_face_pipeline_result.py").read_text(encoding="utf-8")
+    synth_fragments = [
+        'output("synthesized", "false")',
+        'output("synthesized", "true")',
+        '"status": "blocked"',
+        '"synthesized": True',
+    ]
+    missing_synth = [fragment for fragment in synth_fragments if fragment not in pipeline_result]
+    record("synthesized-result-invariants", not missing_synth, f"missing={missing_synth}")
 
     catalog_entries: list[dict] = []
     for name in ("pillar-actions.json", "action-face-actions.json"):
