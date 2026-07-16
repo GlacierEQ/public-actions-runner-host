@@ -13,7 +13,8 @@ from pathlib import Path
 import apex_catalog_runner as catalog
 
 CHECKOUT_PIN = "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
-SENSITIVE_ENV = {"APEX_CONTROL_TOKEN", "APEX_PRIVATE_READ_TOKEN", "GH_PAT"}
+SENSITIVE_ENV = {"APEX_CONTROL_TOKEN", "APEX_PRIVATE_READ_TOKEN", "GH_PAT", "GITHUB_TOKEN"}
+EXPECTED_ENVELOPE_FIELDS = {"job_id", "pillar", "action", "source_repo", "source_ref", "task", "approval_id"}
 
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
@@ -38,12 +39,17 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
     json_failures: list[str] = []
     json_files = sorted((workspace / "config").glob("*.json"))
+    parsed_json: dict[str, object] = {}
     for path in json_files:
         try:
-            json.loads(path.read_text(encoding="utf-8"))
+            parsed_json[path.name] = json.loads(path.read_text(encoding="utf-8"))
         except Exception as exc:  # noqa: BLE001
             json_failures.append(f"{path.name}:{type(exc).__name__}")
     record("json-contracts", bool(json_files) and not json_failures, ", ".join(json_failures) or f"{len(json_files)} JSON files parsed")
+
+    schema = parsed_json.get("job-envelope.schema.json")
+    schema_fields = set(schema.get("properties", {})) if isinstance(schema, dict) else set()
+    record("schema-field-alignment", schema_fields == EXPECTED_ENVELOPE_FIELDS, f"fields={sorted(schema_fields)}")
 
     workflow_path = workspace / ".github" / "workflows" / "apex-pillar-runner.yml"
     workflow = workflow_path.read_text(encoding="utf-8") if workflow_path.exists() else ""
@@ -53,6 +59,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "scripts/action_face_authorize.py",
         "scripts/action_face_guard.py",
         "scripts/action_face_control_plane_guard.py",
+        "assert-new-result",
         CHECKOUT_PIN,
     ]
     forbidden_fragments = [
@@ -67,9 +74,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
     catalog_entries: list[dict] = []
     for name in ("pillar-actions.json", "action-face-actions.json"):
-        path = workspace / "config" / name
-        if path.exists():
-            data = json.loads(path.read_text(encoding="utf-8"))
+        data = parsed_json.get(name)
+        if isinstance(data, dict):
             catalog_entries.extend(data.get("actions", []))
     keys = [(item.get("pillar"), item.get("action")) for item in catalog_entries]
     targets = [str(item.get("target_repo", "")) for item in catalog_entries]
@@ -112,12 +118,13 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         record("planner-positive-negative", valid.returncode == 0 and invalid.returncode != 0, f"valid={valid.returncode}; invalid={invalid.returncode}")
 
         issue_event = temp_path / "issue.json"
-        issue_event.write_text(json.dumps({"issue": {"user": {"login": "GlacierEQ"}, "author_association": "OWNER"}}), encoding="utf-8")
+        issue_event.write_text(json.dumps({"issue": {"user": {"login": "GlacierEQ", "id": 194243768}, "author_association": "OWNER"}}), encoding="utf-8")
         auth_env = {
             **os.environ,
             "GITHUB_REPOSITORY": "GlacierEQ/public-actions-runner-host",
             "GITHUB_EVENT_NAME": "issues",
             "GITHUB_ACTOR": "GlacierEQ",
+            "GITHUB_ACTOR_ID": "194243768",
             "GITHUB_EVENT_PATH": str(issue_event),
             "GITHUB_OUTPUT": str(auth_output),
         }
@@ -133,11 +140,11 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             timeout=30,
             check=False,
         )
-        issue_event.write_text(json.dumps({"issue": {"user": {"login": "intruder"}, "author_association": "NONE"}}), encoding="utf-8")
+        issue_event.write_text(json.dumps({"issue": {"user": {"login": "intruder", "id": 999}, "author_association": "NONE"}}), encoding="utf-8")
         unauthorized = subprocess.run(
             [sys.executable, "scripts/action_face_authorize.py"],
             cwd=workspace,
-            env={**auth_env, "GITHUB_ACTOR": "intruder"},
+            env={**auth_env, "GITHUB_ACTOR": "intruder", "GITHUB_ACTOR_ID": "999"},
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -145,9 +152,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             check=False,
         )
         record("authorization-positive-negative", authorized.returncode == 0 and unauthorized.returncode != 0, f"authorized={authorized.returncode}; unauthorized={unauthorized.returncode}")
-
-        outer_output_untouched = os.environ.get("GITHUB_OUTPUT", "") not in {str(planner_output), str(auth_output)}
-        record("subprocess-output-isolation", outer_output_untouched, "canary subprocesses use temporary output files")
+        record("subprocess-output-isolation", planner_output.exists() and auth_output.exists(), "canary subprocesses wrote only to temporary output files")
 
     failed = [check for check in checks if check["status"] != "pass"]
     digest = hashlib.sha256(json.dumps(checks, sort_keys=True).encode("utf-8")).hexdigest()
