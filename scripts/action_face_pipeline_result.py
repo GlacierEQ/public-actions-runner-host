@@ -11,6 +11,13 @@ from pathlib import Path
 SAFE_OUTCOME = re.compile(r"^(success|failure|cancelled|skipped|)$")
 
 
+def output(name: str, value: str) -> None:
+    path = os.environ.get("GITHUB_OUTPUT")
+    if path:
+        with open(path, "a", encoding="utf-8") as handle:
+            handle.write(f"{name}={value}\n")
+
+
 def outcome(name: str) -> str:
     value = os.environ.get(name, "")
     return value if SAFE_OUTCOME.fullmatch(value) else "invalid"
@@ -25,6 +32,7 @@ def main() -> int:
     plan_path = Path(args.plan).resolve()
     result_path = Path(args.result).resolve()
     if result_path.exists():
+        output("synthesized", "false")
         print("PIPELINE_RESULT_OK: adapter result already exists; synthesis not needed")
         return 0
     if not plan_path.is_file():
@@ -47,7 +55,7 @@ def main() -> int:
     }
     failed_stages = [name for name, state in stages.items() if state in {"failure", "cancelled", "invalid"}]
     skipped_stages = [name for name, state in stages.items() if state == "skipped"]
-    reason = "pipeline did not produce an adapter result"
+    reason = "adapter exited without producing a result file"
     if failed_stages:
         reason = f"pipeline blocked at: {', '.join(failed_stages)}"
     elif skipped_stages:
@@ -76,9 +84,11 @@ def main() -> int:
         "status": "blocked",
         "reason": reason,
         "stage_outcomes": stages,
+        "synthesized": true,
     }
     result_path.parent.mkdir(parents=True, exist_ok=True)
     result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output("synthesized", "true")
     print(f"PIPELINE_RESULT_OK: synthesized blocked result for {result.get('job_id')}")
     return 0
 
