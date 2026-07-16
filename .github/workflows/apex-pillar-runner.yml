@@ -32,15 +32,16 @@ on:
         type: choice
         options: [A, B, C, D, E, F, G, H, I]
       action:
-        description: Cataloged public action; leave blank for an allowlisted base task
+        description: Cataloged public action; leave blank for a base task
         required: false
+        default: ""
         type: string
       job_id:
         description: Opaque job identifier
         required: true
         type: string
       source_repo:
-        description: Catalog-approved workload repository for a base task
+        description: Catalog-approved workload repository; required only for a base task
         required: false
         default: ""
         type: string
@@ -50,14 +51,14 @@ on:
         default: main
         type: string
       task:
-        description: Allowlisted base operation; ignored when action is set
+        description: Allowlisted base operation; leave blank when action is set
         required: false
-        default: validate
-        type: choice
-        options: [validate, hash-manifest, test, build, audit]
+        default: ""
+        type: string
       approval_id:
         description: Private approval ID required only for pillars G and I
         required: false
+        default: ""
         type: string
 
 permissions:
