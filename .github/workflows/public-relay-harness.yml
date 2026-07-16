@@ -1,0 +1,56 @@
+name: Public synthetic relay harness
+
+on:
+  repository_dispatch:
+    types: [relay-harness]
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        required: true
+        default: feat/free-tier-relay-harness
+      job_id:
+        required: true
+        default: relay-manual-001
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - id: meta
+        run: |
+          echo "repo=${{ github.event.client_payload.source_repo || 'GlacierEQ/1FDV-23-0001009-FEDERAL-WARFARE' }}" >> $GITHUB_OUTPUT
+          echo "ref=${{ github.event.client_payload.source_ref || inputs.source_ref }}" >> $GITHUB_OUTPUT
+          echo "job=${{ github.event.client_payload.job_id || inputs.job_id }}" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.meta.outputs.repo }}
+          ref: ${{ steps.meta.outputs.ref }}
+          token: ${{ secrets.APEX_PRIVATE_READ_TOKEN || secrets.GH_PAT || github.token }}
+          path: workload
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Run five-record synthetic relay
+        run: python3 workload/automation/relay/process_relay.py workload/automation/relay/fixtures/synthetic_records.json relay-audit.json
+      - name: Verify synthetic result
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open('relay-audit.json'))
+          e=d['events']
+          assert d['record_count']==5
+          assert sum(x['status']=='processed' for x in e)==5
+          assert sum(x['status']=='duplicate_skipped' for x in e)==1
+          print({'job_id':'${{ steps.meta.outputs.job }}','status':'completed','records':5,'duplicates':1})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relay-audit-${{ steps.meta.outputs.job }}
+          path: relay-audit.json
+          retention-days: 7
