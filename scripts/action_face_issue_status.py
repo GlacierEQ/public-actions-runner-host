@@ -68,6 +68,7 @@ def main() -> int:
         replay_outcome = clean("replay", os.environ.get("REPLAY_OUTCOME", ""))
         runner_outcome = clean("runner", os.environ.get("RUNNER_OUTCOME", ""))
         pipeline_result_outcome = clean("pipeline", os.environ.get("PIPELINE_RESULT_OUTCOME", ""))
+        synthesized = clean("synthesized", os.environ.get("PIPELINE_RESULT_SYNTHESIZED", ""))
         publish_outcome = clean("publish", os.environ.get("PUBLISH_OUTCOME", ""))
 
         if replay_outcome == "failure":
@@ -75,22 +76,22 @@ def main() -> int:
             private_sink = "existing immutable claim or result preserved"
             close = True
             close_reason = "not_planned"
-        elif runner_outcome == "success" and publish_outcome == "success":
+        elif synthesized == "true" and publish_outcome == "success":
+            public_state = "pipeline blocked"
+            private_sink = "synthesized blocked lifecycle result recorded privately"
+        elif runner_outcome == "success" and synthesized == "false" and publish_outcome == "success":
             public_state = "completed"
-            private_sink = "success recorded privately"
+            private_sink = "adapter result recorded privately"
             close = True
         elif runner_outcome == "failure" and publish_outcome == "success":
             public_state = "execution failed"
             private_sink = "failure recorded privately"
-        elif runner_outcome == "skipped" and pipeline_result_outcome == "success" and publish_outcome == "success":
-            public_state = "execution blocked before adapter"
-            private_sink = "blocked lifecycle result recorded privately"
         elif pipeline_result_outcome == "failure":
             public_state = "result synthesis failed"
             private_sink = "claim preserved but no complete result receipt was published"
         else:
             public_state = "blocked"
-            private_sink = "private result publication failed"
+            private_sink = "private result publication failed or outcome was incomplete"
 
         body = "\n".join([
             "APEX public action face finished.",
