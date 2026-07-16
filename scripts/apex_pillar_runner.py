@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Safe public execution adapter for APEX pillar jobs."""
+"""Safe public execution adapter and immutable private receipt bridge."""
 from __future__ import annotations
 
 import argparse
@@ -12,6 +12,7 @@ import subprocess
 import sys
 import urllib.error
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 
 PILLARS = {
@@ -42,6 +43,7 @@ REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$")
 SKIP = {".git", "node_modules", ".next", "dist", "build", "__pycache__", ".venv", "venv"}
 CONTROL_REPO = os.environ.get("APEX_CONTROL_REPO", "GlacierEQ/llm-runner-teams")
 CATALOG = Path("config/pillar-actions.json")
+MAX_RESULT_BYTES = 5_000_000
 ADAPTER_TASK = {
     "hash-manifest": "hash-manifest",
     "validate": "validate",
@@ -68,7 +70,7 @@ def resolve_action(payload: dict, pillar: str) -> dict | None:
     action = str(payload.get("action", ""))
     if not action:
         return None
-    catalog = json.loads(CATALOG.read_text())
+    catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
     matches = [item for item in catalog["actions"] if item["action"] == action and item["pillar"] == pillar]
     if len(matches) != 1:
         fail("action is not registered to the requested pillar")
@@ -76,7 +78,7 @@ def resolve_action(payload: dict, pillar: str) -> dict | None:
 
 
 def load_plan(event_path: str, manual: dict[str, str]) -> dict:
-    event = json.loads(Path(event_path).read_text())
+    event = json.loads(Path(event_path).read_text(encoding="utf-8"))
     if event.get("action") in PILLARS:
         payload = dict(event.get("client_payload") or {})
         pillar = PILLARS[event["action"]]
@@ -118,36 +120,69 @@ def emit_outputs(plan: dict) -> None:
         return
     with open(output, "a", encoding="utf-8") as handle:
         for key, value in plan.items():
-            handle.write(f"{key}={value}\n")
-    Path(".apex-plan.json").write_text(json.dumps(plan, indent=2) + "\n")
+            text = str(value)
+            if "\n" in text or "\r" in text:
+                fail(f"plan output {key} contains a newline")
+            handle.write(f"{key}={text}\n")
+    Path(".apex-plan.json").write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def api(path: str, token: str, method: str = "GET", payload: dict | None = None) -> dict:
+def api(
+    path: str,
+    token: str,
+    method: str = "GET",
+    payload: dict | None = None,
+    *,
+    allow_not_found: bool = False,
+) -> dict | None:
     url = f"https://api.github.com/repos/{CONTROL_REPO}/contents/{path}"
-    body = json.dumps(payload).encode() if payload is not None else None
-    req = urllib.request.Request(url, data=body, method=method)
-    req.add_header("Accept", "application/vnd.github+json")
-    req.add_header("Authorization", f"Bearer {token}")
-    req.add_header("X-GitHub-Api-Version", "2022-11-28")
-    req.add_header("User-Agent", "apex-public-runner")
+    body = json.dumps(payload).encode("utf-8") if payload is not None else None
+    request = urllib.request.Request(url, data=body, method=method)
+    request.add_header("Accept", "application/vnd.github+json")
+    request.add_header("Authorization", f"Bearer {token}")
+    request.add_header("Content-Type", "application/json")
+    request.add_header("X-GitHub-Api-Version", "2022-11-28")
+    request.add_header("User-Agent", "apex-public-runner")
     try:
-        with urllib.request.urlopen(req, timeout=30) as response:
+        with urllib.request.urlopen(request, timeout=30) as response:
             return json.load(response)
     except urllib.error.HTTPError as exc:
+        if allow_not_found and exc.code == 404:
+            return None
         fail(f"control-plane API request failed with status {exc.code}")
+    except Exception as exc:  # noqa: BLE001
+        fail(f"control-plane API request failed: {type(exc).__name__}")
 
 
-def verify_approval(job_id: str, pillar: str, approval_id: str) -> None:
+def control_token() -> str:
     token = os.environ.get("APEX_CONTROL_TOKEN", "")
     if not token:
         fail("APEX_CONTROL_TOKEN is required")
-    record = api(f"approvals/{approval_id}.json", token)
-    content = json.loads(base64.b64decode(record["content"]).decode())
+    return token
+
+
+def verify_approval(job_id: str, pillar: str, approval_id: str) -> None:
+    record = api(f"approvals/{approval_id}.json", control_token())
+    if not isinstance(record, dict) or "content" not in record:
+        fail("approval record is malformed")
+    try:
+        content = json.loads(base64.b64decode(record["content"]).decode("utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        fail(f"approval record is invalid: {type(exc).__name__}")
     if content.get("approved") is not True:
         fail("approval is not active")
     if content.get("job_id") != job_id or content.get("pillar") != pillar:
         fail("approval does not match this job")
     print("Private dual-confirmation record verified.")
+
+
+def assert_new_result(job_id: str) -> None:
+    if not JOB_ID.fullmatch(job_id):
+        fail("invalid job_id")
+    existing = api(f"results/{job_id}.json", control_token(), allow_not_found=True)
+    if existing is not None:
+        fail("an immutable private result already exists for this job_id")
+    print("Replay guard passed: job_id has no prior private result.")
 
 
 def files(root: Path):
@@ -169,23 +204,36 @@ def command_for(task: str, root: Path) -> list[str] | None:
     return None
 
 
+def provenance(plan: dict) -> dict:
+    keys = (
+        "workflow_run_id",
+        "workflow_run_attempt",
+        "trigger_actor",
+        "trigger_actor_id",
+        "event_name",
+        "execution_repo",
+        "public_runner_sha",
+    )
+    return {key: plan.get(key, "") for key in keys if plan.get(key, "")}
+
+
 def execute(plan: dict, root: Path, result_path: Path) -> int:
     result = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "job_id": plan["job_id"],
         "pillar": plan["pillar"],
         "task": plan["task"],
         "source_repo": plan["source_repo"],
         "source_ref": plan["source_ref"],
+        "provenance": provenance(plan),
         "status": "completed",
     }
     exit_code = 0
     if plan["task"] == "hash-manifest":
         manifest = []
         for path in files(root):
-            rel = path.relative_to(root).as_posix()
-            digest = hashlib.sha256(path.read_bytes()).hexdigest()
-            manifest.append({"path": rel, "sha256": digest, "bytes": path.stat().st_size})
+            relative = path.relative_to(root).as_posix()
+            manifest.append({"path": relative, "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "bytes": path.stat().st_size})
         result["manifest"] = manifest
         result["file_count"] = len(manifest)
     elif plan["task"] == "validate":
@@ -210,7 +258,7 @@ def execute(plan: dict, root: Path, result_path: Path) -> int:
             result["reason"] = "No allowlisted command applies to this repository"
             exit_code = 2
         else:
-            proc = subprocess.run(command, cwd=root, text=True, capture_output=True, timeout=1800)
+            proc = subprocess.run(command, cwd=root, text=True, capture_output=True, timeout=1800, check=False)
             combined = (proc.stdout + "\n" + proc.stderr)[-100_000:]
             result["command"] = command
             result["exit_code"] = proc.returncode
@@ -220,25 +268,50 @@ def execute(plan: dict, root: Path, result_path: Path) -> int:
                 result["status"] = "failed"
                 exit_code = proc.returncode
     result_path.parent.mkdir(parents=True, exist_ok=True)
-    result_path.write_text(json.dumps(result, indent=2) + "\n")
+    result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"Job {plan['job_id']} finished with status {result['status']}.")
     return exit_code
 
 
 def publish(job_id: str, result_path: Path) -> None:
-    token = os.environ.get("APEX_CONTROL_TOKEN", "")
-    if not token:
-        fail("APEX_CONTROL_TOKEN is required")
-    path = f"results/{job_id}.json"
-    content = base64.b64encode(result_path.read_bytes()).decode()
-    payload = {"message": f"runner: record result {job_id}", "content": content}
+    if not JOB_ID.fullmatch(job_id):
+        fail("invalid job_id")
+    result_path = result_path.resolve()
+    if not result_path.is_file():
+        fail("result file does not exist")
+    raw = result_path.read_bytes()
+    if len(raw) > MAX_RESULT_BYTES:
+        fail(f"result exceeds {MAX_RESULT_BYTES} bytes")
     try:
-        existing = api(path, token)
-        payload["sha"] = existing["sha"]
-    except SystemExit:
-        pass
+        result = json.loads(raw.decode("utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        fail(f"result file is invalid JSON: {type(exc).__name__}")
+    if not isinstance(result, dict) or result.get("job_id") != job_id:
+        fail("result job_id does not match the publish request")
+    if not isinstance(result.get("status"), str):
+        fail("result status is missing")
+
+    token = control_token()
+    path = f"results/{job_id}.json"
+    if api(path, token, allow_not_found=True) is not None:
+        fail("immutable result path already exists")
+
+    canonical = json.dumps(result, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    result["receipt"] = {
+        "published_at": datetime.now(timezone.utc).isoformat(),
+        "payload_sha256": hashlib.sha256(canonical).hexdigest(),
+        "workflow_run_id": os.environ.get("GITHUB_RUN_ID", ""),
+        "workflow_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
+        "public_runner_sha": os.environ.get("GITHUB_SHA", ""),
+        "execution_repo": os.environ.get("GITHUB_REPOSITORY", ""),
+    }
+    published = json.dumps(result, indent=2, sort_keys=True).encode("utf-8") + b"\n"
+    payload = {
+        "message": f"runner: record immutable result {job_id}",
+        "content": base64.b64encode(published).decode("ascii"),
+    }
     api(path, token, method="PUT", payload=payload)
-    print("Result published to the private control plane.")
+    print("Immutable result published to the private control plane.")
 
 
 def main() -> int:
@@ -254,6 +327,9 @@ def main() -> int:
     verify.add_argument("--job-id", required=True)
     verify.add_argument("--pillar", required=True)
     verify.add_argument("--approval-id", required=True)
+
+    replay = sub.add_parser("assert-new-result")
+    replay.add_argument("--job-id", required=True)
 
     run = sub.add_parser("run")
     run.add_argument("--plan", default=".apex-plan.json")
@@ -275,14 +351,16 @@ def main() -> int:
             "approval_id": args.approval_id,
             "action": args.action,
         }
-        plan = load_plan(args.event, manual)
-        emit_outputs(plan)
+        emit_outputs(load_plan(args.event, manual))
         return 0
     if args.command == "verify-approval":
         verify_approval(args.job_id, args.pillar, args.approval_id)
         return 0
+    if args.command == "assert-new-result":
+        assert_new_result(args.job_id)
+        return 0
     if args.command == "run":
-        return execute(json.loads(Path(args.plan).read_text()), Path(args.workspace), Path(args.result))
+        return execute(json.loads(Path(args.plan).read_text(encoding="utf-8")), Path(args.workspace), Path(args.result))
     publish(args.job_id, Path(args.result))
     return 0
 
