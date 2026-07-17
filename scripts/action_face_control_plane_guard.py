@@ -111,6 +111,7 @@ def main() -> int:
         "one_job_id_one_claim": policy.get("one_job_id_one_claim") is True,
         "one_job_id_one_receipt": policy.get("one_job_id_one_receipt") is True,
         "claim_before_checkout": policy.get("claim_before_checkout") is True,
+        "resolved_commit_required": policy.get("resolved_commit_required_after_checkout") is True,
         "overwrite_allowed": policy.get("overwrite_allowed") is False,
         "delete_allowed": policy.get("delete_allowed") is False,
         "claim_path": policy.get("claim_path_pattern") == "claims/<job_id>.json",
@@ -125,13 +126,17 @@ def main() -> int:
         "schema_version", "job_id", "state", "claimed_at", "plan_sha256",
         "pillar", "source_repo", "source_ref", "provenance",
     }, "claim contract")
+    require_subset(policy.get("required_result_fields"), {
+        "schema_version", "job_id", "pillar", "status", "source_repo",
+        "source_ref", "resolved_source_sha", "provenance", "receipt",
+    }, "result contract")
     require_subset(policy.get("required_receipt_fields"), {
         "published_at", "payload_sha256", "claim_path", "claim_blob_sha",
-        "plan_sha256", "workflow_run_id", "workflow_run_attempt",
-        "public_runner_sha", "execution_repo",
+        "plan_sha256", "resolved_source_sha", "workflow_run_id",
+        "workflow_run_attempt", "public_runner_sha", "execution_repo",
     }, "receipt contract")
 
-    print(f"CONTROL_PLANE_OK: {CONTROL_REPO} is private, non-executing, atomically claimed, and append-only")
+    print(f"CONTROL_PLANE_OK: {CONTROL_REPO} is private, non-executing, atomically claimed, exact-source bound, and append-only")
     return 0
 
 
