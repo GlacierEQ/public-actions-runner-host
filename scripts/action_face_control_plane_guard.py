@@ -111,7 +111,7 @@ def main() -> int:
         "one_job_id_one_claim": policy.get("one_job_id_one_claim") is True,
         "one_job_id_one_receipt": policy.get("one_job_id_one_receipt") is True,
         "claim_before_checkout": policy.get("claim_before_checkout") is True,
-        "resolved_commit_required": policy.get("resolved_commit_required_after_checkout") is True,
+        "resolved_commit_required": policy.get("resolved_commit_required_before_adapter") is True,
         "overwrite_allowed": policy.get("overwrite_allowed") is False,
         "delete_allowed": policy.get("delete_allowed") is False,
         "claim_path": policy.get("claim_path_pattern") == "claims/<job_id>.json",
