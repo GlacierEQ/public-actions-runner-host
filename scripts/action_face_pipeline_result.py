@@ -55,7 +55,11 @@ def main() -> int:
         "runner": outcome("RUNNER_OUTCOME"),
     }
     failed_stages = [name for name, state in stages.items() if state in {"failure", "cancelled", "invalid"}]
-    skipped_stages = [name for name, state in stages.items() if state == "skipped"]
+    expected_skips = {"approval"} if plan.get("pillar") not in {"G", "I"} else set()
+    skipped_stages = [
+        name for name, state in stages.items()
+        if state == "skipped" and name not in expected_skips
+    ]
     reason = "adapter exited without producing a result file"
     if failed_stages:
         reason = f"pipeline blocked at: {', '.join(failed_stages)}"
