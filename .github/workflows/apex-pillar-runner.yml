@@ -183,10 +183,21 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      - name: Bind exact workload repository and commit
+        if: steps.checkout.outcome == 'success'
+        id: bind
+        continue-on-error: true
+        run: |
+          python3 scripts/action_face_bind_checkout.py \
+            --plan .apex-plan.json \
+            --workspace workload
+
       - name: Execute isolated public action adapter
-        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.checkout.outcome == 'success'
+        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.checkout.outcome == 'success' && steps.bind.outcome == 'success'
         id: runner
         continue-on-error: true
+        env:
+          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
         run: |
           python3 scripts/action_face_catalog_runner.py \
             .apex-plan.json \
@@ -206,7 +217,9 @@ jobs:
           CLAIM_OUTCOME: ${{ steps.replay.outcome }}
           APPROVAL_OUTCOME: ${{ steps.approval.outcome }}
           CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          BIND_OUTCOME: ${{ steps.bind.outcome }}
           RUNNER_OUTCOME: ${{ steps.runner.outcome }}
+          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
         run: |
           python3 scripts/action_face_pipeline_result.py \
             --plan .apex-plan.json \
@@ -247,6 +260,7 @@ jobs:
            steps.replay.outcome == 'failure' ||
            steps.approval.outcome == 'failure' ||
            steps.checkout.outcome == 'failure' ||
+           steps.bind.outcome == 'failure' ||
            steps.runner.outcome != 'success' ||
            steps.synthesize.outcome == 'failure' ||
            steps.synthesize.outputs.synthesized == 'true' ||
