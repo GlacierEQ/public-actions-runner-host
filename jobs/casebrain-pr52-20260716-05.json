@@ -1,0 +1,6 @@
+{
+  "job_id": "casebrain-pr52-20260716-05",
+  "pillar": "C",
+  "action": "casebrain-validation",
+  "source_ref": "casebrain-actor-registry-v1"
+}
