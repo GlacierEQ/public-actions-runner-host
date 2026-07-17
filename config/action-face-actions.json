@@ -13,6 +13,15 @@
       "gate": "standard"
     },
     {
+      "pillar": "C",
+      "action": "casebrain-validation",
+      "source_event": "casebrain-validation",
+      "target_repo": "GlacierEQ/AEON-777",
+      "legacy_event": "casebrain-validation",
+      "adapter": "node-ci",
+      "gate": "standard"
+    },
+    {
       "pillar": "F",
       "action": "gateway-ci",
       "source_event": "gateway-ci",
