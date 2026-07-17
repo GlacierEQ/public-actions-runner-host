@@ -59,8 +59,11 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "scripts/action_face_authorize.py",
         "scripts/action_face_guard.py",
         "scripts/action_face_control_plane_guard.py",
+        "scripts/action_face_bind_checkout.py",
         "scripts/action_face_pipeline_result.py",
         "claim-job",
+        "resolved_source_sha",
+        "APEX_RESOLVED_SOURCE_SHA",
         "REPLAY_OUTCOME",
         "PIPELINE_RESULT_SYNTHESIZED",
         "steps.synthesize.outputs.synthesized == 'true'",
@@ -77,6 +80,16 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     forbidden = [fragment for fragment in forbidden_fragments if fragment in workflow]
     record("workflow-invariants", bool(workflow) and not missing and not forbidden, f"missing={missing}; forbidden={forbidden}")
 
+    bind_script = (workspace / "scripts" / "action_face_bind_checkout.py").read_text(encoding="utf-8")
+    bind_fragments = [
+        'git(workspace, "rev-parse", "HEAD")',
+        'git(workspace, "config", "--get", "remote.origin.url")',
+        'git(workspace, "status", "--porcelain", "--untracked-files=no")',
+        'output("resolved_source_sha", resolved_sha)',
+    ]
+    missing_bind = [fragment for fragment in bind_fragments if fragment not in bind_script]
+    record("checkout-binding-invariants", not missing_bind, f"missing={missing_bind}")
+
     pillar_runner = (workspace / "scripts" / "apex_pillar_runner.py").read_text(encoding="utf-8")
     receipt_fragments = [
         "claims/{job_id}.json",
@@ -85,6 +98,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "untrusted result already contains a receipt",
         "claim_blob_sha",
         "payload_sha256",
+        "resolved_source_sha",
+        "adapter result is missing a valid resolved source SHA",
     ]
     missing_receipt = [fragment for fragment in receipt_fragments if fragment not in pillar_runner]
     record("claim-receipt-invariants", not missing_receipt, f"missing={missing_receipt}")
@@ -95,6 +110,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         'output("synthesized", "true")',
         '"status": "blocked"',
         '"synthesized": True',
+        '"resolved_source_sha": os.environ.get("APEX_RESOLVED_SOURCE_SHA", "")',
     ]
     missing_synth = [fragment for fragment in synth_fragments if fragment not in pipeline_result]
     record("synthesized-result-invariants", not missing_synth, f"missing={missing_synth}")
