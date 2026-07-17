@@ -40,6 +40,7 @@ ALLOWED_TASKS = {
 JOB_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$")
 REPO = re.compile(r"^GlacierEQ/[A-Za-z0-9_.-]+$")
 REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$")
+SOURCE_SHA = re.compile(r"^[0-9a-f]{40}$")
 SKIP = {".git", "node_modules", ".next", "dist", "build", "__pycache__", ".venv", "venv"}
 CONTROL_REPO = os.environ.get("APEX_CONTROL_REPO", "GlacierEQ/llm-runner-teams")
 CATALOG = Path("config/pillar-actions.json")
@@ -295,6 +296,7 @@ def execute(plan: dict, root: Path, result_path: Path) -> int:
         "task": plan["task"],
         "source_repo": plan["source_repo"],
         "source_ref": plan["source_ref"],
+        "resolved_source_sha": os.environ.get("APEX_RESOLVED_SOURCE_SHA", ""),
         "provenance": provenance(plan),
         "status": "completed",
     }
@@ -369,6 +371,15 @@ def publish(job_id: str, result_path: Path) -> None:
     if missing_provenance:
         fail(f"result provenance is incomplete: {', '.join(missing_provenance)}")
 
+    resolved_source_sha = str(result.get("resolved_source_sha", "")).lower()
+    stage_outcomes = result.get("stage_outcomes")
+    pre_checkout_block = isinstance(stage_outcomes, dict) and stage_outcomes.get("checkout") != "success"
+    if pre_checkout_block:
+        if resolved_source_sha and not SOURCE_SHA.fullmatch(resolved_source_sha):
+            fail("optional resolved source SHA is invalid")
+    elif not SOURCE_SHA.fullmatch(resolved_source_sha):
+        fail("adapter result is missing a valid resolved source SHA")
+
     token = control_token()
     result_path_remote = f"results/{job_id}.json"
     if api(result_path_remote, token, allow_not_found=True) is not None:
@@ -378,8 +389,11 @@ def publish(job_id: str, result_path: Path) -> None:
     claim, claim_blob_sha = decode_content(claim_record, "immutable claim")
     if claim.get("job_id") != job_id or claim.get("state") != "claimed":
         fail("immutable claim does not match the result")
-    for field in ("pillar", "source_repo", "source_ref"):
+    for field in ("pillar", "source_repo", "source_ref", "task"):
         if claim.get(field) != result.get(field):
+            fail(f"immutable claim {field} does not match the result")
+    for field in ("action", "adapter"):
+        if str(claim.get(field, "")) != str(result.get(field, "")):
             fail(f"immutable claim {field} does not match the result")
     claim_provenance = claim.get("provenance")
     if not isinstance(claim_provenance, dict) or claim_provenance != result_provenance:
@@ -392,6 +406,7 @@ def publish(job_id: str, result_path: Path) -> None:
         "claim_path": f"claims/{job_id}.json",
         "claim_blob_sha": claim_blob_sha,
         "plan_sha256": claim.get("plan_sha256", ""),
+        "resolved_source_sha": resolved_source_sha,
         "workflow_run_id": os.environ.get("GITHUB_RUN_ID", ""),
         "workflow_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
         "public_runner_sha": os.environ.get("GITHUB_SHA", ""),
