@@ -60,10 +60,13 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "scripts/action_face_guard.py",
         "scripts/action_face_control_plane_guard.py",
         "scripts/action_face_bind_checkout.py",
-        "scripts/action_face_pipeline_result.py",
+        ".apex-postrun-control/scripts/action_face_pipeline_result.py",
+        ".apex-postrun-control/scripts/action_face_postrun_guard.py",
+        ".apex-postrun-control/scripts/action_face_publish_verified.py",
         "claim-job",
         "resolved_source_sha",
         "APEX_RESOLVED_SOURCE_SHA",
+        "result_file_sha256",
         "REPLAY_OUTCOME",
         "PIPELINE_RESULT_SYNTHESIZED",
         "steps.synthesize.outputs.synthesized == 'true'",
@@ -75,6 +78,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "actions/github-script@",
         "actions/checkout@v",
         "assert-new-result",
+        "python3 scripts/apex_pillar_runner.py publish",
     ]
     missing = [fragment for fragment in required_fragments if fragment not in workflow]
     forbidden = [fragment for fragment in forbidden_fragments if fragment in workflow]
@@ -100,6 +104,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "payload_sha256",
         "resolved_source_sha",
         "adapter result is missing a valid resolved source SHA",
+        'stage_outcomes.get("checkout_binding") != "success"',
     ]
     missing_receipt = [fragment for fragment in receipt_fragments if fragment not in pillar_runner]
     record("claim-receipt-invariants", not missing_receipt, f"missing={missing_receipt}")
@@ -114,6 +119,27 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     ]
     missing_synth = [fragment for fragment in synth_fragments if fragment not in pipeline_result]
     record("synthesized-result-invariants", not missing_synth, f"missing={missing_synth}")
+
+    postrun_guard = (workspace / "scripts" / "action_face_postrun_guard.py").read_text(encoding="utf-8")
+    postrun_fragments = [
+        "verify_checkout(runner_root, workflow_sha",
+        "verify_checkout(control_root, workflow_sha",
+        "current plan does not match the immutable claim hash",
+        "result resolved source SHA does not match checkout binding",
+        'output("result_file_sha256", digest)',
+    ]
+    missing_postrun = [fragment for fragment in postrun_fragments if fragment not in postrun_guard]
+    record("fresh-postrun-control-invariants", not missing_postrun, f"missing={missing_postrun}")
+
+    verified_publish = (workspace / "scripts" / "action_face_publish_verified.py").read_text(encoding="utf-8")
+    publish_fragments = [
+        "result bytes changed after post-run verification",
+        "NamedTemporaryFile",
+        "os.chmod(handle.name, 0o600)",
+        "base.publish(args.job_id, Path(temporary_path))",
+    ]
+    missing_publish = [fragment for fragment in publish_fragments if fragment not in verified_publish]
+    record("verified-publication-invariants", not missing_publish, f"missing={missing_publish}")
 
     catalog_entries: list[dict] = []
     for name in ("pillar-actions.json", "action-face-actions.json"):
