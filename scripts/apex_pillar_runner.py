@@ -373,8 +373,11 @@ def publish(job_id: str, result_path: Path) -> None:
 
     resolved_source_sha = str(result.get("resolved_source_sha", "")).lower()
     stage_outcomes = result.get("stage_outcomes")
-    pre_checkout_block = isinstance(stage_outcomes, dict) and stage_outcomes.get("checkout") != "success"
-    if pre_checkout_block:
+    pre_adapter_block = isinstance(stage_outcomes, dict) and (
+        stage_outcomes.get("checkout") != "success"
+        or stage_outcomes.get("checkout_binding") != "success"
+    )
+    if pre_adapter_block:
         if resolved_source_sha and not SOURCE_SHA.fullmatch(resolved_source_sha):
             fail("optional resolved source SHA is invalid")
     elif not SOURCE_SHA.fullmatch(resolved_source_sha):
