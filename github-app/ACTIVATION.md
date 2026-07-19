@@ -1,6 +1,10 @@
 # APEX Runner Bridge — Owner Activation
 
-The repository-side GitHub App bridge is complete on branch `apex/github-app-bridge-20260719`.
+The repository-side GitHub App bridge is installed on `main` in commit:
+
+```text
+0ee4cfc32aff8748874cf2c9083b817caee341f5
+```
 
 GitHub requires the account owner to create the App registration, generate its private key, choose the installation repositories, and store the key. Those owner-only settings are not exposed by the connected repository API.
 
@@ -65,7 +69,7 @@ No App ID or installation ID needs to be stored. The workflow resolves installat
 
 ## 6. Canary
 
-After the branch is merged, public visibility is confirmed, and the variable/secret exist, dispatch:
+After public visibility is confirmed and the variable/secret exist, dispatch:
 
 ```text
 Workflow: APEX GitHub App Bridge Canary
