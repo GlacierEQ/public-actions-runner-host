@@ -46,7 +46,7 @@ on:
 jobs:
   python-quality:
     name: "🐍 Python · Lint · Type · Test"
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     if: inputs.language == 'python' && inputs.run_lint
     steps:
       - uses: actions/checkout@v4
@@ -73,7 +73,7 @@ jobs:
 
   python-test:
     name: "🐍 Python · Test"
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     if: inputs.language == 'python' && inputs.run_tests
     needs: [python-quality]
     steps:
@@ -101,7 +101,7 @@ jobs:
 
   typescript-quality:
     name: "📦 TypeScript · Lint · Type · Build"
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     if: inputs.language == 'typescript' && inputs.run_lint
     steps:
       - uses: actions/checkout@v4
@@ -124,7 +124,7 @@ jobs:
 
   typescript-test:
     name: "📦 TypeScript · Test"
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     if: inputs.language == 'typescript' && inputs.run_tests
     needs: [typescript-quality]
     steps:
@@ -142,7 +142,7 @@ jobs:
 
   go-quality:
     name: "🐹 Go · Vet · Lint · Test"
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     if: inputs.language == 'go' && inputs.run_lint
     steps:
       - uses: actions/checkout@v4
@@ -168,7 +168,7 @@ jobs:
 
   security:
     name: "🔒 Security Scan"
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     if: inputs.run_security
     steps:
       - uses: actions/checkout@v4
@@ -195,7 +195,7 @@ jobs:
 
   build:
     name: "🔨 Build"
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     if: inputs.run_build
     needs: [python-quality, typescript-quality, go-quality, security]
     steps:
@@ -211,7 +211,7 @@ jobs:
 
   notify:
     name: "📊 Status"
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     needs: [python-quality, python-test, typescript-quality, typescript-test, go-quality, security]
     if: always()
     steps:
