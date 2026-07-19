@@ -1,0 +1,157 @@
+name: APEX GitHub App Bridge Canary
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: Unique immutable job ID
+        required: true
+        type: string
+      workload_repo:
+        description: Selected private workload repository
+        required: true
+        default: GlacierEQ/mastermind
+        type: string
+      workload_ref:
+        description: Branch, tag, or commit to resolve
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apex-github-app-bridge-${{ inputs.job_id }}
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout canonical public action face
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Assert canonical public action face
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
+          APEX_EXPECTED_VISIBILITY: public
+        run: python3 scripts/action_face_guard.py
+
+      - name: Require GitHub App configuration
+        env:
+          APP_CLIENT_ID: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+        run: |
+          test -n "$APP_CLIENT_ID" || { echo "APEX_RUNNER_APP_CLIENT_ID repository variable is required" >&2; exit 1; }
+          test -n "$APP_PRIVATE_KEY" || { echo "APEX_RUNNER_APP_PRIVATE_KEY repository secret is required" >&2; exit 1; }
+          case "$APP_PRIVATE_KEY" in
+            *"BEGIN "*"PRIVATE KEY"*) ;;
+            *) echo "APEX_RUNNER_APP_PRIVATE_KEY does not contain a PEM private key" >&2; exit 1 ;;
+          esac
+
+      - name: Mint private control-plane token
+        id: control-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+          owner: GlacierEQ
+          repositories: GlacierEQ/llm-runner-teams
+          permission-contents: write
+
+      - name: Mint private workload read token
+        id: workload-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+          owner: GlacierEQ
+          repositories: ${{ inputs.workload_repo }}
+          permission-contents: read
+
+      - name: Verify one-repository scopes and create immutable claim
+        env:
+          APEX_CONTROL_TOKEN: ${{ steps.control-token.outputs.token }}
+          APEX_PRIVATE_READ_TOKEN: ${{ steps.workload-token.outputs.token }}
+        run: |
+          python3 scripts/github_app_bridge_canary.py verify-and-claim \
+            --job-id "${{ inputs.job_id }}" \
+            --workload-repo "${{ inputs.workload_repo }}" \
+            --workload-ref "${{ inputs.workload_ref }}" \
+            --app-slug "${{ steps.control-token.outputs.app-slug }}" \
+            --control-installation-id "${{ steps.control-token.outputs.installation-id }}" \
+            --workload-installation-id "${{ steps.workload-token.outputs.installation-id }}"
+
+      - name: Create source-binding plan
+        env:
+          JOB_ID: ${{ inputs.job_id }}
+          SOURCE_REPO: ${{ inputs.workload_repo }}
+          SOURCE_REF: ${{ inputs.workload_ref }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          Path('.apex-plan.json').write_text(json.dumps({
+              'job_id': os.environ['JOB_ID'],
+              'pillar': 'C',
+              'action': 'github-app-bridge-canary',
+              'adapter': 'bridge-canary',
+              'task': 'validate',
+              'source_repo': os.environ['SOURCE_REPO'],
+              'source_ref': os.environ['SOURCE_REF'],
+              'target_repo': os.environ['SOURCE_REPO'],
+          }, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Checkout selected private workload
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: ${{ inputs.workload_repo }}
+          ref: ${{ inputs.workload_ref }}
+          token: ${{ steps.workload-token.outputs.token }}
+          path: workload
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact private workload commit
+        id: bind
+        run: |
+          python3 scripts/action_face_bind_checkout.py \
+            --plan .apex-plan.json \
+            --workspace workload
+
+      - name: Write immutable private bridge receipt
+        env:
+          APEX_CONTROL_TOKEN: ${{ steps.control-token.outputs.token }}
+        run: |
+          python3 scripts/github_app_bridge_canary.py complete \
+            --job-id "${{ inputs.job_id }}" \
+            --workload-repo "${{ inputs.workload_repo }}" \
+            --workload-ref "${{ inputs.workload_ref }}" \
+            --resolved-source-sha "${{ steps.bind.outputs.resolved_source_sha }}" \
+            --app-slug "${{ steps.control-token.outputs.app-slug }}" \
+            --control-installation-id "${{ steps.control-token.outputs.installation-id }}" \
+            --workload-installation-id "${{ steps.workload-token.outputs.installation-id }}"
+
+      - name: Record sanitized canary summary
+        run: |
+          {
+            echo "## APEX GitHub App Bridge Canary"
+            echo
+            echo "- Job: ${{ inputs.job_id }}"
+            echo "- App: ${{ steps.control-token.outputs.app-slug }}"
+            echo "- Workload: ${{ inputs.workload_repo }}"
+            echo "- Exact source: ${{ steps.bind.outputs.resolved_source_sha }}"
+            echo "- Control token scope: GlacierEQ/llm-runner-teams only"
+            echo "- Workload token scope: ${{ inputs.workload_repo }} only"
+            echo "- Tokens: revoked automatically at job completion"
+          } >> "$GITHUB_STEP_SUMMARY"
