@@ -1,0 +1,16 @@
+{
+  "name": "APEX Runner Bridge",
+  "url": "https://github.com/GlacierEQ/public-actions-runner-host",
+  "hook_attributes": {
+    "url": "https://github.com/GlacierEQ/public-actions-runner-host",
+    "active": false
+  },
+  "description": "Owner-only GitHub App that mints short-lived least-privilege tokens for the APEX public action face.",
+  "public": false,
+  "default_events": [],
+  "default_permissions": {
+    "contents": "write"
+  },
+  "request_oauth_on_install": false,
+  "setup_on_update": false
+}
