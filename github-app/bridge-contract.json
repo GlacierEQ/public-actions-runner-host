@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "status": "staged",
+  "app": {
+    "name": "APEX Runner Bridge",
+    "owner_login": "GlacierEQ",
+    "owner_id": 194243768,
+    "public": false,
+    "webhooks": false,
+    "oauth_user_flow": false,
+    "installation_repository_selection": "selected"
+  },
+  "stored_configuration": {
+    "repository": "GlacierEQ/public-actions-runner-host",
+    "variable": "APEX_RUNNER_APP_CLIENT_ID",
+    "secret": "APEX_RUNNER_APP_PRIVATE_KEY"
+  },
+  "installation_repositories": [
+    "GlacierEQ/mastermind",
+    "GlacierEQ/llm-runner-teams"
+  ],
+  "token_profiles": {
+    "private_workload_read": {
+      "repositories": "exact source repository from validated plan",
+      "permissions": {
+        "contents": "read"
+      },
+      "maximum_lifetime": "1 hour",
+      "revocation": "automatic at job completion"
+    },
+    "private_control_write": {
+      "repositories": [
+        "GlacierEQ/llm-runner-teams"
+      ],
+      "permissions": {
+        "contents": "write"
+      },
+      "maximum_lifetime": "1 hour",
+      "revocation": "automatic at job completion"
+    }
+  },
+  "forbidden_permissions": [
+    "actions",
+    "administration",
+    "checks",
+    "deployments",
+    "issues",
+    "pull_requests",
+    "secrets",
+    "workflows"
+  ],
+  "forbidden_routes": [
+    "GitHub Actions in a private workload repository",
+    "GitHub Actions in GlacierEQ/llm-runner-teams",
+    "installation access to all GlacierEQ repositories",
+    "unscoped installation tokens",
+    "PAT fallback after GitHub App activation",
+    "private key exposure to workload processes"
+  ]
+}
