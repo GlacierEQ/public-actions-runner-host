@@ -1,4 +1,5 @@
-# Manual dry-run workflow; registration refresh only.name: Supermemory Space Cleanup
+# Manual dry-run workflow; registration refresh only.
+name: Supermemory Space Cleanup
 
 on:
   workflow_dispatch:
