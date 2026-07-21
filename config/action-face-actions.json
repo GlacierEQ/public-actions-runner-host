@@ -22,6 +22,15 @@
       "gate": "standard"
     },
     {
+      "pillar": "C",
+      "action": "akos-operational-cognition-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/AKOS",
+      "legacy_event": "akos-operational-cognition-ci",
+      "adapter": "test",
+      "gate": "standard"
+    },
+    {
       "pillar": "F",
       "action": "gateway-ci",
       "source_event": "gateway-ci",
