@@ -43,7 +43,8 @@ jobs:
           response=$(curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors "$BASE/v3/documents?containerTag=sm_project_administrative_entities_&limit=50" -H "Authorization: Bearer $SM_KEY")
           jq -r '.documents[]?.id' <<<"$response" | while IFS= read -r id; do
             if [ "${DRY_RUN:-true}" = true ]; then echo "[DRY RUN] Would move $id"; else
-              curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X PATCH "$BASE/v3/documents/$id" -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: application/json' --data '{"containerTag":"sm_project_administrative_entities"}' >/dev/null
+              curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X PATCH "$BASE/v3/documents/$id" -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: applicatio
+              n/json' --data '{"containerTag":"sm_project_administrative_entities"}' >/dev/null
               echo "Moved $id"
             fi
           done
