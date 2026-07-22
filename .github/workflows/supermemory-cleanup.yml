@@ -1,1 +1,66 @@
-name: Supermemory Space Cleanupon:  workflow_dispatch:    inputs:      dry_run:        description: Dry run only (recommended)        required: false        default: true        type: booleanpermissions:  contents: readjobs:  cleanup:    runs-on: ubuntu-latest    env:      SM_KEY: ${{ secrets.SUPERMEMORY_API_KEY }}      BASE: https://api.supermemory.ai      DRY_RUN: ${{ inputs.dry_run }}    steps:      - name: Validate secret and tools        shell: bash        run: |          set -euo pipefail          command -v jq >/dev/null          test -n "${SM_KEY:-}" || { echo "Missing SUPERMEMORY_API_KEY" >&2; exit 1; }      - name: Audit and optionally move documents        shell: bash        run: |          set -euo pipefail          move_space() {            local source="$1" target="$2" id            response=$(curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X POST "$BASE/v3/documents/list" \              -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: application/json' \              --data "{\"containerTags\":[\"$source\"],\"limit\":50,\"includeContent\":false}")            jq -r '.memories[]?.id' <<<"$response" | while IFS= read -r id; do              if [[ "${DRY_RUN:-true}" == "true" ]]; then                echo "[DRY RUN] Would move $id from $source to $target"              else                curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X PATCH "$BASE/v3/documents/$id" \                  -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: application/json' \                  --data "{\"containerTag\":\"$target\"}" >/dev/null                echo "Moved $id"              fi            done          }          response=$(curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X POST "$BASE/v3/documents/list" \            -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: application/json' \            --data '{"containerTags":["case_test"],"limit":50,"includeContent":false}')          echo "case_test document count: $(jq '.memories // [] | length' <<<"$response")"          jq '[.memories[]? | {id, title}]' <<<"$response"          move_space sm_project_administrative_entities_ sm_project_administrative_entities          move_space 5k3ntRsaCJxZW4GG4GMe6a kekoa-session-logs          move_space sm_project_default sm_project_memory_master      - name: Upsert stable routing rule when live mode is explicitly selected        if: ${{ inputs.dry_run == false }}        shell: bash        run: |          set -euo pipefail          payload=$(jq -n --arg content 'GlacierEQ APEX SPACE ROUTING RULES v1; use apex-case for 1FDV-23-0001009; use evidence-vault for source-indexed evidence; use timestamp-forensics for timestamp analysis; recommendations never auto-file, accuse, contact courts, or delete evidence.' '{customId:"apex-space-routing-rules-v1",content:$content,containerTag:"sm_project_me
+name: Supermemory Space Cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Dry run only (recommended)
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      SM_KEY: ${{ secrets.SUPERMEMORY_API_KEY }}
+      BASE: https://api.supermemory.ai
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - name: Validate secret and tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v jq >/dev/null
+          test -n "${SM_KEY:-}" || { echo "Missing SUPERMEMORY_API_KEY" >&2; exit 1; }
+
+      - name: Audit and optionally move documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          move_space() {
+            local source="$1" target="$2" id
+            response=$(curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X POST "$BASE/v3/documents/list" \
+              -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: application/json' \
+              --data "{\"containerTags\":[\"$source\"],\"limit\":50,\"includeContent\":false}")
+            jq -r '.memories[]?.id' <<<"$response" | while IFS= read -r id; do
+              if [[ "${DRY_RUN:-true}" == "true" ]]; then
+                echo "[DRY RUN] Would move $id from $source to $target"
+              else
+                curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X PATCH "$BASE/v3/documents/$id" \
+                  -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: application/json' \
+                  --data "{\"containerTag\":\"$target\"}" >/dev/null
+                echo "Moved $id"
+              fi
+            done
+          }
+          response=$(curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X POST "$BASE/v3/documents/list" \
+            -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: application/json' \
+            --data '{"containerTags":["case_test"],"limit":50,"includeContent":false}')
+          echo "case_test document count: $(jq '.memories // [] | length' <<<"$response")"
+          jq '[.memories[]? | {id, title}]' <<<"$response"
+          move_space sm_project_administrative_entities_ sm_project_administrative_entities
+          move_space 5k3ntRsaCJxZW4GG4GMe6a kekoa-session-logs
+          move_space sm_project_default sm_project_memory_master
+
+      - name: Upsert stable routing rule when live mode is explicitly selected
+        if: ${{ inputs.dry_run == false }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload=$(jq -n --arg content 'GlacierEQ APEX SPACE ROUTING RULES v1; use apex-case for 1FDV-23-0001009; use evidence-vault for source-indexed evidence; use timestamp-forensics for timestamp analysis; recommendations never auto-file, accuse, contact courts, or delete evidence.' '{customId:"apex-space-routing-rules-v1",content:$content,containerTag:"sm_project_memory_master",metadata:{source:"public-actions-runner-host",caseNumber:"1FDV-23-0001009",verificationLevel:"operational-rule",tags:["routing","token-saver","pointer-first"]}}')
+          curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors -X POST "$BASE/v3/documents" -H "Authorization: Bearer $SM_KEY" -H 'Content-Type: application/json' --data "$payload" >/dev/null
+          echo "Routing rules upsert submitted."
