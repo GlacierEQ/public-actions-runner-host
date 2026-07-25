@@ -36,6 +36,8 @@ ADAPTER_TASK = {
     "python-ci": "test",
     "node-ci": "test",
     "action-face-selftest": "validate",
+    "master-strand-inventory": "audit",
+    "master-strand-extinction": "audit",
 }
 ALLOWED_KEYS = {"job_id", "pillar", "action", "source_repo", "source_ref", "task", "approval_id"}
 MAX_ENVELOPE_BYTES = 4096
@@ -175,11 +177,12 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
     if not base.REPO.fullmatch(source_repo):
         fail("source_repo must be an approved GlacierEQ repository")
 
+    approval_required = pillar in {"G", "I"} or bool(entry and entry.get("approval_required"))
     approval_id = payload.get("approval_id", "")
-    if pillar in {"G", "I"} and not base.JOB_ID.fullmatch(approval_id):
-        fail("pillars G and I require a valid private approval_id")
-    if pillar not in {"G", "I"} and approval_id:
-        fail("approval_id is accepted only for pillars G and I")
+    if approval_required and not base.JOB_ID.fullmatch(approval_id):
+        fail("this action requires a valid private approval_id")
+    if not approval_required and approval_id:
+        fail("approval_id is accepted only for approval-gated actions")
 
     plan = {
         "job_id": job_id,
@@ -188,6 +191,7 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
         "source_ref": source_ref,
         "task": task,
         "approval_id": approval_id,
+        "approval_required": "true" if approval_required else "false",
         "action": str(entry["action"]) if entry else "",
         "adapter": str(entry["adapter"]) if entry else "",
         "target_repo": str(entry["target_repo"]) if entry else "",
