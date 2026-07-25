@@ -12,8 +12,15 @@ from pathlib import Path
 
 import apex_catalog_runner as catalog
 from action_face_selftest import run as run_selftest
+from master_strand_extinction import ExtinctionError, run as run_master_strand
 
-SENSITIVE_ENV = {"APEX_CONTROL_TOKEN", "APEX_PRIVATE_READ_TOKEN", "GH_PAT", "GITHUB_TOKEN"}
+SENSITIVE_ENV = {
+    "APEX_BRANCH_WRITE_TOKEN",
+    "APEX_CONTROL_TOKEN",
+    "APEX_PRIVATE_READ_TOKEN",
+    "GH_PAT",
+    "GITHUB_TOKEN",
+}
 
 
 def executable_available(executable: str) -> bool:
@@ -225,6 +232,32 @@ def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
     )
 
 
+def master_strand(plan: dict, result_path: Path, mode: str) -> int:
+    try:
+        report = run_master_strand(
+            owner="GlacierEQ",
+            mode=mode,
+            job_id=str(plan["job_id"]),
+            approval_id=str(plan.get("approval_id") or "") or None,
+        )
+    except ExtinctionError as exc:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            exact_blocker=str(exc),
+            master_strand_mode=mode,
+        )
+    status = "completed" if report.get("status") == "completed" else "failed"
+    return catalog.write_result(
+        plan,
+        result_path,
+        status,
+        master_strand_mode=mode,
+        master_strand=report,
+    )
+
+
 def main() -> int:
     if len(sys.argv) != 4:
         raise SystemExit("usage: action_face_catalog_runner.py PLAN WORKSPACE RESULT")
@@ -239,6 +272,10 @@ def main() -> int:
         return node_ci(plan, workspace, result_path)
     if adapter == "python-ci":
         return python_ci(plan, workspace, result_path)
+    if adapter == "master-strand-inventory":
+        return master_strand(plan, result_path, "inventory")
+    if adapter == "master-strand-extinction":
+        return master_strand(plan, result_path, "apply")
     return subprocess.call([sys.executable, "scripts/apex_catalog_runner.py", str(plan_path), str(workspace), str(result_path)], env=isolated_env())
 
 
