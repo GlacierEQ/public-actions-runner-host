@@ -1,7 +1,8 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "control_plane": "GlacierEQ/llm-runner-teams",
   "execution_plane": "GlacierEQ/public-actions-runner-host",
+  "bootstrap_execution_plane": "GlacierEQ/clonezone",
   "actions": [
     {
       "pillar": "C",
@@ -29,6 +30,26 @@
       "legacy_event": "akos-operational-cognition-ci",
       "adapter": "test",
       "gate": "standard"
+    },
+    {
+      "pillar": "F",
+      "action": "master-strand-inventory",
+      "source_event": "infra-gateway",
+      "target_repo": "GlacierEQ/public-actions-runner-host",
+      "legacy_event": "master-strand-inventory",
+      "adapter": "master-strand-inventory",
+      "gate": "elevated",
+      "approval_required": false
+    },
+    {
+      "pillar": "F",
+      "action": "master-strand-extinction",
+      "source_event": "infra-gateway",
+      "target_repo": "GlacierEQ/public-actions-runner-host",
+      "legacy_event": "master-strand-extinction",
+      "adapter": "master-strand-extinction",
+      "gate": "destructive-explicit",
+      "approval_required": true
     },
     {
       "pillar": "F",
