@@ -1,0 +1,77 @@
+name: CASEBRAIN Validation
+
+on:
+  workflow_call:
+    inputs:
+      expected_head_sha:
+        description: Exact private workload commit expected by the caller
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Connector and memory controls
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out caller repository
+        uses: actions/checkout@v4
+
+      - name: Verify pinned workload
+        shell: bash
+        run: |
+          actual_sha="$(git rev-parse HEAD)"
+          if [ "${actual_sha}" != "${{ inputs.expected_head_sha }}" ]; then
+            echo "Expected ${{ inputs.expected_head_sha }}, got ${actual_sha}" >&2
+            exit 1
+          fi
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: BRAIN/CONNECTORS/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install locked dependencies
+        working-directory: BRAIN/CONNECTORS
+        run: npm ci --ignore-scripts
+
+      - name: Run connector and memory validators
+        working-directory: BRAIN/CONNECTORS
+        run: npm test
+
+      - name: Generate sanitized validation receipt
+        id: receipt
+        shell: bash
+        run: |
+          mkdir -p validation-receipt
+          {
+            echo "schema_version=1.0.0"
+            echo "repository=${GITHUB_REPOSITORY}"
+            echo "commit_sha=$(git rev-parse HEAD)"
+            echo "workflow_run_id=${GITHUB_RUN_ID}"
+            echo "workflow_run_attempt=${GITHUB_RUN_ATTEMPT}"
+            echo "validated_package=BRAIN/CONNECTORS"
+            echo "result=success"
+            echo "generated_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            find BRAIN/CONNECTORS -maxdepth 1 -type f \
+              \( -name '*.json' -o -name '*.mjs' -o -name '*.py' -o -name '*.md' \) \
+              -print0 | sort -z | xargs -0 sha256sum
+          } > validation-receipt/casebrain-validation.txt
+          sha256sum validation-receipt/casebrain-validation.txt > validation-receipt/casebrain-validation.txt.sha256
+
+      - name: Upload validation receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: casebrain-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: validation-receipt/
+          if-no-files-found: error
+          retention-days: 90
