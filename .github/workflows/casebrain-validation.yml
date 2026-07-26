@@ -16,8 +16,11 @@ jobs:
     name: Connector and memory controls
     runs-on: ubuntu-latest
     steps:
-      - name: Check out caller repository
+      - name: Check out pinned caller commit
         uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ inputs.expected_head_sha }}
 
       - name: Verify pinned workload
         shell: bash
@@ -49,7 +52,6 @@ jobs:
         run: npm test
 
       - name: Generate sanitized validation receipt
-        id: receipt
         shell: bash
         run: |
           mkdir -p validation-receipt
