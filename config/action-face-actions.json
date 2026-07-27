@@ -32,6 +32,15 @@
       "gate": "standard"
     },
     {
+      "pillar": "C",
+      "action": "akos-echo-policy-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/FILEBOSS",
+      "legacy_event": "akos-echo-policy-ci",
+      "adapter": "akos-echo-policy-ci",
+      "gate": "standard"
+    },
+    {
       "pillar": "F",
       "action": "master-strand-inventory",
       "source_event": "infra-gateway",
