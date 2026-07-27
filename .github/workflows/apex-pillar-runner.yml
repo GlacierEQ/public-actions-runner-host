@@ -198,6 +198,7 @@ jobs:
         continue-on-error: true
         env:
           APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+          AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}
         run: |
           python3 scripts/action_face_catalog_runner.py \
             .apex-plan.json \
