@@ -10,7 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "config" / "public-runner-team.json"
 WORKFLOW_DIR = ROOT / ".github" / "workflows"
-RUNS_ON = re.compile(r"^\s*runs-on:\s*([^#\n]+)", re.MULTILINE)
+RUNS_ON = re.compile(r"^\s*runs-on:\s*([^#
+]+)", re.MULTILINE)
 PRIVATE_MARKERS = ("self-hosted", "llm-runner-teams", "private-actions-runner")
 
 
@@ -32,7 +33,7 @@ def main() -> int:
             if marker in text:
                 failures.append(f"{workflow.name}: forbidden runner/control-plane marker {marker!r}")
         for match in RUNS_ON.finditer(text):
-            runner = match.group(1).strip().strip("\\"'")
+            runner = match.group(1).strip().strip("\"'")
             if not runner.startswith(prefixes):
                 failures.append(f"{workflow.name}: runs-on {runner!r} is outside the public hosted runner policy")
 
