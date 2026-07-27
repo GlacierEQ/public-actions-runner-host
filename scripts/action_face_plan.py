@@ -35,6 +35,7 @@ ADAPTER_TASK = {
     "apex-verify": "validate",
     "python-ci": "test",
     "node-ci": "test",
+    "akos-echo-policy-ci": "test",
     "action-face-selftest": "validate",
     "master-strand-inventory": "audit",
     "master-strand-extinction": "audit",
