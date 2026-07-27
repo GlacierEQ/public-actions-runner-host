@@ -66,6 +66,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "claim-job",
         "resolved_source_sha",
         "APEX_RESOLVED_SOURCE_SHA",
+        "AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}",
         "result_file_sha256",
         "REPLAY_OUTCOME",
         "PIPELINE_RESULT_SYNTHESIZED",
@@ -150,6 +151,20 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     targets = [str(item.get("target_repo", "")) for item in catalog_entries]
     catalog_ok = bool(keys) and len(keys) == len(set(keys)) and all(target.startswith("GlacierEQ/") for target in targets)
     record("catalog-uniqueness", catalog_ok, f"{len(keys)} catalog actions checked")
+
+    adapter_script = (workspace / "scripts" / "action_face_catalog_runner.py").read_text(encoding="utf-8")
+    planner_script = (workspace / "scripts" / "action_face_plan.py").read_text(encoding="utf-8")
+    akos_entries = [item for item in catalog_entries if item.get("action") == "akos-echo-policy-ci"]
+    akos_ok = (
+        len(akos_entries) == 1
+        and akos_entries[0].get("pillar") == "C"
+        and akos_entries[0].get("target_repo") == "GlacierEQ/FILEBOSS"
+        and akos_entries[0].get("adapter") == "akos-echo-policy-ci"
+        and '"akos-echo-policy-ci": "test"' in planner_script
+        and 'if adapter == "akos-echo-policy-ci"' in adapter_script
+        and "AKOS_POLICY_SHA256" in workflow
+    )
+    record("akos-echo-policy-adapter", akos_ok, f"entries={len(akos_entries)}")
 
     with tempfile.TemporaryDirectory() as temp:
         temp_path = Path(temp)
