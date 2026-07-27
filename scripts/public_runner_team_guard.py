@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "config" / "public-runner-team.json"
 WORKFLOW_DIR = ROOT / ".github" / "workflows"
-PRIVATE_MARKERS = ("self-hosted", "llm-runner-teams", "private-actions-runner")
+PRIVATE_MARKERS = ("self-hosted", "private-actions-runner")
 
 
 def fail(message: str) -> None:
