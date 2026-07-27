@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -232,6 +233,38 @@ def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
     )
 
 
+def akos_echo_policy_ci(plan: dict, workspace: Path, result_path: Path) -> int:
+    """Run the exact AKOS-Echo policy gate from the nested FILEBOSS project."""
+    workspace = workspace.resolve()
+    result_path = result_path.resolve()
+    project = workspace / "genius" / "pro-code"
+    policy = project / "smithery_control_plane" / "config" / "akos_connector_policy.json"
+    tests = [
+        project / "tests" / "test_connector_policy.py",
+        project / "tests" / "test_connector_gateway.py",
+        project / "tests" / "test_connector_entrypoint_integration.py",
+    ]
+
+    if not project.is_dir():
+        return catalog.write_result(plan, result_path, "blocked", reason="genius/pro-code was not found")
+    missing = [path.relative_to(workspace).as_posix() for path in [policy, *tests] if not path.is_file()]
+    if missing:
+        return catalog.write_result(plan, result_path, "blocked", reason=f"required AKOS gate files are missing: {', '.join(missing)}")
+
+    digest = os.environ.get("AKOS_POLICY_SHA256", "").lower()
+    if not re.fullmatch(r"[0-9a-f]{64}", digest):
+        return catalog.write_result(plan, result_path, "blocked", reason="AKOS_POLICY_SHA256 is unavailable or invalid")
+
+    venv = result_path.parent / f"venv-{plan['job_id']}"
+    python = venv / "bin" / "python"
+    commands = [
+        [sys.executable, "-m", "venv", str(venv)],
+        [str(python), "-m", "pip", "install", "--disable-pip-version-check", "pytest", "pytest-asyncio"],
+        [str(python), "-m", "smithery_control_plane.runtime.connector_policy", "--validate", "smithery_control_plane/config/akos_connector_policy.json"],
+        [str(python), "-m", "pytest", "tests/test_connector_policy.py", "tests/test_connector_gateway.py", "tests/test_connector_entrypoint_integration.py", "-q"],
+    ]
+    return run_sequence(plan, project, result_path, commands)
+
 def master_strand(plan: dict, result_path: Path, mode: str) -> int:
     try:
         report = run_master_strand(
@@ -272,6 +305,8 @@ def main() -> int:
         return node_ci(plan, workspace, result_path)
     if adapter == "python-ci":
         return python_ci(plan, workspace, result_path)
+    if adapter == "akos-echo-policy-ci":
+        return akos_echo_policy_ci(plan, workspace, result_path)
     if adapter == "master-strand-inventory":
         return master_strand(plan, result_path, "inventory")
     if adapter == "master-strand-extinction":
