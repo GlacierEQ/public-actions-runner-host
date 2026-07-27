@@ -48,8 +48,12 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Run connector and memory validators
+        shell: bash
         working-directory: BRAIN/CONNECTORS
-        run: npm test
+        run: |
+          set -o pipefail
+          mkdir -p ../../validation-receipt
+          npm test 2>&1 | tee ../../validation-receipt/validator.log
 
       - name: Generate sanitized validation receipt
         shell: bash
@@ -70,7 +74,8 @@ jobs:
           } > validation-receipt/casebrain-validation.txt
           sha256sum validation-receipt/casebrain-validation.txt > validation-receipt/casebrain-validation.txt.sha256
 
-      - name: Upload validation receipt
+      - name: Upload validation evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: casebrain-validation-${{ github.run_id }}-${{ github.run_attempt }}
