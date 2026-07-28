@@ -1,0 +1,226 @@
+{
+  "audit": {
+    "credential_and_identifier_value_redaction": true,
+    "durable_repair_queue": true,
+    "exact_sensitive_key_matching": true,
+    "required_receipt_fields": [
+      "receipt_id",
+      "timestamp",
+      "request_id",
+      "service",
+      "route",
+      "operation",
+      "decision",
+      "verification",
+      "authorization_proofs",
+      "completion_proofs",
+      "artifact_hashes",
+      "failed_gates"
+    ]
+  },
+  "authority": {
+    "canonical_route_map": {
+      "path": "genius/pro-code/smithery_control_plane/data/connector_canonical_route_map_2026-07-24T1715HST.json",
+      "sha256": "deb9169905f22b7226f241bc958323172af4a213dcdc2f1b539b58f1f0cc3b15"
+    },
+    "coverage_milestone": {
+      "path": "genius/pro-code/smithery_control_plane/data/connector_coverage_milestone_2026-07-24T1718HST.json",
+      "sha256": "38b12960446a214ab4b0eb140a1fe9f59e1c88a0ac65406cb2fcc251a1293719"
+    },
+    "precedence": [
+      "externally_pinned_policy_digest",
+      "signed_current_request_attestations",
+      "canonical_route_map",
+      "structured_registry",
+      "vendor_health_label",
+      "documentation_or_conversation_history"
+    ]
+  },
+  "authorization_gates": {
+    "compute": [
+      "identity",
+      "account_affinity",
+      "current_schema",
+      "current_runtime_probe"
+    ],
+    "delete": [
+      "identity",
+      "account_affinity",
+      "current_schema",
+      "current_runtime_probe",
+      "isolated_target"
+    ],
+    "local_device": [
+      "device_online",
+      "same_run_ping",
+      "approved_root",
+      "policy_scope"
+    ],
+    "local_read": [
+      "identity",
+      "account_affinity",
+      "current_schema",
+      "current_runtime_probe"
+    ],
+    "local_write": [
+      "identity",
+      "account_affinity",
+      "current_schema",
+      "current_runtime_probe",
+      "isolated_target"
+    ],
+    "read": [
+      "identity",
+      "account_affinity",
+      "current_schema",
+      "current_runtime_probe"
+    ],
+    "temporary_probe": [
+      "identity",
+      "account_affinity",
+      "current_schema",
+      "current_runtime_probe",
+      "isolated_target"
+    ],
+    "write": [
+      "identity",
+      "account_affinity",
+      "current_schema",
+      "current_runtime_probe",
+      "isolated_target"
+    ]
+  },
+  "classification": "systems-control-not-case-evidence",
+  "completion_gates": {
+    "compute": [
+      "validated_response"
+    ],
+    "delete": [
+      "scoped_write",
+      "matching_readback",
+      "cleanup_or_approved_retention",
+      "absence_verification",
+      "artifact_hash",
+      "registry_update"
+    ],
+    "local_device": [
+      "matching_local_and_cloud_receipts"
+    ],
+    "local_read": [
+      "bounded_read",
+      "validated_response"
+    ],
+    "local_write": [
+      "scoped_write",
+      "matching_readback",
+      "cleanup_or_approved_retention",
+      "artifact_hash",
+      "registry_update"
+    ],
+    "read": [
+      "bounded_read",
+      "validated_response"
+    ],
+    "temporary_probe": [
+      "scoped_write",
+      "matching_readback",
+      "cleanup_or_approved_retention",
+      "absence_verification",
+      "artifact_hash",
+      "registry_update"
+    ],
+    "write": [
+      "scoped_write",
+      "matching_readback",
+      "cleanup_or_approved_retention",
+      "artifact_hash",
+      "registry_update"
+    ]
+  },
+  "operation_classes": {
+    "compute": {
+      "capability": "compute"
+    },
+    "delete": {
+      "capability": "delete"
+    },
+    "local_read": {
+      "capability": "local_read"
+    },
+    "local_write": {
+      "capability": "local_write"
+    },
+    "read": {
+      "capability": "read"
+    },
+    "temporary_probe": {
+      "capability": "temporary_probe"
+    },
+    "write": {
+      "capability": "write"
+    }
+  },
+  "policy_id": "AKOS-CONNECTOR-CONTROL",
+  "required_authorities": [
+    "canonical_route_map",
+    "coverage_milestone"
+  ],
+  "roles": {
+    "AKOS": {
+      "prohibitions": [
+        "caller_supplied_route_roles",
+        "caller_supplied_affinity_booleans",
+        "caller_supplied_runtime_probe_booleans",
+        "silent_degradation",
+        "partial_fallback_selection",
+        "approved_receipt_with_failed_completion_gate"
+      ],
+      "responsibilities": [
+        "load_external_trust_root",
+        "verify_all_required_authorities",
+        "derive_route_role_from_authority",
+        "verify_current_request_attestations",
+        "authorize_before_execution",
+        "verify_completion_after_execution",
+        "emit_sanitized_receipt",
+        "enqueue_durable_repair_instruction",
+        "fail_closed"
+      ]
+    },
+    "Echo": {
+      "prohibitions": [
+        "claim_execution_from_memory",
+        "select_route_without_AKOS",
+        "persist_credentials_or_evidence_content"
+      ],
+      "responsibilities": [
+        "retrieve_latest_control_state",
+        "preserve_user_intent",
+        "translate_intent_to_closed_operation_class",
+        "surface_receipts_hashes_and_blockers"
+      ]
+    }
+  },
+  "route_selection": {
+    "duplicate_route_names_fail_closed": true,
+    "fallback_requires_current_signed_primary_failure": true,
+    "fallback_requires_preferred_state": true,
+    "preferred_state": "Verified",
+    "runtime_states_allowed": [
+      "Verified",
+      "Partial"
+    ],
+    "unknown_routes_fail_closed": true
+  },
+  "schema_version": "2.0.0",
+  "verification_states": [
+    "Verified",
+    "Partial",
+    "Blocked",
+    "Needs Test",
+    "Documentation Only",
+    "Deprecated",
+    "Planned",
+    "Pending Auth"
+  ]
+}
