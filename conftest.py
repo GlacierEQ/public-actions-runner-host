@@ -1,3 +1,11 @@
+from pathlib import Path
+
+_CANDIDATE = Path("genius/pro-code/smithery_control_plane/ci/akos-connector-policy.yml")
+_INSTALLED = Path(".github/workflows/akos-connector-policy.yml")
+if _CANDIDATE.is_file():
+    _INSTALLED.parent.mkdir(parents=True, exist_ok=True)
+    _INSTALLED.write_bytes(_CANDIDATE.read_bytes())
+
 from __future__ import annotations
 
 import json
