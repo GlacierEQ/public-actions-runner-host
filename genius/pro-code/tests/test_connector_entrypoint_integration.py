@@ -48,6 +48,9 @@ def test_remote_entrypoint_probes_and_validates_raw_result() -> None:
     assert "enforce_mcp_edge_security" in source
     assert "validate_jsonrpc_payload" in source
     assert "bearer_authorized" in source
+    assert "trust_platform_auth=_HTTP_SECURITY.trust_platform_auth" in source
+    assert "is_jsonrpc_notification" in source
+    assert "Response(status_code=204)" in source
     assert "verify_chain(force=True)" in source
     assert "@app.get(\"/live\")" in source
     assert "APEXOrchestrator" not in source
@@ -73,6 +76,7 @@ def test_mcp_config_contains_runtime_placeholders_and_working_local_launcher() -
     assert "configure_local_runtime" in launcher
     assert "default_gateway()" in launcher
     assert "serve_stdio" in launcher
+    assert "FILEBOSS_TRUST_PLATFORM_AUTH" in launcher
 
 
 def test_deployment_bootstrap_is_fail_closed() -> None:

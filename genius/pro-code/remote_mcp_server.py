@@ -36,6 +36,7 @@ from smithery_control_plane.runtime.http_guard import (
     HttpSecurityConfig,
     RequestRejected,
     bearer_authorized,
+    is_jsonrpc_notification,
     security_headers,
     validate_jsonrpc_payload,
 )
@@ -89,6 +90,7 @@ async def enforce_mcp_edge_security(request: Request, call_next):
         if not bearer_authorized(
             request.headers.get("authorization"),
             _HTTP_SECURITY.bearer_token,
+            trust_platform_auth=_HTTP_SECURITY.trust_platform_auth,
         ):
             return _json_http_response(
                 {"error": "unauthorized"},
@@ -662,8 +664,16 @@ async def mcp_post(request: Request):
         )
 
     if isinstance(body, list):
-        responses = [await _process_jsonrpc(req, validated=True) for req in requests]
+        results = [await _process_jsonrpc(req, validated=True) for req in requests]
+        responses = [result for result in results if result is not None]
+        if not responses:
+            return _secure_response(Response(status_code=204))
         return _json_http_response(responses)
+
+    notification = is_jsonrpc_notification(requests[0])
+    if notification:
+        await _process_jsonrpc(requests[0], validated=True)
+        return _secure_response(Response(status_code=204))
 
     accept = request.headers.get("accept", "")
     if "text/event-stream" in accept:
@@ -678,7 +688,11 @@ async def mcp_get(request: Request):
     return EventSourceResponse(_heartbeat())
 
 
-async def _process_jsonrpc(req: dict, *, validated: bool = False) -> dict:
+async def _process_jsonrpc(
+    req: dict,
+    *,
+    validated: bool = False,
+) -> dict | None:
     if not validated:
         try:
             req = validate_jsonrpc_payload(req, _HTTP_SECURITY)[0]
@@ -690,10 +704,13 @@ async def _process_jsonrpc(req: dict, *, validated: bool = False) -> dict:
             }
     method = req.get("method", "")
     params = dict(req.get("params", {}))
+    notification = is_jsonrpc_notification(req)
     req_id = req.get("id")
 
     handler = HANDLERS.get(method)
     if not handler:
+        if notification:
+            return None
         return {
             "jsonrpc": "2.0",
             "id": req_id,
@@ -702,10 +719,14 @@ async def _process_jsonrpc(req: dict, *, validated: bool = False) -> dict:
 
     try:
         result = await handler(params)
+        if notification:
+            return None
         return {"jsonrpc": "2.0", "id": req_id, "result": result}
     except Exception as exc:
         safe_error = sanitize_audit_metadata(str(exc))
         logger.error("JSON-RPC handler failed for %s (%s)", method, type(exc).__name__)
+        if notification:
+            return None
         return {
             "jsonrpc": "2.0",
             "id": req_id,

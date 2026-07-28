@@ -21,6 +21,7 @@ class HttpSecurityConfig:
     max_input_depth: int = 20
     max_string_chars: int = 131_072
     bearer_token: str = ""
+    trust_platform_auth: bool = False
 
     @classmethod
     def from_environment(cls, environment: Mapping[str, str] | None = None) -> "HttpSecurityConfig":
@@ -35,6 +36,13 @@ class HttpSecurityConfig:
             if value < minimum or value > maximum:
                 raise RequestRejected(f"{name} must be between {minimum} and {maximum}")
             return value
+
+        bearer_token = env.get("FILEBOSS_MCP_BEARER_TOKEN", "").strip()
+        trust_platform_auth = env.get("FILEBOSS_TRUST_PLATFORM_AUTH", "").strip() == "1"
+        if not bearer_token and not trust_platform_auth:
+            raise RequestRejected(
+                "Configure FILEBOSS_MCP_BEARER_TOKEN or explicitly enable FILEBOSS_TRUST_PLATFORM_AUTH"
+            )
 
         return cls(
             max_request_bytes=positive_int(
@@ -67,14 +75,20 @@ class HttpSecurityConfig:
                 minimum=1_024,
                 maximum=1_048_576,
             ),
-            bearer_token=env.get("FILEBOSS_MCP_BEARER_TOKEN", "").strip(),
+            bearer_token=bearer_token,
+            trust_platform_auth=trust_platform_auth,
         )
 
 
-def bearer_authorized(header: str | None, expected_token: str) -> bool:
-    """Constant-time optional bearer check; empty configuration leaves gateway auth in charge."""
+def bearer_authorized(
+    header: str | None,
+    expected_token: str,
+    *,
+    trust_platform_auth: bool = False,
+) -> bool:
+    """Require either a constant-time bearer match or explicit platform-auth trust."""
     if not expected_token:
-        return True
+        return trust_platform_auth
     if not isinstance(header, str):
         return False
     scheme, separator, supplied = header.partition(" ")
@@ -141,6 +155,10 @@ def validate_jsonrpc_request(request: Any, config: HttpSecurityConfig) -> dict[s
         raise RequestRejected("JSON-RPC id is invalid")
     _validate_tree(params, config)
     return normalized
+
+
+def is_jsonrpc_notification(request: Mapping[str, Any]) -> bool:
+    return "id" not in request
 
 
 def validate_jsonrpc_payload(payload: Any, config: HttpSecurityConfig) -> list[dict[str, Any]]:

@@ -37,6 +37,7 @@ def configure_local_runtime() -> None:
     os.environ.setdefault("AKOS_TENANT_ALIAS", _local_tenant_alias())
     os.environ.setdefault("AKOS_REPAIR_QUEUE", str(repair_queue))
     os.environ.setdefault("FILEBOSS_ALLOWED_ROOTS", str(Path.home()))
+    os.environ.setdefault("FILEBOSS_TRUST_PLATFORM_AUTH", "1")
 
 
 async def serve_stdio() -> int:

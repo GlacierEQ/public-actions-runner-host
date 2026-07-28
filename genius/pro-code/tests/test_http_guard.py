@@ -7,6 +7,7 @@ from smithery_control_plane.runtime.http_guard import (
     RequestRejected,
     bearer_authorized,
     encoded_json_size,
+    is_jsonrpc_notification,
     security_headers,
     validate_jsonrpc_payload,
 )
@@ -23,8 +24,9 @@ def request(**changes):
     return payload
 
 
-def test_optional_bearer_auth_is_constant_shape() -> None:
-    assert bearer_authorized(None, "") is True
+def test_bearer_auth_requires_explicit_edge_authority() -> None:
+    assert bearer_authorized(None, "") is False
+    assert bearer_authorized(None, "", trust_platform_auth=True) is True
     assert bearer_authorized("Bearer correct", "correct") is True
     assert bearer_authorized("bearer correct", "correct") is True
     assert bearer_authorized("Basic correct", "correct") is False
@@ -89,13 +91,30 @@ def test_environment_limits_are_bounded() -> None:
             "FILEBOSS_MAX_INPUT_DEPTH": "12",
             "FILEBOSS_MAX_STRING_CHARS": "4096",
             "FILEBOSS_MCP_BEARER_TOKEN": " token ",
+            "FILEBOSS_TRUST_PLATFORM_AUTH": "0",
         }
     )
     assert loaded.max_request_bytes == 2048
     assert loaded.max_batch_size == 8
     assert loaded.bearer_token == "token"
+    assert loaded.trust_platform_auth is False
     with pytest.raises(RequestRejected):
-        HttpSecurityConfig.from_environment({"FILEBOSS_MAX_BATCH_SIZE": "0"})
+        HttpSecurityConfig.from_environment(
+            {"FILEBOSS_MAX_BATCH_SIZE": "0", "FILEBOSS_TRUST_PLATFORM_AUTH": "1"}
+        )
+    with pytest.raises(RequestRejected, match="TRUST_PLATFORM_AUTH"):
+        HttpSecurityConfig.from_environment({})
+    platform = HttpSecurityConfig.from_environment(
+        {"FILEBOSS_TRUST_PLATFORM_AUTH": "1"}
+    )
+    assert platform.trust_platform_auth is True
+
+
+def test_notification_detection_distinguishes_missing_and_null_id() -> None:
+    assert is_jsonrpc_notification({"jsonrpc": "2.0", "method": "ping"}) is True
+    assert is_jsonrpc_notification(
+        {"jsonrpc": "2.0", "id": None, "method": "ping"}
+    ) is False
 
 
 def test_encoded_json_size_measures_utf8_bytes() -> None:
