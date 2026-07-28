@@ -1,14 +1,5 @@
 {
   "mcpServers": {
-    "fileboss-remote": {
-      "url": "https://fileboss-mcp.up.railway.app/mcp",
-      "transport": "http",
-      "description": "FILEBOSS Remote MCP — Streamable HTTP (MCP 2025-03-26)",
-      "auth": {
-        "type": "bearer",
-        "token": "${FILEBOSS_MCP_TOKEN}"
-      }
-    },
     "fileboss-local": {
       "command": "python",
       "args": [
