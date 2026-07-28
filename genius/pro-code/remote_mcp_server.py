@@ -24,7 +24,9 @@ import uuid
 
 from smithery_control_plane.runtime.connector_gateway import (
     ExecutionOutcome,
+    ProbeEvidence,
     compute_outcome,
+    default_gateway,
     execute_mcp_tool,
     read_outcome,
     resolve_mcp_tool_spec,
@@ -46,6 +48,15 @@ import uvicorn
 logger = logging.getLogger("fileboss.mcp")
 
 app = FastAPI(title="FILEBOSS Remote MCP", version="2.0.4")
+_AKOS_READY = False
+
+
+@app.on_event("startup")
+async def validate_akos_runtime_on_startup() -> None:
+    """Load the protected trust root before the service may report healthy."""
+    global _AKOS_READY
+    default_gateway()
+    _AKOS_READY = True
 
 
 # ── Observability Helpers ─────────────────────────────────────────────────────
@@ -317,30 +328,30 @@ async def _run_local_tool(name: str, args: dict, correlation_id: str) -> dict:
     return result
 
 
-async def _probe_tool_route(name: str, args: dict) -> bool:
-    """Perform a same-run, non-mutating route probe before authorization."""
+async def _probe_tool_route(name: str, args: dict) -> ProbeEvidence:
+    """Contact the selected route and bind authorization to its returned identity."""
     if name in LOCAL_TOOLS:
-        from pathlib import Path
-        from genius.shared.integrations.local_organizer import run_local_tool
-
-        path_value = args.get("path")
-        return callable(run_local_tool) and isinstance(path_value, str) and Path(path_value).exists()
+        return ProbeEvidence(
+            False,
+            "",
+            {"reason": "local_device_identity_and_cloud_receipt_not_proven"},
+        )
 
     from genius.shared.integrations.apex_orchestrator import ApexFileBossOrchestrator
 
     apex = ApexFileBossOrchestrator()
     try:
-        supported = {
-            "fileboss_search": "intelligent_search",
-            "fileboss_legal_search": "intelligent_search",
-            "fileboss_memory_recall": "recall",
-            "fileboss_motion_draft": "operator_delegate",
-            "fileboss_memory_store": "store",
-        }
-        method_name = supported.get(name)
-        return bool(method_name and callable(getattr(apex, method_name, None)) and not apex.client.is_closed)
+        raw = await apex.probe_route(name)
+        return ProbeEvidence(
+            bool(raw.get("passed")),
+            str(raw.get("authenticated_tenant_alias", "")),
+            {
+                str(key): str(value)
+                for key, value in dict(raw.get("details", {})).items()
+            },
+        )
     finally:
-        await apex.client.aclose()
+        await apex.close()
 
 
 async def _execute_tool_unchecked(
@@ -361,11 +372,11 @@ async def _execute_tool_unchecked(
     try:
         if name in {"fileboss_search", "fileboss_legal_search"}:
             return await asyncio.wait_for(
-                apex.intelligent_search(str(args.get("query", ""))), timeout=30.0
+                apex.intelligent_search_remote_only(str(args.get("query", ""))), timeout=30.0
             )
         if name == "fileboss_memory_recall":
             return await asyncio.wait_for(
-                apex.recall(
+                apex.recall_remote_only(
                     str(args.get("query", "")),
                     limit=int(args.get("limit", 5)),
                 ),
@@ -380,6 +391,7 @@ async def _execute_tool_unchecked(
                     ),
                     context={"statutes": args.get("statutes", [])},
                     priority="high",
+                    persist_result=False,
                 ),
                 timeout=30.0,
             )
@@ -396,7 +408,7 @@ async def _execute_tool_unchecked(
             )
         raise PolicyError(f"No executable APEX route for tool: {name}")
     finally:
-        await apex.client.aclose()
+        await apex.close()
 
 
 async def handle_tools_call(params: dict) -> dict:
@@ -505,8 +517,18 @@ async def handle_tools_call(params: dict) -> dict:
         track_latency(start_time, correlation_id, name)
         safe_error = sanitize_audit_metadata(str(exc))
         log_event("tool_call_policy_error", correlation_id, tool=name, error=safe_error)
+        details = {"error": str(safe_error)}
+        receipt = getattr(exc, "akos_rejected_receipt", None)
+        repair = getattr(exc, "akos_repair_instruction", None)
+        persistence_error = getattr(exc, "akos_repair_persistence_error", None)
+        if receipt is not None:
+            details["receipt"] = receipt_to_dict(receipt)
+        if repair is not None:
+            details["repair"] = repair_instruction_to_dict(repair)
+        if persistence_error is not None:
+            details["repair_persistence_error"] = persistence_error
         return {
-            "content": [{"type": "text", "text": str(safe_error)}],
+            "content": [{"type": "text", "text": json.dumps(details, indent=2)}],
             "isError": True,
         }
     except Exception as exc:
@@ -607,7 +629,13 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "tools": len(TOOLS), "version": "2.0.4"}
+    if not _AKOS_READY:
+        return Response(
+            content=json.dumps({"status": "error", "akos": "not_ready"}),
+            status_code=503,
+            media_type="application/json",
+        )
+    return {"status": "ok", "akos": "ready", "tools": len(TOOLS), "version": "2.0.4"}
 
 
 if __name__ == "__main__":

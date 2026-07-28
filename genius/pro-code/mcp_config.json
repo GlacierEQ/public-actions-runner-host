@@ -12,17 +12,13 @@
     "fileboss-local": {
       "command": "python",
       "args": [
-        "remote_mcp_server.py"
+        "-m",
+        "smithery_control_plane.runtime.launch_local"
       ],
       "env": {
-        "PORT": "8001",
-        "AKOS_POLICY_SHA256": "${AKOS_POLICY_SHA256}",
-        "AKOS_ATTESTATION_HMAC_KEY": "${AKOS_ATTESTATION_HMAC_KEY}",
-        "AKOS_TENANT_ALIAS": "${AKOS_TENANT_ALIAS}",
-        "AKOS_REPAIR_QUEUE": "${AKOS_REPAIR_QUEUE}",
-        "FILEBOSS_ALLOWED_ROOTS": "${FILEBOSS_ALLOWED_ROOTS}"
+        "ASPEN_GROVE_BASE_URL": "http://localhost:7000"
       },
-      "description": "FILEBOSS Local fallback (stdio) — only if remote unavailable"
+      "description": "FILEBOSS local stdio MCP with process-local AKOS bootstrap"
     },
     "memory-plugin-a": {
       "url": "https://memory.mcp.so/mcp",

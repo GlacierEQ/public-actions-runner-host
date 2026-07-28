@@ -26,6 +26,7 @@ from .connector_policy import (
     RouteDecision,
     new_request,
     sign_attestation,
+    sanitize_audit_metadata,
 )
 
 
@@ -33,10 +34,18 @@ T = TypeVar("T")
 
 
 @dataclass(frozen=True)
+class ProbeEvidence:
+    passed: bool
+    authenticated_tenant_alias: str
+    details: Mapping[str, str] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
 class ExecutionOutcome(Generic[T]):
     result: T
     completion_proofs: frozenset[str]
     artifact_hashes: Mapping[str, str] = field(default_factory=dict)
+    artifact_bytes: Mapping[str, bytes] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -253,17 +262,22 @@ class PolicyGateway:
             {"device_online", "same_run_ping", "approved_root", "policy_scope"}
         )
 
-    async def _runtime_probe_outcome(
+    async def _runtime_probe_evidence(
         self,
-        probe: Callable[[], Awaitable[bool] | bool],
-    ) -> AttestationOutcome:
+        probe: Callable[[], Awaitable[ProbeEvidence] | ProbeEvidence],
+    ) -> ProbeEvidence:
         try:
             result = probe()
             if inspect.isawaitable(result):
                 result = await result
         except Exception:
-            return AttestationOutcome.FAILED
-        return AttestationOutcome.PASSED if result is True else AttestationOutcome.FAILED
+            return ProbeEvidence(False, "", {"reason": "probe_exception"})
+        if not isinstance(result, ProbeEvidence):
+            return ProbeEvidence(False, "", {"reason": "untrusted_probe_shape"})
+        alias = result.authenticated_tenant_alias.strip()
+        if result.passed and not alias:
+            return ProbeEvidence(False, "", {"reason": "authenticated_identity_missing"})
+        return ProbeEvidence(bool(result.passed), alias, dict(result.details))
 
     def build_observation(
         self,
@@ -271,16 +285,23 @@ class PolicyGateway:
         request: OperationRequest,
         spec: ToolPolicySpec,
         arguments: Mapping[str, Any],
-        runtime_outcome: AttestationOutcome,
-        authenticated_tenant_alias: str | None = None,
+        probe_evidence: ProbeEvidence,
     ) -> RouteObservation:
-        authenticated = authenticated_tenant_alias or self.tenant_alias
+        authenticated = probe_evidence.authenticated_tenant_alias
+        identity_passed = bool(probe_evidence.passed and authenticated)
+        affinity_passed = bool(
+            identity_passed and authenticated == request.requested_tenant_alias
+        )
         identity = sign_attestation(
             key=self._attestation_key,
             kind=AttestationKind.IDENTITY,
             request=request,
             route=spec.route,
-            outcome=AttestationOutcome.PASSED,
+            outcome=(
+                AttestationOutcome.PASSED
+                if identity_passed
+                else AttestationOutcome.FAILED
+            ),
             claims={"authenticated_tenant_alias": authenticated},
         )
         affinity = sign_attestation(
@@ -288,7 +309,11 @@ class PolicyGateway:
             kind=AttestationKind.TENANT_AFFINITY,
             request=request,
             route=spec.route,
-            outcome=AttestationOutcome.PASSED,
+            outcome=(
+                AttestationOutcome.PASSED
+                if affinity_passed
+                else AttestationOutcome.FAILED
+            ),
             claims={
                 "requested_tenant_alias": request.requested_tenant_alias,
                 "authenticated_tenant_alias": authenticated,
@@ -299,7 +324,11 @@ class PolicyGateway:
             kind=AttestationKind.RUNTIME_PROBE,
             request=request,
             route=spec.route,
-            outcome=runtime_outcome,
+            outcome=(
+                AttestationOutcome.PASSED
+                if probe_evidence.passed
+                else AttestationOutcome.FAILED
+            ),
             claims={"probe_scope": f"{request.service}:{request.operation.value}"},
         )
         proofs = set(spec.static_proofs)
@@ -319,7 +348,7 @@ class PolicyGateway:
         spec: ToolPolicySpec,
         arguments: Mapping[str, Any],
         target_alias: str,
-        probe: Callable[[], Awaitable[bool] | bool],
+        probe: Callable[[], Awaitable[ProbeEvidence] | ProbeEvidence],
         callback: Callable[[], Awaitable[ExecutionOutcome[T]] | ExecutionOutcome[T]],
     ) -> tuple[T, AuditReceipt]:
         request = new_request(
@@ -328,12 +357,12 @@ class PolicyGateway:
             requested_tenant_alias=self.tenant_alias,
             target_alias=target_alias,
         )
-        runtime_outcome = await self._runtime_probe_outcome(probe)
+        probe_evidence = await self._runtime_probe_evidence(probe)
         observation = self.build_observation(
             request=request,
             spec=spec,
             arguments=arguments,
-            runtime_outcome=runtime_outcome,
+            probe_evidence=probe_evidence,
         )
         decision = self.policy.authorize(request, [observation])
         try:
@@ -345,14 +374,31 @@ class PolicyGateway:
                     "Connector callback must return ExecutionOutcome with completion proofs"
                 )
         except Exception as exc:
-            receipt, repair = self.policy.record_failure(
+            receipt = self.policy.build_rejected_receipt(
                 decision,
                 ("connector_runtime_failure",),
             )
+            repair = None
+            try:
+                receipt, repair = self.policy.record_failure(
+                    decision,
+                    ("connector_runtime_failure",),
+                )
+            except Exception as persistence_exc:
+                try:
+                    setattr(
+                        exc,
+                        "akos_repair_persistence_error",
+                        sanitize_audit_metadata(str(persistence_exc)),
+                    )
+                except Exception:
+                    pass
             for name, value in (
                 ("akos_rejected_receipt", receipt),
                 ("akos_repair_instruction", repair),
             ):
+                if value is None:
+                    continue
                 try:
                     setattr(exc, name, value)
                 except Exception:
@@ -363,6 +409,7 @@ class PolicyGateway:
             decision,
             completion_proofs=outcome.completion_proofs,
             artifact_hashes=outcome.artifact_hashes,
+            artifact_bytes=outcome.artifact_bytes,
         )
         return outcome.result, receipt
 
@@ -388,29 +435,47 @@ def _error_value_present(value: Any) -> bool:
     return value not in (None, False, "", (), [], {})
 
 
+def _validate_result_tree(result: Any) -> None:
+    stack: list[tuple[str, Any, int]] = [("$", result, 0)]
+    nodes = 0
+    while stack:
+        path, value, depth = stack.pop()
+        nodes += 1
+        if nodes > 10000 or depth > 32:
+            raise PolicyError("Connector result exceeds validation complexity limits")
+        if isinstance(value, Mapping):
+            if bool(value.get("isError")):
+                raise PolicyError(f"Connector result reports an execution error at {path}")
+            if _error_value_present(value.get("error")) or _error_value_present(
+                value.get("errors")
+            ):
+                raise PolicyError(f"Connector result contains an error payload at {path}")
+            for key in ("status_code", "statusCode", "http_status"):
+                status = value.get(key)
+                if isinstance(status, bool):
+                    continue
+                try:
+                    numeric_status = int(status)
+                except (TypeError, ValueError):
+                    continue
+                if numeric_status >= 400:
+                    raise PolicyError(
+                        f"Connector result reports an unsuccessful status at {path}"
+                    )
+            status = value.get("status")
+            if isinstance(status, str) and status.strip().lower() in _ERROR_STATUS_WORDS:
+                raise PolicyError(f"Connector result reports a failed status at {path}")
+            for key, child in value.items():
+                stack.append((f"{path}.{key}", child, depth + 1))
+        elif isinstance(value, (list, tuple)):
+            for index, child in enumerate(value):
+                stack.append((f"{path}[{index}]", child, depth + 1))
+
+
 def validate_result(result: T) -> tuple[T, str]:
     if result is None:
         raise PolicyError("Connector result is empty")
-    if isinstance(result, Mapping):
-        if bool(result.get("isError")):
-            raise PolicyError("Connector result reports an execution error")
-        if _error_value_present(result.get("error")) or _error_value_present(
-            result.get("errors")
-        ):
-            raise PolicyError("Connector result contains an error payload")
-        for key in ("status_code", "statusCode", "http_status"):
-            status = result.get(key)
-            if isinstance(status, bool):
-                continue
-            try:
-                numeric_status = int(status)
-            except (TypeError, ValueError):
-                continue
-            if numeric_status >= 400:
-                raise PolicyError("Connector result reports an unsuccessful status")
-        status = result.get("status")
-        if isinstance(status, str) and status.strip().lower() in _ERROR_STATUS_WORDS:
-            raise PolicyError("Connector result reports a failed status")
+    _validate_result_tree(result)
     _, digest = _serialized_result(result)
     return result, digest
 
@@ -451,7 +516,7 @@ def default_gateway() -> PolicyGateway:
 async def execute_mcp_tool(
     name: str,
     arguments: Mapping[str, Any],
-    probe: Callable[[], Awaitable[bool] | bool],
+    probe: Callable[[], Awaitable[ProbeEvidence] | ProbeEvidence],
     callback: Callable[[], Awaitable[ExecutionOutcome[T]] | ExecutionOutcome[T]],
 ) -> tuple[T, AuditReceipt]:
     spec = resolve_mcp_tool_spec(name, arguments)

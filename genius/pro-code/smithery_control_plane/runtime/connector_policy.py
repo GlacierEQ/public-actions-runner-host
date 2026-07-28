@@ -12,6 +12,7 @@ This module is intentionally fail-closed. It separates:
 from __future__ import annotations
 
 from collections import Counter
+from contextlib import contextmanager
 from collections.abc import Callable, Iterable, Mapping, MutableMapping, Sequence
 from copy import deepcopy
 from dataclasses import asdict, dataclass, field
@@ -25,10 +26,16 @@ import os
 from pathlib import Path
 import re
 import sys
+import time
 from types import MappingProxyType
 from typing import Any, Protocol
 from urllib.parse import parse_qsl, urlsplit
 from uuid import uuid4
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - Windows fallback below
+    fcntl = None
 
 
 class PolicyError(ValueError):
@@ -177,16 +184,13 @@ class InMemoryRepairSink:
 
 
 class JsonlRepairSink:
-    """Append-only hash chain with a cached, verified tail.
-
-    The file is fully verified on first use and whenever another process changes
-    its size or modification timestamp. Appends made by this process then use
-    the cached tail, avoiding quadratic rescans.
-    """
+    """Concurrent append-only hash chain with incremental tail verification."""
 
     def __init__(self, path: str | Path) -> None:
         self.path = Path(path)
+        self._lock_path = self.path.with_suffix(self.path.suffix + ".lock")
         self._verified_signature: tuple[int, int] | None = None
+        self._verified_size = 0
         self._tail_hash = "0" * 64
 
     @staticmethod
@@ -204,41 +208,129 @@ class JsonlRepairSink:
             raise PolicyError(f"Cannot stat repair queue {self.path}: {exc}") from exc
         return stat.st_size, stat.st_mtime_ns
 
-    def verify_chain(self, *, force: bool = False) -> bool:
-        signature = self._signature()
-        if signature is None:
-            self._verified_signature = None
-            self._tail_hash = "0" * 64
-            return True
-        if not force and signature == self._verified_signature:
-            return True
+    @contextmanager
+    def _exclusive_lock(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        if fcntl is not None:
+            with self._lock_path.open("a+", encoding="utf-8") as handle:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+                try:
+                    yield
+                finally:
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            return
+
+        deadline = time.monotonic() + 10.0
+        descriptor: int | None = None
+        while descriptor is None:
+            try:
+                descriptor = os.open(
+                    self._lock_path,
+                    os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                    0o600,
+                )
+            except FileExistsError:
+                if time.monotonic() >= deadline:
+                    raise PolicyError(f"Timed out acquiring repair queue lock {self._lock_path}")
+                time.sleep(0.05)
         try:
-            lines = self.path.read_text(encoding="utf-8").splitlines()
-        except OSError as exc:
-            raise PolicyError(f"Cannot read repair queue {self.path}: {exc}") from exc
-        previous = "0" * 64
-        for index, line in enumerate(lines, start=1):
+            yield
+        finally:
+            os.close(descriptor)
+            try:
+                self._lock_path.unlink()
+            except FileNotFoundError:
+                pass
+
+    def _verify_lines(
+        self,
+        lines: Sequence[str],
+        *,
+        previous: str,
+        start_index: int,
+    ) -> str:
+        current = previous
+        for index, line in enumerate(lines, start=start_index):
+            if not line:
+                continue
             try:
                 record = json.loads(line)
             except json.JSONDecodeError as exc:
                 raise PolicyError(f"Repair queue line {index} is invalid JSON") from exc
             if not isinstance(record, Mapping):
                 raise PolicyError(f"Repair queue line {index} is not a JSON object")
-            if record.get("previous_sha256") != previous:
+            if record.get("previous_sha256") != current:
                 raise PolicyError(f"Repair queue chain breaks at line {index}")
             stored = record.get("record_sha256")
             if not isinstance(stored, str) or not _SHA256_RE.fullmatch(stored):
                 raise PolicyError(f"Repair queue line {index} has invalid SHA-256")
             if not hmac.compare_digest(stored.lower(), self._record_digest(record)):
                 raise PolicyError(f"Repair queue digest mismatch at line {index}")
-            previous = stored.lower()
-        self._tail_hash = previous
-        self._verified_signature = signature
+            current = stored.lower()
+        return current
+
+    def verify_chain(self, *, force: bool = False) -> bool:
+        signature = self._signature()
+        if signature is None:
+            self._verified_signature = None
+            self._verified_size = 0
+            self._tail_hash = "0" * 64
+            return True
+        if not force and signature == self._verified_signature:
+            return True
+
+        size, mtime_ns = signature
+        if (
+            not force
+            and self._verified_signature is not None
+            and size > self._verified_size > 0
+        ):
+            try:
+                with self.path.open("rb") as handle:
+                    handle.seek(self._verified_size)
+                    appended = handle.read()
+            except OSError as exc:
+                raise PolicyError(f"Cannot incrementally read repair queue {self.path}: {exc}") from exc
+            try:
+                text = appended.decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise PolicyError(f"Repair queue append is not UTF-8: {self.path}") from exc
+            if text and not text.endswith("
+"):
+                raise PolicyError("Repair queue has an incomplete appended record")
+            previous_lines = 1
+            try:
+                with self.path.open("rb") as handle:
+                    previous_lines += handle.read(self._verified_size).count(b"
+")
+            except OSError as exc:
+                raise PolicyError(f"Cannot count repair queue records {self.path}: {exc}") from exc
+            self._tail_hash = self._verify_lines(
+                text.splitlines(),
+                previous=self._tail_hash,
+                start_index=previous_lines,
+            )
+            self._verified_size = size
+            self._verified_signature = (size, mtime_ns)
+            return True
+
+        try:
+            text = self.path.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise PolicyError(f"Cannot read repair queue {self.path}: {exc}") from exc
+        if text and not text.endswith("
+"):
+            raise PolicyError("Repair queue has an incomplete final record")
+        self._tail_hash = self._verify_lines(
+            text.splitlines(),
+            previous="0" * 64,
+            start_index=1,
+        )
+        self._verified_size = size
+        self._verified_signature = (size, mtime_ns)
         return True
 
     def enqueue(self, instruction: RepairInstruction) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.verify_chain()
         payload = sanitize_audit_metadata(
             {
                 "instruction_id": instruction.instruction_id,
@@ -250,21 +342,28 @@ class JsonlRepairSink:
                 "action": instruction.action,
             }
         )
-        record: dict[str, Any] = {
-            "previous_sha256": self._tail_hash,
-            "instruction": payload,
-        }
-        record["record_sha256"] = self._record_digest(record)
-        encoded = json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n"
-        try:
-            with self.path.open("a", encoding="utf-8") as handle:
-                handle.write(encoded)
-                handle.flush()
-                os.fsync(handle.fileno())
-        except OSError as exc:
-            raise PolicyError(f"Cannot append repair queue {self.path}: {exc}") from exc
-        self._tail_hash = str(record["record_sha256"])
-        self._verified_signature = self._signature()
+        with self._exclusive_lock():
+            self.verify_chain()
+            record: dict[str, Any] = {
+                "previous_sha256": self._tail_hash,
+                "instruction": payload,
+            }
+            record["record_sha256"] = self._record_digest(record)
+            encoded = json.dumps(record, sort_keys=True, separators=(",", ":")) + "
+"
+            try:
+                with self.path.open("a", encoding="utf-8") as handle:
+                    handle.write(encoded)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+            except OSError as exc:
+                raise PolicyError(f"Cannot append repair queue {self.path}: {exc}") from exc
+            self._tail_hash = str(record["record_sha256"])
+            signature = self._signature()
+            if signature is None:
+                raise PolicyError("Repair queue disappeared after append")
+            self._verified_size = signature[0]
+            self._verified_signature = signature
 
 
 # ---------------------------------------------------------------------------
@@ -1083,16 +1182,15 @@ class ConnectorPolicy:
             rejected_routes=MappingProxyType(dict(rejected)),
         )
 
-    def record_failure(
+    def build_rejected_receipt(
         self,
         decision: RouteDecision,
         failed_gates: Iterable[str],
-    ) -> tuple[AuditReceipt, RepairInstruction]:
-        """Persist a rejected receipt without replacing the original exception."""
+    ) -> AuditReceipt:
         gates = tuple(dict.fromkeys(str(gate) for gate in failed_gates)) or (
             "connector_runtime_failure",
         )
-        receipt = AuditReceipt(
+        return AuditReceipt(
             receipt_id=f"AKOS-RECEIPT-{uuid4()}",
             timestamp=datetime.now(timezone.utc).isoformat(timespec="microseconds"),
             request_id=decision.request.request_id,
@@ -1106,9 +1204,17 @@ class ConnectorPolicy:
             artifact_hashes=MappingProxyType({}),
             failed_gates=gates,
         )
+
+    def record_failure(
+        self,
+        decision: RouteDecision,
+        failed_gates: Iterable[str],
+    ) -> tuple[AuditReceipt, RepairInstruction]:
+        """Persist a rejected receipt without replacing the original exception."""
+        receipt = self.build_rejected_receipt(decision, failed_gates)
         repair = self._repair(
             decision.request,
-            {decision.selected_route: gates},
+            {decision.selected_route: receipt.failed_gates},
         )
         return receipt, repair
 
@@ -1118,18 +1224,28 @@ class ConnectorPolicy:
         *,
         completion_proofs: Iterable[str],
         artifact_hashes: Mapping[str, str] | None = None,
+        artifact_bytes: Mapping[str, bytes] | None = None,
     ) -> AuditReceipt:
         provided = frozenset(str(proof) for proof in completion_proofs)
         missing = sorted(decision.required_completion_gates.difference(provided))
         sanitized_hashes = sanitize_audit_metadata(dict(artifact_hashes or {}))
         if "artifact_hash" in decision.required_completion_gates:
-            if not sanitized_hashes or not all(
-                isinstance(value, str) and _SHA256_RE.fullmatch(value)
-                for value in sanitized_hashes.values()
+            verified_artifacts = dict(artifact_bytes or {})
+            if not verified_artifacts or not all(
+                isinstance(name, str) and isinstance(value, bytes)
+                for name, value in verified_artifacts.items()
             ):
                 missing.append("artifact_hash")
+            else:
+                sanitized_hashes = {
+                    str(name): sha256(value).hexdigest()
+                    for name, value in verified_artifacts.items()
+                }
 
-        timestamp = datetime.now(timezone.utc).isoformat(timespec="microseconds")
+        now = datetime.now(timezone.utc)
+        if _parse_time(decision.request.expires_at, "request expires_at") < now:
+            missing.append("execution_window_expired")
+        timestamp = now.isoformat(timespec="microseconds")
         if missing:
             receipt = AuditReceipt(
                 receipt_id=f"AKOS-RECEIPT-{uuid4()}",

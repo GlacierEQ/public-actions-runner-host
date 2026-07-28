@@ -20,11 +20,13 @@ import os
 import json
 import logging
 import httpx
+from urllib.parse import urlsplit
 from datetime import datetime
 from hashlib import sha256
 
 from smithery_control_plane.runtime.connector_gateway import (
     ExecutionOutcome,
+    ProbeEvidence,
     execute_actor_operation,
     read_outcome,
 )
@@ -50,34 +52,51 @@ class ActorViolationsConnector:
         self.base_url = base_url
         self.session_tag = f"AVC-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
 
-    async def _probe_apex(self) -> bool:
-        """Contact the current APEX health route before authorizing execution."""
+    def _local_route_alias(self) -> str:
+        parsed = urlsplit(self.base_url)
+        if parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
+            material = f"actor-loopback:{parsed.scheme}:{parsed.netloc}".encode("utf-8")
+            return "actor-local-" + sha256(material).hexdigest()[:20]
+        return ""
+
+    async def _probe_apex(self) -> ProbeEvidence:
+        """Contact APEX and bind policy identity to the live route response."""
         try:
             async with httpx.AsyncClient(timeout=10) as client:
                 response = await client.get(f"{self.base_url}/apex/health")
-                if response.status_code >= 400:
-                    return False
+                response.raise_for_status()
                 payload = response.json()
-                if isinstance(payload, dict):
-                    if payload.get("isError") or payload.get("error"):
-                        return False
-                    status = payload.get("status")
-                    if isinstance(status, str) and status.lower() in {
-                        "error", "failed", "failure", "unauthorized", "forbidden"
-                    }:
-                        return False
-                return True
-        except Exception:
-            return False
+                if not isinstance(payload, dict):
+                    return ProbeEvidence(False, "", {"reason": "invalid_health_payload"})
+                if payload.get("isError") or payload.get("error"):
+                    return ProbeEvidence(False, "", {"reason": "health_error_payload"})
+                status = str(payload.get("status", "ok")).strip().lower()
+                if status in {"error", "failed", "failure", "unauthorized", "forbidden"}:
+                    return ProbeEvidence(False, "", {"reason": "health_failed"})
+                alias = str(
+                    response.headers.get("X-AKOS-Tenant-Alias")
+                    or payload.get("authenticated_tenant_alias")
+                    or payload.get("tenant_alias")
+                    or self._local_route_alias()
+                ).strip()
+                return ProbeEvidence(
+                    bool(alias),
+                    alias,
+                    {"status_code": str(response.status_code)},
+                )
+        except Exception as exc:
+            return ProbeEvidence(False, "", {"reason": type(exc).__name__})
+
 
     async def ingest(self, actor_json: dict, version: str = "1.0") -> dict:
         """Authorize the full ingestion pipeline before any external write."""
 
         async def callback():
             result = await self._ingest_unchecked(actor_json, version)
-            payload_hash = sha256(
-                json.dumps(actor_json, sort_keys=True, ensure_ascii=False).encode("utf-8")
-            ).hexdigest()
+            payload_bytes = json.dumps(
+                actor_json, sort_keys=True, ensure_ascii=False
+            ).encode("utf-8")
+            payload_hash = sha256(payload_bytes).hexdigest()
             # Current route authority deliberately advertises no write completion
             # contract, so AKOS blocks before this callback until readback,
             # retention, registry-update, and audit proofs are implemented.
@@ -85,6 +104,7 @@ class ActorViolationsConnector:
                 result=result,
                 completion_proofs=frozenset(),
                 artifact_hashes={"actor_payload_sha256": payload_hash},
+                artifact_bytes={"actor_payload_sha256": payload_bytes},
             )
 
         result, receipt = await execute_actor_operation(

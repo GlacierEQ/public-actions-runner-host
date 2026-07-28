@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from datetime import datetime, timedelta, timezone
 import json
+from hashlib import sha256
+import threading
 from pathlib import Path
 
 import pytest
@@ -446,12 +448,21 @@ def test_write_completion_requires_real_sha256_artifact_hashes() -> None:
             completion_proofs=capabilities,
             artifact_hashes={"artifact": "not-a-sha"},
         )
+    with pytest.raises(CompletionRejected):
+        policy.complete(
+            decision,
+            completion_proofs=capabilities,
+            artifact_hashes={"artifact": "a" * 64},
+        )
+    payload = b"verified artifact bytes"
     receipt = policy.complete(
         decision,
         completion_proofs=capabilities,
         artifact_hashes={"artifact": "a" * 64},
+        artifact_bytes={"artifact": payload},
     )
     assert receipt.decision == "approved"
+    assert receipt.artifact_hashes["artifact"] == sha256(payload).hexdigest()
 
 
 def test_repair_queue_is_hash_chained_and_sanitized(tmp_path: Path) -> None:
@@ -586,3 +597,48 @@ def test_record_failure_returns_rejected_receipt_and_repair() -> None:
     assert receipt.decision == "rejected"
     assert receipt.failed_gates == ("connector_runtime_failure",)
     assert sink.instructions[-1] == repair
+
+
+def test_completion_rechecks_request_execution_window() -> None:
+    policy = load_policy()
+    request = make_request()
+    decision = policy.authorize(
+        request,
+        [observation(request, "CourtListener / RECAP Adapter")],
+    )
+    expired_request = replace(
+        decision.request,
+        expires_at=(datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat(),
+    )
+    expired_decision = replace(decision, request=expired_request)
+    with pytest.raises(CompletionRejected) as exc:
+        policy.complete(
+            expired_decision,
+            completion_proofs={"bounded_read", "validated_response"},
+        )
+    assert "execution_window_expired" in exc.value.receipt.failed_gates
+
+
+def test_repair_queue_serializes_multiple_process_like_writers(tmp_path: Path) -> None:
+    path = tmp_path / "repair.jsonl"
+    barrier = threading.Barrier(2)
+    errors: list[BaseException] = []
+
+    def writer() -> None:
+        try:
+            policy = load_policy(JsonlRepairSink(path))
+            barrier.wait(timeout=5)
+            with pytest.raises(NoApprovedRoute):
+                policy.authorize(make_request(), [])
+        except BaseException as exc:
+            errors.append(exc)
+
+    threads = [threading.Thread(target=writer) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=10)
+    assert not errors
+    records = path.read_text(encoding="utf-8").splitlines()
+    assert len(records) == 2
+    assert JsonlRepairSink(path).verify_chain(force=True) is True

@@ -7,6 +7,7 @@ import pytest
 from smithery_control_plane.runtime.connector_gateway import (
     ExecutionOutcome,
     PolicyGateway,
+    ProbeEvidence,
     compute_outcome,
     read_outcome,
     resolve_actor_operation_spec,
@@ -85,7 +86,7 @@ async def test_safe_read_executes_through_gateway_and_completes() -> None:
         spec=spec,
         arguments={"query": "HRS 571-46"},
         target_alias="bounded_search",
-        probe=lambda: True,
+        probe=lambda: ProbeEvidence(True, TENANT),
         callback=callback,
     )
     assert called is True
@@ -224,7 +225,7 @@ async def test_probe_runs_before_callback() -> None:
 
     async def probe():
         order.append("probe")
-        return True
+        return ProbeEvidence(True, TENANT)
 
     async def callback():
         order.append("callback")
@@ -257,7 +258,7 @@ async def test_failed_probe_blocks_callback() -> None:
             spec=spec,
             arguments={},
             target_alias="bounded_search",
-            probe=lambda: False,
+            probe=lambda: ProbeEvidence(False, ""),
             callback=callback,
         )
     assert called is False
@@ -291,3 +292,90 @@ def test_read_outcome_rejects_structured_errors_and_oversize() -> None:
             read_outcome(result)
     with pytest.raises(PolicyError, match="bounded response"):
         read_outcome({"data": "x" * (1024 * 1024 + 1)})
+
+
+@pytest.mark.asyncio
+async def test_boolean_probe_cannot_self_assert_identity() -> None:
+    policy_gateway = gateway()
+    spec = resolve_mcp_tool_spec("fileboss_search", {"query": "bounded"})
+    called = False
+
+    async def callback():
+        nonlocal called
+        called = True
+        return read_outcome({"results": []})
+
+    with pytest.raises(NoApprovedRoute) as exc:
+        await policy_gateway.execute(
+            spec=spec,
+            arguments={"query": "bounded"},
+            target_alias="bounded_search",
+            probe=lambda: True,  # type: ignore[return-value]
+            callback=callback,
+        )
+    assert called is False
+    assert "missing_proof:identity" in exc.value.failures[spec.route]
+
+
+@pytest.mark.asyncio
+async def test_probe_identity_must_match_requested_tenant() -> None:
+    policy_gateway = gateway()
+    spec = resolve_mcp_tool_spec("fileboss_search", {"query": "bounded"})
+    with pytest.raises(NoApprovedRoute) as exc:
+        await policy_gateway.execute(
+            spec=spec,
+            arguments={"query": "bounded"},
+            target_alias="bounded_search",
+            probe=lambda: ProbeEvidence(True, "other-tenant"),
+            callback=lambda: read_outcome({"results": []}),
+        )
+    assert "missing_proof:identity" in exc.value.failures[spec.route]
+    assert "missing_proof:account_affinity" in exc.value.failures[spec.route]
+
+
+def test_read_outcome_rejects_nested_structured_errors() -> None:
+    bad_results = (
+        {"sources": {"memory": {"status": "error"}}},
+        {"results": [{"data": {"errors": ["upstream failed"]}}]},
+        {"content": [{"statusCode": 503}]},
+        {"nested": {"isError": True}},
+    )
+    for result in bad_results:
+        with pytest.raises(PolicyError):
+            read_outcome(result)
+
+
+@pytest.mark.asyncio
+async def test_original_exception_survives_repair_persistence_failure() -> None:
+    class FailingSink:
+        def enqueue(self, instruction) -> None:
+            raise OSError("repair disk offline")
+
+    policy = ConnectorPolicy.load(
+        POLICY_PATH,
+        trusted_policy_sha256=POLICY_SHA,
+        attestation_key=KEY,
+        repair_sink=FailingSink(),
+    )
+    policy_gateway = PolicyGateway(
+        policy=policy,
+        attestation_key=KEY,
+        tenant_alias=TENANT,
+    )
+    spec = resolve_mcp_tool_spec("fileboss_search", {})
+    original = RuntimeError("connector exploded")
+
+    def callback():
+        raise original
+
+    with pytest.raises(RuntimeError) as exc:
+        await policy_gateway.execute(
+            spec=spec,
+            arguments={},
+            target_alias="bounded_search",
+            probe=lambda: ProbeEvidence(True, TENANT),
+            callback=callback,
+        )
+    assert exc.value is original
+    assert exc.value.akos_rejected_receipt.decision == "rejected"
+    assert "repair disk offline" in str(exc.value.akos_repair_persistence_error)

@@ -39,21 +39,34 @@ def test_remote_entrypoint_probes_and_validates_raw_result() -> None:
     assert "validated = read_outcome(raw_result)" in source
     assert "execute_mcp_tool(name, args, probe, callback)" in source
     assert "ApexFileBossOrchestrator" in source
+    assert "apex.probe_route(name)" in source
+    assert "intelligent_search_remote_only" in source
+    assert "recall_remote_only" in source
+    assert "persist_result=False" in source
+    assert "validate_akos_runtime_on_startup" in source
     assert "APEXOrchestrator" not in source
 
 
 def test_actor_entrypoint_requires_live_probe() -> None:
     source = read(ROOT / "casebuilder/services/actor_violations_connector.py")
     assert "async def _probe_apex" in source
+    assert "ProbeEvidence" in source
+    assert "X-AKOS-Tenant-Alias" in source
     assert "self._probe_apex" in source
 
 
-def test_mcp_config_contains_only_runtime_placeholders() -> None:
+def test_mcp_config_contains_runtime_placeholders_and_working_local_launcher() -> None:
     config = json.loads(read(ROOT / "mcp_config.json"))
     assert config["mcpServers"]["memory-plugin-a"]["auth"]["token"] == "${MEMORY_PLUGIN_TOKEN_A}"
     assert config["mcpServers"]["memory-plugin-b"]["auth"]["token"] == "${MEMORY_PLUGIN_TOKEN_B}"
-    env = config["mcpServers"]["fileboss-local"]["env"]
-    assert {"AKOS_POLICY_SHA256", "AKOS_ATTESTATION_HMAC_KEY", "AKOS_TENANT_ALIAS"}.issubset(env)
+    local = config["mcpServers"]["fileboss-local"]
+    assert local["command"] == "python"
+    assert local["args"] == ["-m", "smithery_control_plane.runtime.launch_local"]
+    assert "AKOS_POLICY_SHA256" not in local.get("env", {})
+    launcher = read(ROOT / "smithery_control_plane/runtime/launch_local.py")
+    assert "configure_local_runtime" in launcher
+    assert "default_gateway()" in launcher
+    assert "serve_stdio" in launcher
 
 
 def test_deployment_bootstrap_is_fail_closed() -> None:
