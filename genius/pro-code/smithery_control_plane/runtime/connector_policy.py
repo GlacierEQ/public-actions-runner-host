@@ -316,8 +316,7 @@ class JsonlRepairSink:
             text = self.path.read_text(encoding="utf-8")
         except OSError as exc:
             raise PolicyError(f"Cannot read repair queue {self.path}: {exc}") from exc
-        if text and not text.endswith("
-"):
+        if text and not text.endswith("\n"):
             raise PolicyError("Repair queue has an incomplete final record")
         self._tail_hash = self._verify_lines(
             text.splitlines(),
