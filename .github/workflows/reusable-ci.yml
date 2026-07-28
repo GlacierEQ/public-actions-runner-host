@@ -10,6 +10,10 @@ on:
         type: string
         default: python
         required: false
+      working_directory:
+        type: string
+        default: "."
+        required: false
       node_version:
         type: string
         default: "22"
@@ -21,6 +25,22 @@ on:
       go_version:
         type: string
         default: "1.23"
+        required: false
+      node_lint_script:
+        type: string
+        default: lint
+        required: false
+      node_typecheck_script:
+        type: string
+        default: typecheck
+        required: false
+      node_test_script:
+        type: string
+        default: test
+        required: false
+      node_build_script:
+        type: string
+        default: build
         required: false
       run_tests:
         type: boolean
@@ -44,9 +64,43 @@ on:
         required: false
 
 jobs:
-  python-quality:
-    name: "🐍 Python · Lint · Type · Test"
+  validate-inputs:
+    name: "Validate CI contract"
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate language, project path, and Node scripts
+        shell: bash
+        env:
+          LANGUAGE: ${{ inputs.language }}
+          WORKING_DIRECTORY: ${{ inputs.working_directory }}
+          NODE_LINT_SCRIPT: ${{ inputs.node_lint_script }}
+          NODE_TYPECHECK_SCRIPT: ${{ inputs.node_typecheck_script }}
+          NODE_TEST_SCRIPT: ${{ inputs.node_test_script }}
+          NODE_BUILD_SCRIPT: ${{ inputs.node_build_script }}
+        run: |
+          set -euo pipefail
+          case "$LANGUAGE" in
+            python|typescript|go) ;;
+            *) echo "Unsupported language: $LANGUAGE" >&2; exit 2 ;;
+          esac
+          if [[ -z "$WORKING_DIRECTORY" || "$WORKING_DIRECTORY" == /* || "$WORKING_DIRECTORY" == *".."* ]]; then
+            echo "working_directory must be a repository-relative path without '..': $WORKING_DIRECTORY" >&2
+            exit 2
+          fi
+          test -d "$WORKING_DIRECTORY"
+          for script in "$NODE_LINT_SCRIPT" "$NODE_TYPECHECK_SCRIPT" "$NODE_TEST_SCRIPT" "$NODE_BUILD_SCRIPT"; do
+            if [[ -n "$script" && ! "$script" =~ ^[A-Za-z0-9:_-]+$ ]]; then
+              echo "Invalid npm script name: $script" >&2
+              exit 2
+            fi
+          done
+
+  python-quality:
+    name: "🐍 Python · Lint · Type"
+    runs-on: ubuntu-latest
+    needs: [validate-inputs]
     if: inputs.language == 'python' && inputs.run_lint
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +110,7 @@ jobs:
           python-version: ${{ inputs.python_version }}
 
       - name: Install dependencies
+        working-directory: ${{ inputs.working_directory }}
         run: |
           pip install --upgrade pip
           pip install ruff mypy pytest pytest-cov
@@ -63,19 +118,27 @@ jobs:
           [ -f requirements-dev.txt ] && pip install -r requirements-dev.txt || true
 
       - name: Ruff lint
+        working-directory: ${{ inputs.working_directory }}
         run: ruff check . --output-format=github
 
       - name: Ruff format check
+        working-directory: ${{ inputs.working_directory }}
         run: ruff format --check .
 
       - name: Mypy type check
+        working-directory: ${{ inputs.working_directory }}
         run: mypy . --ignore-missing-imports
 
   python-test:
     name: "🐍 Python · Test"
     runs-on: ubuntu-latest
-    if: inputs.language == 'python' && inputs.run_tests
-    needs: [python-quality]
+    needs: [validate-inputs, python-quality]
+    if: >-
+      always() &&
+      inputs.language == 'python' &&
+      inputs.run_tests &&
+      needs.validate-inputs.result == 'success' &&
+      (needs.python-quality.result == 'success' || needs.python-quality.result == 'skipped')
     steps:
       - uses: actions/checkout@v4
 
@@ -84,24 +147,27 @@ jobs:
           python-version: ${{ inputs.python_version }}
 
       - name: Install dependencies
+        working-directory: ${{ inputs.working_directory }}
         run: |
           pip install --upgrade pip
           pip install pytest pytest-cov
           [ -f requirements.txt ] && pip install -r requirements.txt || true
 
       - name: Pytest
+        working-directory: ${{ inputs.working_directory }}
         run: pytest --cov=. --cov-report=xml --cov-report=term-missing -q
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         with:
-          file: ./coverage.xml
+          file: ${{ inputs.working_directory }}/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
         continue-on-error: true
 
   typescript-quality:
     name: "📦 TypeScript · Lint · Type · Build"
     runs-on: ubuntu-latest
+    needs: [validate-inputs]
     if: inputs.language == 'typescript' && inputs.run_lint
     steps:
       - uses: actions/checkout@v4
@@ -109,41 +175,69 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working_directory }}/package-lock.json
 
-      - name: Install
-        run: npm ci
+      - name: Install locked dependencies
+        working-directory: ${{ inputs.working_directory }}
+        run: npm ci --ignore-scripts --no-audit --no-fund
 
       - name: ESLint
-        run: npm run lint
+        if: inputs.node_lint_script != ''
+        working-directory: ${{ inputs.working_directory }}
+        env:
+          NPM_SCRIPT: ${{ inputs.node_lint_script }}
+        run: npm run "$NPM_SCRIPT"
 
       - name: TypeScript type check
-        run: npm run typecheck
+        if: inputs.node_typecheck_script != ''
+        working-directory: ${{ inputs.working_directory }}
+        env:
+          NPM_SCRIPT: ${{ inputs.node_typecheck_script }}
+        run: npm run "$NPM_SCRIPT"
 
       - name: Build
-        run: npm run build
+        if: inputs.node_build_script != ''
+        working-directory: ${{ inputs.working_directory }}
+        env:
+          NPM_SCRIPT: ${{ inputs.node_build_script }}
+        run: npm run "$NPM_SCRIPT"
 
   typescript-test:
     name: "📦 TypeScript · Test"
     runs-on: ubuntu-latest
-    if: inputs.language == 'typescript' && inputs.run_tests
-    needs: [typescript-quality]
+    needs: [validate-inputs, typescript-quality]
+    if: >-
+      always() &&
+      inputs.language == 'typescript' &&
+      inputs.run_tests &&
+      needs.validate-inputs.result == 'success' &&
+      (needs.typescript-quality.result == 'success' || needs.typescript-quality.result == 'skipped')
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working_directory }}/package-lock.json
 
-      - name: Install
-        run: npm ci
+      - name: Install locked dependencies
+        working-directory: ${{ inputs.working_directory }}
+        run: npm ci --ignore-scripts --no-audit --no-fund
 
       - name: Test
-        run: npm test
+        if: inputs.node_test_script != ''
+        working-directory: ${{ inputs.working_directory }}
+        env:
+          NPM_SCRIPT: ${{ inputs.node_test_script }}
+        run: npm run "$NPM_SCRIPT"
 
   go-quality:
     name: "🐹 Go · Vet · Lint · Test"
     runs-on: ubuntu-latest
-    if: inputs.language == 'go' && inputs.run_lint
+    needs: [validate-inputs]
+    if: inputs.language == 'go' && (inputs.run_lint || inputs.run_tests)
     steps:
       - uses: actions/checkout@v4
 
@@ -151,29 +245,40 @@ jobs:
         with:
           go-version: ${{ inputs.go_version }}
           cache: true
+          cache-dependency-path: ${{ inputs.working_directory }}/go.sum
 
       - name: go vet
+        if: inputs.run_lint
+        working-directory: ${{ inputs.working_directory }}
         run: go vet ./...
 
       - name: golangci-lint
+        if: inputs.run_lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
+          working-directory: ${{ inputs.working_directory }}
 
       - name: Test
+        if: inputs.run_tests
+        working-directory: ${{ inputs.working_directory }}
         run: go test -race -coverprofile=coverage.out ./...
 
       - name: Coverage
+        if: inputs.run_tests
+        working-directory: ${{ inputs.working_directory }}
         run: go tool cover -func=coverage.out
 
   security:
     name: "🔒 Security Scan"
     runs-on: ubuntu-latest
+    needs: [validate-inputs]
     if: inputs.run_security
     steps:
       - uses: actions/checkout@v4
 
       - name: Secret scan
+        working-directory: ${{ inputs.working_directory }}
         run: |
           echo "🔍 Scanning for secrets..."
           ! grep -rn "ghp_\|sk_live\|AKIA\|password\s*=" \
@@ -185,6 +290,7 @@ jobs:
           echo "✅ Clean"
 
       - name: Dependency audit
+        working-directory: ${{ inputs.working_directory }}
         run: |
           if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
             pip install pip-audit 2>/dev/null && pip-audit || echo "pip-audit skipped"
@@ -196,34 +302,57 @@ jobs:
   build:
     name: "🔨 Build"
     runs-on: ubuntu-latest
-    if: inputs.run_build
-    needs: [python-quality, typescript-quality, go-quality, security]
+    needs: [validate-inputs, python-quality, typescript-quality, go-quality, security]
+    if: >-
+      always() &&
+      inputs.run_build &&
+      needs.validate-inputs.result == 'success' &&
+      needs.security.result == 'success' &&
+      (
+        (inputs.language == 'python' && (needs.python-quality.result == 'success' || needs.python-quality.result == 'skipped')) ||
+        (inputs.language == 'typescript' && (needs.typescript-quality.result == 'success' || needs.typescript-quality.result == 'skipped')) ||
+        (inputs.language == 'go' && (needs.go-quality.result == 'success' || needs.go-quality.result == 'skipped'))
+      )
     steps:
       - uses: actions/checkout@v4
 
       - name: Build
+        working-directory: ${{ inputs.working_directory }}
+        env:
+          LANGUAGE: ${{ inputs.language }}
+          NODE_BUILD_SCRIPT: ${{ inputs.node_build_script }}
         run: |
-          if [ -f "Makefile" ]; then make build
-          elif [ -f "pyproject.toml" ]; then pip install build && python -m build
-          elif [ -f "package.json" ]; then npm run build
-          else echo "No build system"
-          fi
+          case "$LANGUAGE" in
+            python)
+              if [ -f "pyproject.toml" ]; then pip install build && python -m build; else echo "No Python build system"; fi
+              ;;
+            typescript)
+              npm ci --ignore-scripts --no-audit --no-fund
+              if [ -n "$NODE_BUILD_SCRIPT" ]; then npm run "$NODE_BUILD_SCRIPT"; else echo "No Node build script configured"; fi
+              ;;
+            go)
+              go build ./...
+              ;;
+          esac
 
   notify:
     name: "📊 Status"
     runs-on: ubuntu-latest
-    needs: [python-quality, python-test, typescript-quality, typescript-test, go-quality, security]
+    needs: [validate-inputs, python-quality, python-test, typescript-quality, typescript-test, go-quality, security, build]
     if: always()
     steps:
       - name: Report
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "  📦 ${{ inputs.repo_name }}"
+          echo "  📁 ${{ inputs.working_directory }}"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  Contract:        ${{ needs.validate-inputs.result || 'skipped' }}"
           echo "  🐍 Python Lint:  ${{ needs.python-quality.result || 'skipped' }}"
           echo "  🐍 Python Test:  ${{ needs.python-test.result || 'skipped' }}"
-          echo "  📦 TS Lint:      ${{ needs.typescript-quality.result || 'skipped' }}"
+          echo "  📦 TS Quality:   ${{ needs.typescript-quality.result || 'skipped' }}"
           echo "  📦 TS Test:      ${{ needs.typescript-test.result || 'skipped' }}"
           echo "  🐹 Go:           ${{ needs.go-quality.result || 'skipped' }}"
           echo "  🔒 Security:     ${{ needs.security.result || 'skipped' }}"
+          echo "  🔨 Build:        ${{ needs.build.result || 'skipped' }}"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
