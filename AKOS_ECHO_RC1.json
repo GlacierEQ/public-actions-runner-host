@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.1",
+  "name": "AKOS + Echo Policy Enforcement",
+  "version": "0.1.0-rc.1",
+  "status": "release-candidate",
+  "source_repository": "GlacierEQ/FILEBOSS",
+  "release_branch": "release/akos-echo-policy-v0.1.0-rc1",
+  "commit": "77668e873653939904355994f0dc94f7ef85edc0",
+  "source_pr": 52,
+  "promotion_issue": 56,
+  "downloads": {
+    "immutable_zip": "https://github.com/GlacierEQ/FILEBOSS/archive/77668e873653939904355994f0dc94f7ef85edc0.zip",
+    "immutable_tar_gz": "https://github.com/GlacierEQ/FILEBOSS/archive/77668e873653939904355994f0dc94f7ef85edc0.tar.gz",
+    "branch_zip": "https://github.com/GlacierEQ/FILEBOSS/archive/refs/heads/release/akos-echo-policy-v0.1.0-rc1.zip",
+    "branch_tar_gz": "https://github.com/GlacierEQ/FILEBOSS/archive/refs/heads/release/akos-echo-policy-v0.1.0-rc1.tar.gz"
+  },
+  "verification": {
+    "public_repository": "GlacierEQ/public-actions-runner-host",
+    "run_id": 30341778921,
+    "dispatch_issue": 29,
+    "blob_matches": "23/23",
+    "tests_passed": 50,
+    "tests_failed": 0
+  },
+  "promotion_complete": false
+}
