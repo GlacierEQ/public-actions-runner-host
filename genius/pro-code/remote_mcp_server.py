@@ -31,6 +31,14 @@ from smithery_control_plane.runtime.connector_gateway import (
     read_outcome,
     resolve_mcp_tool_spec,
 )
+from smithery_control_plane.runtime.deployment_bootstrap import configure_deployment_runtime
+from smithery_control_plane.runtime.http_guard import (
+    HttpSecurityConfig,
+    RequestRejected,
+    bearer_authorized,
+    security_headers,
+    validate_jsonrpc_payload,
+)
 from smithery_control_plane.runtime.connector_policy import (
     CompletionRejected,
     NoApprovedRoute,
@@ -47,15 +55,80 @@ import uvicorn
 
 logger = logging.getLogger("fileboss.mcp")
 
-app = FastAPI(title="FILEBOSS Remote MCP", version="2.0.4")
+configure_deployment_runtime()
+
+app = FastAPI(title="FILEBOSS Remote MCP", version="2.0.5")
+_HTTP_SECURITY = HttpSecurityConfig.from_environment()
 _AKOS_READY = False
+
+
+def _secure_response(response: Response) -> Response:
+    for name, value in security_headers().items():
+        response.headers.setdefault(name, value)
+    return response
+
+
+def _json_http_response(
+    payload: object,
+    *,
+    status_code: int = 200,
+    headers: dict[str, str] | None = None,
+) -> Response:
+    response = Response(
+        content=json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
+        status_code=status_code,
+        media_type="application/json",
+        headers=headers,
+    )
+    return _secure_response(response)
+
+
+@app.middleware("http")
+async def enforce_mcp_edge_security(request: Request, call_next):
+    if request.url.path == "/mcp":
+        if not bearer_authorized(
+            request.headers.get("authorization"),
+            _HTTP_SECURITY.bearer_token,
+        ):
+            return _json_http_response(
+                {"error": "unauthorized"},
+                status_code=401,
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        if request.method == "POST":
+            content_length = request.headers.get("content-length")
+            if content_length:
+                try:
+                    declared = int(content_length)
+                except ValueError:
+                    return _json_http_response(
+                        {"error": "invalid_content_length"},
+                        status_code=400,
+                    )
+                if declared < 0 or declared > _HTTP_SECURITY.max_request_bytes:
+                    return _json_http_response(
+                        {"error": "request_too_large"},
+                        status_code=413,
+                    )
+            body = await request.body()
+            if len(body) > _HTTP_SECURITY.max_request_bytes:
+                return _json_http_response(
+                    {"error": "request_too_large"},
+                    status_code=413,
+                )
+    response = await call_next(request)
+    return _secure_response(response)
 
 
 @app.on_event("startup")
 async def validate_akos_runtime_on_startup() -> None:
     """Load the protected trust root before the service may report healthy."""
     global _AKOS_READY
-    default_gateway()
+    gateway = default_gateway()
+    repair_sink = getattr(gateway.policy, "_repair_sink", None)
+    verify_chain = getattr(repair_sink, "verify_chain", None)
+    if callable(verify_chain):
+        verify_chain(force=True)
     _AKOS_READY = True
 
 
@@ -298,7 +371,7 @@ LOCAL_TOOLS = {
 async def handle_initialize(params: dict) -> dict:
     return {
         "protocolVersion": "2025-03-26",
-        "serverInfo": {"name": "fileboss-apex", "version": "2.0.4"},
+        "serverInfo": {"name": "fileboss-apex", "version": "2.0.5"},
         "capabilities": {
             "tools": {"listChanged": False},
             "resources": {"subscribe": False},
@@ -414,6 +487,11 @@ async def _execute_tool_unchecked(
 async def handle_tools_call(params: dict) -> dict:
     name = params.get("name")
     args = params.get("arguments", {})
+    if not isinstance(args, dict):
+        return {
+            "content": [{"type": "text", "text": "Tool arguments must be an object"}],
+            "isError": True,
+        }
     correlation_id = str(uuid.uuid4())
     start_time = time.time()
 
@@ -559,21 +637,40 @@ HANDLERS = {
 # ── Streamable HTTP Endpoint (MCP 2025-03-26) ─────────────────────────────────
 @app.post("/mcp")
 async def mcp_post(request: Request):
-    body = await request.json()
-    correlation_id = str(uuid.uuid4())
+    try:
+        body = await request.json()
+    except Exception:
+        return _json_http_response(
+            {
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {"code": -32700, "message": "Parse error"},
+            },
+            status_code=400,
+        )
+
+    try:
+        requests = validate_jsonrpc_payload(body, _HTTP_SECURITY)
+    except RequestRejected as exc:
+        return _json_http_response(
+            {
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {"code": -32600, "message": str(exc)},
+            },
+            status_code=400,
+        )
 
     if isinstance(body, list):
-        responses = []
-        for req in body:
-            responses.append(await _process_jsonrpc(req))
-        return Response(content=json.dumps(responses), media_type="application/json")
+        responses = [await _process_jsonrpc(req, validated=True) for req in requests]
+        return _json_http_response(responses)
 
     accept = request.headers.get("accept", "")
     if "text/event-stream" in accept:
-        return EventSourceResponse(_sse_generator(body))
+        return EventSourceResponse(_sse_generator(requests[0]))
 
-    result = await _process_jsonrpc(body)
-    return Response(content=json.dumps(result), media_type="application/json")
+    result = await _process_jsonrpc(requests[0], validated=True)
+    return _json_http_response(result)
 
 
 @app.get("/mcp")
@@ -581,14 +678,27 @@ async def mcp_get(request: Request):
     return EventSourceResponse(_heartbeat())
 
 
-async def _process_jsonrpc(req: dict) -> dict:
+async def _process_jsonrpc(req: dict, *, validated: bool = False) -> dict:
+    if not validated:
+        try:
+            req = validate_jsonrpc_payload(req, _HTTP_SECURITY)[0]
+        except RequestRejected as exc:
+            return {
+                "jsonrpc": "2.0",
+                "id": None,
+                "error": {"code": -32600, "message": str(exc)},
+            }
     method = req.get("method", "")
-    params = req.get("params", {})
+    params = dict(req.get("params", {}))
     req_id = req.get("id")
 
     handler = HANDLERS.get(method)
     if not handler:
-        return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32601, "message": f"Method not found: {method}"}}
+        return {
+            "jsonrpc": "2.0",
+            "id": req_id,
+            "error": {"code": -32601, "message": "Method not found"},
+        }
 
     try:
         result = await handler(params)
@@ -619,23 +729,26 @@ async def _heartbeat():
 async def root():
     return {
         "service": "FILEBOSS Remote MCP",
-        "version": "2.0.4",
+        "version": "2.0.5",
         "mcp_endpoint": "/mcp",
         "transport": "Streamable HTTP (MCP 2025-03-26)",
-        "tools": list(TOOLS.keys()),
-        "status": "healthy",
+        "status": "ready" if _AKOS_READY else "not_ready",
     }
+
+
+@app.get("/live")
+async def live():
+    return {"status": "ok", "version": "2.0.5"}
 
 
 @app.get("/health")
 async def health():
     if not _AKOS_READY:
-        return Response(
-            content=json.dumps({"status": "error", "akos": "not_ready"}),
+        return _json_http_response(
+            {"status": "error", "akos": "not_ready"},
             status_code=503,
-            media_type="application/json",
         )
-    return {"status": "ok", "akos": "ready", "tools": len(TOOLS), "version": "2.0.4"}
+    return {"status": "ok", "akos": "ready", "tools": len(TOOLS), "version": "2.0.5"}
 
 
 if __name__ == "__main__":

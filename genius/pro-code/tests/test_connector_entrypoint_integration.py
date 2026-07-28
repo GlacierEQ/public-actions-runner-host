@@ -44,6 +44,12 @@ def test_remote_entrypoint_probes_and_validates_raw_result() -> None:
     assert "recall_remote_only" in source
     assert "persist_result=False" in source
     assert "validate_akos_runtime_on_startup" in source
+    assert "configure_deployment_runtime()" in source
+    assert "enforce_mcp_edge_security" in source
+    assert "validate_jsonrpc_payload" in source
+    assert "bearer_authorized" in source
+    assert "verify_chain(force=True)" in source
+    assert "@app.get(\"/live\")" in source
     assert "APEXOrchestrator" not in source
 
 
@@ -82,3 +88,22 @@ def test_bootstrap_document_names_secrets_without_values() -> None:
     for name in ("AKOS_POLICY_SHA256", "AKOS_ATTESTATION_HMAC_KEY", "AKOS_TENANT_ALIAS"):
         assert name in source
     assert "runtime secret only" in source.lower()
+
+
+def test_http_edge_guard_is_pure_stdlib_and_bounded() -> None:
+    source = read(ROOT / "smithery_control_plane/runtime/http_guard.py")
+    assert "hmac.compare_digest" in source
+    assert "max_request_bytes" in source
+    assert "max_batch_size" in source
+    assert "max_input_nodes" in source
+    assert "max_input_depth" in source
+    assert "max_string_chars" in source
+    assert "Strict-Transport-Security" in source
+
+
+def test_deployment_bootstrap_preserves_external_policy_root() -> None:
+    source = read(ROOT / "smithery_control_plane/runtime/deployment_bootstrap.py")
+    assert "must come from protected deployment configuration" in source
+    assert "AKOS_ALLOW_EPHEMERAL_ATTESTATION_KEY" in source
+    assert 'token_hex(48)' in source
+    assert "sha256(policy_path.read_bytes())" not in source
