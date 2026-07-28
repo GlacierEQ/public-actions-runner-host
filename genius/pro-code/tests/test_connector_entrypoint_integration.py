@@ -47,6 +47,9 @@ def test_remote_entrypoint_probes_and_validates_raw_result() -> None:
     assert "configure_deployment_runtime()" in source
     assert "enforce_mcp_edge_security" in source
     assert "validate_jsonrpc_payload" in source
+    assert "read_bounded_body" in source
+    assert "request.stream()" in source
+    assert "request._body = body" in source
     assert "bearer_authorized" in source
     assert "trust_platform_auth=_HTTP_SECURITY.trust_platform_auth" in source
     assert "is_jsonrpc_notification" in source

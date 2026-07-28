@@ -8,6 +8,7 @@ from smithery_control_plane.runtime.http_guard import (
     bearer_authorized,
     encoded_json_size,
     is_jsonrpc_notification,
+    read_bounded_body,
     security_headers,
     validate_jsonrpc_payload,
 )
@@ -31,6 +32,41 @@ def test_bearer_auth_requires_explicit_edge_authority() -> None:
     assert bearer_authorized("bearer correct", "correct") is True
     assert bearer_authorized("Basic correct", "correct") is False
     assert bearer_authorized("Bearer wrong", "correct") is False
+
+
+def test_unicode_bearer_is_rejected_without_raising() -> None:
+    assert bearer_authorized("Bearer é", "correct") is False
+    assert bearer_authorized("Bearer correct", "corréct") is False
+    with pytest.raises(RequestRejected, match="must be ASCII"):
+        HttpSecurityConfig.from_environment(
+            {"FILEBOSS_MCP_BEARER_TOKEN": "corréct"}
+        )
+
+
+@pytest.mark.asyncio
+async def test_bounded_body_streams_without_exceeding_cap() -> None:
+    async def accepted_chunks():
+        yield b"ab"
+        yield b"cd"
+
+    assert await read_bounded_body(accepted_chunks(), 4) == b"abcd"
+
+    async def rejected_chunks():
+        yield b"abc"
+        yield b"def"
+        raise AssertionError("reader must stop immediately after overflow")
+
+    with pytest.raises(RequestRejected, match="byte limit"):
+        await read_bounded_body(rejected_chunks(), 5)
+
+
+@pytest.mark.asyncio
+async def test_bounded_body_rejects_invalid_chunk_type() -> None:
+    async def chunks():
+        yield "not-bytes"
+
+    with pytest.raises(RequestRejected, match="chunk is invalid"):
+        await read_bounded_body(chunks(), 1024)
 
 
 def test_security_headers_are_fail_closed() -> None:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterable
 from dataclasses import dataclass
 import hmac
 import json
@@ -38,6 +39,11 @@ class HttpSecurityConfig:
             return value
 
         bearer_token = env.get("FILEBOSS_MCP_BEARER_TOKEN", "").strip()
+        if bearer_token:
+            try:
+                bearer_token.encode("ascii")
+            except UnicodeEncodeError as exc:
+                raise RequestRejected("FILEBOSS_MCP_BEARER_TOKEN must be ASCII") from exc
         trust_platform_auth = env.get("FILEBOSS_TRUST_PLATFORM_AUTH", "").strip() == "1"
         if not bearer_token and not trust_platform_auth:
             raise RequestRejected(
@@ -80,13 +86,25 @@ class HttpSecurityConfig:
         )
 
 
+async def read_bounded_body(chunks: AsyncIterable[bytes], max_bytes: int) -> bytes:
+    """Consume an ASGI body incrementally and stop before buffering beyond the cap."""
+    body = bytearray()
+    async for chunk in chunks:
+        if not isinstance(chunk, bytes):
+            raise RequestRejected("Request body chunk is invalid")
+        if len(body) + len(chunk) > max_bytes:
+            raise RequestRejected("Request body exceeds byte limit")
+        body.extend(chunk)
+    return bytes(body)
+
+
 def bearer_authorized(
     header: str | None,
     expected_token: str,
     *,
     trust_platform_auth: bool = False,
 ) -> bool:
-    """Require either a constant-time bearer match or explicit platform-auth trust."""
+    """Require either a constant-time ASCII bearer match or explicit platform-auth trust."""
     if not expected_token:
         return trust_platform_auth
     if not isinstance(header, str):
@@ -94,7 +112,12 @@ def bearer_authorized(
     scheme, separator, supplied = header.partition(" ")
     if not separator or scheme.lower() != "bearer" or not supplied:
         return False
-    return hmac.compare_digest(supplied, expected_token)
+    try:
+        supplied_bytes = supplied.encode("ascii")
+        expected_bytes = expected_token.encode("ascii")
+    except UnicodeEncodeError:
+        return False
+    return hmac.compare_digest(supplied_bytes, expected_bytes)
 
 
 def security_headers() -> dict[str, str]:

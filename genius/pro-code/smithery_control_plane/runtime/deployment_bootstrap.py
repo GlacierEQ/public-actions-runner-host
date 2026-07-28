@@ -62,6 +62,40 @@ def deployment_runtime_values(
     }
 
 
+def _assert_owned(path: Path) -> None:
+    getuid = getattr(os, "geteuid", None)
+    if callable(getuid) and path.stat().st_uid != getuid():
+        raise DeploymentBootstrapError(f"Runtime path is not owned by this process user: {path}")
+
+
+def _secure_repair_queue(queue: Path) -> None:
+    parent = queue.parent
+    if parent.is_symlink():
+        raise DeploymentBootstrapError(f"Repair queue parent must not be a symlink: {parent}")
+    parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    _assert_owned(parent)
+    os.chmod(parent, 0o700)
+
+    if queue.is_symlink():
+        raise DeploymentBootstrapError(f"Repair queue must not be a symlink: {queue}")
+    flags = os.O_CREAT | os.O_APPEND | os.O_WRONLY
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(queue, flags, 0o600)
+    except OSError as exc:
+        raise DeploymentBootstrapError(f"Cannot secure repair queue {queue}: {exc}") from exc
+    try:
+        getuid = getattr(os, "geteuid", None)
+        stat = os.fstat(descriptor)
+        if callable(getuid) and stat.st_uid != getuid():
+            raise DeploymentBootstrapError(
+                f"Repair queue is not owned by this process user: {queue}"
+            )
+        os.fchmod(descriptor, 0o600)
+    finally:
+        os.close(descriptor)
+
+
 def configure_deployment_runtime(
     environment: MutableMapping[str, str] | None = None,
 ) -> dict[str, str]:
@@ -73,7 +107,8 @@ def configure_deployment_runtime(
     )
     values = deployment_runtime_values(env, policy_path=policy_path)
     for name, value in values.items():
-        env.setdefault(name, value)
-    repair_parent = Path(env["AKOS_REPAIR_QUEUE"]).expanduser().parent
-    repair_parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        env[name] = value
+    os.umask(0o077)
+    queue = Path(env["AKOS_REPAIR_QUEUE"]).expanduser()
+    _secure_repair_queue(queue)
     return values

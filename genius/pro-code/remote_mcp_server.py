@@ -37,6 +37,7 @@ from smithery_control_plane.runtime.http_guard import (
     RequestRejected,
     bearer_authorized,
     is_jsonrpc_notification,
+    read_bounded_body,
     security_headers,
     validate_jsonrpc_payload,
 )
@@ -112,12 +113,17 @@ async def enforce_mcp_edge_security(request: Request, call_next):
                         {"error": "request_too_large"},
                         status_code=413,
                     )
-            body = await request.body()
-            if len(body) > _HTTP_SECURITY.max_request_bytes:
+            try:
+                body = await read_bounded_body(
+                    request.stream(),
+                    _HTTP_SECURITY.max_request_bytes,
+                )
+            except RequestRejected:
                 return _json_http_response(
                     {"error": "request_too_large"},
                     status_code=413,
                 )
+            request._body = body
     response = await call_next(request)
     return _secure_response(response)
 

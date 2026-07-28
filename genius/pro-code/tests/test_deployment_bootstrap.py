@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from hashlib import sha256
 from pathlib import Path
+import stat
 
 import pytest
 
@@ -94,8 +95,27 @@ def test_tenant_derivation_requires_explicit_opt_in(tmp_path: Path) -> None:
     assert values["AKOS_TENANT_ALIAS"].startswith("apex-local-")
 
 
-def test_configure_runtime_creates_private_repair_parent(tmp_path: Path) -> None:
+def test_blank_placeholders_are_replaced_in_environment(tmp_path: Path) -> None:
     repair = tmp_path / "private" / "queue.jsonl"
+    env = {
+        "AKOS_POLICY_SHA256": "f" * 64,
+        "AKOS_ATTESTATION_HMAC_KEY": "   ",
+        "AKOS_TENANT_ALIAS": "tenant-fixed",
+        "AKOS_ALLOW_EPHEMERAL_ATTESTATION_KEY": "1",
+        "AKOS_REPAIR_QUEUE": str(repair),
+    }
+    values = configure_deployment_runtime(env)
+    assert env["AKOS_ATTESTATION_HMAC_KEY"] == values["AKOS_ATTESTATION_HMAC_KEY"]
+    assert env["AKOS_ATTESTATION_HMAC_KEY"].strip()
+    assert env["AKOS_REPAIR_QUEUE"] == str(repair)
+
+
+def test_configure_runtime_repairs_directory_and_file_permissions(tmp_path: Path) -> None:
+    parent = tmp_path / "private"
+    parent.mkdir(mode=0o755)
+    repair = parent / "queue.jsonl"
+    repair.write_text("", encoding="utf-8")
+    repair.chmod(0o644)
     env = {
         "AKOS_POLICY_SHA256": "f" * 64,
         "AKOS_ATTESTATION_HMAC_KEY": "protected",
@@ -103,4 +123,20 @@ def test_configure_runtime_creates_private_repair_parent(tmp_path: Path) -> None
         "AKOS_REPAIR_QUEUE": str(repair),
     }
     configure_deployment_runtime(env)
-    assert repair.parent.is_dir()
+    assert stat.S_IMODE(parent.stat().st_mode) == 0o700
+    assert stat.S_IMODE(repair.stat().st_mode) == 0o600
+
+
+def test_configure_runtime_rejects_symlink_queue(tmp_path: Path) -> None:
+    target = tmp_path / "target.jsonl"
+    target.write_text("", encoding="utf-8")
+    link = tmp_path / "queue.jsonl"
+    link.symlink_to(target)
+    env = {
+        "AKOS_POLICY_SHA256": "f" * 64,
+        "AKOS_ATTESTATION_HMAC_KEY": "protected",
+        "AKOS_TENANT_ALIAS": "tenant-fixed",
+        "AKOS_REPAIR_QUEUE": str(link),
+    }
+    with pytest.raises(DeploymentBootstrapError, match="must not be a symlink"):
+        configure_deployment_runtime(env)
