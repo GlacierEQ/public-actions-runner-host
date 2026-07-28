@@ -1,0 +1,41 @@
+{
+  "blocked_or_degraded": {
+    "Context7": "no valid session",
+    "Direct Desktop Commander": "no registered device",
+    "Remote Desktop Commander": "authorized but device offline",
+    "Standalone Gmail": "expired HTTP 410",
+    "Standalone Google Photos": "unauthorized HTTP 401",
+    "memplato": "initialization 403",
+    "secondary Lanonasis": "initialization 522"
+  },
+  "classification": "systems-control; not case evidence",
+  "generated_at_hst": "2026-07-24T17:18:00-10:00",
+  "governance": {
+    "completion_requires_declared_postflight_proofs": true,
+    "credentials_and_raw_resource_identifiers_are_forbidden": true,
+    "fallback_requires_signed_primary_runtime_failure": true,
+    "partial_fallbacks_are_not_admissible": true,
+    "repair_instructions_are_durable_and_sanitized": true,
+    "runtime_attestations_must_be_current_and_request_bound": true,
+    "tenant_affinity_must_be_signed_and_alias_based": true
+  },
+  "proven_routes": [
+    "GitHub",
+    "Notion",
+    "ClickUp",
+    "Google Drive",
+    "Google Sheets read",
+    "Google Super Gmail read",
+    "Google Super Photos read"
+  ],
+  "purpose": "Bind AKOS enforcement to the current connection plane without treating nominal connection labels as runtime proof.",
+  "runtime_summary": {
+    "auth_required": 5,
+    "initialization_errors": 2,
+    "input_required": 5,
+    "nominally_connected": 33,
+    "smithery_routes_total": 47
+  },
+  "schema_version": "2.0.0",
+  "snapshot_id": "CONNECTOR-COVERAGE-MILESTONE-20260724T1718-HST"
+}
