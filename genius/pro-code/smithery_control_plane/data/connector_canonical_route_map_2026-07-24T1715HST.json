@@ -1,0 +1,236 @@
+{
+  "classification": "systems-control; not case evidence",
+  "current_runtime_notes": {
+    "context7": "requires valid session",
+    "desktop": "requires live signed same-run device proof",
+    "legacy_status_labels": "advisory only",
+    "standalone_gmail": "expired account; use Google Super",
+    "standalone_google_photos": "invalid OAuth; use Google Super read fallback"
+  },
+  "generated_at_hst": "2026-07-24T17:15:00-10:00",
+  "policy": {
+    "account_affinity_requires_signed_current_request_attestation": true,
+    "evidence_content_must_not_be_copied_into_connector_health_artifacts": true,
+    "route_roles_come_only_from_this_authority": true,
+    "runtime_proof_overrides_nominal_connection": true,
+    "temporary_and_local_operations_use_distinct_operation_classes": true
+  },
+  "route_authority": {
+    "actor_violations_pipeline": {
+      "allowed_operations": [
+        "read",
+        "write"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "APEX Actor Violations Connector"
+      ]
+    },
+    "automation_fabric": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "Zapier Connector Fabric"
+      ]
+    },
+    "browser": {
+      "allowed_operations": [
+        "read",
+        "write"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "Opera Neon MCP"
+      ]
+    },
+    "cloud_storage": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "Google Drive Connector",
+        "Dropbox Direct MCP",
+        "OneDrive Direct MCP"
+      ]
+    },
+    "connector_discovery": {
+      "allowed_operations": [
+        "read"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "Smithery Tool Discovery Index"
+      ]
+    },
+    "database_backend": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "Supabase Hot Layer"
+      ]
+    },
+    "desktop_and_local_files": {
+      "allowed_operations": [
+        "local_read",
+        "local_write"
+      ],
+      "fallback": [],
+      "local_device_operations": [
+        "local_read",
+        "local_write"
+      ],
+      "primary": [
+        "Smithery Remote Desktop Commander",
+        "FILEBOSS Remote MCP Local Organizer"
+      ]
+    },
+    "documents": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [
+        "GitHub Markdown"
+      ],
+      "local_device_operations": [],
+      "primary": [
+        "Notion Control Plane"
+      ]
+    },
+    "fileboss_mcp_tools": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "compute"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "FILEBOSS Remote MCP"
+      ]
+    },
+    "google_email": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "Google Super Connector"
+      ]
+    },
+    "memory": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [
+        "Lano Enterprise Memory",
+        "Omega Memory"
+      ],
+      "local_device_operations": [],
+      "primary": [
+        "Supermemory MCP"
+      ]
+    },
+    "microsoft_email": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [],
+      "local_device_operations": [],
+      "primary": [
+        "Outlook Smithery MCP"
+      ]
+    },
+    "project_control": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [
+        "Trello Smithery MCP"
+      ],
+      "local_device_operations": [],
+      "primary": [
+        "ClickUp Direct MCP"
+      ]
+    },
+    "public_legal_research": {
+      "allowed_operations": [
+        "read"
+      ],
+      "fallback": [
+        "Case Law Search"
+      ],
+      "local_device_operations": [],
+      "primary": [
+        "CourtListener / RECAP Adapter"
+      ]
+    },
+    "tables": {
+      "allowed_operations": [
+        "read",
+        "write",
+        "delete",
+        "temporary_probe"
+      ],
+      "fallback": [
+        "Notion data sources"
+      ],
+      "local_device_operations": [],
+      "primary": [
+        "GitHub JSON or CSV"
+      ]
+    },
+    "web_search": {
+      "allowed_operations": [
+        "read"
+      ],
+      "fallback": [
+        "SparkForge Web Search",
+        "Keenable Web Search",
+        "Parallel Web Search",
+        "Tavily",
+        "Linkup"
+      ],
+      "local_device_operations": [],
+      "primary": [
+        "Smithery Exa Search"
+      ]
+    }
+  },
+  "schema_version": "2.0.0"
+}
