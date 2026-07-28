@@ -533,7 +533,7 @@ async def execute_mcp_tool(
 async def execute_actor_operation(
     name: str,
     arguments: Mapping[str, Any],
-    probe: Callable[[], Awaitable[bool] | bool],
+    probe: Callable[[], Awaitable[ProbeEvidence] | ProbeEvidence],
     callback: Callable[[], Awaitable[ExecutionOutcome[T]] | ExecutionOutcome[T]],
 ) -> tuple[T, AuditReceipt]:
     spec = resolve_actor_operation_spec(name)
