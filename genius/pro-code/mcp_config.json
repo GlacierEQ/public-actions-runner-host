@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "fileboss-remote": {
+      "url": "https://fileboss-mcp.up.railway.app/mcp",
+      "transport": "http",
+      "description": "FILEBOSS Remote MCP — Streamable HTTP (MCP 2025-03-26)",
+      "auth": {
+        "type": "bearer",
+        "token": "${FILEBOSS_MCP_TOKEN}"
+      }
+    },
+    "fileboss-local": {
+      "command": "python",
+      "args": [
+        "remote_mcp_server.py"
+      ],
+      "env": {
+        "PORT": "8001",
+        "AKOS_POLICY_SHA256": "${AKOS_POLICY_SHA256}",
+        "AKOS_ATTESTATION_HMAC_KEY": "${AKOS_ATTESTATION_HMAC_KEY}",
+        "AKOS_TENANT_ALIAS": "${AKOS_TENANT_ALIAS}",
+        "AKOS_REPAIR_QUEUE": "${AKOS_REPAIR_QUEUE}",
+        "FILEBOSS_ALLOWED_ROOTS": "${FILEBOSS_ALLOWED_ROOTS}"
+      },
+      "description": "FILEBOSS Local fallback (stdio) — only if remote unavailable"
+    },
+    "memory-plugin-a": {
+      "url": "https://memory.mcp.so/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "bearer",
+        "token": "${MEMORY_PLUGIN_TOKEN_A}"
+      }
+    },
+    "memory-plugin-b": {
+      "url": "https://memory.mcp.so/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "bearer",
+        "token": "${MEMORY_PLUGIN_TOKEN_B}"
+      }
+    }
+  }
+}
