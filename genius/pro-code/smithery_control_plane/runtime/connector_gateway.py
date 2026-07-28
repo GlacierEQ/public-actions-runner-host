@@ -425,7 +425,7 @@ def read_outcome(result: T) -> ExecutionOutcome[T]:
 
 
 def compute_outcome(result: T) -> ExecutionOutcome[T]:
-    validated, digest = _validate_result(result)
+    validated, digest = validate_result(result)
     return ExecutionOutcome(
         result=validated,
         completion_proofs=_COMPUTE_COMPLETION,
