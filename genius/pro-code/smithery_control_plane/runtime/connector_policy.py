@@ -295,14 +295,12 @@ class JsonlRepairSink:
                 text = appended.decode("utf-8")
             except UnicodeDecodeError as exc:
                 raise PolicyError(f"Repair queue append is not UTF-8: {self.path}") from exc
-            if text and not text.endswith("
-"):
+            if text and not text.endswith("\n"):
                 raise PolicyError("Repair queue has an incomplete appended record")
             previous_lines = 1
             try:
                 with self.path.open("rb") as handle:
-                    previous_lines += handle.read(self._verified_size).count(b"
-")
+                    previous_lines += handle.read(self._verified_size).count(b"\n")
             except OSError as exc:
                 raise PolicyError(f"Cannot count repair queue records {self.path}: {exc}") from exc
             self._tail_hash = self._verify_lines(
@@ -349,8 +347,7 @@ class JsonlRepairSink:
                 "instruction": payload,
             }
             record["record_sha256"] = self._record_digest(record)
-            encoded = json.dumps(record, sort_keys=True, separators=(",", ":")) + "
-"
+            encoded = json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n"
             try:
                 with self.path.open("a", encoding="utf-8") as handle:
                     handle.write(encoded)
