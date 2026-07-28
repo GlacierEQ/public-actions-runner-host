@@ -1,0 +1,59 @@
+name: AKOS Connector Policy
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.agents/AGENTS.md'
+      - '.agents/rules/connector-control.md'
+      - '.pre-commit-config.yaml'
+      - 'genius/pro-code/smithery_control_plane/**'
+      - 'genius/pro-code/tests/test_connector_policy.py'
+      - 'genius/pro-code/tests/test_connector_gateway.py'
+      - 'genius/pro-code/tests/test_connector_entrypoint_integration.py'
+      - 'genius/pro-code/remote_mcp_server.py'
+      - 'genius/pro-code/casebuilder/services/actor_violations_connector.py'
+      - 'genius/pro-code/mcp_config.json'
+      - 'genius/shared/integrations/apex_orchestrator.py'
+      - 'genius/shared/ops/paas/railway-mcp.json'
+  push:
+    branches: [main]
+    paths:
+      - '.agents/AGENTS.md'
+      - '.agents/rules/connector-control.md'
+      - '.pre-commit-config.yaml'
+      - 'genius/pro-code/smithery_control_plane/**'
+      - 'genius/pro-code/tests/test_connector_policy.py'
+      - 'genius/pro-code/tests/test_connector_gateway.py'
+      - 'genius/pro-code/tests/test_connector_entrypoint_integration.py'
+      - 'genius/pro-code/remote_mcp_server.py'
+      - 'genius/pro-code/casebuilder/services/actor_violations_connector.py'
+      - 'genius/pro-code/mcp_config.json'
+      - 'genius/shared/integrations/apex_orchestrator.py'
+      - 'genius/shared/ops/paas/railway-mcp.json'
+
+permissions:
+  contents: read
+
+jobs:
+  policy:
+    name: Validate AKOS connector policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify protected trust root is available
+        run: test -n "${AKOS_POLICY_SHA256:-}"
+      - name: Install focused test dependencies
+        run: python -m pip install --disable-pip-version-check pytest pytest-asyncio
+      - name: Validate policy and authority hashes
+        working-directory: genius/pro-code
+        run: python -m smithery_control_plane.runtime.connector_policy --validate smithery_control_plane/config/akos_connector_policy.json
+      - name: Run adversarial policy and entrypoint tests
+        working-directory: genius/pro-code
+        run: python -m pytest tests/test_connector_policy.py tests/test_connector_gateway.py tests/test_connector_entrypoint_integration.py -q
