@@ -113,7 +113,7 @@ async def test_unproven_write_is_blocked_before_callback() -> None:
             spec=spec,
             arguments={"content": "control"},
             target_alias="memory_control",
-            probe=lambda: True,
+            probe=lambda: ProbeEvidence(True, TENANT),
             callback=callback,
         )
     assert called is False
@@ -145,7 +145,7 @@ async def test_local_path_outside_approved_roots_is_blocked_before_execution(
             spec=spec,
             arguments={"path": str(outside)},
             target_alias="local_analysis",
-            probe=lambda: True,
+            probe=lambda: ProbeEvidence(True, TENANT),
             callback=callback,
         )
     assert called is False
@@ -171,7 +171,7 @@ async def test_local_read_without_cloud_receipt_contract_is_blocked_before_io(
             spec=spec,
             arguments={"path": str(approved)},
             target_alias="local_analysis",
-            probe=lambda: True,
+            probe=lambda: ProbeEvidence(True, TENANT),
             callback=callback,
         )
     assert called is False
@@ -190,7 +190,7 @@ async def test_compute_tool_uses_compute_completion_contract() -> None:
         spec=spec,
         arguments={"facts": "bounded"},
         target_alias="motion_draft",
-        probe=lambda: True,
+        probe=lambda: ProbeEvidence(True, TENANT),
         callback=lambda: compute_outcome({"draft": "text"}),
     )
     assert result["draft"] == "text"
@@ -278,7 +278,7 @@ async def test_callback_exception_is_preserved_with_rejected_receipt() -> None:
             spec=spec,
             arguments={},
             target_alias="bounded_search",
-            probe=lambda: True,
+            probe=lambda: ProbeEvidence(True, TENANT),
             callback=callback,
         )
     assert exc.value is original
