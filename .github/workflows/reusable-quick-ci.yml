@@ -9,50 +9,118 @@ on:
       language:
         type: string
         default: python
+      strict:
+        type: boolean
+        default: false
+      verify_command:
+        type: string
+        default: ""
+      node_version:
+        type: string
+        default: "22"
+      python_version:
+        type: string
+        default: "3.12"
+      artifact_path:
+        type: string
+        default: ""
+      artifact_name:
+        type: string
+        default: "verification-artifacts"
 
 jobs:
   check:
-    name: "${{ inputs.language == 'python' && '🐍' || inputs.language == 'typescript' && '📦' || '🐹' }} Lint + Test"
+    name: "${{ inputs.language == 'python' && 'Python' || inputs.language == 'typescript' && 'TypeScript' || inputs.language == 'javascript' && 'JavaScript' || inputs.language == 'go' && 'Go' || 'Generic' }} Verify"
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
-      - name: Python Check
+      - name: Set up Python
         if: inputs.language == 'python'
-        run: |
-          pip install ruff pytest 2>/dev/null
-          echo "=== Ruff Lint ==="
-          ruff check . 2>/dev/null || echo "No ruff config"
-          echo "=== Ruff Format ==="
-          ruff format --check . 2>/dev/null || echo "No format config"
-          echo "=== Tests ==="
-          pytest -x -q 2>/dev/null || echo "No tests"
-          echo "✅ Python check complete"
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
 
-      - name: TypeScript Check
+      - name: Set up Node
         if: inputs.language == 'typescript' || inputs.language == 'javascript'
-        run: |
-          npm ci 2>/dev/null || npm install
-          echo "=== ESLint ==="
-          npm run lint 2>/dev/null || echo "No lint script"
-          echo "=== Type Check ==="
-          npm run typecheck 2>/dev/null || echo "No typecheck script"
-          echo "=== Tests ==="
-          npm test 2>/dev/null || echo "No test script"
-          echo "✅ TypeScript check complete"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
 
-      - name: Go Check
-        if: inputs.language == 'go'
-        run: |
-          echo "=== go vet ==="
-          go vet ./... 2>/dev/null || echo "No Go files"
-          echo "=== Tests ==="
-          go test ./... 2>/dev/null || echo "No tests"
-          echo "✅ Go check complete"
+      - name: Custom verification
+        if: inputs.verify_command != ''
+        shell: bash
+        env:
+          VERIFY_COMMAND: ${{ inputs.verify_command }}
+        run: bash -euo pipefail -c "$VERIFY_COMMAND"
 
-      - name: Generic Check
-        if: inputs.language != 'python' && inputs.language != 'typescript' && inputs.language != 'javascript' && inputs.language != 'go'
+      - name: Python check
+        if: inputs.verify_command == '' && inputs.language == 'python'
+        shell: bash
+        env:
+          STRICT: ${{ inputs.strict }}
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check ruff pytest
+          if [[ "$STRICT" == "true" ]]; then
+            ruff check .
+            ruff format --check .
+            python -m compileall -q .
+            pytest -x -q
+          else
+            ruff check . 2>/dev/null || echo "No ruff config or lint findings are non-blocking"
+            ruff format --check . 2>/dev/null || echo "No format config or formatting findings are non-blocking"
+            pytest -x -q 2>/dev/null || echo "No tests or test findings are non-blocking"
+          fi
+
+      - name: TypeScript check
+        if: inputs.verify_command == '' && (inputs.language == 'typescript' || inputs.language == 'javascript')
+        shell: bash
+        env:
+          STRICT: ${{ inputs.strict }}
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund 2>/dev/null || npm install --ignore-scripts --no-audit --no-fund
+          if [[ "$STRICT" == "true" ]]; then
+            npm run verify
+          else
+            npm run lint 2>/dev/null || echo "No lint script or lint findings are non-blocking"
+            npm run typecheck 2>/dev/null || echo "No typecheck script or type findings are non-blocking"
+            npm test 2>/dev/null || echo "No tests or test findings are non-blocking"
+          fi
+
+      - name: Go check
+        if: inputs.verify_command == '' && inputs.language == 'go'
+        shell: bash
+        env:
+          STRICT: ${{ inputs.strict }}
+        run: |
+          set -euo pipefail
+          if [[ "$STRICT" == "true" ]]; then
+            go vet ./...
+            go test ./...
+          else
+            go vet ./... 2>/dev/null || echo "No Go files or vet findings are non-blocking"
+            go test ./... 2>/dev/null || echo "No tests or test findings are non-blocking"
+          fi
+
+      - name: Generic check
+        if: inputs.verify_command == '' && inputs.language != 'python' && inputs.language != 'typescript' && inputs.language != 'javascript' && inputs.language != 'go'
         run: |
           echo "Language: ${{ inputs.language }}"
-          echo "Add specific checks to reusable-quick-ci.yml"
-          echo "✅ Passthrough"
+          if [[ "${{ inputs.strict }}" == "true" ]]; then
+            echo "Strict generic verification requires verify_command" >&2
+            exit 2
+          fi
+
+      - name: Upload verification artifacts
+        if: always() && inputs.artifact_path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ${{ inputs.artifact_path }}
+          if-no-files-found: warn
+          retention-days: 14
