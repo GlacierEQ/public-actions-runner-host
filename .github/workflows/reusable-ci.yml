@@ -91,7 +91,7 @@ jobs:
           fi
           test -d "$WORKING_DIRECTORY"
           for script in "$NODE_LINT_SCRIPT" "$NODE_TYPECHECK_SCRIPT" "$NODE_TEST_SCRIPT" "$NODE_BUILD_SCRIPT"; do
-            if [[ -n "$script" && ! "$script" =~ ^[A-Za-z0-9:_-]+$ ]]; then
+            if [[ -n "$script" && ! "$script" =~ ^[A-Za-z0-9_-]+$ ]]; then
               echo "Invalid npm script name: $script" >&2
               exit 2
             fi
@@ -307,7 +307,7 @@ jobs:
       always() &&
       inputs.run_build &&
       needs.validate-inputs.result == 'success' &&
-      needs.security.result == 'success' &&
+      (needs.security.result == 'success' || needs.security.result == 'skipped') &&
       (
         (inputs.language == 'python' && (needs.python-quality.result == 'success' || needs.python-quality.result == 'skipped')) ||
         (inputs.language == 'typescript' && (needs.typescript-quality.result == 'success' || needs.typescript-quality.result == 'skipped')) ||
@@ -327,8 +327,12 @@ jobs:
               if [ -f "pyproject.toml" ]; then pip install build && python -m build; else echo "No Python build system"; fi
               ;;
             typescript)
-              npm ci --ignore-scripts --no-audit --no-fund
-              if [ -n "$NODE_BUILD_SCRIPT" ]; then npm run "$NODE_BUILD_SCRIPT"; else echo "No Node build script configured"; fi
+              if [ -n "$NODE_BUILD_SCRIPT" ]; then
+                npm ci --ignore-scripts --no-audit --no-fund
+                npm run "$NODE_BUILD_SCRIPT"
+              else
+                echo "No Node build script configured"
+              fi
               ;;
             go)
               go build ./...
