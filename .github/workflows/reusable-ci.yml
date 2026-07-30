@@ -85,13 +85,21 @@ jobs:
             python|typescript|go) ;;
             *) echo "Unsupported language: $LANGUAGE" >&2; exit 2 ;;
           esac
-          if [[ -z "$WORKING_DIRECTORY" || "$WORKING_DIRECTORY" == /* || "$WORKING_DIRECTORY" == *".."* ]]; then
-            echo "working_directory must be a repository-relative path without '..': $WORKING_DIRECTORY" >&2
+          if [[ -z "$WORKING_DIRECTORY" || "$WORKING_DIRECTORY" == /* ]]; then
+            echo "working_directory must be a non-empty repository-relative path: $WORKING_DIRECTORY" >&2
             exit 2
           fi
-          test -d "$WORKING_DIRECTORY"
+          repository_root="$(realpath -e .)"
+          project_root="$(realpath -e "$WORKING_DIRECTORY")"
+          case "$project_root" in
+            "$repository_root"|"$repository_root"/*) ;;
+            *)
+              echo "working_directory resolves outside the repository: $WORKING_DIRECTORY" >&2
+              exit 2
+              ;;
+          esac
           for script in "$NODE_LINT_SCRIPT" "$NODE_TYPECHECK_SCRIPT" "$NODE_TEST_SCRIPT" "$NODE_BUILD_SCRIPT"; do
-            if [[ -n "$script" && ! "$script" =~ ^[A-Za-z0-9_-]+$ ]]; then
+            if [[ -n "$script" && ! "$script" =~ ^[A-Za-z0-9][A-Za-z0-9._:-]*$ ]]; then
               echo "Invalid npm script name: $script" >&2
               exit 2
             fi
@@ -197,7 +205,7 @@ jobs:
         run: npm run "$NPM_SCRIPT"
 
       - name: Build
-        if: inputs.node_build_script != ''
+        if: inputs.node_build_script != '' && !inputs.run_build
         working-directory: ${{ inputs.working_directory }}
         env:
           NPM_SCRIPT: ${{ inputs.node_build_script }}
@@ -316,6 +324,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        if: inputs.language == 'python'
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - uses: actions/setup-node@v4
+        if: inputs.language == 'typescript'
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working_directory }}/package-lock.json
+
+      - uses: actions/setup-go@v5
+        if: inputs.language == 'go'
+        with:
+          go-version: ${{ inputs.go_version }}
+          cache: true
+          cache-dependency-path: ${{ inputs.working_directory }}/go.sum
+
       - name: Build
         working-directory: ${{ inputs.working_directory }}
         env:
@@ -324,7 +351,14 @@ jobs:
         run: |
           case "$LANGUAGE" in
             python)
-              if [ -f "pyproject.toml" ]; then pip install build && python -m build; else echo "No Python build system"; fi
+              if [ -f "pyproject.toml" ]; then
+                python -m pip install --upgrade build
+                python -m build
+              elif [ -f "Makefile" ]; then
+                make
+              else
+                echo "No Python build system"
+              fi
               ;;
             typescript)
               if [ -n "$NODE_BUILD_SCRIPT" ]; then
