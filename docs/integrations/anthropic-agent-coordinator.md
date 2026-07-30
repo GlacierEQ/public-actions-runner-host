@@ -27,10 +27,21 @@ The catalog fixes the workload repository and adapter. A dispatch may choose onl
 }
 ```
 
-The same payload may be submitted through an owner-created public issue titled:
+The same request may be submitted through an owner-created public issue titled:
 
 ```text
 [APEX JOB] coordinator-ci-20260730-001
+```
+
+The issue body must contain the metadata-only job envelope itself, without the repository-dispatch wrapper:
+
+```json
+{
+  "job_id": "coordinator-ci-20260730-001",
+  "pillar": "H",
+  "action": "anthropic-agent-coordinator-ci",
+  "source_ref": "wave-1/coordinator-promotion-rebased-2026-07-30"
+}
 ```
 
 Do not include source code, prompts, credentials, test logs, or private evidence in the public payload.
