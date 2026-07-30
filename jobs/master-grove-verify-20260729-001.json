@@ -1,0 +1,6 @@
+{
+  "job_id": "master-grove-verify-20260729-001",
+  "pillar": "C",
+  "action": "master-grove-verify",
+  "source_ref": "main"
+}
