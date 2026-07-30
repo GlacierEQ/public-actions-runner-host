@@ -1,0 +1,6 @@
+{
+  "job_id": "coordinator-ci-20260730-001",
+  "pillar": "H",
+  "action": "anthropic-agent-coordinator-ci",
+  "source_ref": "wave-1/coordinator-promotion-rebased-2026-07-30"
+}
