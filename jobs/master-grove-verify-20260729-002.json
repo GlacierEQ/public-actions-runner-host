@@ -1,6 +1,6 @@
 {
-  "job_id": "master-grove-verify-20260729-002",
   "pillar": "C",
   "action": "master-grove-verify",
-  "source_ref": "main"
+  "source_ref": "main",
+  "job_id": "master-grove-verify-20260729-002"
 }
