@@ -55,7 +55,7 @@
       "source_event": "orchestrate",
       "target_repo": "GlacierEQ/anthropic-agent-coordinator",
       "legacy_event": "anthropic-agent-coordinator-ci",
-      "adapter": "repo-verify-script",
+      "adapter": "python-ci",
       "gate": "elevated",
       "approval_required": false
     },
