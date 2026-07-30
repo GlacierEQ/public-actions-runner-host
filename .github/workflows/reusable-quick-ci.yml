@@ -1,4 +1,4 @@
-name: Spiral Engine Quick CI
+name: GlacierEQ Reusable Verification Gate
 
 on:
   workflow_call:
@@ -8,51 +8,173 @@ on:
         required: true
       language:
         type: string
-        default: python
+        default: generic
+      strict:
+        type: boolean
+        default: true
+      verify_script:
+        description: Optional repository-owned script under scripts/ci/ or .github/verification/
+        type: string
+        default: ""
+      node_version:
+        type: string
+        default: "22"
+      python_version:
+        type: string
+        default: "3.12"
+      upload_artifacts:
+        type: boolean
+        default: true
 
 jobs:
-  check:
-    name: "${{ inputs.language == 'python' && '🐍' || inputs.language == 'typescript' && '📦' || '🐹' }} Lint + Test"
+  verify:
+    name: ${{ inputs.language }} verification
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      STRICT: ${{ inputs.strict }}
+      LANGUAGE_NAME: ${{ inputs.language }}
+      VERIFY_SCRIPT: ${{ inputs.verify_script }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Enforce trusted caller boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REPOSITORY_OWNER" != "GlacierEQ" ]]; then
+            echo "This reusable workflow accepts only GlacierEQ-owned callers." >&2
+            exit 78
+          fi
 
-      - name: Python Check
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare artifact boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .verification-artifacts
+          install -d -m 700 .verification-artifacts
+
+      - name: Set up Python
         if: inputs.language == 'python'
-        run: |
-          pip install ruff pytest 2>/dev/null
-          echo "=== Ruff Lint ==="
-          ruff check . 2>/dev/null || echo "No ruff config"
-          echo "=== Ruff Format ==="
-          ruff format --check . 2>/dev/null || echo "No format config"
-          echo "=== Tests ==="
-          pytest -x -q 2>/dev/null || echo "No tests"
-          echo "✅ Python check complete"
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: ${{ inputs.python_version }}
+          check-latest: false
 
-      - name: TypeScript Check
+      - name: Set up Node
         if: inputs.language == 'typescript' || inputs.language == 'javascript'
-        run: |
-          npm ci 2>/dev/null || npm install
-          echo "=== ESLint ==="
-          npm run lint 2>/dev/null || echo "No lint script"
-          echo "=== Type Check ==="
-          npm run typecheck 2>/dev/null || echo "No typecheck script"
-          echo "=== Tests ==="
-          npm test 2>/dev/null || echo "No test script"
-          echo "✅ TypeScript check complete"
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ inputs.node_version }}
+          check-latest: false
 
-      - name: Go Check
-        if: inputs.language == 'go'
+      - name: Run repository-owned verification script
+        if: inputs.verify_script != ''
+        shell: bash
         run: |
-          echo "=== go vet ==="
-          go vet ./... 2>/dev/null || echo "No Go files"
-          echo "=== Tests ==="
-          go test ./... 2>/dev/null || echo "No tests"
-          echo "✅ Go check complete"
+          set -euo pipefail
+          case "$VERIFY_SCRIPT" in
+            scripts/ci/*|.github/verification/*) ;;
+            *) echo "verify_script must live under scripts/ci/ or .github/verification/" >&2; exit 64 ;;
+          esac
+          if [[ "$VERIFY_SCRIPT" == *".."* || ! -f "$VERIFY_SCRIPT" ]]; then
+            echo "verify_script is invalid or missing: $VERIFY_SCRIPT" >&2
+            exit 66
+          fi
+          bash -euo pipefail "$VERIFY_SCRIPT"
 
-      - name: Generic Check
-        if: inputs.language != 'python' && inputs.language != 'typescript' && inputs.language != 'javascript' && inputs.language != 'go'
+      - name: Verify Python project
+        if: inputs.verify_script == '' && inputs.language == 'python'
+        shell: bash
         run: |
-          echo "Language: ${{ inputs.language }}"
-          echo "Add specific checks to reusable-quick-ci.yml"
-          echo "✅ Passthrough"
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check ruff pytest
+          [[ -f requirements.txt ]] && python -m pip install -r requirements.txt
+          [[ -f requirements-dev.txt ]] && python -m pip install -r requirements-dev.txt
+          if [[ -f pyproject.toml || -f setup.py || -f setup.cfg ]]; then
+            python -m pip install -e .
+          fi
+          if [[ "$STRICT" == "true" ]]; then
+            ruff check .
+            ruff format --check .
+            python -m compileall -q .
+            pytest -x -q
+          else
+            ruff check . || true
+            ruff format --check . || true
+            pytest -x -q || true
+          fi
+
+      - name: Verify Node project
+        if: inputs.verify_script == '' && (inputs.language == 'typescript' || inputs.language == 'javascript')
+        shell: bash
+        run: |
+          set -euo pipefail
+          has_script() {
+            node -e 'const p=require("./package.json"); process.exit(p.scripts && p.scripts[process.argv[1]] ? 0 : 1)' "$1"
+          }
+          if [[ "$STRICT" == "true" ]]; then
+            [[ -f package-lock.json || -f npm-shrinkwrap.json ]] || {
+              echo "Strict Node verification requires a committed lockfile." >&2
+              exit 65
+            }
+            npm ci --no-audit --no-fund
+          else
+            npm ci --no-audit --no-fund 2>/dev/null || npm install --no-audit --no-fund
+          fi
+
+          if has_script verify; then
+            npm run verify
+          else
+            ran=0
+            for script in lint typecheck test; do
+              if has_script "$script"; then
+                ran=1
+                if [[ "$STRICT" == "true" ]]; then npm run "$script"; else npm run "$script" || true; fi
+              fi
+            done
+            if [[ "$STRICT" == "true" && "$ran" -eq 0 ]]; then
+              echo "Strict Node verification requires verify, lint, typecheck, or test scripts." >&2
+              exit 65
+            fi
+          fi
+
+      - name: Verify Go project
+        if: inputs.verify_script == '' && inputs.language == 'go'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$STRICT" == "true" ]]; then
+            test -z "$(gofmt -l .)"
+            go vet ./...
+            go test ./...
+          else
+            go vet ./... || true
+            go test ./... || true
+          fi
+
+      - name: Reject undefined strict language gates
+        if: inputs.verify_script == '' && inputs.language != 'python' && inputs.language != 'typescript' && inputs.language != 'javascript' && inputs.language != 'go'
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'Language: %s\n' "$LANGUAGE_NAME"
+          if [[ "$STRICT" == "true" ]]; then
+            echo "Strict generic verification requires a repository-owned verify_script." >&2
+            exit 65
+          fi
+
+      - name: Upload bounded verification artifacts
+        if: always() && inputs.upload_artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ inputs.repo_name }}-verification
+          path: .verification-artifacts/
+          if-no-files-found: warn
+          include-hidden-files: false
+          retention-days: 14
