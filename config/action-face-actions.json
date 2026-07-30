@@ -41,6 +41,15 @@
       "gate": "standard"
     },
     {
+      "pillar": "C",
+      "action": "master-grove-verify",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/Z-BACKUP-aspen-grove-operator-v7",
+      "legacy_event": "master-grove-verify",
+      "adapter": "node-ci",
+      "gate": "standard"
+    },
+    {
       "pillar": "F",
       "action": "master-strand-inventory",
       "source_event": "infra-gateway",
