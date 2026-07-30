@@ -110,21 +110,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: python3 scripts/action_face_guard.py
 
-      - name: Require dedicated bridge credentials
-        id: credentials
-        env:
-          APEX_PRIVATE_READ_TOKEN: ${{ secrets.APEX_PRIVATE_READ_TOKEN }}
-          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
-        run: |
-          test -n "$APEX_PRIVATE_READ_TOKEN" || { echo "APEX_PRIVATE_READ_TOKEN is required" >&2; exit 1; }
-          test -n "$APEX_CONTROL_TOKEN" || { echo "APEX_CONTROL_TOKEN is required" >&2; exit 1; }
-
-      - name: Assert private non-executing control plane
-        id: control
-        env:
-          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
-        run: python3 scripts/action_face_control_plane_guard.py
-
       - name: Validate and normalize strict job envelope
         id: plan
         continue-on-error: true
@@ -157,12 +142,47 @@ jobs:
           AUTH_REASON: strict metadata envelope validation failed
         run: python3 scripts/action_face_issue_status.py
 
-      - name: Atomically claim immutable job ID
+      - name: Require GitHub App bridge configuration
         if: steps.plan.outcome == 'success'
+        id: app_config
+        continue-on-error: true
+        env:
+          APP_CLIENT_ID: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+        run: |
+          test -n "$APP_CLIENT_ID" || { echo "APEX_RUNNER_APP_CLIENT_ID repository variable is required" >&2; exit 1; }
+          test -n "$APP_PRIVATE_KEY" || { echo "APEX_RUNNER_APP_PRIVATE_KEY repository secret is required" >&2; exit 1; }
+          case "$APP_PRIVATE_KEY" in
+            *"BEGIN "*"PRIVATE KEY"*) ;;
+            *) echo "APEX_RUNNER_APP_PRIVATE_KEY does not contain a PEM private key" >&2; exit 1 ;;
+          esac
+
+      - name: Mint one-repository private control token
+        if: steps.plan.outcome == 'success' && steps.app_config.outcome == 'success'
+        id: control_token
+        continue-on-error: true
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+          owner: GlacierEQ
+          repositories: GlacierEQ/llm-runner-teams
+          permission-contents: write
+
+      - name: Assert private non-executing control plane
+        if: steps.control_token.outcome == 'success'
+        id: control
+        continue-on-error: true
+        env:
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: python3 scripts/action_face_control_plane_guard.py
+
+      - name: Atomically claim immutable job ID
+        if: steps.plan.outcome == 'success' && steps.control.outcome == 'success'
         id: replay
         continue-on-error: true
         env:
-          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
         run: |
           python3 scripts/apex_pillar_runner.py claim-job \
             --plan .apex-plan.json
@@ -172,26 +192,38 @@ jobs:
         id: approval
         continue-on-error: true
         env:
-          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
         run: |
           python3 scripts/apex_pillar_runner.py verify-approval \
             --job-id "${{ steps.plan.outputs.job_id }}" \
             --pillar "${{ steps.plan.outputs.pillar }}" \
             --approval-id "${{ steps.plan.outputs.approval_id }}"
 
-      - name: Checkout catalog-approved workload without persisting credentials
+      - name: Mint one-repository private workload token
         if: >-
           steps.plan.outcome == 'success' &&
           steps.replay.outcome == 'success' &&
           ((steps.plan.outputs.pillar != 'G' && steps.plan.outputs.pillar != 'I') ||
            steps.approval.outcome == 'success')
+        id: workload_token
+        continue-on-error: true
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+          owner: GlacierEQ
+          repositories: ${{ steps.plan.outputs.source_repo }}
+          permission-contents: read
+
+      - name: Checkout catalog-approved workload without persisting credentials
+        if: steps.workload_token.outcome == 'success'
         id: checkout
         continue-on-error: true
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: ${{ steps.plan.outputs.source_repo }}
           ref: ${{ steps.plan.outputs.source_ref }}
-          token: ${{ secrets.APEX_PRIVATE_READ_TOKEN }}
+          token: ${{ steps.workload_token.outputs.token }}
           path: workload
           fetch-depth: 1
           persist-credentials: false
@@ -246,11 +278,13 @@ jobs:
         env:
           AUTHORIZATION_OUTCOME: ${{ steps.authorize.outcome }}
           IDENTITY_OUTCOME: ${{ steps.identity.outcome }}
-          CREDENTIAL_OUTCOME: ${{ steps.credentials.outcome }}
+          CREDENTIAL_OUTCOME: ${{ steps.app_config.outcome }}
+          CONTROL_TOKEN_OUTCOME: ${{ steps.control_token.outcome }}
           CONTROL_PLANE_OUTCOME: ${{ steps.control.outcome }}
           PLAN_OUTCOME: ${{ steps.plan.outcome }}
           CLAIM_OUTCOME: ${{ steps.replay.outcome }}
           APPROVAL_OUTCOME: ${{ steps.approval.outcome }}
+          WORKLOAD_TOKEN_OUTCOME: ${{ steps.workload_token.outcome }}
           CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
           BIND_OUTCOME: ${{ steps.bind.outcome }}
           RUNNER_OUTCOME: ${{ steps.runner.outcome }}
@@ -265,7 +299,7 @@ jobs:
         id: postrun_guard
         continue-on-error: true
         env:
-          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
         run: |
           python3 .apex-postrun-control/scripts/action_face_postrun_guard.py \
             --runner-root . \
@@ -280,7 +314,7 @@ jobs:
         id: publish
         continue-on-error: true
         env:
-          APEX_CONTROL_TOKEN: ${{ secrets.APEX_CONTROL_TOKEN }}
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
         run: |
           python3 .apex-postrun-control/scripts/action_face_publish_verified.py \
             --job-id "${{ steps.plan.outputs.job_id }}" \
@@ -308,8 +342,12 @@ jobs:
         if: >-
           always() &&
           (steps.plan.outcome == 'failure' ||
+           steps.app_config.outcome == 'failure' ||
+           steps.control_token.outcome == 'failure' ||
+           steps.control.outcome == 'failure' ||
            steps.replay.outcome == 'failure' ||
            steps.approval.outcome == 'failure' ||
+           steps.workload_token.outcome == 'failure' ||
            steps.checkout.outcome == 'failure' ||
            steps.bind.outcome == 'failure' ||
            steps.runner.outcome != 'success' ||
