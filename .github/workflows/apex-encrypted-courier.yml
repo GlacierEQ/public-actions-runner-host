@@ -1,0 +1,257 @@
+name: APEX Encrypted Courier Runner
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+    paths:
+      - jobs/encrypted-courier-*.json
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: apex-encrypted-courier-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  execute:
+    if: >-
+      github.event.pull_request.user.login == github.repository_owner &&
+      github.event.pull_request.author_association == 'OWNER' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout public courier control
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate encrypted courier envelope
+        id: plan
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          from pathlib import Path
+
+          safe = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]{7,80}$')
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only', f"{os.environ['BASE_SHA']}...{os.environ['HEAD_SHA']}"],
+              text=True,
+          ).splitlines()
+          changed = [p.strip() for p in changed if p.strip()]
+          if len(changed) != 1:
+              raise SystemExit('courier PR must change exactly one file')
+          path = Path(changed[0])
+          if not re.fullmatch(r'jobs/encrypted-courier-[A-Za-z0-9._-]+\.json', path.as_posix()):
+              raise SystemExit('courier PR path is not allowed')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          allowed = {'job_id', 'payload_branch', 'payload_path'}
+          if set(data) != allowed:
+              raise SystemExit('courier envelope fields are invalid')
+          job_id = str(data['job_id'])
+          branch = str(data['payload_branch'])
+          payload_path = str(data['payload_path'])
+          if not safe.fullmatch(job_id) or not safe.fullmatch(branch):
+              raise SystemExit('courier job or branch identifier is invalid')
+          if payload_path != f'courier/{job_id}.json':
+              raise SystemExit('courier payload path does not match job ID')
+          out = Path(os.environ['GITHUB_OUTPUT'])
+          with out.open('a', encoding='utf-8') as handle:
+              handle.write(f'job_id={job_id}\n')
+              handle.write(f'payload_branch={branch}\n')
+              handle.write(f'payload_path={payload_path}\n')
+          PY
+
+      - name: Generate one-run courier key
+        id: handshake
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          JOB_ID: ${{ steps.plan.outputs.job_id }}
+        run: |
+          umask 077
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out "$RUNNER_TEMP/courier-private.pem" >/dev/null 2>&1
+          openssl pkey -in "$RUNNER_TEMP/courier-private.pem" -pubout -out "$RUNNER_TEMP/courier-public.pem" >/dev/null 2>&1
+          python3 - <<'PY'
+          import base64, json, os, subprocess
+          from pathlib import Path
+
+          public_key = base64.b64encode(Path(os.environ['RUNNER_TEMP'], 'courier-public.pem').read_bytes()).decode()
+          body = '\n'.join([
+              'APEX_COURIER_HANDSHAKE_V1',
+              f"job_id={os.environ['JOB_ID']}",
+              f'public_key_b64={public_key}',
+          ])
+          payload = json.dumps({'body': body}).encode()
+          subprocess.run([
+              'gh', 'api',
+              f"repos/{os.environ['GITHUB_REPOSITORY']}/issues/{os.environ['PR_NUMBER']}/comments",
+              '--method', 'POST', '--input', '-',
+          ], input=payload, check=True)
+          PY
+
+      - name: Await encrypted courier payload
+        id: payload
+        env:
+          PAYLOAD_BRANCH: ${{ steps.plan.outputs.payload_branch }}
+          PAYLOAD_PATH: ${{ steps.plan.outputs.payload_path }}
+        run: |
+          found=false
+          for attempt in $(seq 1 90); do
+            if git fetch --quiet --depth=1 origin "$PAYLOAD_BRANCH"; then
+              if git show FETCH_HEAD:"$PAYLOAD_PATH" > "$RUNNER_TEMP/courier-envelope.json" 2>/dev/null; then
+                found=true
+                break
+              fi
+            fi
+            sleep 4
+          done
+          test "$found" = true || { echo 'encrypted courier payload did not arrive' >&2; exit 1; }
+
+      - name: Decrypt and verify private payload
+        id: decrypt
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, os
+          from pathlib import Path
+
+          root = Path(os.environ['RUNNER_TEMP'])
+          data = json.loads((root / 'courier-envelope.json').read_text(encoding='utf-8'))
+          required = {'schema_version', 'job_id', 'wrapped_key_b64', 'ciphertext_b64', 'plaintext_sha256', 'return_public_key_b64', 'source_manifest'}
+          if set(data) != required or data['schema_version'] != 'apex.encrypted_courier.v1':
+              raise SystemExit('courier payload schema is invalid')
+          (root / 'wrapped-key.bin').write_bytes(base64.b64decode(data['wrapped_key_b64'], validate=True))
+          (root / 'payload.enc').write_bytes(base64.b64decode(data['ciphertext_b64'], validate=True))
+          (root / 'return-public.pem').write_bytes(base64.b64decode(data['return_public_key_b64'], validate=True))
+          (root / 'payload-meta.json').write_text(json.dumps(data, sort_keys=True), encoding='utf-8')
+          PY
+          openssl pkeyutl -decrypt \
+            -inkey "$RUNNER_TEMP/courier-private.pem" \
+            -in "$RUNNER_TEMP/wrapped-key.bin" \
+            -out "$RUNNER_TEMP/payload-key.txt" \
+            -pkeyopt rsa_padding_mode:oaep \
+            -pkeyopt rsa_oaep_md:sha256 \
+            -pkeyopt rsa_mgf1_md:sha256
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
+            -in "$RUNNER_TEMP/payload.enc" \
+            -out "$RUNNER_TEMP/payload.tar.gz" \
+            -pass file:"$RUNNER_TEMP/payload-key.txt"
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          meta = json.loads((root / 'payload-meta.json').read_text(encoding='utf-8'))
+          actual = hashlib.sha256((root / 'payload.tar.gz').read_bytes()).hexdigest()
+          if actual != meta['plaintext_sha256']:
+              raise SystemExit('decrypted courier payload hash mismatch')
+          print('encrypted courier payload verified')
+          PY
+          mkdir -p "$RUNNER_TEMP/workload"
+          tar -xzf "$RUNNER_TEMP/payload.tar.gz" -C "$RUNNER_TEMP/workload"
+
+      - name: Execute private verification with public output suppressed
+        id: runner
+        continue-on-error: true
+        run: |
+          set +e
+          (
+            cd "$RUNNER_TEMP/workload"
+            bash scripts/run_aspen_local_verify.sh
+          ) >"$RUNNER_TEMP/private-verification.log" 2>&1
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          test "$code" -eq 0
+
+      - name: Encrypt detailed result for private receipt plane
+        id: result
+        if: always() && steps.decrypt.outcome == 'success'
+        env:
+          JOB_ID: ${{ steps.plan.outputs.job_id }}
+          TEST_EXIT_CODE: ${{ steps.runner.outputs.exit_code }}
+          RUNNER_OUTCOME: ${{ steps.runner.outcome }}
+          PUBLIC_RUN_ID: ${{ github.run_id }}
+          PUBLIC_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PUBLIC_RUNNER_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          root = Path(os.environ['RUNNER_TEMP'])
+          meta = json.loads((root / 'payload-meta.json').read_text(encoding='utf-8'))
+          detail = (root / 'private-verification.log').read_text(encoding='utf-8', errors='replace') if (root / 'private-verification.log').exists() else ''
+          detail = detail[-50000:]
+          status = 'success' if os.environ.get('RUNNER_OUTCOME') == 'success' and os.environ.get('TEST_EXIT_CODE') == '0' else 'failure'
+          result = {
+              'schema_version': 'apex.encrypted_courier_result.v1',
+              'job_id': os.environ['JOB_ID'],
+              'status': status,
+              'test_exit_code': os.environ.get('TEST_EXIT_CODE', ''),
+              'runner_outcome': os.environ.get('RUNNER_OUTCOME', ''),
+              'public_run_id': os.environ['PUBLIC_RUN_ID'],
+              'public_run_attempt': os.environ['PUBLIC_RUN_ATTEMPT'],
+              'public_runner_sha': os.environ['PUBLIC_RUNNER_SHA'],
+              'executed_at': datetime.now(timezone.utc).isoformat(),
+              'source_manifest': meta['source_manifest'],
+              'detail_sha256': hashlib.sha256(detail.encode()).hexdigest(),
+              'detail': detail,
+          }
+          (root / 'result.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
+          PY
+          umask 077
+          openssl rand -hex 32 > "$RUNNER_TEMP/result-key.txt"
+          openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
+            -in "$RUNNER_TEMP/result.json" \
+            -out "$RUNNER_TEMP/result.enc" \
+            -pass file:"$RUNNER_TEMP/result-key.txt"
+          openssl pkeyutl -encrypt \
+            -pubin -inkey "$RUNNER_TEMP/return-public.pem" \
+            -in "$RUNNER_TEMP/result-key.txt" \
+            -out "$RUNNER_TEMP/result-key.enc" \
+            -pkeyopt rsa_padding_mode:oaep \
+            -pkeyopt rsa_oaep_md:sha256 \
+            -pkeyopt rsa_mgf1_md:sha256
+
+      - name: Publish encrypted result envelope
+        if: always() && steps.result.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          JOB_ID: ${{ steps.plan.outputs.job_id }}
+        run: |
+          python3 - <<'PY'
+          import base64, json, os, subprocess
+          from pathlib import Path
+
+          root = Path(os.environ['RUNNER_TEMP'])
+          envelope = {
+              'schema_version': 'apex.encrypted_courier_result_envelope.v1',
+              'job_id': os.environ['JOB_ID'],
+              'wrapped_key_b64': base64.b64encode((root / 'result-key.enc').read_bytes()).decode(),
+              'ciphertext_b64': base64.b64encode((root / 'result.enc').read_bytes()).decode(),
+          }
+          body = 'APEX_COURIER_RESULT_V1\n' + base64.b64encode(json.dumps(envelope, separators=(',', ':')).encode()).decode()
+          payload = json.dumps({'body': body}).encode()
+          subprocess.run([
+              'gh', 'api',
+              f"repos/{os.environ['GITHUB_REPOSITORY']}/issues/{os.environ['PR_NUMBER']}/comments",
+              '--method', 'POST', '--input', '-',
+          ], input=payload, check=True)
+          print('encrypted private result returned')
+          PY
+
+      - name: Enforce verification result
+        if: always() && (steps.decrypt.outcome != 'success' || steps.runner.outcome != 'success' || steps.result.outcome != 'success')
+        run: exit 1
