@@ -50,6 +50,16 @@
       "gate": "standard"
     },
     {
+      "pillar": "H",
+      "action": "anthropic-agent-coordinator-ci",
+      "source_event": "orchestrate",
+      "target_repo": "GlacierEQ/anthropic-agent-coordinator",
+      "legacy_event": "anthropic-agent-coordinator-ci",
+      "adapter": "repo-verify-script",
+      "gate": "elevated",
+      "approval_required": false
+    },
+    {
       "pillar": "F",
       "action": "master-strand-inventory",
       "source_event": "infra-gateway",
