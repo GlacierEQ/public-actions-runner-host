@@ -6,11 +6,14 @@
     {
       "login": "GlacierEQ",
       "id": 194243768,
-      "roles": ["issues", "repository_dispatch", "workflow_dispatch", "push"]
+      "roles": ["issues", "repository_dispatch", "workflow_dispatch", "push", "pull_request"]
     }
   ],
   "authorized_issue_associations": [
     "OWNER"
   ],
-  "policy": "Both actor login and immutable numeric identity must match when GitHub supplies an actor ID. Anonymous public issue authors are never execution principals."
+  "authorized_pull_request_associations": [
+    "OWNER"
+  ],
+  "policy": "Both actor login and immutable numeric identity must match when GitHub supplies an actor ID. Pull-request ingress is limited to owner-created same-repository branches targeting main and is accepted only when the PR changes exactly one jobs/<job_id>.json envelope."
 }

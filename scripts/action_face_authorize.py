@@ -41,7 +41,8 @@ def main() -> int:
         for record in actor_records
         if isinstance(record, dict) and record.get("login")
     }
-    associations = set(config.get("authorized_issue_associations") or [])
+    issue_associations = set(config.get("authorized_issue_associations") or [])
+    pr_associations = set(config.get("authorized_pull_request_associations") or [])
     expected_owner = str(config.get("repository_owner") or "")
 
     repository = os.environ.get("GITHUB_REPOSITORY", "")
@@ -64,8 +65,24 @@ def main() -> int:
         principal = str(user.get("login") or actor)
         principal_id = str(user.get("id") or actor_id)
         association = str(issue.get("author_association") or "")
-        if association not in associations:
+        if association not in issue_associations:
             deny(f"issue association {clean(association)} is not authorized")
+    elif event_name == "pull_request":
+        pull_request = event.get("pull_request") or {}
+        user = pull_request.get("user") or {}
+        base = pull_request.get("base") or {}
+        head = pull_request.get("head") or {}
+        base_repo = (base.get("repo") or {}).get("full_name")
+        head_repo = (head.get("repo") or {}).get("full_name")
+        principal = str(user.get("login") or actor)
+        principal_id = str(user.get("id") or actor_id)
+        association = str(pull_request.get("author_association") or "")
+        if association not in pr_associations:
+            deny(f"pull-request association {clean(association)} is not authorized")
+        if base_repo != repository or head_repo != repository:
+            deny("pull-request ingress must use a same-repository branch")
+        if str(base.get("ref") or "") != "main":
+            deny("pull-request ingress must target main")
     elif event_name == "repository_dispatch":
         sender = event.get("sender") or {}
         principal = str(sender.get("login") or actor)
