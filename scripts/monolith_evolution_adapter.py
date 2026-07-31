@@ -4,6 +4,7 @@ The workload token is read-only and is removed from the subprocess environment.
 Generated files never enter a public artifact or public log. They are compressed,
 hashed, and returned only through the action face's immutable private receipt.
 """
+
 from __future__ import annotations
 
 import base64
@@ -108,9 +109,7 @@ def validate_ledger(payload: Any) -> tuple[int, dict[str, int]]:
     source = payload.get("source_catalog")
     records = payload.get("records")
     counts = payload.get("counts")
-    generation_counts = (
-        counts.get("generation") if isinstance(counts, dict) else None
-    )
+    generation_counts = counts.get("generation") if isinstance(counts, dict) else None
     if not isinstance(source, dict) or not isinstance(records, list):
         raise TypeError("evolution ledger lacks source_catalog or records")
     if not isinstance(generation_counts, dict):
@@ -209,9 +208,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         source_entry_count, generation_counts = validate_ledger(ledger)
         artifacts = {
             "catalog/evolution_map.json": seal_artifact(json_path, workspace),
-            "status/EVOLUTION_LEVELS.md": seal_artifact(
-                markdown_path, workspace
-            ),
+            "status/EVOLUTION_LEVELS.md": seal_artifact(markdown_path, workspace),
         }
     except (
         OSError,
@@ -224,10 +221,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             plan,
             result_path,
             "failed",
-            reason=(
-                "generated ledger validation failed: "
-                f"{type(error).__name__}: {error}"
-            ),
+            reason=f"generated ledger validation failed: {type(error).__name__}: {error}",
             steps=steps,
         )
 
@@ -240,9 +234,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "generation_counts": generation_counts,
         "artifacts": artifacts,
     }
-    estimated = len(
-        json.dumps(details, separators=(",", ":")).encode("utf-8")
-    )
+    estimated = len(json.dumps(details, separators=(",", ":")).encode("utf-8"))
     if estimated > MAX_PRIVATE_PAYLOAD_BYTES:
         return catalog.write_result(
             plan,
