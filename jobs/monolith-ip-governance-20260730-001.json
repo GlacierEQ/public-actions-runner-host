@@ -1,6 +1,0 @@
-{
-  "job_id": "monolith-ip-governance-20260730-001",
-  "pillar": "D",
-  "action": "monolith-ip-governance",
-  "source_ref": "overhaul/ip-control-plane-v1"
-}
