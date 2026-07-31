@@ -36,6 +36,7 @@ ADAPTER_TASK = {
     "python-ci": "test",
     "node-ci": "test",
     "akos-echo-policy-ci": "test",
+    "monolith-evolution": "test",
     "action-face-selftest": "validate",
     "master-strand-inventory": "audit",
     "master-strand-extinction": "audit",
