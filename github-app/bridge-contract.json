@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "status": "staged",
+  "schema_version": "1.1",
+  "status": "staged_owner_activation_required",
   "app": {
     "name": "APEX Runner Bridge",
     "owner_login": "GlacierEQ",
@@ -18,11 +18,12 @@
   "installation_repositories": [
     "GlacierEQ/mastermind",
     "GlacierEQ/llm-runner-teams",
-    "GlacierEQ/monolith"
+    "GlacierEQ/monolith",
+    "GlacierEQ/MEGA-PDF"
   ],
   "token_profiles": {
     "private_workload_read": {
-      "repositories": "exact source repository from validated plan",
+      "repositories": "one exact catalog-approved source repository",
       "permissions": {
         "contents": "read"
       },
@@ -36,6 +37,17 @@
       "permissions": {
         "contents": "write"
       },
+      "maximum_lifetime": "1 hour",
+      "revocation": "automatic at job completion"
+    },
+    "mega_pdf_receipt_write": {
+      "repositories": [
+        "GlacierEQ/MEGA-PDF"
+      ],
+      "permissions": {
+        "contents": "write"
+      },
+      "purpose": "Read the exact selected MEGA-PDF source ref and publish generated Function Genome artifacts only to automation/mega-pdf-function-genome-results",
       "maximum_lifetime": "1 hour",
       "revocation": "automatic at job completion"
     }
@@ -55,7 +67,8 @@
     "GitHub Actions in GlacierEQ/llm-runner-teams",
     "installation access to all GlacierEQ repositories",
     "unscoped installation tokens",
-    "PAT fallback after GitHub App activation",
-    "private key exposure to workload processes"
+    "PAT fallback",
+    "private key exposure to workload processes",
+    "publishing private MEGA-PDF inventory artifacts to the public action-face repository"
   ]
 }
