@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-evolution-20260731-001",
+  "pillar": "D",
+  "action": "monolith-evolution-map",
+  "source_ref": "feat/monolith-evolution-roadmap"
+}
