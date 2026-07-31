@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-python -m pip install --disable-pip-version-check ruff pytest
+python -m pip install \
+  --disable-pip-version-check \
+  --only-binary=:all: \
+  ruff==0.16.1 \
+  pytest==9.1.1
 
 python -m json.tool config/action-face-actions.json >/dev/null
 
