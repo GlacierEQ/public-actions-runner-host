@@ -14,6 +14,7 @@ from pathlib import Path
 import apex_catalog_runner as catalog
 from action_face_selftest import run as run_selftest
 from master_strand_extinction import ExtinctionError, run as run_master_strand
+from monolith_evolution_adapter import run as run_monolith_evolution
 
 SENSITIVE_ENV = {
     "APEX_BRANCH_WRITE_TOKEN",
@@ -265,6 +266,7 @@ def akos_echo_policy_ci(plan: dict, workspace: Path, result_path: Path) -> int:
     ]
     return run_sequence(plan, project, result_path, commands)
 
+
 def master_strand(plan: dict, result_path: Path, mode: str) -> int:
     try:
         report = run_master_strand(
@@ -307,6 +309,8 @@ def main() -> int:
         return python_ci(plan, workspace, result_path)
     if adapter == "akos-echo-policy-ci":
         return akos_echo_policy_ci(plan, workspace, result_path)
+    if adapter == "monolith-evolution":
+        return run_monolith_evolution(plan, workspace, result_path)
     if adapter == "master-strand-inventory":
         return master_strand(plan, result_path, "inventory")
     if adapter == "master-strand-extinction":

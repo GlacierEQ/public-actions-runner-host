@@ -105,6 +105,16 @@
       "legacy_event": "action-face-canary",
       "adapter": "action-face-selftest",
       "gate": "standard"
+    },
+    {
+      "pillar": "D",
+      "action": "monolith-evolution-map",
+      "source_event": "evolution-optimize",
+      "target_repo": "GlacierEQ/monolith",
+      "legacy_event": "monolith-evolution-map",
+      "adapter": "monolith-evolution",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
