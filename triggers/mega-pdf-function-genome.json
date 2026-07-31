@@ -1,0 +1,8 @@
+{
+  "schema_version": "mega-pdf-relay-trigger/v1",
+  "source_repo": "GlacierEQ/MEGA-PDF",
+  "source_ref": "upgrade/mega-pdf-document-intelligence-v2",
+  "requested_source_sha": "ebccf699a43c18c73fb98187a1be0ee74b72389d",
+  "requested_at": "2026-07-31T14:50:00Z",
+  "purpose": "Execute private Function Genome verification on the public runner host and publish results to the dedicated private results branch."
+}
