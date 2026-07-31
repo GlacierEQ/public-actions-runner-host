@@ -15,6 +15,7 @@ import os
 import re
 import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -89,6 +90,16 @@ def run_command(
         }
 
 
+def parse_test_count(output: str) -> int:
+    match = TEST_COUNT.search(output)
+    if not match:
+        raise ValueError("unittest output did not report an executed test count")
+    count = int(match.group(1))
+    if count < 1:
+        raise ValueError("unittest discovery executed zero tests")
+    return count
+
+
 def seal_artifact(path: Path, workspace: Path) -> dict[str, Any]:
     raw = path.read_bytes()
     compressed = gzip.compress(raw, compresslevel=9, mtime=0)
@@ -103,9 +114,37 @@ def seal_artifact(path: Path, workspace: Path) -> dict[str, Any]:
     }
 
 
-def validate_ledger(payload: Any) -> tuple[int, dict[str, int]]:
+def validate_source_catalog(payload: Any) -> tuple[list[dict[str, Any]], bytes]:
+    if not isinstance(payload, dict):
+        raise TypeError("catalog/library.json must contain a JSON object")
+    entries = payload.get("entries")
+    if not isinstance(entries, list) or not entries:
+        raise TypeError("catalog/library.json must contain a nonempty entries array")
+    names: set[str] = set()
+    normalized: list[dict[str, Any]] = []
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            raise TypeError(f"source catalog entry {index} is not an object")
+        name = entry.get("name")
+        if not isinstance(name, str) or not name:
+            raise ValueError(f"source catalog entry {index} lacks a valid name")
+        if name in names:
+            raise ValueError(f"source catalog contains duplicate repository name: {name}")
+        names.add(name)
+        normalized.append(entry)
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return normalized, raw
+
+
+def validate_ledger(
+    payload: Any,
+    source_catalog: dict[str, Any],
+) -> tuple[int, dict[str, int]]:
     if not isinstance(payload, dict):
         raise TypeError("evolution_map.json must contain a JSON object")
+    source_entries, _ = validate_source_catalog(source_catalog)
+    source_by_name = {str(entry["name"]): entry for entry in source_entries}
+
     source = payload.get("source_catalog")
     records = payload.get("records")
     counts = payload.get("counts")
@@ -114,18 +153,29 @@ def validate_ledger(payload: Any) -> tuple[int, dict[str, int]]:
         raise TypeError("evolution ledger lacks source_catalog or records")
     if not isinstance(generation_counts, dict):
         raise TypeError("evolution ledger lacks generation counts")
-    entry_count = source.get("entry_count")
-    if not isinstance(entry_count, int) or entry_count < 1:
-        raise ValueError("source entry_count is invalid")
+
+    entry_count = len(source_entries)
+    if source.get("path") != "catalog/library.json":
+        raise ValueError("evolution ledger source path is invalid")
+    if source.get("entry_count") != entry_count:
+        raise ValueError("evolution ledger source count differs from library.json")
+    if source.get("version") != source_catalog.get("version"):
+        raise ValueError("evolution ledger source version differs from library.json")
+    if source.get("updated") != source_catalog.get("updated"):
+        raise ValueError("evolution ledger source timestamp differs from library.json")
     if len(records) != entry_count:
-        raise ValueError("record count does not match source entry_count")
-    normalized: dict[str, int] = {}
+        raise ValueError("record count does not match source catalog")
+
+    normalized_counts: dict[str, int] = {}
     for key, value in generation_counts.items():
         if not isinstance(key, str) or not isinstance(value, int) or value < 0:
             raise TypeError("generation counts contain an invalid entry")
-        normalized[key] = value
-    if sum(normalized.values()) != entry_count:
+        normalized_counts[key] = value
+    if sum(normalized_counts.values()) != entry_count:
         raise ValueError("generation counts do not sum to source entry_count")
+
+    record_names: set[str] = set()
+    derived_counts: Counter[str] = Counter()
     for index, record in enumerate(records):
         if not isinstance(record, dict):
             raise TypeError(f"record {index} is not an object")
@@ -140,14 +190,57 @@ def validate_ledger(payload: Any) -> tuple[int, dict[str, int]]:
         ):
             if not record.get(field):
                 raise ValueError(f"record {index} lacks {field}")
-    return entry_count, normalized
+        name = str(record["name"])
+        if name in record_names:
+            raise ValueError(f"evolution ledger contains duplicate repository: {name}")
+        record_names.add(name)
+        source_entry = source_by_name.get(name)
+        if source_entry is None:
+            raise ValueError(f"evolution ledger contains unknown repository: {name}")
+        for key, expected in source_entry.items():
+            if record.get(key) != expected:
+                raise ValueError(f"evolution record {name} changed source field {key}")
+        derived_counts[str(record["generation"])] += 1
+
+    if record_names != set(source_by_name):
+        missing = sorted(set(source_by_name) - record_names)
+        raise ValueError(f"evolution ledger omitted repositories: {', '.join(missing[:10])}")
+    declared_nonzero = {
+        key: value for key, value in normalized_counts.items() if value != 0
+    }
+    if dict(derived_counts) != declared_nonzero:
+        raise ValueError("declared generation counts do not match record generations")
+    return entry_count, normalized_counts
+
+
+def validate_markdown(
+    text: str,
+    entry_count: int,
+    generation_counts: dict[str, int],
+) -> None:
+    if not text.strip():
+        raise ValueError("status/EVOLUTION_LEVELS.md is empty")
+    required = {
+        "# Evolution Levels",
+        "## Complete repository placement",
+        "## Regenerate and verify",
+        f"**Repositories classified:** {entry_count}",
+    }
+    required.update(f"### {generation}" for generation in generation_counts)
+    missing = sorted(fragment for fragment in required if fragment not in text)
+    if missing:
+        raise ValueError(
+            "status/EVOLUTION_LEVELS.md lacks required structure: "
+            + ", ".join(missing)
+        )
 
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
+    catalog_path = workspace / "catalog" / "library.json"
     required = [
-        workspace / "catalog" / "library.json",
+        catalog_path,
         workspace / "scripts" / "evolution.py",
         workspace / "scripts" / "generate_evolution_map.py",
         workspace / "tests" / "test_evolution.py",
@@ -165,7 +258,19 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason=f"required Monolith files are missing: {', '.join(missing)}",
         )
 
-    commands = [
+    try:
+        source_bytes = catalog_path.read_bytes()
+        source_catalog = json.loads(source_bytes.decode("utf-8"))
+        validate_source_catalog(source_catalog)
+    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError) as error:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason=f"source catalog validation failed: {type(error).__name__}: {error}",
+        )
+
+    test_step = run_command(
         [
             sys.executable,
             "-m",
@@ -176,11 +281,32 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "-p",
             "test_*.py",
         ],
+        workspace,
+    )
+    steps: list[dict[str, Any]] = [test_step]
+    if test_step["status"] != "completed":
+        return catalog.write_result(
+            plan,
+            result_path,
+            "failed",
+            reason="Monolith unittest command failed",
+            steps=steps,
+        )
+    try:
+        test_count = parse_test_count(test_step.get("output_tail", ""))
+    except ValueError as error:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "failed",
+            reason=str(error),
+            steps=steps,
+        )
+
+    for command in (
         [sys.executable, "scripts/generate_evolution_map.py"],
         [sys.executable, "scripts/generate_evolution_map.py", "--check"],
-    ]
-    steps: list[dict[str, Any]] = []
-    for command in commands:
+    ):
         step = run_command(command, workspace)
         steps.append(step)
         if step["status"] != "completed":
@@ -190,6 +316,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 "failed",
                 reason="Monolith evolution command failed",
                 steps=steps,
+                test_count=test_count,
             )
 
     json_path = workspace / "catalog" / "evolution_map.json"
@@ -201,11 +328,16 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "failed",
             reason="generator completed without producing both governed ledgers",
             steps=steps,
+            test_count=test_count,
         )
 
     try:
         ledger = json.loads(json_path.read_text(encoding="utf-8"))
-        source_entry_count, generation_counts = validate_ledger(ledger)
+        source_entry_count, generation_counts = validate_ledger(
+            ledger, source_catalog
+        )
+        markdown = markdown_path.read_text(encoding="utf-8")
+        validate_markdown(markdown, source_entry_count, generation_counts)
         artifacts = {
             "catalog/evolution_map.json": seal_artifact(json_path, workspace),
             "status/EVOLUTION_LEVELS.md": seal_artifact(markdown_path, workspace),
@@ -223,14 +355,14 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "failed",
             reason=f"generated ledger validation failed: {type(error).__name__}: {error}",
             steps=steps,
+            test_count=test_count,
         )
 
-    test_match = TEST_COUNT.search(steps[0].get("output_tail", ""))
-    test_count = int(test_match.group(1)) if test_match else None
     details = {
         "steps": steps,
         "test_count": test_count,
         "source_entry_count": source_entry_count,
+        "source_catalog_sha256": hashlib.sha256(source_bytes).hexdigest(),
         "generation_counts": generation_counts,
         "artifacts": artifacts,
     }
@@ -245,7 +377,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 f"payload ({estimated} > {MAX_PRIVATE_PAYLOAD_BYTES} bytes)"
             ),
             steps=steps,
+            test_count=test_count,
             source_entry_count=source_entry_count,
+            source_catalog_sha256=hashlib.sha256(source_bytes).hexdigest(),
             generation_counts=generation_counts,
             artifact_metadata={
                 name: {
