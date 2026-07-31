@@ -123,15 +123,13 @@ def test_parse_test_count_rejects_missing_or_zero_tests() -> None:
 
 def test_validate_markdown_requires_governed_structure() -> None:
     counts = {"G1_GENESIS": 1, "G2_SPECIALIST": 1}
-    valid = "\n".join(
-        [
-            "# Evolution Levels",
-            "**Repositories classified:** 2",
-            "## Complete repository placement",
-            "### G1_GENESIS",
-            "### G2_SPECIALIST",
-            "## Regenerate and verify",
-        ]
+    valid = (
+        "# Evolution Levels\n"
+        "**Repositories classified:** 2\n"
+        "## Complete repository placement\n"
+        "### G1_GENESIS\n"
+        "### G2_SPECIALIST\n"
+        "## Regenerate and verify"
     )
     validate_markdown(valid, 2, counts)
     with pytest.raises(ValueError, match="lacks required structure"):
