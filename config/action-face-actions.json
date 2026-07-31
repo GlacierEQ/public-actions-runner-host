@@ -115,6 +115,16 @@
       "adapter": "monolith-evolution",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "D",
+      "action": "monolith-ip-governance",
+      "source_event": "evolution-optimize",
+      "target_repo": "GlacierEQ/monolith",
+      "legacy_event": "monolith-ip-governance",
+      "adapter": "monolith-ip-governance",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
