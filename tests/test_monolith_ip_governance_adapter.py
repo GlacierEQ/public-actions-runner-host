@@ -66,11 +66,13 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
         json.dumps(schema) + "\n", encoding="utf-8"
     )
     for name in (
+        "generate_publication_receipt.py",
         "json_schema_subset.py",
         "validate_evidence_records.py",
         "validate_ip_manifest.py",
         "validate_publication_authorization.py",
         "validate_release_evidence.py",
+        "verify_publication_readiness.py",
     ):
         (root / "scripts" / name).write_text(
             "raise SystemExit(0)\n", encoding="utf-8"
@@ -222,7 +224,23 @@ def test_adapter_fails_when_release_evidence_gate_fails(
     assert result["failed_step"] == 4
 
 
-def test_adapter_rejects_mid_run_transitive_evidence_validator_mutation(
+def test_adapter_fails_when_publication_readiness_gate_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    (tmp_path / "scripts" / "verify_publication_readiness.py").write_text(
+        "raise SystemExit(1)\n", encoding="utf-8"
+    )
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-readiness.json"
+
+    assert run(plan(), tmp_path, result_path) != 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["failed_step"] == 5
+
+
+def test_adapter_rejects_mid_run_receipt_generator_mutation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     write_fixture(tmp_path)
@@ -236,9 +254,12 @@ def test_adapter_rejects_mid_run_transitive_evidence_validator_mutation(
     ) -> dict:
         nonlocal mutated
         result = original_run_command(command, workspace, timeout)
-        if not mutated and "scripts/validate_release_evidence.py" in command:
-            target = workspace / "scripts" / "validate_evidence_records.py"
-            target.write_text(target.read_text(encoding="utf-8") + "# mutated\n", encoding="utf-8")
+        if not mutated and "scripts/verify_publication_readiness.py" in command:
+            target = workspace / "scripts" / "generate_publication_receipt.py"
+            target.write_text(
+                target.read_text(encoding="utf-8") + "# mutated\n",
+                encoding="utf-8",
+            )
             mutated = True
         return result
 
@@ -247,7 +268,7 @@ def test_adapter_rejects_mid_run_transitive_evidence_validator_mutation(
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "failed"
     assert result["reason"] == "critical governance files changed during execution"
-    assert "scripts/validate_evidence_records.py" in result["changed_critical_files"]
+    assert "scripts/generate_publication_receipt.py" in result["changed_critical_files"]
 
 
 def test_adapter_rejects_zero_test_execution(
