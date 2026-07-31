@@ -31,6 +31,7 @@ CRITICAL_PATHS = (
     "scripts/json_schema_subset.py",
     "scripts/load_governed_catalog.py",
     "scripts/scan_secrets.py",
+    "scripts/validate_evidence_records.py",
     "scripts/validate_ip_manifest.py",
     "scripts/validate_publication_authorization.py",
     "scripts/validate_release_evidence.py",
