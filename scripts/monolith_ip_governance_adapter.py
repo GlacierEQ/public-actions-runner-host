@@ -4,7 +4,8 @@
 The adapter is read-only with respect to the workload. It executes the exact
 repository-owned overlay, scanner, schema-backed manifest validator, substantive
 release-evidence gate, and tests; proves that at least one test ran; and returns
-only bounded verification metadata through the private receipt plane.
+only bounded verification metadata through the private receipt plane. Critical
+control bytes are hashed before execution and must remain unchanged afterward.
 """
 from __future__ import annotations
 
@@ -23,6 +24,16 @@ ENV_ALLOWLIST = ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR")
 MAX_OUTPUT = 24_000
 TEST_COUNT = re.compile(r"Ran\s+(\d+)\s+tests?", re.IGNORECASE)
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
+CRITICAL_PATHS = (
+    "ip-manifest.json",
+    "catalog/rights_overlay.json",
+    "schemas/ip-manifest.schema.json",
+    "scripts/json_schema_subset.py",
+    "scripts/load_governed_catalog.py",
+    "scripts/scan_secrets.py",
+    "scripts/validate_ip_manifest.py",
+    "scripts/validate_release_evidence.py",
+)
 
 
 def isolated_env() -> dict[str, str]:
@@ -95,6 +106,12 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def hash_critical_files(workspace: Path) -> dict[str, str]:
+    return {
+        relative: sha256_file(workspace / relative) for relative in CRITICAL_PATHS
+    }
+
+
 def manifest_summary(manifest: object) -> dict[str, Any]:
     if not isinstance(manifest, dict):
         raise TypeError("ip-manifest.json must contain a JSON object")
@@ -155,17 +172,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="APEX_RESOLVED_SOURCE_SHA is unavailable or invalid",
         )
 
-    required = [
-        workspace / "ip-manifest.json",
-        workspace / "catalog" / "rights_overlay.json",
-        workspace / "schemas" / "ip-manifest.schema.json",
-        workspace / "scripts" / "json_schema_subset.py",
-        workspace / "scripts" / "load_governed_catalog.py",
-        workspace / "scripts" / "scan_secrets.py",
-        workspace / "scripts" / "validate_ip_manifest.py",
-        workspace / "scripts" / "validate_release_evidence.py",
-        workspace / "tests",
-    ]
+    required = [*(workspace / path for path in CRITICAL_PATHS), workspace / "tests"]
     missing = [
         path.relative_to(workspace).as_posix()
         for path in required
@@ -180,6 +187,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         )
 
     try:
+        critical_files_before = hash_critical_files(workspace)
         manifest = json.loads((workspace / "ip-manifest.json").read_text(encoding="utf-8"))
         schema = json.loads(
             (workspace / "schemas" / "ip-manifest.schema.json").read_text(
@@ -274,6 +282,33 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             )
 
     try:
+        critical_files_after = hash_critical_files(workspace)
+    except OSError as error:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "failed",
+            reason=f"critical governance files became unreadable: {error}",
+            steps=steps,
+            manifest_summary=summary,
+        )
+    if critical_files_after != critical_files_before:
+        changed = sorted(
+            path
+            for path in CRITICAL_PATHS
+            if critical_files_after.get(path) != critical_files_before.get(path)
+        )
+        return catalog.write_result(
+            plan,
+            result_path,
+            "failed",
+            reason="critical governance files changed during execution",
+            changed_critical_files=changed,
+            steps=steps,
+            manifest_summary=summary,
+        )
+
+    try:
         report = json.loads(scan_path.read_text(encoding="utf-8"))
         bounded_scan = scan_summary(report)
     except (OSError, UnicodeError, json.JSONDecodeError, TypeError) as error:
@@ -286,20 +321,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             manifest_summary=summary,
         )
 
-    critical_paths = [
-        "ip-manifest.json",
-        "catalog/rights_overlay.json",
-        "schemas/ip-manifest.schema.json",
-        "scripts/json_schema_subset.py",
-        "scripts/load_governed_catalog.py",
-        "scripts/scan_secrets.py",
-        "scripts/validate_ip_manifest.py",
-        "scripts/validate_release_evidence.py",
-    ]
-    critical_files = {
-        relative: sha256_file(workspace / relative) for relative in critical_paths
-    }
-
     return catalog.write_result(
         plan,
         result_path,
@@ -308,6 +329,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         test_count=test_count,
         manifest_summary=summary,
         secret_scan=bounded_scan,
-        critical_file_sha256=critical_files,
+        critical_file_sha256=critical_files_before,
         steps=steps,
     )
