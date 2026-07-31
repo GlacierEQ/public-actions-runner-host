@@ -1,12 +1,6 @@
 # APEX Runner Bridge — Owner Activation
 
-The repository-side GitHub App bridge is installed on `main` in commit:
-
-```text
-0ee4cfc32aff8748874cf2c9083b817caee341f5
-```
-
-GitHub requires the account owner to create the App registration, generate its private key, choose the installation repositories, and store the key. Those owner-only settings are not exposed by the connected repository API.
+The repository-side bridge, MEGA-PDF relay, security checks, and observable canary are installed. GitHub requires the personal-account owner to create the App registration, generate its private key, choose installation repositories, and store the key. Those owner-only settings are not exposed by the connected repository API.
 
 ## 1. Register the private App
 
@@ -28,7 +22,7 @@ Confirm this exact configuration before creating it:
 | Account permissions | **No access** |
 | OAuth authorization on install | **Off** |
 
-The App requires `contents:write` at registration because it must create append-only claims and receipts in the private control repository. Every workload token is down-scoped at runtime to `contents:read` for one exact repository.
+Contents write is registered because the bridge writes bounded receipts to explicitly selected private repositories. Each runtime token is down-scoped to one exact repository and expires automatically.
 
 ## 2. Generate one private key
 
@@ -43,13 +37,23 @@ Install the App on the `GlacierEQ` personal account using **Only select reposito
 ```text
 GlacierEQ/mastermind
 GlacierEQ/llm-runner-teams
+GlacierEQ/monolith
+GlacierEQ/MEGA-PDF
 ```
 
-Add another private workload only when it is admitted to the APEX action catalog. Do not select `All repositories`.
+Do not select `All repositories`.
+
+For MEGA-PDF, the token is limited at runtime to `GlacierEQ/MEGA-PDF` with `contents:write`. The relay reads the selected source ref and writes generated inventory artifacts only to:
+
+```text
+automation/mega-pdf-function-genome-results
+```
+
+No private inventory artifact is uploaded to the public action-face repository.
 
 ## 4. Store the App identity on the canonical action face
 
-In `GlacierEQ/public-actions-runner-host` repository settings, create:
+In `GlacierEQ/public-actions-runner-host` repository settings, create exactly:
 
 ```text
 Actions variable
@@ -61,45 +65,52 @@ APEX_RUNNER_APP_PRIVATE_KEY = <entire downloaded PEM contents>
 
 The secret must include the complete `BEGIN ... PRIVATE KEY` and `END ... PRIVATE KEY` lines.
 
-No App ID or installation ID needs to be stored. The workflow resolves installations dynamically and writes the installation IDs into the private claim and receipt.
+No App ID or installation ID needs to be stored. The workflow resolves installations dynamically. Static PAT fallback is prohibited.
 
 ## 5. Public visibility gate
 
-`GlacierEQ/public-actions-runner-host` must be public before the canary is run. The repository identity guard intentionally blocks execution while GitHub reports it as private.
+`GlacierEQ/public-actions-runner-host` must remain public. The identity guard blocks execution if GitHub reports any other visibility or repository identity.
 
-## 6. Canary
+## 6. MEGA-PDF activation run
 
-After public visibility is confirmed and the variable/secret exist, dispatch:
+After the variable and secret exist, rerun PR:
 
 ```text
-Workflow: APEX GitHub App Bridge Canary
-job_id: github-app-canary-20260719-001
-workload_repo: GlacierEQ/mastermind
-workload_ref: main
+GlacierEQ/public-actions-runner-host #67
+Workflow: MEGA-PDF Private Relay PR Trigger
+Source: GlacierEQ/MEGA-PDF
+Ref: upgrade/mega-pdf-document-intelligence-v2
 ```
 
-The canary will:
+The relay will:
 
-1. verify the canonical public action face;
-2. mint a one-repository `contents:write` token for `llm-runner-teams`;
-3. mint a one-repository `contents:read` token for `mastermind`;
-4. prove each token sees exactly one repository;
-5. create `claims/<job_id>.json` privately;
-6. checkout and bind the exact private workload commit;
-7. create `results/<job_id>.json` privately;
-8. revoke both installation tokens automatically when the job ends.
+1. verify the public action-face identity;
+2. mint one short-lived token scoped only to `GlacierEQ/MEGA-PDF`;
+3. checkout and bind the exact private source commit;
+4. compile the governed control plane;
+5. run the focused governance and ingestion tests;
+6. execute the real monorepo Function Genome ingestion;
+7. verify every receipt, chain link, terminal root, and promotion invariant;
+8. publish the private artifacts to `automation/mega-pdf-function-genome-results`;
+9. revoke the installation token automatically at job completion.
 
 ## Acceptance evidence
 
-The App bridge is activated only when all of these are observed:
+The bridge is activated for MEGA-PDF only when all of these are observed:
 
 ```text
-public workflow conclusion = success
-control installation scope = GlacierEQ/llm-runner-teams only
-workload installation scope = GlacierEQ/mastermind only
-private claim exists before checkout completion
-resolved source SHA is 40 lowercase hexadecimal characters
-private immutable receipt exists
+public relay workflow conclusion = success
+exact private source SHA recorded
+installation token scope = GlacierEQ/MEGA-PDF only
+contents permission = write; all unrelated permissions absent
+focused tests pass
+receipt_chain_valid = true
+discovered = promoted_to_probed + blocked
+receipts = discovered
+approved = 0
+defaults_promoted = 0
+private results branch exists
 no PAT fallback used
-no private Actions used
+no private Actions minutes used
+no private inventory artifact published publicly
 ```
