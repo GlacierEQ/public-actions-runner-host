@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Generate Monolith evolution ledgers and seal them into a private receipt.
 
 The workload token is read-only and is removed from the subprocess environment.
@@ -47,7 +46,9 @@ def isolated_env() -> dict[str, str]:
     return env
 
 
-def run_command(command: list[str], workspace: Path, timeout: int = 900) -> dict[str, Any]:
+def run_command(
+    command: list[str], workspace: Path, timeout: int = 900
+) -> dict[str, Any]:
     try:
         process = subprocess.run(
             command,
@@ -103,15 +104,17 @@ def seal_artifact(path: Path, workspace: Path) -> dict[str, Any]:
 
 def validate_ledger(payload: Any) -> tuple[int, dict[str, int]]:
     if not isinstance(payload, dict):
-        raise ValueError("evolution_map.json must contain a JSON object")
+        raise TypeError("evolution_map.json must contain a JSON object")
     source = payload.get("source_catalog")
     records = payload.get("records")
     counts = payload.get("counts")
-    generation_counts = counts.get("generation") if isinstance(counts, dict) else None
+    generation_counts = (
+        counts.get("generation") if isinstance(counts, dict) else None
+    )
     if not isinstance(source, dict) or not isinstance(records, list):
-        raise ValueError("evolution ledger lacks source_catalog or records")
+        raise TypeError("evolution ledger lacks source_catalog or records")
     if not isinstance(generation_counts, dict):
-        raise ValueError("evolution ledger lacks generation counts")
+        raise TypeError("evolution ledger lacks generation counts")
     entry_count = source.get("entry_count")
     if not isinstance(entry_count, int) or entry_count < 1:
         raise ValueError("source entry_count is invalid")
@@ -120,13 +123,13 @@ def validate_ledger(payload: Any) -> tuple[int, dict[str, int]]:
     normalized: dict[str, int] = {}
     for key, value in generation_counts.items():
         if not isinstance(key, str) or not isinstance(value, int) or value < 0:
-            raise ValueError("generation counts contain an invalid entry")
+            raise TypeError("generation counts contain an invalid entry")
         normalized[key] = value
     if sum(normalized.values()) != entry_count:
         raise ValueError("generation counts do not sum to source entry_count")
     for index, record in enumerate(records):
         if not isinstance(record, dict):
-            raise ValueError(f"record {index} is not an object")
+            raise TypeError(f"record {index} is not an object")
         for field in (
             "name",
             "domain",
@@ -150,7 +153,11 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         workspace / "scripts" / "generate_evolution_map.py",
         workspace / "tests" / "test_evolution.py",
     ]
-    missing = [path.relative_to(workspace).as_posix() for path in required if not path.is_file()]
+    missing = [
+        path.relative_to(workspace).as_posix()
+        for path in required
+        if not path.is_file()
+    ]
     if missing:
         return catalog.write_result(
             plan,
@@ -160,7 +167,16 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         )
 
     commands = [
-        [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"],
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "test_*.py",
+        ],
         [sys.executable, "scripts/generate_evolution_map.py"],
         [sys.executable, "scripts/generate_evolution_map.py", "--check"],
     ]
@@ -193,14 +209,25 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         source_entry_count, generation_counts = validate_ledger(ledger)
         artifacts = {
             "catalog/evolution_map.json": seal_artifact(json_path, workspace),
-            "status/EVOLUTION_LEVELS.md": seal_artifact(markdown_path, workspace),
+            "status/EVOLUTION_LEVELS.md": seal_artifact(
+                markdown_path, workspace
+            ),
         }
-    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
+    except (
+        OSError,
+        UnicodeError,
+        json.JSONDecodeError,
+        TypeError,
+        ValueError,
+    ) as error:
         return catalog.write_result(
             plan,
             result_path,
             "failed",
-            reason=f"generated ledger validation failed: {type(error).__name__}: {error}",
+            reason=(
+                "generated ledger validation failed: "
+                f"{type(error).__name__}: {error}"
+            ),
             steps=steps,
         )
 
@@ -213,21 +240,27 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "generation_counts": generation_counts,
         "artifacts": artifacts,
     }
-    estimated = len(json.dumps(details, separators=(",", ":")).encode("utf-8"))
+    estimated = len(
+        json.dumps(details, separators=(",", ":")).encode("utf-8")
+    )
     if estimated > MAX_PRIVATE_PAYLOAD_BYTES:
         return catalog.write_result(
             plan,
             result_path,
             "blocked",
             reason=(
-                "compressed evolution ledgers exceed the bounded private receipt payload "
-                f"({estimated} > {MAX_PRIVATE_PAYLOAD_BYTES} bytes)"
+                "compressed evolution ledgers exceed the bounded private receipt "
+                f"payload ({estimated} > {MAX_PRIVATE_PAYLOAD_BYTES} bytes)"
             ),
             steps=steps,
             source_entry_count=source_entry_count,
             generation_counts=generation_counts,
             artifact_metadata={
-                name: {key: value for key, value in artifact.items() if key != "data_base64"}
+                name: {
+                    key: value
+                    for key, value in artifact.items()
+                    if key != "data_base64"
+                }
                 for name, artifact in artifacts.items()
             },
         )
