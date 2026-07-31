@@ -22,6 +22,7 @@ from typing import Any
 import apex_catalog_runner as catalog
 
 SENSITIVE_ENV = {
+    "AKOS_POLICY_SHA256",
     "APEX_BRANCH_WRITE_TOKEN",
     "APEX_CONTROL_TOKEN",
     "APEX_PRIVATE_READ_TOKEN",
