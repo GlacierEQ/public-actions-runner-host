@@ -16,7 +16,6 @@
     "secret": "APEX_RUNNER_APP_PRIVATE_KEY"
   },
   "installation_repositories": [
-    "GlacierEQ/public-actions-runner-host",
     "GlacierEQ/mastermind",
     "GlacierEQ/llm-runner-teams",
     "GlacierEQ/monolith"
