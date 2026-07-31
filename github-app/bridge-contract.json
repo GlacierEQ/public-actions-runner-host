@@ -17,7 +17,8 @@
   },
   "installation_repositories": [
     "GlacierEQ/mastermind",
-    "GlacierEQ/llm-runner-teams"
+    "GlacierEQ/llm-runner-teams",
+    "GlacierEQ/monolith"
   ],
   "token_profiles": {
     "private_workload_read": {
