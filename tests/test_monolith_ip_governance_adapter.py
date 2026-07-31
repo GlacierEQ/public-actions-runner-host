@@ -68,6 +68,7 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
     for name in (
         "json_schema_subset.py",
         "validate_ip_manifest.py",
+        "validate_publication_authorization.py",
         "validate_release_evidence.py",
     ):
         (root / "scripts" / name).write_text(
