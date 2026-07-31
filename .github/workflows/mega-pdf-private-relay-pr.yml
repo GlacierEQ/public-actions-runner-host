@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - "triggers/mega-pdf-function-genome.json"
-      - ".github/workflows/mega-pdf-private-relay-core-pat.yml"
+      - ".github/workflows/mega-pdf-private-relay-core.yml"
       - ".github/workflows/mega-pdf-private-relay-pr.yml"
 
 permissions:
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   relay:
-    uses: ./.github/workflows/mega-pdf-private-relay-core-pat.yml
+    uses: ./.github/workflows/mega-pdf-private-relay-core.yml
     with:
       source_ref: upgrade/mega-pdf-document-intelligence-v2
     secrets: inherit
