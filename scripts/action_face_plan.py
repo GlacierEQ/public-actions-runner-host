@@ -37,6 +37,7 @@ ADAPTER_TASK = {
     "node-ci": "test",
     "akos-echo-policy-ci": "test",
     "monolith-evolution": "test",
+    "monolith-ip-governance": "test",
     "action-face-selftest": "validate",
     "master-strand-inventory": "audit",
     "master-strand-extinction": "audit",
@@ -217,7 +218,7 @@ def main() -> int:
         "approval_id": args.approval_id,
         "action": args.action,
     }
-    base.emit_outputs(build_plan(args.event, manual))
+    base.emit_outputs(build_plan( args.event, manual))
     return 0
 
 
