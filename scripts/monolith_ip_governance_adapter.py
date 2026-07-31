@@ -2,9 +2,9 @@
 """Run Monolith's commit-bound IP governance gate through the public action face.
 
 The adapter is read-only with respect to the workload. It executes the exact
-repository-owned scanner, schema-backed validator, and tests; proves that at
-least one test ran; and returns only bounded verification metadata through the
-private receipt plane.
+repository-owned overlay, scanner, schema-backed manifest validator, substantive
+release-evidence gate, and tests; proves that at least one test ran; and returns
+only bounded verification metadata through the private receipt plane.
 """
 from __future__ import annotations
 
@@ -135,6 +135,7 @@ def scan_summary(report: object) -> dict[str, Any]:
         "scanner": report.get("scanner"),
         "status": report.get("status"),
         "scanned_commit": report.get("scannedCommit"),
+        "files_tracked": report.get("filesTracked"),
         "files_scanned": report.get("filesScanned"),
         "files_skipped": report.get("filesSkipped"),
         "finding_count": report.get("findingCount"),
@@ -162,6 +163,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         workspace / "scripts" / "load_governed_catalog.py",
         workspace / "scripts" / "scan_secrets.py",
         workspace / "scripts" / "validate_ip_manifest.py",
+        workspace / "scripts" / "validate_release_evidence.py",
         workspace / "tests",
     ]
     missing = [
@@ -219,6 +221,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "--expected-commit",
             resolved_source_sha,
         ],
+        [sys.executable, "scripts/validate_release_evidence.py", "ip-manifest.json"],
         [
             sys.executable,
             "-m",
@@ -246,7 +249,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         step = run_command(command, workspace)
         steps.append(step)
 
-        if index == 3:
+        if index == 4:
             try:
                 test_count = parse_test_count(step.get("output_tail", ""))
             except ValueError as error:
@@ -291,6 +294,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "scripts/load_governed_catalog.py",
         "scripts/scan_secrets.py",
         "scripts/validate_ip_manifest.py",
+        "scripts/validate_release_evidence.py",
     ]
     critical_files = {
         relative: sha256_file(workspace / relative) for relative in critical_paths
