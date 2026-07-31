@@ -9,8 +9,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import action_face_plan as planner  # noqa: E402
-from monolith_evolution_adapter import seal_artifact, validate_ledger  # noqa: E402
+import action_face_plan as planner
+from monolith_evolution_adapter import seal_artifact, validate_ledger
 
 
 def sample_ledger() -> dict:
@@ -60,7 +60,9 @@ def test_validate_ledger_checks_counts_and_required_coordinates() -> None:
     assert sum(generation_counts.values()) == 2
 
 
-def test_sealed_artifact_is_deterministic_and_round_trips(tmp_path: Path) -> None:
+def test_sealed_artifact_is_deterministic_and_round_trips(
+    tmp_path: Path,
+) -> None:
     payload = json.dumps(sample_ledger(), sort_keys=True).encode("utf-8")
     path = tmp_path / "catalog" / "evolution_map.json"
     path.parent.mkdir(parents=True)
