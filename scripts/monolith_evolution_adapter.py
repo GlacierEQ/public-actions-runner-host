@@ -129,7 +129,9 @@ def validate_source_catalog(payload: Any) -> tuple[list[dict[str, Any]], bytes]:
         if not isinstance(name, str) or not name:
             raise ValueError(f"source catalog entry {index} lacks a valid name")
         if name in names:
-            raise ValueError(f"source catalog contains duplicate repository name: {name}")
+            raise ValueError(
+                f"source catalog contains duplicate repository name: {name}"
+            )
         names.add(name)
         normalized.append(entry)
     raw = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -204,7 +206,9 @@ def validate_ledger(
 
     if record_names != set(source_by_name):
         missing = sorted(set(source_by_name) - record_names)
-        raise ValueError(f"evolution ledger omitted repositories: {', '.join(missing[:10])}")
+        raise ValueError(
+            f"evolution ledger omitted repositories: {', '.join(missing[:10])}"
+        )
     declared_nonzero = {
         key: value for key, value in normalized_counts.items() if value != 0
     }
@@ -230,8 +234,7 @@ def validate_markdown(
     missing = sorted(fragment for fragment in required if fragment not in text)
     if missing:
         raise ValueError(
-            "status/EVOLUTION_LEVELS.md lacks required structure: "
-            + ", ".join(missing)
+            "status/EVOLUTION_LEVELS.md lacks required structure: " + ", ".join(missing)
         )
 
 
@@ -262,7 +265,13 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         source_bytes = catalog_path.read_bytes()
         source_catalog = json.loads(source_bytes.decode("utf-8"))
         validate_source_catalog(source_catalog)
-    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError) as error:
+    except (
+        OSError,
+        UnicodeError,
+        json.JSONDecodeError,
+        TypeError,
+        ValueError,
+    ) as error:
         return catalog.write_result(
             plan,
             result_path,
@@ -333,9 +342,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
     try:
         ledger = json.loads(json_path.read_text(encoding="utf-8"))
-        source_entry_count, generation_counts = validate_ledger(
-            ledger, source_catalog
-        )
+        source_entry_count, generation_counts = validate_ledger(ledger, source_catalog)
         markdown = markdown_path.read_text(encoding="utf-8")
         validate_markdown(markdown, source_entry_count, generation_counts)
         artifacts = {
