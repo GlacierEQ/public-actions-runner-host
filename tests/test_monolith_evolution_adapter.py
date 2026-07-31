@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import action_face_plan as planner
 from monolith_evolution_adapter import (
+    isolated_env,
     parse_test_count,
     seal_artifact,
     validate_ledger,
@@ -89,6 +90,22 @@ def test_monolith_action_is_narrowly_catalogued() -> None:
     assert entry["target_repo"] == "GlacierEQ/monolith"
     assert entry["adapter"] == "monolith-evolution"
     assert planner.ADAPTER_TASK["monolith-evolution"] == "test"
+
+
+def test_private_workload_environment_strips_trust_material(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    protected = {
+        "AKOS_POLICY_SHA256": "policy-secret",
+        "APEX_CONTROL_TOKEN": "control-secret",
+        "APEX_PRIVATE_READ_TOKEN": "read-secret",
+        "GITHUB_TOKEN": "github-secret",
+    }
+    for key, value in protected.items():
+        monkeypatch.setenv(key, value)
+    env = isolated_env()
+    assert protected.keys().isdisjoint(env)
+    assert env["CI"] == "true"
 
 
 def test_validate_ledger_binds_records_and_generation_counts() -> None:
