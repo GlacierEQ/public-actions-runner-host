@@ -173,9 +173,24 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     ]
 
     steps: list[dict[str, Any]] = []
-    for command in commands:
+    test_count = 0
+    for index, command in enumerate(commands):
         step = run_command(command, workspace)
         steps.append(step)
+
+        if index == 1:
+            try:
+                test_count = parse_test_count(step.get("output_tail", ""))
+            except ValueError as error:
+                return catalog.write_result(
+                    plan,
+                    result_path,
+                    "failed",
+                    reason=str(error),
+                    steps=steps,
+                    manifest_summary=summary,
+                )
+
         if step["status"] != "completed":
             return catalog.write_result(
                 plan,
@@ -185,18 +200,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 steps=steps,
                 manifest_summary=summary,
             )
-
-    try:
-        test_count = parse_test_count(steps[1].get("output_tail", ""))
-    except ValueError as error:
-        return catalog.write_result(
-            plan,
-            result_path,
-            "failed",
-            reason=str(error),
-            steps=steps,
-            manifest_summary=summary,
-        )
 
     critical_files = {
         "ip-manifest.json": sha256_file(workspace / "ip-manifest.json"),
