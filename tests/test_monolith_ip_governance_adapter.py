@@ -64,7 +64,11 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
     (root / "schemas" / "ip-manifest.schema.json").write_text(
         json.dumps(schema) + "\n", encoding="utf-8"
     )
-    for name in ("json_schema_subset.py", "validate_ip_manifest.py"):
+    for name in (
+        "json_schema_subset.py",
+        "validate_ip_manifest.py",
+        "validate_release_evidence.py",
+    ):
         (root / "scripts" / name).write_text(
             "raise SystemExit(0)\n", encoding="utf-8"
         )
@@ -78,9 +82,9 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
         "p.add_argument('--commit', required=True)\n"
         "p.add_argument('--output', required=True)\n"
         "a=p.parse_args()\n"
-        "r={'schemaVersion':'1.0.0','scanner':'fixture-scan','status':'passed',"
-        "'scannedCommit':a.commit,'filesScanned':5,'filesSkipped':0,"
-        "'findingCount':0,'findings':[]}\n"
+        "r={'schemaVersion':'1.1.0','scanner':'fixture-scan','status':'passed',"
+        "'scannedCommit':a.commit,'filesTracked':5,'filesScanned':5,"
+        "'filesSkipped':0,'findingCount':0,'findings':[]}\n"
         "r['reportSha256']=hashlib.sha256(json.dumps(r,sort_keys=True).encode()).hexdigest()\n"
         "open(a.output,'w',encoding='utf-8').write(json.dumps(r))\n",
         encoding="utf-8",
@@ -161,6 +165,7 @@ def test_scan_summary_is_bounded() -> None:
             "scanner": "fixture-scan",
             "status": "passed",
             "scannedCommit": SOURCE_SHA,
+            "filesTracked": 5,
             "filesScanned": 5,
             "filesSkipped": 0,
             "findingCount": 0,
@@ -171,6 +176,7 @@ def test_scan_summary_is_bounded() -> None:
         "scanner": "fixture-scan",
         "status": "passed",
         "scanned_commit": SOURCE_SHA,
+        "files_tracked": 5,
         "files_scanned": 5,
         "files_skipped": 0,
         "finding_count": 0,
@@ -201,7 +207,24 @@ def test_adapter_executes_repository_owned_gate(
         "scripts/load_governed_catalog.py",
         "scripts/scan_secrets.py",
         "scripts/validate_ip_manifest.py",
+        "scripts/validate_release_evidence.py",
     }
+
+
+def test_adapter_fails_when_release_evidence_gate_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    (tmp_path / "scripts" / "validate_release_evidence.py").write_text(
+        "raise SystemExit(1)\n", encoding="utf-8"
+    )
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-evidence.json"
+
+    assert run(plan(), tmp_path, result_path) != 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["failed_step"] == 4
 
 
 def test_adapter_rejects_zero_test_execution(
