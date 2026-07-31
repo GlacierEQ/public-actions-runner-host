@@ -67,7 +67,9 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
     )
     for name in (
         "json_schema_subset.py",
+        "validate_evidence_records.py",
         "validate_ip_manifest.py",
+        "validate_publication_authorization.py",
         "validate_release_evidence.py",
     ):
         (root / "scripts" / name).write_text(
@@ -220,7 +222,7 @@ def test_adapter_fails_when_release_evidence_gate_fails(
     assert result["failed_step"] == 4
 
 
-def test_adapter_rejects_mid_run_control_mutation(
+def test_adapter_rejects_mid_run_transitive_evidence_validator_mutation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     write_fixture(tmp_path)
@@ -235,7 +237,7 @@ def test_adapter_rejects_mid_run_control_mutation(
         nonlocal mutated
         result = original_run_command(command, workspace, timeout)
         if not mutated and "scripts/validate_release_evidence.py" in command:
-            target = workspace / "scripts" / "validate_release_evidence.py"
+            target = workspace / "scripts" / "validate_evidence_records.py"
             target.write_text(target.read_text(encoding="utf-8") + "# mutated\n", encoding="utf-8")
             mutated = True
         return result
@@ -245,7 +247,7 @@ def test_adapter_rejects_mid_run_control_mutation(
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "failed"
     assert result["reason"] == "critical governance files changed during execution"
-    assert "scripts/validate_release_evidence.py" in result["changed_critical_files"]
+    assert "scripts/validate_evidence_records.py" in result["changed_critical_files"]
 
 
 def test_adapter_rejects_zero_test_execution(
