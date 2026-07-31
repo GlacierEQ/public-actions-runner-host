@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import action_face_plan as planner
+import monolith_ip_governance_adapter as adapter
 from monolith_ip_governance_adapter import (
     isolated_env,
     manifest_summary,
@@ -64,7 +65,15 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
     (root / "schemas" / "ip-manifest.schema.json").write_text(
         json.dumps(schema) + "\n", encoding="utf-8"
     )
-    for name in ("json_schema_subset.py", "validate_ip_manifest.py"):
+    for name in (
+        "generate_publication_receipt.py",
+        "json_schema_subset.py",
+        "validate_evidence_records.py",
+        "validate_ip_manifest.py",
+        "validate_publication_authorization.py",
+        "validate_release_evidence.py",
+        "verify_publication_readiness.py",
+    ):
         (root / "scripts" / name).write_text(
             "raise SystemExit(0)\n", encoding="utf-8"
         )
@@ -78,8 +87,9 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
         "p.add_argument('--commit', required=True)\n"
         "p.add_argument('--output', required=True)\n"
         "a=p.parse_args()\n"
-        "r={'schemaVersion':'1.0.0','scanner':'fixture-scan','status':'passed',"
-        "'scannedCommit':a.commit,'filesScanned':5,'filesSkipped':0,"
+        "r={'schemaVersion':'1.2.0','scanner':'fixture-scan','status':'passed',"
+        "'scannedCommit':a.commit,'gitBindingVerified':True,"
+        "'filesTracked':5,'filesScanned':5,'filesSkipped':0,"
         "'findingCount':0,'findings':[]}\n"
         "r['reportSha256']=hashlib.sha256(json.dumps(r,sort_keys=True).encode()).hexdigest()\n"
         "open(a.output,'w',encoding='utf-8').write(json.dumps(r))\n",
@@ -161,6 +171,7 @@ def test_scan_summary_is_bounded() -> None:
             "scanner": "fixture-scan",
             "status": "passed",
             "scannedCommit": SOURCE_SHA,
+            "filesTracked": 5,
             "filesScanned": 5,
             "filesSkipped": 0,
             "findingCount": 0,
@@ -171,6 +182,7 @@ def test_scan_summary_is_bounded() -> None:
         "scanner": "fixture-scan",
         "status": "passed",
         "scanned_commit": SOURCE_SHA,
+        "files_tracked": 5,
         "files_scanned": 5,
         "files_skipped": 0,
         "finding_count": 0,
@@ -193,15 +205,70 @@ def test_adapter_executes_repository_owned_gate(
     assert result["manifest_summary"]["release_status"] == "blocked"
     assert result["secret_scan"]["status"] == "passed"
     assert result["secret_scan"]["scanned_commit"] == SOURCE_SHA
-    assert set(result["critical_file_sha256"]) == {
-        "ip-manifest.json",
-        "catalog/rights_overlay.json",
-        "schemas/ip-manifest.schema.json",
-        "scripts/json_schema_subset.py",
-        "scripts/load_governed_catalog.py",
-        "scripts/scan_secrets.py",
-        "scripts/validate_ip_manifest.py",
-    }
+    assert set(result["critical_file_sha256"]) == set(adapter.CRITICAL_PATHS)
+
+
+def test_adapter_fails_when_release_evidence_gate_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    (tmp_path / "scripts" / "validate_release_evidence.py").write_text(
+        "raise SystemExit(1)\n", encoding="utf-8"
+    )
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-evidence.json"
+
+    assert run(plan(), tmp_path, result_path) != 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["failed_step"] == 4
+
+
+def test_adapter_fails_when_publication_readiness_gate_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    (tmp_path / "scripts" / "verify_publication_readiness.py").write_text(
+        "raise SystemExit(1)\n", encoding="utf-8"
+    )
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-readiness.json"
+
+    assert run(plan(), tmp_path, result_path) != 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["failed_step"] == 5
+
+
+def test_adapter_rejects_mid_run_receipt_generator_mutation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-mutation.json"
+    original_run_command = adapter.run_command
+    mutated = False
+
+    def mutating_run_command(
+        command: list[str], workspace: Path, timeout: int = 900
+    ) -> dict:
+        nonlocal mutated
+        result = original_run_command(command, workspace, timeout)
+        if not mutated and "scripts/verify_publication_readiness.py" in command:
+            target = workspace / "scripts" / "generate_publication_receipt.py"
+            target.write_text(
+                target.read_text(encoding="utf-8") + "# mutated\n",
+                encoding="utf-8",
+            )
+            mutated = True
+        return result
+
+    monkeypatch.setattr(adapter, "run_command", mutating_run_command)
+    assert adapter.run(plan(), tmp_path, result_path) != 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["reason"] == "critical governance files changed during execution"
+    assert "scripts/generate_publication_receipt.py" in result["changed_critical_files"]
 
 
 def test_adapter_rejects_zero_test_execution(

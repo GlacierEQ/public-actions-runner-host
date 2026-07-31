@@ -1,0 +1,30 @@
+name: MEGA-PDF Private Verification Relay
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/mega-pdf-private-relay.yml"
+      - ".github/workflows/mega-pdf-private-relay-core.yml"
+      - "triggers/mega-pdf-function-genome.json"
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Private MEGA-PDF branch, tag, or commit to verify
+        required: true
+        default: upgrade/mega-pdf-document-intelligence-v2
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mega-pdf-private-relay-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  relay:
+    uses: ./.github/workflows/mega-pdf-private-relay-core.yml
+    with:
+      source_ref: ${{ inputs.source_ref || 'upgrade/mega-pdf-document-intelligence-v2' }}
+    secrets: inherit

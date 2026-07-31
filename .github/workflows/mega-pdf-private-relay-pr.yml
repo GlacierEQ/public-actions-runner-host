@@ -1,0 +1,23 @@
+name: MEGA-PDF Private Relay PR Trigger
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "triggers/mega-pdf-function-genome.json"
+      - ".github/workflows/mega-pdf-private-relay-core.yml"
+      - ".github/workflows/mega-pdf-private-relay-pr.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mega-pdf-private-relay-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  relay:
+    uses: ./.github/workflows/mega-pdf-private-relay-core.yml
+    with:
+      source_ref: upgrade/mega-pdf-document-intelligence-v2
+    secrets: inherit
