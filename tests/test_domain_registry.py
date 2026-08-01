@@ -32,6 +32,7 @@ def test_registry_validates_and_only_code_is_executable() -> None:
     assert set(actions) == {"code.validate-governance"}
     action = actions["code.validate-governance"]
     assert action["domain"] == "code"
+    assert action["canonicalAction"] == "code.validate-governance"
     assert action["targetRepository"] == "GlacierEQ/monolith"
     assert action["adapter"] == "monolith_ip_governance"
     assert action["receiptRoot"] == "receipts/code"
@@ -53,11 +54,31 @@ def test_legacy_alias_resolves_to_the_same_canonical_action() -> None:
     assert legacy["wasAlias"] is True
 
 
-def test_unknown_and_planned_actions_cannot_resolve() -> None:
+def test_unknown_action_cannot_resolve() -> None:
     with pytest.raises(registry.RegistryError, match="not registered"):
         registry.resolve_action("code.not-real")
-    with pytest.raises(registry.RegistryError, match="not registered"):
-        registry.resolve_action("docs.generate-pdf", requested_domain="docs")
+
+
+def test_indexed_planned_domain_action_stays_non_executable(tmp_path: Path) -> None:
+    root = copy_registry_fixture(tmp_path)
+    mutate_json(
+        root / "registry" / "actions-index.json",
+        lambda value: value["canonicalActions"].update(
+            {
+                "docs.generate-pdf": {
+                    "domain": "docs",
+                    "status": "planned",
+                    "catalog": "domains/docs/actions.json",
+                }
+            }
+        ),
+    )
+    with pytest.raises(registry.RegistryError, match="unresolved canonical actions"):
+        registry.resolve_action(
+            "docs.generate-pdf",
+            requested_domain="docs",
+            root=root,
+        )
 
 
 def test_cross_domain_resolution_is_rejected() -> None:
@@ -132,6 +153,18 @@ def test_disabled_action_index_entry_fails_closed(tmp_path: Path) -> None:
         ),
     )
     with pytest.raises(registry.RegistryError, match="not active in the action index"):
+        registry.validate_registry(root)
+
+
+def test_action_index_catalog_rebinding_fails_closed(tmp_path: Path) -> None:
+    root = copy_registry_fixture(tmp_path)
+    mutate_json(
+        root / "registry" / "actions-index.json",
+        lambda value: value["canonicalActions"]["code.validate-governance"].update(
+            {"catalog": "domains/analysis/actions.json"}
+        ),
+    )
+    with pytest.raises(registry.RegistryError, match="action-index catalog mismatch"):
         registry.validate_registry(root)
 
 
@@ -229,4 +262,47 @@ def test_registry_constraint_weakening_fails_closed(tmp_path: Path) -> None:
         ),
     )
     with pytest.raises(registry.RegistryError, match="constraints are missing or weakened"):
+        registry.validate_registry(root)
+
+
+@pytest.mark.parametrize("reserved", ["domain", "canonicalAction", "receiptRoot"])
+def test_action_catalog_cannot_override_validated_identity(
+    tmp_path: Path,
+    reserved: str,
+) -> None:
+    root = copy_registry_fixture(tmp_path)
+    mutate_json(
+        root / "domains" / "code" / "actions.json",
+        lambda value: value["actions"]["code.validate-governance"].update(
+            {reserved: "attacker-controlled"}
+        ),
+    )
+    with pytest.raises(registry.RegistryError, match="reserved identity fields"):
+        registry.validate_registry(root)
+
+
+def test_alias_cannot_shadow_a_canonical_action(tmp_path: Path) -> None:
+    root = copy_registry_fixture(tmp_path)
+    mutate_json(
+        root / "registry" / "actions-index.json",
+        lambda value: value["aliases"].update(
+            {
+                "code.validate-governance": {
+                    "canonicalAction": "code.validate-governance",
+                    "status": "temporary",
+                    "removeAfter": "never",
+                }
+            }
+        ),
+    )
+    with pytest.raises(registry.RegistryError, match="aliases shadow canonical actions"):
+        registry.validate_registry(root)
+
+
+def test_malformed_schema_fails_before_action_activation(tmp_path: Path) -> None:
+    root = copy_registry_fixture(tmp_path)
+    (root / "domains" / "code" / "schemas" / "job.schema.json").write_text(
+        "{not-json\n", encoding="utf-8"
+    )
+    with pytest.raises(registry.RegistryError, match="could not be loaded"):
         registry.validate_registry(root)
