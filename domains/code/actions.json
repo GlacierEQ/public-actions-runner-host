@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "domain": "code",
+  "actions": {
+    "code.validate-governance": {
+      "status": "active",
+      "adapter": "monolith_ip_governance",
+      "adapterPath": "domains/code/adapters/monolith_ip_governance.py",
+      "targetRepository": "GlacierEQ/monolith",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "governance-job-v1",
+      "resultSchema": "governance-result-v1",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": [
+        "monolith-ip-governance"
+      ]
+    }
+  },
+  "plannedActions": [
+    "code.audit",
+    "code.test",
+    "code.security-scan",
+    "code.patch-branch",
+    "code.build-release"
+  ]
+}

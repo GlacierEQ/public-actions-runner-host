@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "canonicalActions": {
+    "code.validate-governance": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    }
+  },
+  "aliases": {
+    "monolith-ip-governance": {
+      "canonicalAction": "code.validate-governance",
+      "status": "temporary",
+      "removeAfter": "verified-private-domain-run"
+    }
+  }
+}
