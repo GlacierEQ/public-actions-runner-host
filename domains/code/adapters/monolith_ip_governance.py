@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Code-domain wrapper for the existing Monolith IP-governance adapter.
 
-The temporary legacy alias preserves byte-for-byte result compatibility. The
-canonical action executes the same legacy core, then converts its result into a
-bounded, hash-verifiable domain receipt that excludes raw command output.
+The temporary legacy alias preserves byte-for-byte result compatibility. A
+schema-valid canonical envelope is normalized into the fixed legacy execution
+shape, executed by the existing core, and converted into a bounded,
+hash-verifiable domain receipt that excludes raw command output.
 """
 from __future__ import annotations
 
@@ -33,11 +34,31 @@ LEGACY_ADAPTER = "monolith-ip-governance"
 TARGET_REPOSITORY = "GlacierEQ/monolith"
 TOKEN_PROFILE = "private-source-read"
 RESULT_SCHEMA_VERSION = "1.0"
-ALLOWED_ACTIONS = frozenset({CANONICAL_ACTION, LEGACY_ACTION})
-ALLOWED_ADAPTERS = frozenset({ADAPTER, LEGACY_ADAPTER})
 ALLOWED_STATUSES = frozenset({"completed", "failed", "blocked"})
 ALLOWED_ARTIFACT_KINDS = frozenset(
     {"secret-scan-report", "publication-receipt"}
+)
+CANONICAL_JOB_KEYS = frozenset(
+    {
+        "job_id",
+        "domain",
+        "action",
+        "source_ref",
+        "expected_source_sha",
+        "approval_id",
+    }
+)
+LEGACY_JOB_KEYS = frozenset(
+    {
+        "job_id",
+        "pillar",
+        "action",
+        "adapter",
+        "task",
+        "source_repo",
+        "source_ref",
+        "target_repo",
+    }
 )
 JOB_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$")
 SOURCE_REF = re.compile(
@@ -80,6 +101,8 @@ RESULT_KEYS = frozenset(
         "token_profile",
         "source_repo",
         "source_ref",
+        "expected_source_sha",
+        "approval_id",
         "resolved_source_sha",
         "status",
         "checks",
@@ -130,53 +153,90 @@ def valid_source_ref(value: object) -> bool:
     )
 
 
-def validate_plan(plan: object) -> dict[str, Any]:
-    if not isinstance(plan, dict):
-        raise ValueError("domain adapter plan must be a JSON object")
+def validate_expected_source_sha(plan: dict[str, Any]) -> str | None:
+    expected = plan.get("expected_source_sha")
+    if expected in (None, ""):
+        return None
+    if not isinstance(expected, str) or not SHA40.fullmatch(expected):
+        raise ValueError("expected_source_sha is invalid")
+    resolved = os.environ.get("APEX_RESOLVED_SOURCE_SHA", "")
+    if SHA40.fullmatch(resolved) and not hmac.compare_digest(expected, resolved):
+        raise ValueError("expected_source_sha does not match resolved source")
+    return expected
 
+
+def validate_approval_id(plan: dict[str, Any]) -> str | None:
+    approval_id = plan.get("approval_id")
+    if approval_id in (None, ""):
+        return None
+    if not isinstance(approval_id, str) or not JOB_ID.fullmatch(approval_id):
+        raise ValueError("approval_id is invalid")
+    return approval_id
+
+
+def validate_common_job(plan: dict[str, Any]) -> None:
     job_id = plan.get("job_id")
     if not isinstance(job_id, str) or not JOB_ID.fullmatch(job_id):
         raise ValueError("job_id is invalid")
-    if plan.get("pillar") != "D":
-        raise ValueError("Monolith governance pillar must remain D")
-
-    domain = plan.get("domain")
-    if domain not in (None, "", DOMAIN):
-        raise ValueError("cross-domain execution is forbidden")
-
-    action = plan.get("action")
-    if action not in ALLOWED_ACTIONS:
-        raise ValueError("action is not registered to the Monolith code adapter")
-
-    adapter = plan.get("adapter")
-    if adapter not in (None, "", *ALLOWED_ADAPTERS):
-        raise ValueError("caller-selected adapter is forbidden")
-
-    for key in ("source_repo", "target_repo"):
-        value = plan.get(key)
-        if value not in (None, "", TARGET_REPOSITORY):
-            raise ValueError(f"{key} is not the catalog-bound repository")
-
-    source_ref = plan.get("source_ref")
-    if not valid_source_ref(source_ref):
+    if not valid_source_ref(plan.get("source_ref")):
         raise ValueError("source_ref is invalid")
 
-    task = plan.get("task")
-    if task not in (None, "", "test"):
-        raise ValueError("Monolith governance task must remain test")
 
-    expected_source_sha = plan.get("expected_source_sha")
-    if expected_source_sha not in (None, ""):
-        if not isinstance(expected_source_sha, str) or not SHA40.fullmatch(
-            expected_source_sha
-        ):
-            raise ValueError("expected_source_sha is invalid")
-        resolved_source_sha = os.environ.get("APEX_RESOLVED_SOURCE_SHA", "")
-        if SHA40.fullmatch(resolved_source_sha) and not hmac.compare_digest(
-            expected_source_sha, resolved_source_sha
-        ):
-            raise ValueError("expected_source_sha does not match resolved source")
+def normalize_canonical_plan(plan: dict[str, Any]) -> dict[str, Any]:
+    unknown = set(plan) - CANONICAL_JOB_KEYS
+    if unknown:
+        raise ValueError("canonical plan contains unsupported fields")
+    validate_common_job(plan)
+    if plan.get("domain") != DOMAIN:
+        raise ValueError("canonical plan domain must be code")
+    if plan.get("action") != CANONICAL_ACTION:
+        raise ValueError("canonical action is invalid")
+
+    expected_source_sha = validate_expected_source_sha(plan)
+    approval_id = validate_approval_id(plan)
+    normalized: dict[str, Any] = {
+        "job_id": plan["job_id"],
+        "pillar": "D",
+        "action": CANONICAL_ACTION,
+        "adapter": ADAPTER,
+        "task": "test",
+        "source_repo": TARGET_REPOSITORY,
+        "source_ref": plan["source_ref"],
+        "target_repo": TARGET_REPOSITORY,
+        "expected_source_sha": expected_source_sha,
+        "approval_id": approval_id,
+    }
+    return normalized
+
+
+def validate_legacy_plan(plan: dict[str, Any]) -> dict[str, Any]:
+    unknown = set(plan) - LEGACY_JOB_KEYS
+    if unknown:
+        raise ValueError("legacy plan contains unsupported fields")
+    validate_common_job(plan)
+    if plan.get("pillar") != "D":
+        raise ValueError("Monolith governance pillar must remain D")
+    if plan.get("action") != LEGACY_ACTION:
+        raise ValueError("legacy action is invalid")
+    if plan.get("adapter") != LEGACY_ADAPTER:
+        raise ValueError("legacy adapter is invalid")
+    if plan.get("task") != "test":
+        raise ValueError("Monolith governance task must remain test")
+    for key in ("source_repo", "target_repo"):
+        if plan.get(key) != TARGET_REPOSITORY:
+            raise ValueError(f"{key} is not the catalog-bound repository")
     return plan
+
+
+def validate_plan(plan: object) -> dict[str, Any]:
+    if not isinstance(plan, dict):
+        raise ValueError("domain adapter plan must be a JSON object")
+    action = plan.get("action")
+    if action == CANONICAL_ACTION:
+        return normalize_canonical_plan(plan)
+    if action == LEGACY_ACTION:
+        return validate_legacy_plan(plan)
+    raise ValueError("action is not registered to the Monolith code adapter")
 
 
 def blocked_plan(plan: object) -> dict[str, Any]:
@@ -198,6 +258,20 @@ def blocked_plan(plan: object) -> dict[str, Any]:
         "source_ref": source_ref if valid_source_ref(source_ref) else "",
         "target_repo": TARGET_REPOSITORY,
     }
+
+
+def safe_optional_sha(plan: object, key: str) -> str | None:
+    if not isinstance(plan, dict):
+        return None
+    value = plan.get(key)
+    return value if isinstance(value, str) and SHA40.fullmatch(value) else None
+
+
+def safe_optional_id(plan: object, key: str) -> str | None:
+    if not isinstance(plan, dict):
+        return None
+    value = plan.get(key)
+    return value if isinstance(value, str) and JOB_ID.fullmatch(value) else None
 
 
 def reject_symlink_components(path: Path) -> None:
@@ -313,6 +387,32 @@ def validate_bounded_mapping(
     return value
 
 
+def normalize_manifest_summary(value: object) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    validated = validate_bounded_mapping(
+        value,
+        name="manifest_summary",
+        allowed_keys=MANIFEST_KEYS,
+    )
+    return dict(validated)
+
+
+def normalize_secret_scan(value: object) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    validated = validate_bounded_mapping(
+        value,
+        name="secret_scan",
+        allowed_keys=SECRET_SCAN_KEYS,
+    )
+    normalized = dict(validated)
+    for key in ("scanned_commit", "report_sha256"):
+        if normalized.get(key) == "":
+            normalized[key] = None
+    return normalized
+
+
 def canonical_result(
     plan: dict[str, Any], legacy_result: object, result_path: Path
 ) -> dict[str, Any]:
@@ -346,8 +446,6 @@ def canonical_result(
     if not isinstance(test_count, int) or isinstance(test_count, bool) or test_count < 0:
         raise ValueError("legacy adapter result test count is invalid")
 
-    manifest_summary = legacy_result.get("manifest_summary")
-    secret_scan = legacy_result.get("secret_scan")
     result: dict[str, Any] = {
         "schema_version": RESULT_SCHEMA_VERSION,
         "job_id": str(plan["job_id"]),
@@ -358,6 +456,8 @@ def canonical_result(
         "token_profile": TOKEN_PROFILE,
         "source_repo": TARGET_REPOSITORY,
         "source_ref": str(plan["source_ref"]),
+        "expected_source_sha": plan.get("expected_source_sha"),
+        "approval_id": plan.get("approval_id"),
         "resolved_source_sha": resolved_source_sha,
         "status": status,
         "checks": bounded_checks(legacy_result),
@@ -366,10 +466,10 @@ def canonical_result(
         ),
         "legacy_result_sha256": canonical_sha256(legacy_result),
         "test_count": test_count,
-        "manifest_summary": (
-            manifest_summary if isinstance(manifest_summary, dict) else {}
+        "manifest_summary": normalize_manifest_summary(
+            legacy_result.get("manifest_summary")
         ),
-        "secret_scan": secret_scan if isinstance(secret_scan, dict) else {},
+        "secret_scan": normalize_secret_scan(legacy_result.get("secret_scan")),
         "parent_receipt_sha256": None,
         "reason": str(legacy_result.get("reason", ""))[:2048],
     }
@@ -390,6 +490,8 @@ def canonical_blocked_result(plan: object, reason: str) -> dict[str, Any]:
         "token_profile": TOKEN_PROFILE,
         "source_repo": TARGET_REPOSITORY,
         "source_ref": safe["source_ref"],
+        "expected_source_sha": safe_optional_sha(plan, "expected_source_sha"),
+        "approval_id": safe_optional_id(plan, "approval_id"),
         "resolved_source_sha": "",
         "status": "blocked",
         "checks": [],
@@ -404,6 +506,20 @@ def canonical_blocked_result(plan: object, reason: str) -> dict[str, Any]:
     result["receipt_sha256"] = canonical_sha256(result)
     verify_canonical_result(result)
     return result
+
+
+def verify_optional_sha(value: object, name: str) -> None:
+    if value is not None and (
+        not isinstance(value, str) or not SHA40.fullmatch(value)
+    ):
+        raise ValueError(f"canonical result {name} is invalid")
+
+
+def verify_optional_id(value: object, name: str) -> None:
+    if value is not None and (
+        not isinstance(value, str) or not JOB_ID.fullmatch(value)
+    ):
+        raise ValueError(f"canonical result {name} is invalid")
 
 
 def verify_canonical_result(result: object) -> None:
@@ -450,6 +566,9 @@ def verify_canonical_result(result: object) -> None:
         raise ValueError("canonical result source_ref is invalid")
     if status != "blocked" and not valid_source_ref(source_ref):
         raise ValueError("non-blocked canonical result lacks a source_ref")
+
+    verify_optional_sha(result.get("expected_source_sha"), "expected_source_sha")
+    verify_optional_id(result.get("approval_id"), "approval_id")
 
     resolved_source_sha = result.get("resolved_source_sha")
     if not isinstance(resolved_source_sha, str):
@@ -556,6 +675,11 @@ def verify_canonical_result(result: object) -> None:
     if status == "completed":
         if not SHA40.fullmatch(resolved_source_sha):
             raise ValueError("completed canonical result lacks a source SHA")
+        expected_source_sha = result.get("expected_source_sha")
+        if expected_source_sha is not None and not hmac.compare_digest(
+            expected_source_sha, resolved_source_sha
+        ):
+            raise ValueError("completed result violates the expected source pin")
         if not checks or any(check["status"] != "completed" for check in checks):
             raise ValueError("completed canonical result contains incomplete checks")
         if test_count < 1:
@@ -581,10 +705,11 @@ def verify_canonical_result(result: object) -> None:
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
     """Validate boundaries, preserve alias parity, and emit canonical receipts."""
+    requested_action = plan.get("action") if isinstance(plan, dict) else None
     try:
         validated = validate_plan(plan)
     except ValueError as error:
-        if isinstance(plan, dict) and plan.get("action") == CANONICAL_ACTION:
+        if requested_action == CANONICAL_ACTION:
             try:
                 atomic_write_json(
                     result_path,
@@ -602,7 +727,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             canonical_action=CANONICAL_ACTION,
         )
 
-    if validated["action"] == LEGACY_ACTION:
+    if requested_action == LEGACY_ACTION:
         return legacy.run(validated, workspace, result_path)
 
     try:
