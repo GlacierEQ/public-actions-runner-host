@@ -65,7 +65,7 @@ def safe_repository_path(root: Path, relative: str, *, must_exist: bool) -> Path
     current = root
     for part in lexical.parts:
         current = current / part
-        if current.exists() and current.is_symlink():
+        if current.is_symlink():
             raise RegistryError(f"registry path contains a symlink: {relative}")
     if must_exist and not candidate.exists():
         raise RegistryError(f"required registry path is missing: {relative}")
