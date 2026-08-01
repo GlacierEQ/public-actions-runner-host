@@ -19,15 +19,12 @@ SOURCE_SHA = "a" * 40
 
 
 def canonical_plan() -> dict:
-    plan = legacy_fixture.plan()
-    plan.update(
-        {
-            "domain": "code",
-            "action": "code.validate-governance",
-            "adapter": "monolith_ip_governance",
-        }
-    )
-    return plan
+    return {
+        "job_id": "monolith-ip-governance-test",
+        "domain": "code",
+        "action": "code.validate-governance",
+        "source_ref": "overhaul/ip-control-plane-v1",
+    }
 
 
 def read_json(path: Path) -> dict:
@@ -37,6 +34,24 @@ def read_json(path: Path) -> dict:
 def rehash(result: dict) -> None:
     result.pop("receipt_sha256", None)
     result["receipt_sha256"] = domain_adapter.canonical_sha256(result)
+
+
+def test_schema_valid_canonical_plan_normalizes_to_fixed_legacy_identity() -> None:
+    plan = canonical_plan()
+    normalized = domain_adapter.validate_plan(plan)
+    assert set(plan) == {"job_id", "domain", "action", "source_ref"}
+    assert normalized == {
+        "job_id": plan["job_id"],
+        "pillar": "D",
+        "action": "code.validate-governance",
+        "adapter": "monolith_ip_governance",
+        "task": "test",
+        "source_repo": "GlacierEQ/monolith",
+        "source_ref": plan["source_ref"],
+        "target_repo": "GlacierEQ/monolith",
+        "expected_source_sha": None,
+        "approval_id": None,
+    }
 
 
 def test_legacy_alias_preserves_byte_for_byte_bounded_result_parity(
@@ -74,7 +89,10 @@ def test_canonical_action_emits_a_bounded_hash_verified_receipt(
     result_path = results / "result.json"
 
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
-    assert domain_adapter.run(canonical_plan(), workspace, result_path) == 0
+    plan = canonical_plan()
+    plan["expected_source_sha"] = SOURCE_SHA
+    plan["approval_id"] = "OwnerApproval01"
+    assert domain_adapter.run(plan, workspace, result_path) == 0
 
     result = read_json(result_path)
     domain_adapter.verify_canonical_result(result)
@@ -86,6 +104,8 @@ def test_canonical_action_emits_a_bounded_hash_verified_receipt(
     assert result["adapter_sha256"] == domain_adapter.adapter_bundle_sha256()
     assert result["token_profile"] == "private-source-read"
     assert result["source_repo"] == "GlacierEQ/monolith"
+    assert result["expected_source_sha"] == SOURCE_SHA
+    assert result["approval_id"] == "OwnerApproval01"
     assert result["resolved_source_sha"] == SOURCE_SHA
     assert result["test_count"] == 1
     assert result["secret_scan"]["status"] == "passed"
@@ -104,6 +124,24 @@ def test_canonical_action_emits_a_bounded_hash_verified_receipt(
     assert "steps" not in result
     assert "output_tail" not in json.dumps(result)
     assert not list(results.glob(".*.legacy.*.json"))
+
+
+def test_schema_valid_job_without_resolved_sha_returns_bounded_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    legacy_fixture.write_fixture(workspace)
+    result_path = tmp_path / "result.json"
+    monkeypatch.delenv("APEX_RESOLVED_SOURCE_SHA", raising=False)
+
+    assert domain_adapter.run(canonical_plan(), workspace, result_path) != 0
+    result = read_json(result_path)
+    domain_adapter.verify_canonical_result(result)
+    assert result["status"] == "blocked"
+    assert result["source_ref"] == canonical_plan()["source_ref"]
+    assert result["legacy_result_sha256"] is not None
+    assert "KeyError" not in result["reason"]
 
 
 def test_canonical_receipt_hash_tampering_is_rejected(
@@ -155,7 +193,7 @@ def test_cross_domain_canonical_plan_is_blocked_before_execution(
     assert result["domain"] == "code"
     assert result["action"] == "code.validate-governance"
     assert result["checks"] == []
-    assert result["reason"] == "cross-domain execution is forbidden"
+    assert result["reason"] == "canonical plan domain must be code"
 
 
 def test_unsafe_identifiers_are_sanitized_in_blocked_receipts(
@@ -185,25 +223,24 @@ def test_expected_source_sha_mismatch_is_blocked(
     assert domain_adapter.run(plan, tmp_path, result_path) != 0
     result = read_json(result_path)
     domain_adapter.verify_canonical_result(result)
+    assert result["expected_source_sha"] == "b" * 40
     assert "does not match resolved source" in result["reason"]
 
 
-def test_caller_selected_repository_and_adapter_are_blocked(tmp_path: Path) -> None:
-    repository_result = tmp_path / "repository-blocked.json"
-    repository_plan = canonical_plan()
-    repository_plan["source_repo"] = "GlacierEQ/other-private-repo"
-    assert domain_adapter.run(repository_plan, tmp_path, repository_result) != 0
-    repository_value = read_json(repository_result)
-    domain_adapter.verify_canonical_result(repository_value)
-    assert "catalog-bound repository" in repository_value["reason"]
-
-    adapter_result = tmp_path / "adapter-blocked.json"
-    adapter_plan = canonical_plan()
-    adapter_plan["adapter"] = "arbitrary_shell"
-    assert domain_adapter.run(adapter_plan, tmp_path, adapter_result) != 0
-    adapter_value = read_json(adapter_result)
-    domain_adapter.verify_canonical_result(adapter_value)
-    assert "caller-selected adapter" in adapter_value["reason"]
+def test_caller_selected_legacy_fields_are_blocked(tmp_path: Path) -> None:
+    for field, value in (
+        ("source_repo", "GlacierEQ/other-private-repo"),
+        ("adapter", "arbitrary_shell"),
+        ("pillar", "A"),
+        ("task", "deploy"),
+    ):
+        result_path = tmp_path / f"{field}-blocked.json"
+        plan = canonical_plan()
+        plan[field] = value
+        assert domain_adapter.run(plan, tmp_path, result_path) != 0
+        result = read_json(result_path)
+        domain_adapter.verify_canonical_result(result)
+        assert result["reason"] == "canonical plan contains unsupported fields"
 
 
 def test_dangling_symlink_result_directory_is_rejected(
