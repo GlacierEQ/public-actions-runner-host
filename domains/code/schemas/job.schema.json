@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glaciereq.dev/schemas/code/governance-job-v1.json",
+  "title": "Code Governance Job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "domain",
+    "action",
+    "source_ref"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"
+    },
+    "domain": {
+      "const": "code"
+    },
+    "action": {
+      "const": "code.validate-governance"
+    },
+    "source_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^(?!/)(?!.*(?:\\.\\.|//|@\\{|\\\\))[A-Za-z0-9._/-]+$",
+      "allOf": [
+        {
+          "not": {
+            "pattern": "/$"
+          }
+        },
+        {
+          "not": {
+            "pattern": "\\.lock$"
+          }
+        }
+      ]
+    },
+    "expected_source_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "approval_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"
+    }
+  }
+}
