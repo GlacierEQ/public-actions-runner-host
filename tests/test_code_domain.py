@@ -30,6 +30,15 @@ def canonical_plan() -> dict:
     return plan
 
 
+def read_json(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def rehash(result: dict) -> None:
+    result.pop("receipt_sha256", None)
+    result["receipt_sha256"] = domain_adapter.canonical_sha256(result)
+
+
 def test_legacy_alias_preserves_byte_for_byte_bounded_result_parity(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -45,14 +54,13 @@ def test_legacy_alias_preserves_byte_for_byte_bounded_result_parity(
     plan = legacy_fixture.plan()
 
     assert legacy.run(plan, workspace, result_path) == 0
-    legacy_result = json.loads(result_path.read_text(encoding="utf-8"))
+    legacy_result = read_json(result_path)
 
     for generated in results.iterdir():
         generated.unlink()
 
     assert domain_adapter.run(plan, workspace, result_path) == 0
-    domain_result = json.loads(result_path.read_text(encoding="utf-8"))
-    assert domain_result == legacy_result
+    assert read_json(result_path) == legacy_result
 
 
 def test_canonical_action_emits_a_bounded_hash_verified_receipt(
@@ -68,7 +76,7 @@ def test_canonical_action_emits_a_bounded_hash_verified_receipt(
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
     assert domain_adapter.run(canonical_plan(), workspace, result_path) == 0
 
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_json(result_path)
     domain_adapter.verify_canonical_result(result)
     assert set(result) == domain_adapter.RESULT_KEYS
     assert result["status"] == "completed"
@@ -82,7 +90,10 @@ def test_canonical_action_emits_a_bounded_hash_verified_receipt(
     assert result["test_count"] == 1
     assert result["secret_scan"]["status"] == "passed"
     assert len(result["checks"]) == 9
-    assert all(set(check) == {"name", "status", "output_sha256"} for check in result["checks"])
+    assert all(
+        set(check) == {"name", "status", "output_sha256"}
+        for check in result["checks"]
+    )
     assert result["artifact_references"] == [
         {
             "kind": "secret-scan-report",
@@ -95,7 +106,7 @@ def test_canonical_action_emits_a_bounded_hash_verified_receipt(
     assert not list(results.glob(".*.legacy.*.json"))
 
 
-def test_canonical_receipt_tampering_is_rejected(
+def test_canonical_receipt_hash_tampering_is_rejected(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     workspace = tmp_path / "workspace"
@@ -105,10 +116,28 @@ def test_canonical_receipt_tampering_is_rejected(
 
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
     assert domain_adapter.run(canonical_plan(), workspace, result_path) == 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_json(result_path)
     result["status"] = "failed"
 
     with pytest.raises(ValueError, match="receipt hash mismatch"):
+        domain_adapter.verify_canonical_result(result)
+
+
+def test_rehashed_semantically_forged_receipt_is_rejected(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    legacy_fixture.write_fixture(workspace)
+    result_path = tmp_path / "result.json"
+
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    assert domain_adapter.run(canonical_plan(), workspace, result_path) == 0
+    result = read_json(result_path)
+    result["checks"][0]["status"] = "blocked"
+    rehash(result)
+
+    with pytest.raises(ValueError, match="incomplete checks"):
         domain_adapter.verify_canonical_result(result)
 
 
@@ -120,7 +149,7 @@ def test_cross_domain_canonical_plan_is_blocked_before_execution(
     plan["domain"] = "analysis"
 
     assert domain_adapter.run(plan, tmp_path, result_path) != 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_json(result_path)
     domain_adapter.verify_canonical_result(result)
     assert result["status"] == "blocked"
     assert result["domain"] == "code"
@@ -129,12 +158,42 @@ def test_cross_domain_canonical_plan_is_blocked_before_execution(
     assert result["reason"] == "cross-domain execution is forbidden"
 
 
+def test_unsafe_identifiers_are_sanitized_in_blocked_receipts(
+    tmp_path: Path,
+) -> None:
+    result_path = tmp_path / "blocked.json"
+    plan = canonical_plan()
+    plan["job_id"] = "../../etc/passwd"
+    plan["source_ref"] = "../private/.git"
+
+    assert domain_adapter.run(plan, tmp_path, result_path) != 0
+    result = read_json(result_path)
+    domain_adapter.verify_canonical_result(result)
+    assert result["job_id"] == "invalid-domain-plan"
+    assert result["source_ref"] == ""
+    assert result["reason"] == "job_id is invalid"
+
+
+def test_expected_source_sha_mismatch_is_blocked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    result_path = tmp_path / "blocked.json"
+    plan = canonical_plan()
+    plan["expected_source_sha"] = "b" * 40
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+
+    assert domain_adapter.run(plan, tmp_path, result_path) != 0
+    result = read_json(result_path)
+    domain_adapter.verify_canonical_result(result)
+    assert "does not match resolved source" in result["reason"]
+
+
 def test_caller_selected_repository_and_adapter_are_blocked(tmp_path: Path) -> None:
     repository_result = tmp_path / "repository-blocked.json"
     repository_plan = canonical_plan()
     repository_plan["source_repo"] = "GlacierEQ/other-private-repo"
     assert domain_adapter.run(repository_plan, tmp_path, repository_result) != 0
-    repository_value = json.loads(repository_result.read_text(encoding="utf-8"))
+    repository_value = read_json(repository_result)
     domain_adapter.verify_canonical_result(repository_value)
     assert "catalog-bound repository" in repository_value["reason"]
 
@@ -142,9 +201,29 @@ def test_caller_selected_repository_and_adapter_are_blocked(tmp_path: Path) -> N
     adapter_plan = canonical_plan()
     adapter_plan["adapter"] = "arbitrary_shell"
     assert domain_adapter.run(adapter_plan, tmp_path, adapter_result) != 0
-    adapter_value = json.loads(adapter_result.read_text(encoding="utf-8"))
+    adapter_value = read_json(adapter_result)
     domain_adapter.verify_canonical_result(adapter_value)
     assert "caller-selected adapter" in adapter_value["reason"]
+
+
+def test_dangling_symlink_result_directory_is_rejected(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    legacy_fixture.write_fixture(workspace)
+    missing_target = tmp_path / "missing-result-target"
+    symlink_parent = tmp_path / "results"
+    symlink_parent.symlink_to(missing_target)
+
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    assert (
+        domain_adapter.run(
+            canonical_plan(), workspace, symlink_parent / "result.json"
+        )
+        != 0
+    )
+    assert not missing_target.exists()
 
 
 def test_wrapper_and_execution_core_are_hash_bound() -> None:
