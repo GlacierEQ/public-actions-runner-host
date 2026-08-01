@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "domains": {
+    "docs": {
+      "status": "planned",
+      "executionEnabled": false,
+      "adapterRoot": "domains/docs/adapters",
+      "actionCatalog": "domains/docs/actions.json",
+      "tokenProfiles": "domains/docs/token-profiles.json",
+      "jobSchema": "domains/docs/schemas/job.schema.json",
+      "resultSchema": "domains/docs/schemas/result.schema.json",
+      "receiptNamespace": "receipts/docs",
+      "concurrencyPrefix": "docs"
+    },
+    "code": {
+      "status": "active",
+      "executionEnabled": true,
+      "adapterRoot": "domains/code/adapters",
+      "actionCatalog": "domains/code/actions.json",
+      "tokenProfiles": "domains/code/token-profiles.json",
+      "jobSchema": "domains/code/schemas/job.schema.json",
+      "resultSchema": "domains/code/schemas/result.schema.json",
+      "receiptNamespace": "receipts/code",
+      "concurrencyPrefix": "code"
+    },
+    "analysis": {
+      "status": "planned",
+      "executionEnabled": false,
+      "adapterRoot": "domains/analysis/adapters",
+      "actionCatalog": "domains/analysis/actions.json",
+      "tokenProfiles": "domains/analysis/token-profiles.json",
+      "jobSchema": "domains/analysis/schemas/job.schema.json",
+      "resultSchema": "domains/analysis/schemas/result.schema.json",
+      "receiptNamespace": "receipts/analysis",
+      "concurrencyPrefix": "analysis"
+    }
+  },
+  "constraints": {
+    "registeredActionsOnly": true,
+    "callerSelectedAdapters": false,
+    "callerSelectedRepositories": false,
+    "crossDomainImports": false,
+    "crossDomainHandoffsRequireReceipt": true,
+    "permissionProfilesAreMaximums": true
+  }
+}
