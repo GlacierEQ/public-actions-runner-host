@@ -14,6 +14,8 @@
     "token_profile",
     "source_repo",
     "source_ref",
+    "expected_source_sha",
+    "approval_id",
     "resolved_source_sha",
     "status",
     "checks",
@@ -56,6 +58,20 @@
     "source_ref": {
       "type": "string",
       "maxLength": 128
+    },
+    "expected_source_sha": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "approval_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"
     },
     "resolved_source_sha": {
       "type": "string",
