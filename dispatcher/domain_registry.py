@@ -31,6 +31,15 @@ REQUIRED_DOMAIN_KEYS = {
     "receiptNamespace",
     "concurrencyPrefix",
 }
+RESERVED_ACTION_KEYS = {
+    "domain",
+    "canonicalAction",
+    "requestedAction",
+    "wasAlias",
+    "tokenProfileContract",
+    "receiptRoot",
+    "receiptPattern",
+}
 EXPECTED_CONSTRAINTS = {
     "registeredActionsOnly": True,
     "callerSelectedAdapters": False,
@@ -193,6 +202,12 @@ def validate_registry(root: Path = ROOT) -> dict[str, dict[str, Any]]:
     aliases = action_index["aliases"]
     namespaces = receipt_data["namespaces"]
 
+    shadowed_aliases = sorted(set(canonical_index) & set(aliases))
+    if shadowed_aliases:
+        raise RegistryError(
+            "aliases shadow canonical actions: " + ", ".join(shadowed_aliases)
+        )
+
     loaded: dict[str, dict[str, Any]] = {}
     seen_aliases: set[str] = set()
 
@@ -276,6 +291,12 @@ def validate_registry(root: Path = ROOT) -> dict[str, dict[str, Any]]:
                 )
             if not isinstance(action, dict) or action.get("status") != "active":
                 raise RegistryError(f"action {action_name} is not active")
+            reserved = sorted(RESERVED_ACTION_KEYS & set(action))
+            if reserved:
+                raise RegistryError(
+                    f"action {action_name} defines reserved identity fields: "
+                    + ", ".join(reserved)
+                )
 
             adapter = action.get("adapter")
             if not isinstance(adapter, str) or not ADAPTER.fullmatch(adapter):
@@ -390,9 +411,9 @@ def validate_registry(root: Path = ROOT) -> dict[str, dict[str, Any]]:
                 seen_aliases.add(alias)
 
             loaded[action_name] = {
+                **action,
                 "domain": domain_name,
                 "canonicalAction": action_name,
-                **action,
                 "tokenProfileContract": profile,
                 "receiptRoot": contract["receiptNamespace"],
                 "receiptPattern": receipt_pattern.pattern,
@@ -418,7 +439,9 @@ def resolve_action(
     if not isinstance(action, str) or not action:
         raise RegistryError("action is required")
     action_index = _load_action_index(root.resolve())
-    alias_entry = action_index["aliases"].get(action)
+    canonical_actions = action_index["canonicalActions"]
+    aliases = action_index["aliases"]
+    alias_entry = None if action in canonical_actions else aliases.get(action)
     canonical = (
         alias_entry.get("canonicalAction")
         if isinstance(alias_entry, dict)
