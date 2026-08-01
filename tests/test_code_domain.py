@@ -21,28 +21,26 @@ SOURCE_SHA = "a" * 40
 def test_wrapper_and_legacy_adapter_produce_identical_bounded_results(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    legacy_workspace = tmp_path / "legacy-workspace"
-    domain_workspace = tmp_path / "domain-workspace"
-    legacy_workspace.mkdir()
-    domain_workspace.mkdir()
-    legacy_fixture.write_fixture(legacy_workspace)
-    legacy_fixture.write_fixture(domain_workspace)
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    legacy_fixture.write_fixture(workspace)
 
-    legacy_results = tmp_path / "legacy-results"
-    domain_results = tmp_path / "domain-results"
-    legacy_results.mkdir()
-    domain_results.mkdir()
-    legacy_result = legacy_results / "result.json"
-    domain_result = domain_results / "result.json"
+    results = tmp_path / "results"
+    results.mkdir()
+    result_path = results / "result.json"
 
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
     plan = legacy_fixture.plan()
 
-    assert legacy.run(plan, legacy_workspace, legacy_result) == 0
-    assert domain_adapter.run(plan, domain_workspace, domain_result) == 0
-    assert json.loads(domain_result.read_text(encoding="utf-8")) == json.loads(
-        legacy_result.read_text(encoding="utf-8")
-    )
+    assert legacy.run(plan, workspace, result_path) == 0
+    legacy_result = json.loads(result_path.read_text(encoding="utf-8"))
+
+    for generated in results.iterdir():
+        generated.unlink()
+
+    assert domain_adapter.run(plan, workspace, result_path) == 0
+    domain_result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert domain_result == legacy_result
 
 
 def test_canonical_action_delegates_to_the_existing_execution_core(
