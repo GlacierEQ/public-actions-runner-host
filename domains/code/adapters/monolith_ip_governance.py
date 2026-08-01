@@ -72,24 +72,38 @@ def validate_plan(plan: object) -> dict[str, Any]:
     return plan
 
 
+def blocked_plan(plan: object) -> dict[str, Any]:
+    """Build the minimum safe result identity without trusting invalid fields."""
+    source = plan if isinstance(plan, dict) else {}
+    job_id = source.get("job_id")
+    pillar = source.get("pillar")
+    return {
+        "job_id": (
+            job_id
+            if isinstance(job_id, str) and 8 <= len(job_id) <= 64
+            else "invalid-domain-plan"
+        ),
+        "pillar": pillar if pillar == "D" else "D",
+        "action": CANONICAL_ACTION,
+        "adapter": ADAPTER,
+        "task": "test",
+        "source_repo": TARGET_REPOSITORY,
+        "source_ref": (
+            source.get("source_ref")
+            if isinstance(source.get("source_ref"), str)
+            else ""
+        ),
+        "target_repo": TARGET_REPOSITORY,
+    }
+
+
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
     """Validate domain boundaries and delegate with byte-for-byte plan parity."""
     try:
         validated = validate_plan(plan)
     except ValueError as error:
-        safe_plan = plan if isinstance(plan, dict) else {
-            "job_id": "invalid-domain-plan",
-            "pillar": "D",
-            "action": CANONICAL_ACTION,
-        }
-        if not isinstance(safe_plan.get("job_id"), str):
-            safe_plan = {
-                "job_id": "invalid-domain-plan",
-                "pillar": "D",
-                "action": CANONICAL_ACTION,
-            }
         return catalog.write_result(
-            safe_plan,
+            blocked_plan(plan),
             result_path,
             "blocked",
             reason=str(error),
