@@ -18,6 +18,12 @@
     "status",
     "checks",
     "artifact_references",
+    "legacy_result_sha256",
+    "test_count",
+    "manifest_summary",
+    "secret_scan",
+    "parent_receipt_sha256",
+    "reason",
     "receipt_sha256"
   ],
   "properties": {
@@ -49,12 +55,11 @@
     },
     "source_ref": {
       "type": "string",
-      "minLength": 1,
       "maxLength": 128
     },
     "resolved_source_sha": {
       "type": "string",
-      "pattern": "^[0-9a-f]{40}$"
+      "pattern": "^(?:[0-9a-f]{40})?$"
     },
     "status": {
       "enum": [
@@ -65,6 +70,7 @@
     },
     "checks": {
       "type": "array",
+      "maxItems": 64,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -95,6 +101,7 @@
     },
     "artifact_references": {
       "type": "array",
+      "maxItems": 8,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -104,14 +111,150 @@
         ],
         "properties": {
           "kind": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 64
+            "enum": [
+              "secret-scan-report",
+              "publication-receipt"
+            ]
           },
           "sha256": {
             "type": "string",
             "pattern": "^[0-9a-f]{64}$"
           }
+        }
+      }
+    },
+    "legacy_result_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "test_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "manifest_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 32
+        },
+        "repository": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "visibility": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 32
+        },
+        "rights_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "publication_class": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "release_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "ai_assistance": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "human_review_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        }
+      }
+    },
+    "secret_scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scanner": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 32
+        },
+        "scanned_commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "files_tracked": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "files_scanned": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "files_skipped": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "finding_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "report_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
         }
       }
     },
@@ -121,6 +264,10 @@
         "null"
       ],
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 2048
     },
     "receipt_sha256": {
       "type": "string",
