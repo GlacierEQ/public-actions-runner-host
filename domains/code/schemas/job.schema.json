@@ -25,7 +25,19 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 128,
-      "pattern": "^(?!/)(?!.*(?:\\.\\.|//|@\\{|\\\\))[A-Za-z0-9._/-]+(?<!/)(?<!\\.lock)$"
+      "pattern": "^(?!/)(?!.*(?:\\.\\.|//|@\\{|\\\\))[A-Za-z0-9._/-]+$",
+      "allOf": [
+        {
+          "not": {
+            "pattern": "/$"
+          }
+        },
+        {
+          "not": {
+            "pattern": "\\.lock$"
+          }
+        }
+      ]
     },
     "expected_source_sha": {
       "type": "string",
