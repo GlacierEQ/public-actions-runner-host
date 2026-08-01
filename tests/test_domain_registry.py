@@ -114,6 +114,16 @@ def test_repository_paths_cannot_escape_the_checkout(tmp_path: Path) -> None:
         )
 
 
+def test_repository_paths_reject_live_symlink_components(tmp_path: Path) -> None:
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (tmp_path / "domains").symlink_to(outside, target_is_directory=True)
+    with pytest.raises(registry.RegistryError, match="contains a symlink"):
+        registry.safe_repository_path(
+            tmp_path, "domains/code/actions.json", must_exist=False
+        )
+
+
 def test_repository_paths_reject_dangling_symlink_components(
     tmp_path: Path,
 ) -> None:
