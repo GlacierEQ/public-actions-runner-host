@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "namespaces": {
+    "docs": {
+      "status": "reserved",
+      "root": "receipts/docs",
+      "pattern": "^receipts/docs/[A-Za-z0-9][A-Za-z0-9._-]{7,63}\\.json$"
+    },
+    "code": {
+      "status": "active",
+      "root": "receipts/code",
+      "pattern": "^receipts/code/[A-Za-z0-9][A-Za-z0-9._-]{7,63}\\.json$"
+    },
+    "analysis": {
+      "status": "reserved",
+      "root": "receipts/analysis",
+      "pattern": "^receipts/analysis/[A-Za-z0-9][A-Za-z0-9._-]{7,63}\\.json$"
+    }
+  }
+}
