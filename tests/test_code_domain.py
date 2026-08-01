@@ -36,6 +36,28 @@ def rehash(result: dict) -> None:
     result["receipt_sha256"] = domain_adapter.canonical_sha256(result)
 
 
+def test_adapter_contract_keys_match_registered_schemas() -> None:
+    job_schema = read_json(
+        ROOT / "domains" / "code" / "schemas" / "job.schema.json"
+    )
+    result_schema = read_json(
+        ROOT / "domains" / "code" / "schemas" / "result.schema.json"
+    )
+
+    assert set(job_schema["properties"]) == domain_adapter.CANONICAL_JOB_KEYS
+    assert set(job_schema["required"]) == {
+        "job_id",
+        "domain",
+        "action",
+        "source_ref",
+    }
+    assert job_schema["additionalProperties"] is False
+
+    assert set(result_schema["properties"]) == domain_adapter.RESULT_KEYS
+    assert set(result_schema["required"]) == domain_adapter.RESULT_KEYS
+    assert result_schema["additionalProperties"] is False
+
+
 def test_schema_valid_canonical_plan_normalizes_to_fixed_legacy_identity() -> None:
     plan = canonical_plan()
     normalized = domain_adapter.validate_plan(plan)
