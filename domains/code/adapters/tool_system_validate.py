@@ -1,4 +1,5 @@
 """Bounded Code-domain validator for the computer-user Tool System."""
+
 from __future__ import annotations
 
 import hashlib

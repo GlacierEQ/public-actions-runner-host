@@ -34,7 +34,9 @@ def write_workload(root: Path) -> None:
 
 
 def test_command_contract_is_fixed_and_contains_no_shell(tmp_path: Path) -> None:
-    commands = adapter.command_sequence(tmp_path / "result.json", "tool-system-test-001")
+    commands = adapter.command_sequence(
+        tmp_path / "result.json", "tool-system-test-001"
+    )
     assert len(commands) == 6
     assert all(isinstance(command, list) and command for command in commands)
     assert all(command[0] not in {"bash", "sh", "zsh"} for command in commands)
