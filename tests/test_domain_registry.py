@@ -29,7 +29,10 @@ def mutate_json(path: Path, mutation: Callable[[dict], None]) -> None:
 
 def test_registry_validates_and_only_code_is_executable() -> None:
     actions = registry.validate_registry()
-    assert set(actions) == {"code.validate-governance"}
+    assert set(actions) == {
+        "code.tool-system.validate",
+        "code.validate-governance",
+    }
     action = actions["code.validate-governance"]
     assert action["domain"] == "code"
     assert action["canonicalAction"] == "code.validate-governance"
@@ -37,6 +40,32 @@ def test_registry_validates_and_only_code_is_executable() -> None:
     assert action["adapter"] == "monolith_ip_governance"
     assert action["receiptRoot"] == "receipts/code"
     assert action["receiptPattern"] == registry.expected_receipt_pattern("code")
+
+    tool_system = actions["code.tool-system.validate"]
+    assert tool_system["targetRepository"] == "GlacierEQ/computer-user"
+    assert tool_system["adapter"] == "tool_system_validate"
+    assert tool_system["tokenProfile"] == "private-source-read"
+
+
+def test_tool_system_alias_resolves_to_canonical_code_action() -> None:
+    canonical = registry.resolve_action(
+        "code.tool-system.validate", requested_domain="code"
+    )
+    alias = registry.resolve_action(
+        "tool-system-validate", requested_domain="code"
+    )
+    assert canonical["wasAlias"] is False
+    assert alias["wasAlias"] is True
+    assert alias["canonicalAction"] == canonical["canonicalAction"]
+    assert alias["targetRepository"] == "GlacierEQ/computer-user"
+
+
+def test_tool_system_action_uses_closed_action_specific_schemas() -> None:
+    action = registry.resolve_action("code.tool-system.validate")
+    assert action["jobSchema"] == "tool-system-job-v1"
+    assert action["resultSchema"] == "tool-system-result-v1"
+    assert action["jobSchemaPath"].endswith("tool-system-job.schema.json")
+    assert action["resultSchemaPath"].endswith("tool-system-result.schema.json")
 
 
 def test_legacy_alias_resolves_to_the_same_canonical_action() -> None:
