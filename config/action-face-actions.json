@@ -125,6 +125,16 @@
       "adapter": "monolith-ip-governance",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "code.tool-system.validate",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/computer-user",
+      "legacy_event": "tool-system-validate",
+      "adapter": "tool-system-validate",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }

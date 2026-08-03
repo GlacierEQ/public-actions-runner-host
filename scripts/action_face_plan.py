@@ -36,6 +36,7 @@ ADAPTER_TASK = {
     "python-ci": "test",
     "node-ci": "test",
     "akos-echo-policy-ci": "test",
+    "tool-system-validate": "test",
     "monolith-evolution": "test",
     "monolith-ip-governance": "test",
     "action-face-selftest": "validate",
@@ -53,7 +54,9 @@ MAX_LENGTH = {
     "task": 32,
     "approval_id": 64,
 }
-ACTION = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
+ACTION = re.compile(
+    r"^(?:[a-z0-9][a-z0-9-]{0,63}|[a-z][a-z0-9-]{1,31}\.[a-z][a-z0-9-]{1,63})$"
+)
 CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 
 
