@@ -29,8 +29,7 @@ def write_workload(root: Path) -> None:
     for relative in adapter.REQUIRED_PATHS:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text("# fixture
-", encoding="utf-8")
+        path.write_text("# fixture\n", encoding="utf-8")
 
 
 def test_command_contract_is_fixed_and_contains_no_shell(tmp_path: Path) -> None:

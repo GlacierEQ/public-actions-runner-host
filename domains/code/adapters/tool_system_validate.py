@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Bounded Code-domain validator for the computer-user Tool System."""
 from __future__ import annotations
 
