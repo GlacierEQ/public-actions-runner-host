@@ -15,7 +15,9 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DOMAIN = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
-ACTION = re.compile(r"^[a-z][a-z0-9-]{1,31}\.[a-z][a-z0-9-]{1,63}$")
+ACTION = re.compile(
+    r"^[a-z][a-z0-9-]{1,31}(?:\.[a-z][a-z0-9-]{0,63})+$"
+)
 ADAPTER = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
 PROFILE = re.compile(r"^[a-z][a-z0-9-]{1,63}$")
 REPOSITORY = re.compile(r"^GlacierEQ/[A-Za-z0-9_.-]{1,100}$")

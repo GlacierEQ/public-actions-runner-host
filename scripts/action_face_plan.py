@@ -55,7 +55,8 @@ MAX_LENGTH = {
     "approval_id": 64,
 }
 ACTION = re.compile(
-    r"^(?:[a-z0-9][a-z0-9-]{0,63}|[a-z][a-z0-9-]{1,31}\.[a-z][a-z0-9-]{1,63})$"
+    r"^(?:[a-z0-9][a-z0-9-]{0,63}|"
+    r"[a-z][a-z0-9-]{1,31}(?:\.[a-z][a-z0-9-]{0,63})+)$"
 )
 CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 
