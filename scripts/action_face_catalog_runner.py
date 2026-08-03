@@ -11,12 +11,18 @@ import subprocess
 import sys
 from pathlib import Path
 
-import apex_catalog_runner as catalog
-from action_face_selftest import run as run_selftest
-from domains.code.adapters.tool_system_validate import run as run_tool_system_validate
-from master_strand_extinction import ExtinctionError, run as run_master_strand
-from monolith_evolution_adapter import run as run_monolith_evolution
-from monolith_ip_governance_adapter import run as run_monolith_ip_governance
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+import apex_catalog_runner as catalog  # noqa: E402
+from action_face_selftest import run as run_selftest  # noqa: E402
+from domains.code.adapters.tool_system_validate import (  # noqa: E402
+    run as run_tool_system_validate,
+)
+from master_strand_extinction import ExtinctionError, run as run_master_strand  # noqa: E402
+from monolith_evolution_adapter import run as run_monolith_evolution  # noqa: E402
+from monolith_ip_governance_adapter import run as run_monolith_ip_governance  # noqa: E402
 
 SENSITIVE_ENV = {
     "APEX_BRANCH_WRITE_TOKEN",

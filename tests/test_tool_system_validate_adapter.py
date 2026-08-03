@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -11,6 +15,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import action_face_plan as planner
 
 from domains.code.adapters import tool_system_validate as adapter
+
+SOURCE_SHA = "a" * 40
 
 
 def production_plan() -> dict:
@@ -21,8 +27,18 @@ def production_plan() -> dict:
         "adapter": adapter.EXPECTED_ADAPTER,
         "task": "test",
         "source_repo": adapter.EXPECTED_REPOSITORY,
-        "source_ref": "b105f48cf0dd60f5e376be7b7e807cdb3c4a22c6",
+        "source_ref": SOURCE_SHA,
         "target_repo": adapter.EXPECTED_REPOSITORY,
+    }
+
+
+def canonical_plan() -> dict:
+    return {
+        "job_id": "tool-system-canonical-001",
+        "domain": "code",
+        "action": adapter.EXPECTED_ACTION,
+        "source_ref": SOURCE_SHA,
+        "expected_source_sha": SOURCE_SHA,
     }
 
 
@@ -44,6 +60,30 @@ def test_command_contract_is_fixed_and_contains_no_shell(tmp_path: Path) -> None
     assert "scripts/ci/verify_tool_system.py" in flattened
     assert "tests/test_tool_system.py" in flattened
     assert set(adapter.LINT_PATHS).issubset(set(flattened))
+    with pytest.raises(ValueError, match="job_id is invalid"):
+        adapter.command_sequence(tmp_path / "result.json", "../../unsafe")
+
+
+def test_isolated_environment_is_allowlisted(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("PATH", "/usr/bin")
+    monkeypatch.setenv("AKOS_POLICY_SHA256", "secret-digest")
+    monkeypatch.setenv("GITHUB_TOKEN", "secret-token")
+    monkeypatch.setenv("UNRELATED_SECRET", "secret")
+    env = adapter.isolated_env()
+    assert env["PATH"] == "/usr/bin"
+    assert env["CI"] == "true"
+    assert "AKOS_POLICY_SHA256" not in env
+    assert "GITHUB_TOKEN" not in env
+    assert "UNRELATED_SECRET" not in env
+
+
+def test_canonical_job_normalizes_to_fixed_execution_identity() -> None:
+    normalized = adapter.normalize_plan(canonical_plan())
+    assert normalized["pillar"] == "C"
+    assert normalized["adapter"] == adapter.EXPECTED_ADAPTER
+    assert normalized["source_repo"] == adapter.EXPECTED_REPOSITORY
+    assert normalized["target_repo"] == adapter.EXPECTED_REPOSITORY
+    assert normalized["expected_source_sha"] == SOURCE_SHA
 
 
 def test_plan_rebinding_is_blocked_before_execution(tmp_path: Path) -> None:
@@ -53,7 +93,7 @@ def test_plan_rebinding_is_blocked_before_execution(tmp_path: Path) -> None:
     assert adapter.run(plan, tmp_path, result_path) != 0
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "blocked"
-    assert result["reason"] == "source repository identity mismatch"
+    assert result["reason"] == "source repo identity mismatch"
     assert "steps" not in result
 
 
@@ -65,6 +105,38 @@ def test_missing_required_files_are_reported_without_execution(tmp_path: Path) -
     assert "config/tool_system.json" in result["reason"]
 
 
+def test_expected_source_mismatch_blocks_before_commands(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_workload(tmp_path)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", "b" * 40)
+    result_path = tmp_path / "result.json"
+    assert adapter.run(canonical_plan(), tmp_path, result_path) != 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "blocked"
+    assert result["expected_source_sha"] == SOURCE_SHA
+    assert "does not match" in result["reason"]
+    assert "steps" not in result
+
+
+def test_none_stdout_is_normalized(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_workload(tmp_path)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    monkeypatch.setattr(
+        adapter.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=None),
+    )
+    result_path = tmp_path / "result.json"
+    assert adapter.run(production_plan(), tmp_path, result_path) == 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "completed"
+    assert len(result["steps"]) == 6
+    assert all(step["output_tail"] == "" for step in result["steps"])
+
+
 def test_action_face_planner_binds_canonical_code_action(tmp_path: Path) -> None:
     event = tmp_path / "event.json"
     event.write_text("{}", encoding="utf-8")
@@ -74,7 +146,7 @@ def test_action_face_planner_binds_canonical_code_action(tmp_path: Path) -> None
             "pillar": "C",
             "action": adapter.EXPECTED_ACTION,
             "job_id": "tool-system-plan-001",
-            "source_ref": "b105f48cf0dd60f5e376be7b7e807cdb3c4a22c6",
+            "source_ref": SOURCE_SHA,
         },
     )
     assert plan["action"] == adapter.EXPECTED_ACTION
@@ -82,3 +154,18 @@ def test_action_face_planner_binds_canonical_code_action(tmp_path: Path) -> None
     assert plan["source_repo"] == adapter.EXPECTED_REPOSITORY
     assert plan["target_repo"] == adapter.EXPECTED_REPOSITORY
     assert plan["task"] == "test"
+
+
+def test_catalog_runner_direct_entrypoint_imports_domain_adapter() -> None:
+    process = subprocess.run(
+        [sys.executable, "scripts/action_face_catalog_runner.py"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    output = process.stdout or ""
+    assert process.returncode != 0
+    assert "usage: action_face_catalog_runner.py" in output
+    assert "ModuleNotFoundError" not in output
