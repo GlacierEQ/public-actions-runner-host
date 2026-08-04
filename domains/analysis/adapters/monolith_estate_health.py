@@ -35,7 +35,7 @@ def read_object(path: Path) -> dict:
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise ValueError(f"invalid analysis source: {path.name}: {error}") from error
     if not isinstance(value, dict):
-        raise ValueError(f"analysis source must be an object: {path.name}")
+        raise TypeError(f"analysis source must be an object: {path.name}")
     return value
 
 
@@ -61,7 +61,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     try:
         atlas = read_object(atlas_path)
         library = read_object(library_path)
-    except ValueError as error:
+    except (TypeError, ValueError) as error:
         return catalog.write_result(plan, result_path, "blocked", reason=str(error))
 
     estate = atlas.get("estate")
