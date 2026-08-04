@@ -11,7 +11,12 @@ import subprocess
 from pathlib import Path
 
 import apex_pillar_runner as base
-from workload_isolation import WorkloadIsolationError, secure_checkout_path
+from workload_isolation import (
+    CheckoutHandle,
+    WorkloadIsolationError,
+    open_checkout,
+    read_regular_file,
+)
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
 ALLOWED_STATUS = {"completed", "failed", "blocked", "skipped"}
@@ -28,36 +33,34 @@ def output(name: str, value: str) -> None:
             handle.write(f"{name}={value}\n")
 
 
-def secure_checkout(
+def open_bound_checkout(
     path: Path,
     label: str,
     *,
-    allowed_parent: Path | None = None,
-) -> Path:
+    allowed_parent: Path | CheckoutHandle | None = None,
+) -> CheckoutHandle:
     try:
-        return secure_checkout_path(
-            path,
-            allowed_parent=allowed_parent,
-            label=label,
-        )
+        return open_checkout(path, allowed_parent=allowed_parent, label=label)
     except WorkloadIsolationError as error:
         fail(str(error))
 
 
-def git(root: Path, *args: str) -> str:
-    git_home = root.parent / ".apex-postrun-git-home"
+def git(checkout: CheckoutHandle, *args: str) -> str:
+    git_home = checkout.parent_path / ".apex-postrun-git-home"
     git_home.mkdir(parents=True, exist_ok=True, mode=0o700)
     if git_home.is_symlink() or not git_home.is_dir():
         fail("post-run Git HOME is unsafe")
     git_home.chmod(0o700)
 
+    checkout.assert_path_identity()
     process = subprocess.run(
-        ["git", "-C", str(root), *args],
+        ["git", "-C", str(checkout.proc_path), *args],
         text=True,
         capture_output=True,
         timeout=30,
         check=False,
         shell=False,
+        pass_fds=checkout.pass_fds,
         env={
             "PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin"),
             "HOME": str(git_home),
@@ -67,33 +70,38 @@ def git(root: Path, *args: str) -> str:
             "GIT_TERMINAL_PROMPT": "0",
         },
     )
+    checkout.assert_path_identity()
     if process.returncode != 0:
-        fail(f"git {' '.join(args)} failed for {root.name}")
+        fail(f"git {' '.join(args)} failed for {checkout.label}")
     return process.stdout.strip()
 
 
-def verify_checkout(root: Path, expected_sha: str, label: str) -> dict[str, str]:
-    head = git(root, "rev-parse", "HEAD").lower()
+def verify_checkout(
+    checkout: CheckoutHandle,
+    expected_sha: str,
+    label: str,
+) -> dict[str, str | int]:
+    head = git(checkout, "rev-parse", "HEAD").lower()
     if head != expected_sha:
         fail(f"{label} HEAD does not match the expected commit")
-    dirty = git(root, "status", "--porcelain=v1", "--untracked-files=no")
+    dirty = git(checkout, "status", "--porcelain=v1", "--untracked-files=no")
     if dirty:
         fail(f"{label} tracked files changed during workload execution")
-    diff = git(root, "diff", "--no-ext-diff", "--binary", "HEAD", "--")
+    diff = git(checkout, "diff", "--no-ext-diff", "--binary", "HEAD", "--")
+    checkout.assert_path_identity()
     return {
         "head": head,
         "tracked_diff_sha256": hashlib.sha256(diff.encode("utf-8")).hexdigest(),
+        "checkout_device": checkout.device,
+        "checkout_inode": checkout.inode,
     }
 
 
-def secure_regular_file(path: Path, parent: Path, label: str) -> Path:
+def direct_file_name(path: Path, parent: CheckoutHandle, label: str) -> str:
     raw = Path(os.path.abspath(os.fspath(path)))
-    if raw.parent != parent or raw.is_symlink() or not raw.is_file():
-        fail(f"{label} is outside its canonical directory or is unsafe")
-    resolved = raw.resolve(strict=True)
-    if resolved.parent != parent:
-        fail(f"{label} escapes its canonical directory")
-    return resolved
+    if raw.parent != parent.raw_path or raw.name in {"", ".", ".."}:
+        fail(f"{label} is outside its canonical directory")
+    return raw.name
 
 
 def main() -> int:
@@ -113,110 +121,141 @@ def main() -> int:
 
     runner_argument = Path(args.runner_root)
     runner_parent = Path(os.path.abspath(os.fspath(runner_argument))).parent
-    runner_root = secure_checkout(
+    runner_handle = open_bound_checkout(
         runner_argument,
         "primary action-face",
         allowed_parent=runner_parent,
     )
-    control_root = secure_checkout(
-        Path(args.control_root),
-        "fresh post-run control",
-        allowed_parent=runner_root,
-    )
-    workload_root = secure_checkout(
-        Path(args.workload_root),
-        "private workload",
-        allowed_parent=runner_root,
-    )
-    verify_checkout(runner_root, workflow_sha, "primary action-face")
-    verify_checkout(control_root, workflow_sha, "fresh post-run control")
-
-    plan_path = secure_regular_file(Path(args.plan), runner_root, "plan path")
-    result_directory = secure_checkout(
-        Path(args.result).parent,
-        "result directory",
-        allowed_parent=runner_root,
-    )
-    result_path = secure_regular_file(
-        Path(args.result),
-        result_directory,
-        "result path",
-    )
-
-    plan = base.validate_plan(json.loads(plan_path.read_text(encoding="utf-8")))
-    if plan.get("job_id") != args.job_id:
-        fail("plan job ID does not match the workflow request")
-
-    claim, _ = base.decode_content(
-        base.api(f"claims/{args.job_id}.json", base.control_token()),
-        "immutable claim",
-    )
-    if claim.get("plan_sha256") != base.canonical_sha256(plan):
-        fail("current plan does not match the immutable claim hash")
-    for field in (
-        "job_id",
-        "pillar",
-        "action",
-        "adapter",
-        "task",
-        "source_repo",
-        "source_ref",
-    ):
-        if str(claim.get(field, "")) != str(plan.get(field, "")):
-            fail(f"claim and plan disagree on {field}")
-    if claim.get("provenance") != base.provenance(plan):
-        fail("claim and plan provenance disagree")
-
-    raw = result_path.read_bytes()
-    if len(raw) > base.MAX_RESULT_BYTES:
-        fail("result exceeds the maximum private receipt size")
-    result = json.loads(raw.decode("utf-8"))
-    if not isinstance(result, dict):
-        fail("result must be a JSON object")
-    if result.get("job_id") != args.job_id:
-        fail("result job ID does not match")
-    if result.get("status") not in ALLOWED_STATUS:
-        fail("result status is not governed")
-    if "receipt" in result:
-        fail("untrusted result contains a receipt")
-    for field in (
-        "pillar",
-        "action",
-        "adapter",
-        "task",
-        "source_repo",
-        "source_ref",
-    ):
-        if str(result.get(field, "")) != str(plan.get(field, "")):
-            fail(f"result and plan disagree on {field}")
-    if result.get("provenance") != base.provenance(plan):
-        fail("result and plan provenance disagree")
-
-    resolved = str(result.get("resolved_source_sha", "")).lower()
-    expected_resolved = str(args.resolved_source_sha or "").lower()
-    stage_outcomes = result.get("stage_outcomes")
-    pre_adapter_block = isinstance(stage_outcomes, dict) and (
-        stage_outcomes.get("checkout") != "success"
-        or stage_outcomes.get("checkout_binding") != "success"
-    )
-    if pre_adapter_block:
-        if resolved and not SHA.fullmatch(resolved):
-            fail("optional resolved source SHA is invalid")
-    else:
-        if not SHA.fullmatch(expected_resolved):
-            fail("workflow did not provide a valid resolved source SHA")
-        if resolved != expected_resolved:
-            fail("result resolved source SHA does not match checkout binding")
-        workload_attestation = verify_checkout(
-            workload_root,
-            expected_resolved,
+    with runner_handle:
+        control_handle = open_bound_checkout(
+            Path(args.control_root),
+            "fresh post-run control",
+            allowed_parent=runner_handle,
+        )
+        workload_handle = open_bound_checkout(
+            Path(args.workload_root),
             "private workload",
+            allowed_parent=runner_handle,
         )
-        output("workload_verified", "true")
-        output(
-            "workload_tracked_diff_sha256",
-            workload_attestation["tracked_diff_sha256"],
+        result_directory_handle = open_bound_checkout(
+            Path(args.result).parent,
+            "result directory",
+            allowed_parent=runner_handle,
         )
+        with control_handle, workload_handle, result_directory_handle:
+            verify_checkout(runner_handle, workflow_sha, "primary action-face")
+            verify_checkout(
+                control_handle,
+                workflow_sha,
+                "fresh post-run control",
+            )
+
+            plan_name = direct_file_name(Path(args.plan), runner_handle, "plan path")
+            result_name = direct_file_name(
+                Path(args.result),
+                result_directory_handle,
+                "result path",
+            )
+            try:
+                plan_raw = read_regular_file(
+                    runner_handle,
+                    plan_name,
+                    max_bytes=base.MAX_RESULT_BYTES,
+                )
+                raw = read_regular_file(
+                    result_directory_handle,
+                    result_name,
+                    max_bytes=base.MAX_RESULT_BYTES,
+                )
+            except WorkloadIsolationError as error:
+                fail(str(error))
+
+            plan = base.validate_plan(json.loads(plan_raw.decode("utf-8")))
+            if plan.get("job_id") != args.job_id:
+                fail("plan job ID does not match the workflow request")
+
+            claim, _ = base.decode_content(
+                base.api(f"claims/{args.job_id}.json", base.control_token()),
+                "immutable claim",
+            )
+            if claim.get("plan_sha256") != base.canonical_sha256(plan):
+                fail("current plan does not match the immutable claim hash")
+            for field in (
+                "job_id",
+                "pillar",
+                "action",
+                "adapter",
+                "task",
+                "source_repo",
+                "source_ref",
+            ):
+                if str(claim.get(field, "")) != str(plan.get(field, "")):
+                    fail(f"claim and plan disagree on {field}")
+            if claim.get("provenance") != base.provenance(plan):
+                fail("claim and plan provenance disagree")
+
+            result = json.loads(raw.decode("utf-8"))
+            if not isinstance(result, dict):
+                fail("result must be a JSON object")
+            if result.get("job_id") != args.job_id:
+                fail("result job ID does not match")
+            if result.get("status") not in ALLOWED_STATUS:
+                fail("result status is not governed")
+            if "receipt" in result:
+                fail("untrusted result contains a receipt")
+            for field in (
+                "pillar",
+                "action",
+                "adapter",
+                "task",
+                "source_repo",
+                "source_ref",
+            ):
+                if str(result.get(field, "")) != str(plan.get(field, "")):
+                    fail(f"result and plan disagree on {field}")
+            if result.get("provenance") != base.provenance(plan):
+                fail("result and plan provenance disagree")
+
+            resolved = str(result.get("resolved_source_sha", "")).lower()
+            expected_resolved = str(args.resolved_source_sha or "").lower()
+            stage_outcomes = result.get("stage_outcomes")
+            pre_adapter_block = isinstance(stage_outcomes, dict) and (
+                stage_outcomes.get("checkout") != "success"
+                or stage_outcomes.get("checkout_binding") != "success"
+            )
+            if pre_adapter_block:
+                if resolved and not SHA.fullmatch(resolved):
+                    fail("optional resolved source SHA is invalid")
+            else:
+                if not SHA.fullmatch(expected_resolved):
+                    fail("workflow did not provide a valid resolved source SHA")
+                if resolved != expected_resolved:
+                    fail(
+                        "result resolved source SHA does not match checkout binding"
+                    )
+                workload_attestation = verify_checkout(
+                    workload_handle,
+                    expected_resolved,
+                    "private workload",
+                )
+                output("workload_verified", "true")
+                output(
+                    "workload_tracked_diff_sha256",
+                    str(workload_attestation["tracked_diff_sha256"]),
+                )
+                output(
+                    "workload_checkout_device",
+                    str(workload_attestation["checkout_device"]),
+                )
+                output(
+                    "workload_checkout_inode",
+                    str(workload_attestation["checkout_inode"]),
+                )
+
+            runner_handle.assert_path_identity()
+            control_handle.assert_path_identity()
+            workload_handle.assert_path_identity()
+            result_directory_handle.assert_path_identity()
 
     digest = hashlib.sha256(raw).hexdigest()
     output("result_file_sha256", digest)
