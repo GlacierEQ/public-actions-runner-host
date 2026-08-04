@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
+import importlib.util
 import os
 import re
 import subprocess
@@ -21,6 +23,8 @@ EXPECTED_ACTION = "code.monolith.validate-company-engineered-registry"
 EXPECTED_REPOSITORY = "GlacierEQ/monolith"
 EXPECTED_ADAPTER = "monolith_company_registry_validate"
 SHA = re.compile(r"^[0-9a-f]{40}$")
+PYTEST_MAJOR_MIN = 8
+PYTEST_MAJOR_MAX_EXCLUSIVE = 9
 REQUIRED_PATHS = (
     "catalog/company_engineered_repositories.json",
     "domains/company_engineered_portfolio.md",
@@ -58,6 +62,24 @@ def commands() -> list[list[str]]:
     ]
 
 
+def pytest_runtime() -> tuple[bool, str | None, str | None]:
+    if importlib.util.find_spec("pytest") is None:
+        return False, None, "governed pytest runtime is unavailable"
+    try:
+        version = importlib.metadata.version("pytest")
+    except importlib.metadata.PackageNotFoundError:
+        return False, None, "governed pytest runtime metadata is unavailable"
+    match = re.match(r"^(\d+)(?:\.|$)", version)
+    major = int(match.group(1)) if match else None
+    if major is None or not (PYTEST_MAJOR_MIN <= major < PYTEST_MAJOR_MAX_EXCLUSIVE):
+        return (
+            False,
+            version,
+            f"unsupported pytest runtime {version}; required major version is 8",
+        )
+    return True, version, None
+
+
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -82,6 +104,16 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="resolved source SHA does not match requested source_ref",
         )
 
+    available, pytest_version, runtime_error = pytest_runtime()
+    if not available:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason=runtime_error,
+            runtime={"pytest": pytest_version},
+        )
+
     missing = [relative for relative in REQUIRED_PATHS if not (workspace / relative).is_file()]
     if missing:
         return catalog.write_result(
@@ -89,6 +121,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             result_path,
             "blocked",
             reason="required company-registry files are missing: " + ", ".join(missing),
+            runtime={"pytest": pytest_version},
         )
 
     try:
@@ -100,6 +133,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             result_path,
             "blocked",
             reason=f"workload isolation failed before execution: {error}",
+            runtime={"pytest": pytest_version},
         )
 
     sequence = commands()
@@ -175,5 +209,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         steps=steps,
         command_contract_sha256=command_contract_sha256(sequence),
         validated_gates=["company-registry-json", "company-registry-truth-surfaces"],
+        runtime={"pytest": pytest_version},
         workspace_attestation={"before": pre_attestation, "after": post_attestation},
     )
