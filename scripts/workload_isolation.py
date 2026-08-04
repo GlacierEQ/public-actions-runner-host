@@ -19,6 +19,47 @@ class WorkloadIsolationError(RuntimeError):
     """Raised when a workload boundary cannot be established or re-attested."""
 
 
+def _absolute_without_resolving(path: Path) -> Path:
+    return Path(os.path.abspath(os.fspath(path)))
+
+
+def _reject_symlink_components(path: Path, label: str) -> None:
+    """Reject any symlink in an existing path chain before dereferencing it."""
+    for candidate in (path, *path.parents):
+        if candidate.is_symlink():
+            raise WorkloadIsolationError(
+                f"{label} path contains a symlink component: {candidate.name or candidate}"
+            )
+        if candidate == candidate.parent:
+            break
+
+
+def secure_checkout_path(
+    path: Path,
+    *,
+    allowed_parent: Path | None = None,
+    label: str = "workload",
+) -> Path:
+    """Resolve one direct-child checkout only after proving its path is non-symlinked."""
+    raw = _absolute_without_resolving(path)
+    parent = _absolute_without_resolving(allowed_parent or raw.parent)
+    _reject_symlink_components(parent, f"{label} parent")
+    _reject_symlink_components(raw, label)
+
+    if raw.parent != parent:
+        raise WorkloadIsolationError(
+            f"{label} checkout is not a direct child of its allowed parent"
+        )
+    if not raw.exists() or not raw.is_dir():
+        raise WorkloadIsolationError(f"{label} checkout is not a regular directory")
+
+    resolved_parent = parent.resolve(strict=True)
+    resolved = raw.resolve(strict=True)
+    if resolved.parent != resolved_parent:
+        raise WorkloadIsolationError(f"{label} checkout escapes its allowed parent")
+    return resolved
+
+
 def _secure_directory(path: Path) -> Path:
     path.mkdir(parents=True, exist_ok=True, mode=0o700)
     if path.is_symlink() or not path.is_dir():
@@ -109,12 +150,19 @@ def _git(workspace: Path, *args: str) -> str:
     return process.stdout.strip()
 
 
-def attest_workspace(workspace: Path, expected_sha: str) -> dict[str, object]:
+def attest_workspace(
+    workspace: Path,
+    expected_sha: str,
+    *,
+    allowed_parent: Path | None = None,
+) -> dict[str, object]:
     """Require the exact bound commit and a clean tracked private source tree."""
-    workspace = workspace.resolve()
+    workspace = secure_checkout_path(
+        workspace,
+        allowed_parent=allowed_parent,
+        label="workload",
+    )
     expected_sha = expected_sha.lower()
-    if not workspace.is_dir() or workspace.is_symlink():
-        raise WorkloadIsolationError("workload checkout is not a regular directory")
     if not SHA.fullmatch(expected_sha):
         raise WorkloadIsolationError("expected workload SHA is invalid")
 
