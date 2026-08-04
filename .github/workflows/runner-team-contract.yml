@@ -13,6 +13,7 @@ on:
       - "scripts/apex_catalog_runner.py"
       - "scripts/public_runner_team_guard.py"
       - "scripts/workload_isolation.py"
+      - "security/RUNNER_HARDENING_RECEIPT_2026-08-03.md"
   pull_request:
     branches: [main]
     paths:
@@ -25,6 +26,7 @@ on:
       - "scripts/apex_catalog_runner.py"
       - "scripts/public_runner_team_guard.py"
       - "scripts/workload_isolation.py"
+      - "security/RUNNER_HARDENING_RECEIPT_2026-08-03.md"
   workflow_dispatch:
 
 permissions:
