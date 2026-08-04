@@ -8,11 +8,18 @@ import re
 from pathlib import Path
 
 import apex_catalog_runner as catalog
+from scripts.workload_isolation import (
+    WorkloadIsolationError,
+    attest_checkout,
+    open_checkout,
+    read_relative_regular_file,
+)
 
 EXPECTED_ACTION = "analysis.monolith.estate-health"
 EXPECTED_REPOSITORY = "GlacierEQ/monolith"
 EXPECTED_ADAPTER = "audit"
 SHA = re.compile(r"^[0-9a-f]{40}$")
+MAX_ANALYSIS_SOURCE_BYTES = 5_000_000
 
 
 def validate_plan(plan: dict) -> None:
@@ -29,18 +36,30 @@ def validate_plan(plan: dict) -> None:
             raise ValueError(f"{field} identity mismatch")
 
 
-def read_object(path: Path) -> dict:
+def read_object(checkout, relative: str) -> dict:
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
-        raise ValueError(f"invalid analysis source: {path.name}: {error}") from error
+        raw = read_relative_regular_file(
+            checkout,
+            relative,
+            max_bytes=MAX_ANALYSIS_SOURCE_BYTES,
+        )
+        value = json.loads(raw.decode("utf-8"))
+    except (
+        WorkloadIsolationError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+    ) as error:
+        raise ValueError(
+            f"invalid analysis source: {Path(relative).name}: {type(error).__name__}"
+        ) from error
     if not isinstance(value, dict):
-        raise TypeError(f"analysis source must be an object: {path.name}")
+        raise TypeError(
+            f"analysis source must be an object: {Path(relative).name}"
+        )
     return value
 
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
-    workspace = workspace.resolve()
     result_path = result_path.resolve()
     try:
         validate_plan(plan)
@@ -56,13 +75,32 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="resolved source SHA is unavailable or invalid",
         )
 
-    atlas_path = workspace / "catalog" / "monolith_command_atlas.json"
-    library_path = workspace / "catalog" / "library.json"
     try:
-        atlas = read_object(atlas_path)
-        library = read_object(library_path)
-    except (TypeError, ValueError) as error:
-        return catalog.write_result(plan, result_path, "blocked", reason=str(error))
+        checkout = open_checkout(workspace, label="Monolith analysis workload")
+    except WorkloadIsolationError as error:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason=f"analysis boundary failed before execution: {error}",
+        )
+
+    with checkout:
+        try:
+            pre_attestation = attest_checkout(checkout, resolved_sha)
+            atlas = read_object(
+                checkout,
+                "catalog/monolith_command_atlas.json",
+            )
+            library = read_object(checkout, "catalog/library.json")
+            post_attestation = attest_checkout(checkout, resolved_sha)
+        except (TypeError, ValueError, WorkloadIsolationError) as error:
+            return catalog.write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason=str(error),
+            )
 
     estate = atlas.get("estate")
     dispositions = atlas.get("disposition_counts")
@@ -100,7 +138,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 "signal": "source_inspection_coverage",
                 "value": inspected_percent,
                 "threshold": 10,
-                "recommended_action": "Expand fact cards across mapped wholes and worked-on repositories.",
+                "recommended_action": (
+                    "Expand fact cards across mapped wholes and worked-on repositories."
+                ),
             }
         )
     if relationship_edges and verified_edges == 0:
@@ -110,7 +150,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 "signal": "verified_integrations",
                 "value": verified_edges,
                 "relationship_edges": relationship_edges,
-                "recommended_action": "Produce exact integration receipts before promoting relationship edges.",
+                "recommended_action": (
+                    "Produce exact integration receipts before promoting relationship edges."
+                ),
             }
         )
     if lag_days > 3:
@@ -120,7 +162,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 "signal": "catalog_evidence_lag_days",
                 "value": lag_days,
                 "threshold": 3,
-                "recommended_action": "Regenerate the catalog and evidence surfaces from one pinned source state.",
+                "recommended_action": (
+                    "Regenerate the catalog and evidence surfaces from one pinned source state."
+                ),
             }
         )
     if bool(scale_notes.get("incomplete_mirror")):
@@ -129,7 +173,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 "severity": "bounded",
                 "signal": "incomplete_mirror",
                 "value": True,
-                "recommended_action": "Preserve the snapshot limitation in every estate-total claim.",
+                "recommended_action": (
+                    "Preserve the snapshot limitation in every estate-total claim."
+                ),
             }
         )
 
@@ -162,4 +208,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "finding_count": len(findings),
         },
         findings=findings[:25],
+        workspace_attestation={
+            "before": pre_attestation,
+            "after": post_attestation,
+        },
     )
