@@ -6,16 +6,25 @@ import hashlib
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import zipfile
-from pathlib import Path
+from collections.abc import Callable
+from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import apex_pillar_runner as base
+from workload_isolation import (
+    CheckoutHandle,
+    DIRECTORY_FLAGS,
+    FILE_FLAGS,
+    WorkloadIsolationError,
+    open_checkout,
+)
 
 BASE_TASKS = {
     "hash-manifest": "hash-manifest",
@@ -37,7 +46,13 @@ MEDIA_SUFFIXES = {
 }
 OFFICE_SUFFIXES = {".docx", ".odt", ".ods", ".odp", ".pptx", ".xlsx"}
 MAX_EMBEDDED_RECORDS = 256
+MAX_INVENTORY_ENTRIES = 100_000
+MAX_INVENTORY_BYTES = 10_000_000_000
 HASH_CHUNK_BYTES = 1024 * 1024
+
+
+class InventoryBoundaryError(RuntimeError):
+    """Raised when a no-follow inventory cannot be completed safely."""
 
 
 def write_result(plan: dict, result_path: Path, status: str, **details) -> int:
@@ -67,7 +82,11 @@ def write_result(plan: dict, result_path: Path, status: str, **details) -> int:
 
 
 def bounded_process(
-    command: list[str], cwd: Path, timeout: int
+    command: list[str],
+    cwd: Path,
+    timeout: int,
+    *,
+    pass_fds: tuple[int, ...] = (),
 ) -> tuple[int | None, str, str]:
     try:
         proc = subprocess.run(
@@ -79,6 +98,7 @@ def bounded_process(
             timeout=timeout,
             check=False,
             shell=False,
+            pass_fds=pass_fds,
         )
         return proc.returncode, (proc.stdout or "")[-32_000:], ""
     except subprocess.TimeoutExpired as exc:
@@ -86,14 +106,6 @@ def bounded_process(
         return None, output[-32_000:], f"timeout after {timeout} seconds"
     except OSError as exc:
         return None, "", f"process start failed: {type(exc).__name__}: {exc}"
-
-
-def file_sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(HASH_CHUNK_BYTES), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def canonical_record_bytes(record: dict) -> bytes:
@@ -105,227 +117,405 @@ def canonical_record_bytes(record: dict) -> bytes:
     ).encode("utf-8")
 
 
-def media_queue(plan: dict, workspace: Path, result_path: Path) -> int:
-    items: list[dict] = []
-    manifest = hashlib.sha256()
-    media_count = 0
-    total_bytes = 0
+def _same_regular_file(before: os.stat_result, after: os.stat_result) -> bool:
+    return (
+        stat.S_ISREG(before.st_mode)
+        and stat.S_ISREG(after.st_mode)
+        and before.st_dev == after.st_dev
+        and before.st_ino == after.st_ino
+        and before.st_size == after.st_size
+        and before.st_mtime_ns == after.st_mtime_ns
+        and before.st_ctime_ns == after.st_ctime_ns
+    )
+
+
+def _stream_sha256(descriptor: int) -> str:
+    digest = hashlib.sha256()
+    offset = 0
+    while True:
+        chunk = os.pread(descriptor, HASH_CHUNK_BYTES, offset)
+        if not chunk:
+            return digest.hexdigest()
+        digest.update(chunk)
+        offset += len(chunk)
+
+
+def _inspect_regular_file(
+    directory_fd: int,
+    name: str,
+    relative: PurePosixPath,
+    metadata: os.stat_result,
+    inspector: Callable[[int, os.stat_result, str], dict],
+) -> dict:
+    descriptor: int | None = None
     try:
-        for path in sorted(base.files(workspace)):
-            if path.suffix.lower() not in MEDIA_SUFFIXES:
-                continue
-            record = {
-                "path": path.relative_to(workspace).as_posix(),
-                "bytes": path.stat().st_size,
-                "sha256": file_sha256(path),
-            }
-            media_count += 1
-            total_bytes += record["bytes"]
-            manifest.update(canonical_record_bytes(record))
-            manifest.update(b"\n")
-            if len(items) < MAX_EMBEDDED_RECORDS:
-                items.append(record)
+        descriptor = os.open(name, FILE_FLAGS, dir_fd=directory_fd)
+        opened = os.fstat(descriptor)
+        if not _same_regular_file(metadata, opened):
+            raise InventoryBoundaryError(
+                "inventory file identity changed before no-follow open completed"
+            )
+        record = inspector(descriptor, opened, relative.as_posix())
+        after = os.fstat(descriptor)
+        if not _same_regular_file(opened, after):
+            raise InventoryBoundaryError("inventory file changed while being read")
+        return record
     except OSError as error:
+        raise InventoryBoundaryError(
+            f"inventory file open/read failed without following symlinks: "
+            f"{type(error).__name__}"
+        ) from error
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+
+
+def _walk_inventory(
+    checkout: CheckoutHandle,
+    suffixes: set[str],
+    inspector: Callable[[int, os.stat_result, str], dict],
+) -> tuple[list[dict], int, int]:
+    records: list[dict] = []
+    symlink_entries = 0
+    total_bytes = 0
+    entry_count = 0
+
+    def visit(directory_fd: int, relative_directory: PurePosixPath) -> None:
+        nonlocal symlink_entries, total_bytes, entry_count
+        try:
+            names = sorted(os.listdir(directory_fd))
+        except OSError as error:
+            raise InventoryBoundaryError(
+                f"inventory directory listing failed: {type(error).__name__}"
+            ) from error
+
+        for name in names:
+            if name in base.SKIP:
+                continue
+            entry_count += 1
+            if entry_count > MAX_INVENTORY_ENTRIES:
+                raise InventoryBoundaryError("inventory entry ceiling exceeded")
+            relative = relative_directory / name
+            try:
+                metadata = os.stat(
+                    name,
+                    dir_fd=directory_fd,
+                    follow_symlinks=False,
+                )
+            except OSError as error:
+                raise InventoryBoundaryError(
+                    f"inventory metadata read failed: {type(error).__name__}"
+                ) from error
+
+            if stat.S_ISLNK(metadata.st_mode):
+                symlink_entries += 1
+                continue
+            if stat.S_ISDIR(metadata.st_mode):
+                child_fd: int | None = None
+                try:
+                    child_fd = os.open(name, DIRECTORY_FLAGS, dir_fd=directory_fd)
+                    opened = os.fstat(child_fd)
+                    if (
+                        not stat.S_ISDIR(opened.st_mode)
+                        or opened.st_dev != metadata.st_dev
+                        or opened.st_ino != metadata.st_ino
+                    ):
+                        raise InventoryBoundaryError(
+                            "inventory directory identity changed during traversal"
+                        )
+                    visit(child_fd, relative)
+                except OSError as error:
+                    raise InventoryBoundaryError(
+                        f"inventory directory open failed without following symlinks: "
+                        f"{type(error).__name__}"
+                    ) from error
+                finally:
+                    if child_fd is not None:
+                        os.close(child_fd)
+                continue
+            if not stat.S_ISREG(metadata.st_mode):
+                continue
+            if Path(name).suffix.lower() not in suffixes:
+                continue
+
+            total_bytes += metadata.st_size
+            if total_bytes > MAX_INVENTORY_BYTES:
+                raise InventoryBoundaryError("inventory byte ceiling exceeded")
+            records.append(
+                _inspect_regular_file(
+                    directory_fd,
+                    name,
+                    relative,
+                    metadata,
+                    inspector,
+                )
+            )
+
+    checkout.assert_path_identity()
+    root_fd = os.dup(checkout.fd)
+    try:
+        visit(root_fd, PurePosixPath())
+    finally:
+        os.close(root_fd)
+    checkout.assert_path_identity()
+    return records, symlink_entries, total_bytes
+
+
+def _inventory_result(
+    plan: dict,
+    result_path: Path,
+    *,
+    records: list[dict],
+    symlink_entries: int,
+    total_bytes: int,
+    noun: str,
+    empty_reason: str,
+    invalid_field: str | None = None,
+) -> int:
+    manifest = hashlib.sha256()
+    invalid: list[str] = []
+    invalid_count = 0
+    for record in records:
+        manifest.update(canonical_record_bytes(record))
+        manifest.update(b"\n")
+        if invalid_field and not record[invalid_field]:
+            invalid_count += 1
+            if len(invalid) < MAX_EMBEDDED_RECORDS:
+                invalid.append(record["path"])
+
+    status = "completed"
+    reason = ""
+    if not records:
+        status = "blocked"
+        reason = empty_reason
+    elif symlink_entries:
+        status = "failed"
+        reason = "inventory contains symlink entries; no symlink target was read"
+    elif invalid_count:
+        status = "failed"
+
+    embedded = records[:MAX_EMBEDDED_RECORDS]
+    details = {
+        f"{noun}_count": len(records),
+        f"{noun}_total_bytes": total_bytes,
+        f"{noun}_records_included": len(embedded),
+        f"{noun}_records_truncated": len(records) > len(embedded),
+        f"{noun}_manifest_sha256": manifest.hexdigest(),
+        "symlink_entries_rejected": symlink_entries,
+        "inventory_complete": symlink_entries == 0,
+        noun: embedded,
+        "reason": reason,
+    }
+    if invalid_field:
+        details.update(
+            {
+                f"invalid_{noun}_count": invalid_count,
+                f"invalid_{noun}": invalid,
+                f"invalid_{noun}_truncated": invalid_count > len(invalid),
+            }
+        )
+    return write_result(plan, result_path, status, **details)
+
+
+def media_queue(plan: dict, workspace: Path, result_path: Path) -> int:
+    def inspect(descriptor: int, metadata: os.stat_result, relative: str) -> dict:
+        return {
+            "path": relative,
+            "bytes": metadata.st_size,
+            "sha256": _stream_sha256(descriptor),
+        }
+
+    try:
+        with open_checkout(workspace, label="media workload") as checkout:
+            records, symlinks, total_bytes = _walk_inventory(
+                checkout,
+                MEDIA_SUFFIXES,
+                inspect,
+            )
+    except (InventoryBoundaryError, WorkloadIsolationError) as error:
         return write_result(
             plan,
             result_path,
             "failed",
-            reason=f"media inventory failed: {type(error).__name__}: {error}",
+            reason=f"media inventory boundary failed: {error}",
         )
-
-    return write_result(
+    return _inventory_result(
         plan,
         result_path,
-        "completed",
-        media_count=media_count,
-        media_total_bytes=total_bytes,
-        media_records_included=len(items),
-        media_records_truncated=media_count > len(items),
-        media_manifest_sha256=manifest.hexdigest(),
-        media=items,
+        records=records,
+        symlink_entries=symlinks,
+        total_bytes=total_bytes,
+        noun="media",
+        empty_reason="No media files found",
     )
 
 
 def pdf_analyze(plan: dict, workspace: Path, result_path: Path) -> int:
-    documents: list[dict] = []
-    invalid: list[str] = []
-    manifest = hashlib.sha256()
-    pdf_count = 0
-    invalid_count = 0
+    def inspect(descriptor: int, metadata: os.stat_result, relative: str) -> dict:
+        header = os.pread(descriptor, 8, 0)
+        return {
+            "path": relative,
+            "bytes": metadata.st_size,
+            "sha256": _stream_sha256(descriptor),
+            "valid_header": header.startswith(b"%PDF-"),
+        }
+
     try:
-        for path in sorted(base.files(workspace)):
-            if path.suffix.lower() != ".pdf":
-                continue
-            header = path.read_bytes()[:8]
-            item = {
-                "path": path.relative_to(workspace).as_posix(),
-                "bytes": path.stat().st_size,
-                "sha256": file_sha256(path),
-                "valid_header": header.startswith(b"%PDF-"),
-            }
-            pdf_count += 1
-            manifest.update(canonical_record_bytes(item))
-            manifest.update(b"\n")
-            if len(documents) < MAX_EMBEDDED_RECORDS:
-                documents.append(item)
-            if not item["valid_header"]:
-                invalid_count += 1
-                if len(invalid) < MAX_EMBEDDED_RECORDS:
-                    invalid.append(item["path"])
-    except OSError as error:
+        with open_checkout(workspace, label="PDF workload") as checkout:
+            records, symlinks, total_bytes = _walk_inventory(
+                checkout,
+                {".pdf"},
+                inspect,
+            )
+    except (InventoryBoundaryError, WorkloadIsolationError) as error:
         return write_result(
             plan,
             result_path,
             "failed",
-            reason=f"PDF analysis failed: {type(error).__name__}: {error}",
+            reason=f"PDF inventory boundary failed: {error}",
         )
-
-    status = (
-        "completed"
-        if pdf_count and not invalid_count
-        else "blocked"
-        if not pdf_count
-        else "failed"
-    )
-    return write_result(
+    return _inventory_result(
         plan,
         result_path,
-        status,
-        pdf_count=pdf_count,
-        pdf_records_included=len(documents),
-        pdf_records_truncated=pdf_count > len(documents),
-        pdf_manifest_sha256=manifest.hexdigest(),
-        invalid_pdf_header_count=invalid_count,
-        invalid_pdf_headers=invalid,
-        invalid_pdf_headers_truncated=invalid_count > len(invalid),
-        documents=documents,
-        reason="No PDF files found" if not pdf_count else "",
+        records=records,
+        symlink_entries=symlinks,
+        total_bytes=total_bytes,
+        noun="pdf",
+        empty_reason="No PDF files found",
+        invalid_field="valid_header",
     )
 
 
 def document_validate(plan: dict, workspace: Path, result_path: Path) -> int:
-    documents: list[dict] = []
-    invalid: list[str] = []
-    manifest = hashlib.sha256()
-    document_count = 0
-    invalid_count = 0
+    def inspect(descriptor: int, metadata: os.stat_result, relative: str) -> dict:
+        duplicate = os.dup(descriptor)
+        try:
+            with os.fdopen(duplicate, "rb") as handle:
+                valid = zipfile.is_zipfile(handle)
+        except Exception as error:  # noqa: BLE001
+            raise InventoryBoundaryError(
+                f"office container validation failed: {type(error).__name__}"
+            ) from error
+        return {
+            "path": relative,
+            "bytes": metadata.st_size,
+            "sha256": _stream_sha256(descriptor),
+            "valid_container": valid,
+        }
+
     try:
-        for path in sorted(base.files(workspace)):
-            suffix = path.suffix.lower()
-            if suffix not in OFFICE_SUFFIXES:
-                continue
-            valid = zipfile.is_zipfile(path)
-            item = {
-                "path": path.relative_to(workspace).as_posix(),
-                "bytes": path.stat().st_size,
-                "sha256": file_sha256(path),
-                "valid_container": valid,
-            }
-            document_count += 1
-            manifest.update(canonical_record_bytes(item))
-            manifest.update(b"\n")
-            if len(documents) < MAX_EMBEDDED_RECORDS:
-                documents.append(item)
-            if not valid:
-                invalid_count += 1
-                if len(invalid) < MAX_EMBEDDED_RECORDS:
-                    invalid.append(item["path"])
-    except OSError as error:
+        with open_checkout(workspace, label="document workload") as checkout:
+            records, symlinks, total_bytes = _walk_inventory(
+                checkout,
+                OFFICE_SUFFIXES,
+                inspect,
+            )
+    except (InventoryBoundaryError, WorkloadIsolationError) as error:
         return write_result(
             plan,
             result_path,
             "failed",
-            reason=f"document validation failed: {type(error).__name__}: {error}",
+            reason=f"document inventory boundary failed: {error}",
         )
-
-    status = (
-        "completed"
-        if document_count and not invalid_count
-        else "blocked"
-        if not document_count
-        else "failed"
-    )
-    return write_result(
+    return _inventory_result(
         plan,
         result_path,
-        status,
-        document_count=document_count,
-        document_records_included=len(documents),
-        document_records_truncated=document_count > len(documents),
-        document_manifest_sha256=manifest.hexdigest(),
-        invalid_container_count=invalid_count,
-        invalid_containers=invalid,
-        invalid_containers_truncated=invalid_count > len(invalid),
-        documents=documents,
-        reason="No supported office documents found" if not document_count else "",
+        records=records,
+        symlink_entries=symlinks,
+        total_bytes=total_bytes,
+        noun="document",
+        empty_reason="No supported office documents found",
+        invalid_field="valid_container",
     )
 
 
 def latex_compile(plan: dict, workspace: Path, result_path: Path) -> int:
     engine = shutil.which("tectonic") or shutil.which("latexmk")
-    sources = sorted(workspace.rglob("*.tex"))
-    if not sources:
-        return write_result(plan, result_path, "blocked", reason="No TeX source found")
-    if not engine:
+    try:
+        checkout = open_checkout(workspace, label="LaTeX workload")
+    except WorkloadIsolationError as error:
+        return write_result(plan, result_path, "failed", reason=str(error))
+    with checkout:
+        sources = sorted(checkout.proc_path.rglob("*.tex"))
+        if not sources:
+            return write_result(plan, result_path, "blocked", reason="No TeX source found")
+        if not engine:
+            return write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason="Tectonic or latexmk runtime is not installed",
+            )
+        source = sources[0]
+        command = (
+            [engine, source.name]
+            if Path(engine).name == "tectonic"
+            else [engine, "-pdf", "-interaction=nonstopmode", source.name]
+        )
+        exit_code, output, error = bounded_process(
+            command,
+            source.parent,
+            1800,
+            pass_fds=checkout.pass_fds,
+        )
+        checkout.assert_path_identity()
+        status = "completed" if exit_code == 0 and not error else "failed"
         return write_result(
             plan,
             result_path,
-            "blocked",
-            reason="Tectonic or latexmk runtime is not installed",
+            status,
+            source=source.relative_to(checkout.proc_path).as_posix(),
+            exit_code=exit_code,
+            reason=error,
+            output_sha256=hashlib.sha256(output.encode()).hexdigest(),
+            output_tail=output,
         )
-    source = sources[0]
-    command = (
-        [engine, source.name]
-        if Path(engine).name == "tectonic"
-        else [engine, "-pdf", "-interaction=nonstopmode", source.name]
-    )
-    exit_code, output, error = bounded_process(command, source.parent, 1800)
-    status = "completed" if exit_code == 0 and not error else "failed"
-    return write_result(
-        plan,
-        result_path,
-        status,
-        source=source.relative_to(workspace).as_posix(),
-        exit_code=exit_code,
-        reason=error,
-        output_sha256=hashlib.sha256(output.encode()).hexdigest(),
-        output_tail=output,
-    )
 
 
 def xcode_validate(plan: dict, workspace: Path, result_path: Path) -> int:
     xcodebuild = shutil.which("xcodebuild")
-    projects = sorted(workspace.rglob("*.xcodeproj"))
-    workspaces = sorted(workspace.rglob("*.xcworkspace"))
-    if not xcodebuild:
+    try:
+        checkout = open_checkout(workspace, label="Xcode workload")
+    except WorkloadIsolationError as error:
+        return write_result(plan, result_path, "failed", reason=str(error))
+    with checkout:
+        projects = sorted(checkout.proc_path.rglob("*.xcodeproj"))
+        workspaces = sorted(checkout.proc_path.rglob("*.xcworkspace"))
+        if not xcodebuild:
+            return write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason="xcodebuild requires a public macOS runner",
+            )
+        target = workspaces[0] if workspaces else projects[0] if projects else None
+        if target is None:
+            return write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason="No Xcode project or workspace found",
+            )
+        flag = "-workspace" if target.suffix == ".xcworkspace" else "-project"
+        command = [xcodebuild, flag, str(target), "-list"]
+        exit_code, output, error = bounded_process(
+            command,
+            checkout.proc_path,
+            900,
+            pass_fds=checkout.pass_fds,
+        )
+        checkout.assert_path_identity()
+        status = "completed" if exit_code == 0 and not error else "failed"
         return write_result(
             plan,
             result_path,
-            "blocked",
-            reason="xcodebuild requires a public macOS runner",
+            status,
+            target=target.relative_to(checkout.proc_path).as_posix(),
+            exit_code=exit_code,
+            reason=error,
+            output_sha256=hashlib.sha256(output.encode()).hexdigest(),
+            output_tail=output,
         )
-    target = workspaces[0] if workspaces else projects[0] if projects else None
-    if target is None:
-        return write_result(
-            plan,
-            result_path,
-            "blocked",
-            reason="No Xcode project or workspace found",
-        )
-    flag = "-workspace" if target.suffix == ".xcworkspace" else "-project"
-    command = [xcodebuild, flag, str(target), "-list"]
-    exit_code, output, error = bounded_process(command, workspace, 900)
-    status = "completed" if exit_code == 0 and not error else "failed"
-    return write_result(
-        plan,
-        result_path,
-        status,
-        target=target.relative_to(workspace).as_posix(),
-        exit_code=exit_code,
-        reason=error,
-        output_sha256=hashlib.sha256(output.encode()).hexdigest(),
-        output_tail=output,
-    )
 
 
 def run_registered_specialization(
