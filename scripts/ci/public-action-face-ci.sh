@@ -22,6 +22,7 @@ OWNED_FILES=(
   domains/analysis/adapters/monolith_estate_health.py
   scripts/monolith_evolution_adapter.py
   tests/conftest.py
+  tests/test_apex_job_ingress_exclusivity.py
   tests/test_monolith_evolution_adapter.py
   tests/test_tool_system_validate_adapter.py
   tests/test_specialized_monolith_runners.py
