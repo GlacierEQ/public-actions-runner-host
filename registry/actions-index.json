@@ -16,6 +16,11 @@
       "status": "active",
       "catalog": "domains/code/actions.json"
     },
+    "code.fileboss.validate-operator-code-bridge": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
     "docs.monolith.validate-integrity": {
       "domain": "docs",
       "status": "active",
