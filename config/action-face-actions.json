@@ -147,6 +147,16 @@
       "approval_required": false
     },
     {
+      "pillar": "C",
+      "action": "code.fileboss.validate-operator-code-bridge",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/FILEBOSS",
+      "legacy_event": "fileboss-operator-code-bridge",
+      "adapter": "fileboss-operator-code-validate",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
       "pillar": "B",
       "action": "docs.monolith.validate-integrity",
       "source_event": "document-processing",

@@ -53,6 +53,22 @@
       "legacyAliases": [
         "monolith-validate-atlases"
       ]
+    },
+    "code.fileboss.validate-operator-code-bridge": {
+      "status": "active",
+      "adapter": "fileboss_operator_code_validate",
+      "adapterPath": "domains/code/adapters/fileboss_operator_code_validate.py",
+      "targetRepository": "GlacierEQ/FILEBOSS",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "fileboss-operator-code-job-v1",
+      "jobSchemaPath": "domains/code/schemas/fileboss-operator-code-job.schema.json",
+      "resultSchema": "fileboss-operator-code-result-v1",
+      "resultSchemaPath": "domains/code/schemas/fileboss-operator-code-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": []
     }
   },
   "plannedActions": [

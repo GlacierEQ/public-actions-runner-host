@@ -250,6 +250,10 @@ def run_registered_specialization(
         from domains.code.adapters.monolith_atlas_validate import run
 
         return run(plan, workspace, result_path)
+    if action == "code.fileboss.validate-operator-code-bridge":
+        from domains.code.adapters.fileboss_operator_code_validate import run
+
+        return run(plan, workspace, result_path)
     if action == "docs.monolith.validate-integrity":
         from domains.docs.adapters.monolith_docs_validate import run
 

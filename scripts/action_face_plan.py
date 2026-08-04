@@ -45,6 +45,7 @@ ADAPTER_TASK = {
     "tool-system-validate": "test",
     "monolith-evolution": "test",
     "monolith-ip-governance": "test",
+    "fileboss-operator-code-validate": "test",
     "action-face-selftest": "validate",
     "master-strand-inventory": "audit",
     "master-strand-extinction": "audit",
@@ -76,6 +77,7 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 IMMUTABLE_SOURCE_ACTIONS = {
     "code.monolith.validate-atlases",
+    "code.fileboss.validate-operator-code-bridge",
     "docs.monolith.validate-integrity",
     "analysis.monolith.estate-health",
 }

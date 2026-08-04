@@ -34,6 +34,7 @@ def test_registry_validates_all_specialized_domains() -> None:
         "code.tool-system.validate",
         "code.validate-governance",
         "code.monolith.validate-atlases",
+        "code.fileboss.validate-operator-code-bridge",
         "docs.monolith.validate-integrity",
         "analysis.monolith.estate-health",
     }
@@ -53,6 +54,11 @@ def test_registry_validates_all_specialized_domains() -> None:
     atlases = actions["code.monolith.validate-atlases"]
     assert atlases["adapter"] == "test"
     assert atlases["receiptRoot"] == "receipts/code"
+
+    operator_code = actions["code.fileboss.validate-operator-code-bridge"]
+    assert operator_code["adapter"] == "fileboss_operator_code_validate"
+    assert operator_code["targetRepository"] == "GlacierEQ/FILEBOSS"
+    assert operator_code["receiptRoot"] == "receipts/code"
 
     docs = actions["docs.monolith.validate-integrity"]
     assert docs["domain"] == "docs"
@@ -167,6 +173,7 @@ def test_code_token_profile_is_exact_and_read_only() -> None:
 def test_all_active_domains_use_the_same_read_only_ceiling() -> None:
     for action_name in (
         "code.monolith.validate-atlases",
+        "code.fileboss.validate-operator-code-bridge",
         "docs.monolith.validate-integrity",
         "analysis.monolith.estate-health",
     ):
@@ -234,6 +241,7 @@ def test_each_domain_receipt_namespace_is_isolated(tmp_path: Path) -> None:
     root = copy_registry_fixture(tmp_path)
     expected = {
         "code.monolith.validate-atlases": root / "receipts" / "code" / "DomainJob01.json",
+        "code.fileboss.validate-operator-code-bridge": root / "receipts" / "code" / "DomainJob01.json",
         "docs.monolith.validate-integrity": root / "receipts" / "docs" / "DomainJob01.json",
         "analysis.monolith.estate-health": root / "receipts" / "analysis" / "DomainJob01.json",
     }
