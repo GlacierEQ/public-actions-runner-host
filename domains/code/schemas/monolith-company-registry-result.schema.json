@@ -21,6 +21,13 @@
     "steps": {"type": "array", "maxItems": 6},
     "command_contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "validated_gates": {"type": "array", "maxItems": 4, "items": {"type": "string", "maxLength": 64}},
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pytest": {"type": ["string", "null"], "maxLength": 64}
+      }
+    },
     "workspace_attestation": {"type": "object"},
     "reason": {"type": "string", "maxLength": 4096}
   }
