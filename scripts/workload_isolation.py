@@ -88,10 +88,7 @@ def _assert_environment_is_capability_minimized(environment: Mapping[str, str]) 
         key
         for key in environment
         if key in FORBIDDEN_AMBIENT_ENV
-        or (
-            key not in SAFE_EXTRA_ENV
-            and key.startswith(FORBIDDEN_AMBIENT_PREFIXES)
-        )
+        or (key not in SAFE_EXTRA_ENV and key.startswith(FORBIDDEN_AMBIENT_PREFIXES))
     )
     if forbidden:
         raise WorkloadIsolationError(
