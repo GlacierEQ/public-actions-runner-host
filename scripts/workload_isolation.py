@@ -10,11 +10,12 @@ import stat
 import subprocess
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from types import TracebackType
 
 JOB_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
+CONTROL_CHARACTER = re.compile(r"[\x00-\x1f\x7f]")
 SAFE_EXTRA_ENV = {"APEX_RESOLVED_SOURCE_SHA"}
 FORBIDDEN_AMBIENT_ENV = {
     "ACTIONS_ID_TOKEN_REQUEST_TOKEN",
@@ -186,21 +187,54 @@ def open_checkout(
     return handle
 
 
-def read_regular_file(
-    parent: CheckoutHandle,
-    name: str,
+def _relative_parts(relative: str) -> tuple[str, ...]:
+    if not relative or "\\" in relative or CONTROL_CHARACTER.search(relative):
+        raise WorkloadIsolationError("relative checkout path is invalid")
+    parsed = PurePosixPath(relative)
+    if parsed.is_absolute() or any(part in {"", ".", ".."} for part in parsed.parts):
+        raise WorkloadIsolationError("relative checkout path is invalid")
+    return parsed.parts
+
+
+def _open_relative_parent(
+    checkout: CheckoutHandle,
+    parts: tuple[str, ...],
+) -> tuple[int, str]:
+    checkout.assert_path_identity()
+    descriptor = os.dup(checkout.fd)
+    try:
+        for component in parts[:-1]:
+            next_descriptor = os.open(
+                component,
+                DIRECTORY_FLAGS,
+                dir_fd=descriptor,
+            )
+            os.close(descriptor)
+            descriptor = next_descriptor
+    except OSError as error:
+        os.close(descriptor)
+        raise WorkloadIsolationError(
+            "relative path traversal failed without following symlinks: "
+            f"{type(error).__name__}"
+        ) from error
+    return descriptor, parts[-1]
+
+
+def read_relative_regular_file(
+    checkout: CheckoutHandle,
+    relative: str,
     *,
     max_bytes: int | None = None,
 ) -> bytes:
-    """Read one direct regular file through its held parent directory."""
-    if not name or name in {".", ".."} or Path(name).name != name:
-        raise WorkloadIsolationError("regular file name is invalid")
-    parent.assert_path_identity()
+    """Read one checkout-relative regular file without following any link."""
+    parts = _relative_parts(relative)
+    parent_fd, name = _open_relative_parent(checkout, parts)
+    descriptor: int | None = None
     try:
-        descriptor = os.open(name, FILE_FLAGS, dir_fd=parent.fd)
+        descriptor = os.open(name, FILE_FLAGS, dir_fd=parent_fd)
         metadata = os.fstat(descriptor)
         if not stat.S_ISREG(metadata.st_mode):
-            raise WorkloadIsolationError("requested file is not regular")
+            raise WorkloadIsolationError("requested checkout file is not regular")
         chunks: list[bytes] = []
         total = 0
         while True:
@@ -209,18 +243,73 @@ def read_regular_file(
                 break
             total += len(chunk)
             if max_bytes is not None and total > max_bytes:
-                raise WorkloadIsolationError("regular file exceeds its size ceiling")
+                raise WorkloadIsolationError("checkout file exceeds its size ceiling")
             chunks.append(chunk)
     except OSError as error:
         raise WorkloadIsolationError(
-            f"regular file open failed without following symlinks: "
+            "checkout file open/read failed without following symlinks: "
             f"{type(error).__name__}"
         ) from error
     finally:
-        if "descriptor" in locals():
+        if descriptor is not None:
             os.close(descriptor)
-    parent.assert_path_identity()
+        os.close(parent_fd)
+    checkout.assert_path_identity()
     return b"".join(chunks)
+
+
+def read_regular_file(
+    parent: CheckoutHandle,
+    name: str,
+    *,
+    max_bytes: int | None = None,
+) -> bytes:
+    """Read one direct regular file through its held parent directory."""
+    return read_relative_regular_file(parent, name, max_bytes=max_bytes)
+
+
+def relative_path_kind(checkout: CheckoutHandle, relative: str) -> str | None:
+    """Return file/directory without following links; links are rejected."""
+    parts = _relative_parts(relative)
+    descriptor = os.dup(checkout.fd)
+    try:
+        for index, component in enumerate(parts):
+            try:
+                metadata = os.stat(
+                    component,
+                    dir_fd=descriptor,
+                    follow_symlinks=False,
+                )
+            except FileNotFoundError:
+                return None
+            if stat.S_ISLNK(metadata.st_mode):
+                raise WorkloadIsolationError(
+                    "checkout-relative path contains a symlink component"
+                )
+            is_last = index == len(parts) - 1
+            if is_last:
+                if stat.S_ISREG(metadata.st_mode):
+                    return "file"
+                if stat.S_ISDIR(metadata.st_mode):
+                    return "directory"
+                return None
+            if not stat.S_ISDIR(metadata.st_mode):
+                return None
+            next_descriptor = os.open(
+                component,
+                DIRECTORY_FLAGS,
+                dir_fd=descriptor,
+            )
+            os.close(descriptor)
+            descriptor = next_descriptor
+    except OSError as error:
+        raise WorkloadIsolationError(
+            "checkout-relative metadata traversal failed without following symlinks: "
+            f"{type(error).__name__}"
+        ) from error
+    finally:
+        os.close(descriptor)
+    return None
 
 
 def _secure_directory(path: Path) -> Path:
@@ -329,6 +418,32 @@ def _git(checkout: CheckoutHandle, *args: str) -> str:
             f"workload git {' '.join(args)} failed with exit {process.returncode}"
         )
     return process.stdout.strip()
+
+
+def tracked_relative_files(
+    checkout: CheckoutHandle,
+    *,
+    suffixes: set[str] | None = None,
+    skip_parts: set[str] | None = None,
+) -> list[str]:
+    """Return bounded, validated Git-tracked relative file names."""
+    output = _git(checkout, "ls-files", "-z", "--")
+    records: list[str] = []
+    for raw in output.split("\0"):
+        if not raw:
+            continue
+        parts = _relative_parts(raw)
+        if skip_parts and any(part in skip_parts for part in parts):
+            continue
+        if suffixes and Path(raw).suffix.lower() not in suffixes:
+            continue
+        if relative_path_kind(checkout, raw) != "file":
+            raise WorkloadIsolationError(
+                "tracked checkout path is not a no-follow regular file"
+            )
+        records.append(raw)
+    checkout.assert_path_identity()
+    return sorted(records)
 
 
 def attest_checkout(
