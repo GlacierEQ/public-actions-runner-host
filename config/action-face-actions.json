@@ -135,6 +135,36 @@
       "adapter": "tool-system-validate",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "code.monolith.validate-atlases",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/monolith",
+      "legacy_event": "monolith-validate-atlases",
+      "adapter": "test",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "B",
+      "action": "docs.monolith.validate-integrity",
+      "source_event": "document-processing",
+      "target_repo": "GlacierEQ/monolith",
+      "legacy_event": "monolith-docs-integrity",
+      "adapter": "validate",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "D",
+      "action": "analysis.monolith.estate-health",
+      "source_event": "evolution-optimize",
+      "target_repo": "GlacierEQ/monolith",
+      "legacy_event": "monolith-estate-health",
+      "adapter": "audit",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }

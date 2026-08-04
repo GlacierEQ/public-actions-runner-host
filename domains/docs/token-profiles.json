@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "domain": "docs",
+  "profiles": {
+    "private-source-read": {
+      "status": "active",
+      "repositoryCount": 1,
+      "repositorySelection": "catalog-exact",
+      "permissions": {
+        "contents": "read"
+      },
+      "maximumLifetimeSeconds": 3600,
+      "persistCredentials": false,
+      "exposeCredentialToWorkload": false,
+      "sourceWrites": "forbidden",
+      "resultWrites": "control-plane-receipt-only",
+      "revocation": "automatic-at-job-completion"
+    }
+  }
+}
