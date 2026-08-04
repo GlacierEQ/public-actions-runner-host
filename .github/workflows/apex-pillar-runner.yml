@@ -243,7 +243,7 @@ jobs:
         continue-on-error: true
         env:
           APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
-          AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}
+          AKOS_POLICY_SHA256: ${{ steps.plan.outputs.action == 'akos-echo-policy-ci' && secrets.AKOS_POLICY_SHA256 || '' }}
         run: |
           python3 scripts/action_face_catalog_runner.py \
             .apex-plan.json \
@@ -294,7 +294,7 @@ jobs:
             --plan .apex-plan.json \
             --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
 
-      - name: Verify post-run control and result integrity
+      - name: Verify post-run control, workload, and result integrity
         if: always() && steps.synthesize.outcome == 'success'
         id: postrun_guard
         continue-on-error: true
@@ -304,6 +304,7 @@ jobs:
           python3 .apex-postrun-control/scripts/action_face_postrun_guard.py \
             --runner-root . \
             --control-root .apex-postrun-control \
+            --workload-root workload \
             --plan .apex-plan.json \
             --result ".apex-results/${{ steps.plan.outputs.job_id }}.json" \
             --job-id "${{ steps.plan.outputs.job_id }}" \
