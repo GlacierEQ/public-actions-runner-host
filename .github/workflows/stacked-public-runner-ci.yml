@@ -1,0 +1,18 @@
+name: Stacked Public Runner CI
+
+on:
+  pull_request:
+    branches:
+      - security/harden-runner-boundaries
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: GlacierEQ/public-actions-runner-host/.github/workflows/reusable-quick-ci.yml@main
+    with:
+      repo_name: public-actions-runner-host
+      language: python
+      verify_script: scripts/ci/public-action-face-ci.sh
+      upload_artifacts: true
