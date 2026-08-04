@@ -11,6 +11,7 @@ import subprocess
 from pathlib import Path
 
 import apex_pillar_runner as base
+from workload_isolation import WorkloadIsolationError, secure_checkout_path
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
 ALLOWED_STATUS = {"completed", "failed", "blocked", "skipped"}
@@ -25,6 +26,22 @@ def output(name: str, value: str) -> None:
     if path:
         with open(path, "a", encoding="utf-8") as handle:
             handle.write(f"{name}={value}\n")
+
+
+def secure_checkout(
+    path: Path,
+    label: str,
+    *,
+    allowed_parent: Path | None = None,
+) -> Path:
+    try:
+        return secure_checkout_path(
+            path,
+            allowed_parent=allowed_parent,
+            label=label,
+        )
+    except WorkloadIsolationError as error:
+        fail(str(error))
 
 
 def git(root: Path, *args: str) -> str:
@@ -56,8 +73,6 @@ def git(root: Path, *args: str) -> str:
 
 
 def verify_checkout(root: Path, expected_sha: str, label: str) -> dict[str, str]:
-    if not root.is_dir() or root.is_symlink():
-        fail(f"{label} checkout directory does not exist or is unsafe")
     head = git(root, "rev-parse", "HEAD").lower()
     if head != expected_sha:
         fail(f"{label} HEAD does not match the expected commit")
@@ -69,6 +84,16 @@ def verify_checkout(root: Path, expected_sha: str, label: str) -> dict[str, str]
         "head": head,
         "tracked_diff_sha256": hashlib.sha256(diff.encode("utf-8")).hexdigest(),
     }
+
+
+def secure_regular_file(path: Path, parent: Path, label: str) -> Path:
+    raw = Path(os.path.abspath(os.fspath(path)))
+    if raw.parent != parent or raw.is_symlink() or not raw.is_file():
+        fail(f"{label} is outside its canonical directory or is unsafe")
+    resolved = raw.resolve(strict=True)
+    if resolved.parent != parent:
+        fail(f"{label} escapes its canonical directory")
+    return resolved
 
 
 def main() -> int:
@@ -86,22 +111,37 @@ def main() -> int:
     if not SHA.fullmatch(workflow_sha):
         fail("GITHUB_SHA is not a full commit SHA")
 
-    runner_root = Path(args.runner_root).resolve()
-    control_root = Path(args.control_root).resolve()
-    workload_root = Path(args.workload_root).resolve()
+    runner_argument = Path(args.runner_root)
+    runner_parent = Path(os.path.abspath(os.fspath(runner_argument))).parent
+    runner_root = secure_checkout(
+        runner_argument,
+        "primary action-face",
+        allowed_parent=runner_parent,
+    )
+    control_root = secure_checkout(
+        Path(args.control_root),
+        "fresh post-run control",
+        allowed_parent=runner_root,
+    )
+    workload_root = secure_checkout(
+        Path(args.workload_root),
+        "private workload",
+        allowed_parent=runner_root,
+    )
     verify_checkout(runner_root, workflow_sha, "primary action-face")
     verify_checkout(control_root, workflow_sha, "fresh post-run control")
 
-    plan_path = Path(args.plan)
-    result_path = Path(args.result)
-    expected_plan = runner_root / ".apex-plan.json"
-    expected_result_dir = runner_root / ".apex-results"
-    if plan_path.is_symlink() or plan_path.resolve() != expected_plan:
-        fail("plan path is not the canonical action-face plan")
-    if result_path.is_symlink() or result_path.resolve().parent != expected_result_dir:
-        fail("result path is outside the canonical result directory")
-    if not plan_path.resolve().is_file() or not result_path.resolve().is_file():
-        fail("plan or result file does not exist")
+    plan_path = secure_regular_file(Path(args.plan), runner_root, "plan path")
+    result_directory = secure_checkout(
+        Path(args.result).parent,
+        "result directory",
+        allowed_parent=runner_root,
+    )
+    result_path = secure_regular_file(
+        Path(args.result),
+        result_directory,
+        "result path",
+    )
 
     plan = base.validate_plan(json.loads(plan_path.read_text(encoding="utf-8")))
     if plan.get("job_id") != args.job_id:
