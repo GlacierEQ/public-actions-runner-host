@@ -8,6 +8,10 @@ import pytest
 
 from scripts import workload_isolation
 
+EMPTY_SHA256 = (
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+)
+
 
 def git(root: Path, *args: str) -> str:
     process = subprocess.run(
@@ -30,7 +34,7 @@ def git(root: Path, *args: str) -> str:
 def committed_repository(tmp_path: Path) -> tuple[Path, str]:
     repository = tmp_path / "workload"
     repository.mkdir()
-    (tmp_path / "git-home").mkdir()
+    (tmp_path / "git-home").mkdir(exist_ok=True)
     git(repository, "init")
     git(repository, "config", "user.name", "Runner Test")
     git(repository, "config", "user.email", "runner@example.invalid")
@@ -45,13 +49,11 @@ def test_attestation_accepts_exact_clean_checkout(tmp_path: Path) -> None:
 
     attestation = workload_isolation.attest_workspace(repository, sha)
 
-    assert attestation == {
-        "resolved_source_sha": sha,
-        "tracked_clean": True,
-        "tracked_diff_sha256": (
-            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        ),
-    }
+    assert attestation["resolved_source_sha"] == sha
+    assert attestation["tracked_clean"] is True
+    assert attestation["tracked_diff_sha256"] == EMPTY_SHA256
+    assert isinstance(attestation["checkout_device"], int)
+    assert isinstance(attestation["checkout_inode"], int)
 
 
 def test_attestation_rejects_tracked_source_mutation(tmp_path: Path) -> None:
@@ -87,7 +89,7 @@ def test_attestation_rejects_symlinked_checkout(tmp_path: Path) -> None:
 
     with pytest.raises(
         workload_isolation.WorkloadIsolationError,
-        match="path contains a symlink component",
+        match="open failed without following symlinks",
     ):
         workload_isolation.attest_workspace(linked_checkout, sha)
 
@@ -101,7 +103,7 @@ def test_attestation_rejects_symlinked_parent_component(tmp_path: Path) -> None:
 
     with pytest.raises(
         workload_isolation.WorkloadIsolationError,
-        match="path contains a symlink component",
+        match="directory traversal failed without following symlinks",
     ):
         workload_isolation.attest_workspace(linked_parent / "workload", sha)
 
@@ -117,11 +119,49 @@ def test_checkout_must_remain_under_declared_parent(tmp_path: Path) -> None:
         workload_isolation.WorkloadIsolationError,
         match="not a direct child",
     ):
-        workload_isolation.secure_checkout_path(
+        workload_isolation.open_checkout(
             repository,
             allowed_parent=allowed_parent,
             label="workload",
         )
+
+
+def test_held_checkout_detects_visible_path_replacement(tmp_path: Path) -> None:
+    repository, sha = committed_repository(tmp_path)
+    checkout = workload_isolation.open_checkout(repository, label="workload")
+    with checkout:
+        original_inode = checkout.inode
+        moved = tmp_path / "original-workload"
+        repository.rename(moved)
+        repository.mkdir()
+        assert checkout.inode == original_inode
+        assert (checkout.proc_path / "tracked.txt").read_text(encoding="utf-8") == (
+            "canonical\n"
+        )
+        with pytest.raises(
+            workload_isolation.WorkloadIsolationError,
+            match="visible checkout path was replaced",
+        ):
+            checkout.assert_path_identity()
+        with pytest.raises(
+            workload_isolation.WorkloadIsolationError,
+            match="visible checkout path was replaced",
+        ):
+            workload_isolation.attest_checkout(checkout, sha)
+
+
+def test_relative_read_rejects_file_symlink(tmp_path: Path) -> None:
+    repository, _ = committed_repository(tmp_path)
+    outside = tmp_path / "outside-secret.txt"
+    outside.write_text("do-not-read\n", encoding="utf-8")
+    (repository / "leak.txt").symlink_to(outside)
+
+    with workload_isolation.open_checkout(repository, label="workload") as checkout:
+        with pytest.raises(
+            workload_isolation.WorkloadIsolationError,
+            match="open/read failed without following symlinks",
+        ):
+            workload_isolation.read_relative_regular_file(checkout, "leak.txt")
 
 
 def test_untracked_runtime_artifacts_do_not_change_source_attestation(
