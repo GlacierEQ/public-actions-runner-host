@@ -43,12 +43,16 @@ def test_no_workflow_contains_retired_fail_open_executor() -> None:
             )
 
 
-def test_canonical_issue_ingress_is_read_only_to_source() -> None:
+def test_canonical_issue_ingress_separates_source_and_receipt_authority() -> None:
     text = CANONICAL.read_text(encoding="utf-8")
-    assert "contents: read" in text
-    assert "issues: write" in text
-    assert "contents: write" not in text
-    assert "persist-credentials: false" in text
+    assert "permissions:\n  contents: read\n  issues: write" in text
+    assert "Mint one-repository private control token" in text
+    assert "repositories: GlacierEQ/llm-runner-teams" in text
+    assert "permission-contents: write" in text
+    assert "Mint one-repository private workload token" in text
+    assert "repositories: ${{ steps.plan.outputs.source_repo }}" in text
+    assert "permission-contents: read" in text
+    assert text.count("persist-credentials: false") >= 3
     assert "APEX_RUNNER_APP_CLIENT_ID" in text
     assert "APEX_RUNNER_APP_PRIVATE_KEY" in text
     assert "action_face_publish_verified.py" in text
