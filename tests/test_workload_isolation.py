@@ -13,8 +13,7 @@ def git(root: Path, *args: str) -> str:
     process = subprocess.run(
         ["git", "-C", str(root), *args],
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
         env={
             "PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin"),
