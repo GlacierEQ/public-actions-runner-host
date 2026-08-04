@@ -47,7 +47,9 @@ def markdown_files(workspace: Path) -> list[Path]:
     return sorted(
         path
         for path in workspace.rglob("*.md")
-        if not any(part in SKIP_DIRECTORIES for part in path.relative_to(workspace).parts)
+        if not any(
+            part in SKIP_DIRECTORIES for part in path.relative_to(workspace).parts
+        )
     )
 
 
@@ -83,7 +85,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="resolved source SHA is unavailable or invalid",
         )
 
-    missing_required = [path for path in REQUIRED_PATHS if not (workspace / path).is_file()]
+    missing_required = [
+        path for path in REQUIRED_PATHS if not (workspace / path).is_file()
+    ]
     if missing_required:
         return catalog.write_result(
             plan,
@@ -97,7 +101,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     json_files = sorted(
         path
         for path in workspace.rglob("*.json")
-        if not any(part in SKIP_DIRECTORIES for part in path.relative_to(workspace).parts)
+        if not any(
+            part in SKIP_DIRECTORIES for part in path.relative_to(workspace).parts
+        )
     )
     for path in json_files:
         try:
@@ -120,7 +126,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 broken_links.append(
                     {
                         "source": path.relative_to(workspace).as_posix(),
-                        "target_sha256": hashlib.sha256(match.group(1).encode()).hexdigest(),
+                        "target_sha256": hashlib.sha256(
+                            match.group(1).encode()
+                        ).hexdigest(),
                         "reason": str(error),
                     }
                 )
@@ -132,12 +140,18 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 broken_links.append(
                     {
                         "source": path.relative_to(workspace).as_posix(),
-                        "target_sha256": hashlib.sha256(match.group(1).encode()).hexdigest(),
+                        "target_sha256": hashlib.sha256(
+                            match.group(1).encode()
+                        ).hexdigest(),
                         "reason": "target does not exist",
                     }
                 )
 
-    status = "completed" if not (invalid_json or broken_links or unbalanced_fences) else "failed"
+    status = (
+        "completed"
+        if not (invalid_json or broken_links or unbalanced_fences)
+        else "failed"
+    )
     return catalog.write_result(
         plan,
         result_path,
