@@ -57,3 +57,13 @@ def test_canonical_issue_ingress_separates_source_and_receipt_authority() -> Non
     assert "APEX_RUNNER_APP_PRIVATE_KEY" in text
     assert "action_face_publish_verified.py" in text
     assert "Enforce governed release result" in text
+
+
+def test_workload_secret_and_postrun_boundaries_are_explicit() -> None:
+    text = CANONICAL.read_text(encoding="utf-8")
+    assert "steps.plan.outputs.action == 'akos-echo-policy-ci'" in text
+    assert "AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}" not in text
+    assert "Verify post-run control, workload, and result integrity" in text
+    assert "--workload-root workload" in text
+    assert "steps.postrun_guard.outcome == 'failure'" in text
+    assert "steps.synthesize.outputs.synthesized == 'true'" in text
