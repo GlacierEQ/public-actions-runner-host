@@ -25,6 +25,7 @@ OWNED_FILES=(
   domains/docs/adapters/monolith_docs_validate.py
   domains/analysis/adapters/monolith_estate_health.py
   scripts/action_face_postrun_guard.py
+  scripts/action_face_selftest.py
   scripts/monolith_evolution_adapter.py
   scripts/workload_isolation.py
   tests/conftest.py
