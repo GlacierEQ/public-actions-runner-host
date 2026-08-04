@@ -78,6 +78,52 @@ def test_attestation_rejects_commit_drift(tmp_path: Path) -> None:
         workload_isolation.attest_workspace(repository, sha)
 
 
+def test_attestation_rejects_symlinked_checkout(tmp_path: Path) -> None:
+    real_parent = tmp_path / "real-parent"
+    real_parent.mkdir()
+    repository, sha = committed_repository(real_parent)
+    linked_checkout = tmp_path / "linked-workload"
+    linked_checkout.symlink_to(repository, target_is_directory=True)
+
+    with pytest.raises(
+        workload_isolation.WorkloadIsolationError,
+        match="path contains a symlink component",
+    ):
+        workload_isolation.attest_workspace(linked_checkout, sha)
+
+
+def test_attestation_rejects_symlinked_parent_component(tmp_path: Path) -> None:
+    real_parent = tmp_path / "real-parent"
+    real_parent.mkdir()
+    _, sha = committed_repository(real_parent)
+    linked_parent = tmp_path / "linked-parent"
+    linked_parent.symlink_to(real_parent, target_is_directory=True)
+
+    with pytest.raises(
+        workload_isolation.WorkloadIsolationError,
+        match="path contains a symlink component",
+    ):
+        workload_isolation.attest_workspace(linked_parent / "workload", sha)
+
+
+def test_checkout_must_remain_under_declared_parent(tmp_path: Path) -> None:
+    allowed_parent = tmp_path / "allowed"
+    allowed_parent.mkdir()
+    other_parent = tmp_path / "other"
+    other_parent.mkdir()
+    repository, _ = committed_repository(other_parent)
+
+    with pytest.raises(
+        workload_isolation.WorkloadIsolationError,
+        match="not a direct child",
+    ):
+        workload_isolation.secure_checkout_path(
+            repository,
+            allowed_parent=allowed_parent,
+            label="workload",
+        )
+
+
 def test_untracked_runtime_artifacts_do_not_change_source_attestation(
     tmp_path: Path,
 ) -> None:
