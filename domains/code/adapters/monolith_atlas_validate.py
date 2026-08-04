@@ -16,6 +16,7 @@ from scripts.workload_isolation import (
     attest_workspace,
     build_environment,
     command_contract_sha256,
+    secure_checkout_path,
 )
 
 EXPECTED_ACTION = "code.monolith.validate-atlases"
@@ -106,7 +107,7 @@ def commands(result_path: Path, job_id: str) -> list[list[str]]:
 
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
-    workspace = workspace.resolve()
+    raw_workspace = workspace
     result_path = result_path.resolve()
     try:
         validate_plan(plan)
@@ -122,17 +123,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="resolved source SHA is unavailable or invalid",
         )
 
-    missing = [path for path in REQUIRED_PATHS if not (workspace / path).is_file()]
-    if missing:
-        return catalog.write_result(
-            plan,
-            result_path,
-            "blocked",
-            reason="required Monolith atlas files are missing: " + ", ".join(missing),
-        )
-
     try:
-        pre_attestation = attest_workspace(workspace, resolved_sha)
+        pre_attestation = attest_workspace(raw_workspace, resolved_sha)
+        workspace = secure_checkout_path(raw_workspace, label="workload")
         env = build_environment(result_path, str(plan["job_id"]))
     except WorkloadIsolationError as error:
         return catalog.write_result(
@@ -140,6 +133,15 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             result_path,
             "blocked",
             reason=f"workload isolation failed before execution: {error}",
+        )
+
+    missing = [path for path in REQUIRED_PATHS if not (workspace / path).is_file()]
+    if missing:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="required Monolith atlas files are missing: " + ", ".join(missing),
         )
 
     sequence = commands(result_path, str(plan["job_id"]))
@@ -197,7 +199,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
     post_attestation: dict[str, object] | None = None
     try:
-        post_attestation = attest_workspace(workspace, resolved_sha)
+        post_attestation = attest_workspace(raw_workspace, resolved_sha)
     except WorkloadIsolationError as error:
         status = "failed"
         steps.append(
