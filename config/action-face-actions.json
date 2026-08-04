@@ -157,6 +157,36 @@
       "approval_required": false
     },
     {
+      "pillar": "C",
+      "action": "code.monolith.validate-legal-live-reconciliation",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/monolith",
+      "legacy_event": "monolith-legal-live-reconciliation",
+      "adapter": "monolith_legal_live_validate",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "code.monolith.validate-company-engineered-registry",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/monolith",
+      "legacy_event": "monolith-company-engineered-registry",
+      "adapter": "monolith_company_registry_validate",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "code.casey-legal-mcp.validate-v2",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/casey-legal-mcp-server",
+      "legacy_event": "casey-legal-mcp-v2",
+      "adapter": "casey_legal_mcp_validate",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
       "pillar": "B",
       "action": "docs.monolith.validate-integrity",
       "source_event": "document-processing",
