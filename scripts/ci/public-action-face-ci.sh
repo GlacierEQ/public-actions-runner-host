@@ -14,13 +14,19 @@ python -m json.tool registry/receipt-namespaces.json >/dev/null
 python -m json.tool domains/code/actions.json >/dev/null
 python -m json.tool domains/docs/actions.json >/dev/null
 python -m json.tool domains/analysis/actions.json >/dev/null
+python -m json.tool domains/code/schemas/monolith-atlases-job.schema.json >/dev/null
+python -m json.tool domains/code/schemas/monolith-atlases-result.schema.json >/dev/null
+python -m json.tool domains/docs/schemas/job.schema.json >/dev/null
+python -m json.tool domains/analysis/schemas/job.schema.json >/dev/null
 
 OWNED_FILES=(
   domains/code/adapters/tool_system_validate.py
   domains/code/adapters/monolith_atlas_validate.py
   domains/docs/adapters/monolith_docs_validate.py
   domains/analysis/adapters/monolith_estate_health.py
+  scripts/action_face_postrun_guard.py
   scripts/monolith_evolution_adapter.py
+  scripts/workload_isolation.py
   tests/conftest.py
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_monolith_evolution_adapter.py
