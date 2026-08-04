@@ -158,7 +158,8 @@ def _reconcile_domain_contract(action: str, entry: dict) -> None:
         fail("hierarchical action source writes are not forbidden")
 
 
-def resolve_catalog_action(action: str, pillar: str) -> dict | None:
+def resolve_action(action: str, pillar: str) -> dict | None:
+    """Resolve one catalog action while enforcing the active domain contract."""
     if not action:
         return None
     if not ACTION.fullmatch(action):
@@ -226,7 +227,7 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
         fail("job_id must be 8-64 safe characters")
 
     action = payload.get("action", "")
-    entry = resolve_catalog_action(action, pillar)
+    entry = resolve_action(action, pillar)
     source_ref = payload.get("source_ref", "main")
     validate_ref(source_ref)
     if action in IMMUTABLE_SOURCE_ACTIONS and not FULL_SHA.fullmatch(source_ref):
