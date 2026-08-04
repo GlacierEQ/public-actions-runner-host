@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Verify runner, workload, and result integrity before private publication."""
 from __future__ import annotations
 
@@ -28,17 +27,22 @@ def output(name: str, value: str) -> None:
 
 
 def git(root: Path, *args: str) -> str:
+    git_home = root.parent / ".apex-postrun-git-home"
+    git_home.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if git_home.is_symlink() or not git_home.is_dir():
+        fail("post-run Git HOME is unsafe")
+    git_home.chmod(0o700)
+
     process = subprocess.run(
         ["git", "-C", str(root), *args],
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         timeout=30,
         check=False,
         shell=False,
         env={
             "PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin"),
-            "HOME": os.devnull,
+            "HOME": str(git_home),
             "LANG": "C.UTF-8",
             "LC_ALL": "C.UTF-8",
             "GIT_CONFIG_NOSYSTEM": "1",
