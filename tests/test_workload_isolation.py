@@ -49,8 +49,7 @@ def test_attestation_accepts_exact_clean_checkout(tmp_path: Path) -> None:
         "resolved_source_sha": sha,
         "tracked_clean": True,
         "tracked_diff_sha256": (
-            "e3b0c44298fc1c149afbf4c8996fb924"
-            "27ae41e4649b934ca495991b7852b855"
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         ),
     }
 
