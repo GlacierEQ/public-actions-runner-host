@@ -45,23 +45,11 @@ def validate_plan(plan: dict) -> None:
             raise ValueError(f"{field} identity mismatch")
 
 
-def commands(result_path: Path, job_id: str) -> list[list[str]]:
-    venv = result_path.resolve().parent / f"venv-{job_id}"
-    python = venv / "bin" / "python"
+def commands() -> list[list[str]]:
     return [
-        [sys.executable, "-m", "venv", str(venv)],
+        [sys.executable, "-m", "json.tool", "catalog/company_engineered_repositories.json"],
         [
-            str(python),
-            "-m",
-            "pip",
-            "install",
-            "--disable-pip-version-check",
-            "--only-binary=:all:",
-            "pytest==8.4.1",
-        ],
-        [str(python), "-m", "json.tool", "catalog/company_engineered_repositories.json"],
-        [
-            str(python),
+            sys.executable,
             "-m",
             "pytest",
             "-q",
@@ -86,6 +74,13 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "blocked",
             reason="resolved source SHA is unavailable or invalid",
         )
+    if resolved_sha != plan.get("source_ref"):
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="resolved source SHA does not match requested source_ref",
+        )
 
     missing = [relative for relative in REQUIRED_PATHS if not (workspace / relative).is_file()]
     if missing:
@@ -107,7 +102,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason=f"workload isolation failed before execution: {error}",
         )
 
-    sequence = commands(result_path, str(plan["job_id"]))
+    sequence = commands()
     steps: list[dict] = []
     status = "completed"
     for command in sequence:
@@ -178,10 +173,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         result_path,
         status,
         steps=steps,
-        command_contract_sha256=command_contract_sha256(
-            sequence,
-            volatile_roots=(result_path.parent,),
-        ),
+        command_contract_sha256=command_contract_sha256(sequence),
         validated_gates=["company-registry-json", "company-registry-truth-surfaces"],
         workspace_attestation={"before": pre_attestation, "after": post_attestation},
     )
