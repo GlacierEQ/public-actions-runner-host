@@ -61,12 +61,16 @@
       "required": [
         "resolved_source_sha",
         "tracked_clean",
-        "tracked_diff_sha256"
+        "tracked_diff_sha256",
+        "checkout_device",
+        "checkout_inode"
       ],
       "properties": {
         "resolved_source_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
         "tracked_clean": {"const": true},
-        "tracked_diff_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        "tracked_diff_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "checkout_device": {"type": "integer", "minimum": 0},
+        "checkout_inode": {"type": "integer", "minimum": 1}
       }
     }
   }
