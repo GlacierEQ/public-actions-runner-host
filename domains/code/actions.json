@@ -38,7 +38,7 @@
     },
     "code.monolith.validate-atlases": {
       "status": "active",
-      "adapter": "test",
+      "adapter": "monolith_evolution",
       "adapterPath": "domains/code/adapters/monolith_atlas_validate.py",
       "targetRepository": "GlacierEQ/monolith",
       "tokenProfile": "private-source-read",
