@@ -34,6 +34,9 @@ def test_registry_validates_all_specialized_domains() -> None:
         "code.tool-system.validate",
         "code.validate-governance",
         "code.monolith.validate-atlases",
+        "code.monolith.validate-legal-live-reconciliation",
+        "code.monolith.validate-company-engineered-registry",
+        "code.casey-legal-mcp.validate-v2",
         "docs.monolith.validate-integrity",
         "analysis.monolith.estate-health",
     }
