@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "domain": "analysis",
+  "actions": {
+    "analysis.monolith.estate-health": {
+      "status": "active",
+      "adapter": "audit",
+      "adapterPath": "domains/analysis/adapters/monolith_estate_health.py",
+      "targetRepository": "GlacierEQ/monolith",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "monolith-estate-health-job-v1",
+      "resultSchema": "monolith-estate-health-result-v1",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "analysis",
+      "concurrencyKeyTemplate": "analysis:{targetRepository}",
+      "legacyAliases": [
+        "monolith-estate-health"
+      ]
+    }
+  },
+  "plannedActions": [
+    "analysis.compare",
+    "analysis.rank",
+    "analysis.report"
+  ]
+}
