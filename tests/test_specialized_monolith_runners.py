@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import sys
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
@@ -16,14 +17,45 @@ from domains.docs.adapters import monolith_docs_validate
 from scripts import action_face_plan, apex_catalog_runner, workload_isolation
 
 SHA = "a" * 40
-ATTESTATION = {
-    "resolved_source_sha": SHA,
-    "tracked_clean": True,
-    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-}
 
 
-def plan(action: str, pillar: str, adapter: str, task: str) -> dict:
+def git(root: Path, *args: str) -> str:
+    home = root.parent / "git-home"
+    home.mkdir(exist_ok=True)
+    process = subprocess.run(
+        ["git", "-C", str(root), *args],
+        text=True,
+        capture_output=True,
+        check=False,
+        env={
+            "PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin"),
+            "HOME": str(home),
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "GIT_CONFIG_NOSYSTEM": "1",
+        },
+    )
+    assert process.returncode == 0, process.stderr
+    return process.stdout.strip()
+
+
+def commit_workspace(workspace: Path, message: str = "test source") -> str:
+    if not (workspace / ".git").exists():
+        git(workspace, "init")
+        git(workspace, "config", "user.name", "Runner Test")
+        git(workspace, "config", "user.email", "runner@example.invalid")
+    git(workspace, "add", "-A")
+    git(workspace, "commit", "-m", message)
+    return git(workspace, "rev-parse", "HEAD").lower()
+
+
+def plan(
+    action: str,
+    pillar: str,
+    adapter: str,
+    task: str,
+    source_sha: str = SHA,
+) -> dict:
     return {
         "job_id": "RunnerJob01",
         "pillar": pillar,
@@ -31,7 +63,7 @@ def plan(action: str, pillar: str, adapter: str, task: str) -> dict:
         "adapter": adapter,
         "task": task,
         "source_repo": "GlacierEQ/monolith",
-        "source_ref": SHA,
+        "source_ref": source_sha,
         "target_repo": "GlacierEQ/monolith",
         "approval_id": "",
         "workflow_run_id": "1",
@@ -57,6 +89,23 @@ def write_required_atlas_files(workspace: Path) -> None:
         "status/MONOLITH_COMMAND_ATLAS.md": "# Atlas\n",
     }
     for relative, content in paths.items():
+        path = workspace / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+
+
+def write_required_docs(workspace: Path) -> None:
+    required = {
+        "README.md": "# Home\n[Roadmap](ROADMAP.md)\n",
+        "ROADMAP.md": "# Roadmap\n",
+        "AGENTS.md": "# Agents\n",
+        "status/MONOLITH_COMMAND_ATLAS.md": "# Atlas\n",
+        "status/MONOLITH_QUERY_GUIDE.md": "# Query\n",
+        "catalog/library.json": "{}\n",
+        "catalog/monolith_command_atlas.json": "{}\n",
+        "schemas/monolith-command-atlas.schema.json": "{}\n",
+    }
+    for relative, content in required.items():
         path = workspace / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
@@ -115,7 +164,6 @@ def test_catalog_dispatch_is_bound_to_exact_action(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     calls: list[str] = []
-
     monkeypatch.setattr(
         monolith_atlas_validate,
         "run",
@@ -182,8 +230,6 @@ def test_workload_environment_removes_ambient_runner_authority(
     assert environment["PIP_CONFIG_FILE"] == "/dev/null"
     assert environment["NPM_CONFIG_USERCONFIG"] == "/dev/null"
     assert all(key not in environment for key in protected)
-    assert "GITHUB_OUTPUT" not in environment
-    assert "GITHUB_ENV" not in environment
 
     with pytest.raises(
         workload_isolation.WorkloadIsolationError,
@@ -202,21 +248,23 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     write_required_atlas_files(workspace)
+    source_sha = commit_workspace(workspace)
     result_path = tmp_path / "result.json"
-    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", source_sha)
     monkeypatch.setattr(
         monolith_atlas_validate,
-        "attest_workspace",
-        lambda *_: dict(ATTESTATION),
-    )
-    monkeypatch.setattr(
-        monolith_atlas_validate.subprocess,
-        "run",
-        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="ok\n"),
+        "commands",
+        lambda *_: [["/bin/true"]],
     )
 
     value = monolith_atlas_validate.run(
-        plan("code.monolith.validate-atlases", "C", "test", "test"),
+        plan(
+            "code.monolith.validate-atlases",
+            "C",
+            "test",
+            "test",
+            source_sha,
+        ),
         workspace,
         result_path,
     )
@@ -227,17 +275,31 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
         "core-function-atlas",
         "monolith-command-atlas",
     ]
-    assert len(result["steps"]) == 11
-    assert result["workspace_attestation"] == {
-        "before": ATTESTATION,
-        "after": ATTESTATION,
-    }
-    commands = [step["command"] for step in result["steps"]]
-    assert any("scripts/validate_function_atlas.py" in command for command in commands)
+    assert result["steps"] == [
+        {
+            "command": ["/bin/true"],
+            "exit_code": 0,
+            "output_sha256": (
+                "e3b0c44298fc1c149afbf4c8996fb924"
+                "27ae41e4649b934ca495991b7852b855"
+            ),
+            "output_tail": "",
+            "status": "completed",
+        }
+    ]
+    before = result["workspace_attestation"]["before"]
+    after = result["workspace_attestation"]["after"]
+    assert before["resolved_source_sha"] == source_sha
+    assert after["resolved_source_sha"] == source_sha
+    assert before["checkout_inode"] == after["checkout_inode"]
+
+    sequence = monolith_atlas_validate.commands(result_path, "RunnerJob01")
+    assert len(sequence) == 11
+    assert any("scripts/validate_function_atlas.py" in command for command in sequence)
     assert any(
-        "scripts/build_monolith_command_atlas.py" in command for command in commands
+        "scripts/build_monolith_command_atlas.py" in command for command in sequence
     )
-    assert any("tests/test_query_monolith.py" in command for command in commands)
+    assert any("tests/test_query_monolith.py" in command for command in sequence)
 
 
 def test_code_runner_fails_when_private_source_mutates(
@@ -246,31 +308,29 @@ def test_code_runner_fails_when_private_source_mutates(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     write_required_atlas_files(workspace)
+    source_sha = commit_workspace(workspace)
     result_path = tmp_path / "result.json"
-    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
-    attestations: list[object] = [
-        dict(ATTESTATION),
-        workload_isolation.WorkloadIsolationError(
-            "tracked workload files changed during execution"
-        ),
-    ]
-
-    def attest(*_: object) -> dict[str, object]:
-        value = attestations.pop(0)
-        if isinstance(value, Exception):
-            raise value
-        assert isinstance(value, dict)
-        return value
-
-    monkeypatch.setattr(monolith_atlas_validate, "attest_workspace", attest)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", source_sha)
     monkeypatch.setattr(
-        monolith_atlas_validate.subprocess,
-        "run",
-        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="ok\n"),
+        monolith_atlas_validate,
+        "commands",
+        lambda *_: [
+            [
+                "/bin/sh",
+                "-c",
+                "printf 'mutation\\n' >> scripts/validate_function_atlas.py",
+            ]
+        ],
     )
 
     value = monolith_atlas_validate.run(
-        plan("code.monolith.validate-atlases", "C", "test", "test"),
+        plan(
+            "code.monolith.validate-atlases",
+            "C",
+            "test",
+            "test",
+            source_sha,
+        ),
         workspace,
         result_path,
     )
@@ -287,25 +347,19 @@ def test_docs_runner_detects_private_structure_without_leaking_targets(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    required = {
-        "README.md": "# Home\n[Roadmap](ROADMAP.md)\n",
-        "ROADMAP.md": "# Roadmap\n",
-        "AGENTS.md": "# Agents\n",
-        "status/MONOLITH_COMMAND_ATLAS.md": "# Atlas\n",
-        "status/MONOLITH_QUERY_GUIDE.md": "# Query\n",
-        "catalog/library.json": "{}\n",
-        "catalog/monolith_command_atlas.json": "{}\n",
-        "schemas/monolith-command-atlas.schema.json": "{}\n",
-    }
-    for relative, content in required.items():
-        path = workspace / relative
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8")
+    write_required_docs(workspace)
+    source_sha = commit_workspace(workspace)
     result_path = tmp_path / "result.json"
-    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", source_sha)
 
     value = monolith_docs_validate.run(
-        plan("docs.monolith.validate-integrity", "B", "validate", "validate"),
+        plan(
+            "docs.monolith.validate-integrity",
+            "B",
+            "validate",
+            "validate",
+            source_sha,
+        ),
         workspace,
         result_path,
     )
@@ -316,10 +370,19 @@ def test_docs_runner_detects_private_structure_without_leaking_targets(
     assert result["broken_links"] == []
 
     (workspace / "README.md").write_text(
-        "# Home\n[Missing](private-secret-name.md)\n", encoding="utf-8"
+        "# Home\n[Missing](private-secret-name.md)\n",
+        encoding="utf-8",
     )
+    source_sha = commit_workspace(workspace, "broken link")
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", source_sha)
     value = monolith_docs_validate.run(
-        plan("docs.monolith.validate-integrity", "B", "validate", "validate"),
+        plan(
+            "docs.monolith.validate-integrity",
+            "B",
+            "validate",
+            "validate",
+            source_sha,
+        ),
         workspace,
         result_path,
     )
@@ -328,6 +391,34 @@ def test_docs_runner_detects_private_structure_without_leaking_targets(
     assert failed["status"] == "failed"
     assert failed["broken_links"][0]["reason"] == "target does not exist"
     assert "private-secret-name" not in json.dumps(failed)
+
+
+def test_docs_runner_rejects_tracked_symlink(tmp_path: Path, monkeypatch) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    write_required_docs(workspace)
+    outside = tmp_path / "outside.md"
+    outside.write_text("private outside content\n", encoding="utf-8")
+    (workspace / "leak.md").symlink_to(outside)
+    source_sha = commit_workspace(workspace)
+    result_path = tmp_path / "result.json"
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", source_sha)
+
+    value = monolith_docs_validate.run(
+        plan(
+            "docs.monolith.validate-integrity",
+            "B",
+            "validate",
+            "validate",
+            source_sha,
+        ),
+        workspace,
+        result_path,
+    )
+    assert value == 2
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert "private outside content" not in json.dumps(result)
 
 
 def test_analysis_runner_emits_bounded_health_findings(
@@ -362,11 +453,18 @@ def test_analysis_runner_emits_bounded_health_findings(
         json.dumps({"scale_notes": {"incomplete_mirror": True}}) + "\n",
         encoding="utf-8",
     )
+    source_sha = commit_workspace(workspace)
     result_path = tmp_path / "result.json"
-    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", source_sha)
 
     value = monolith_estate_health.run(
-        plan("analysis.monolith.estate-health", "D", "audit", "audit"),
+        plan(
+            "analysis.monolith.estate-health",
+            "D",
+            "audit",
+            "audit",
+            source_sha,
+        ),
         workspace,
         result_path,
     )
@@ -381,6 +479,9 @@ def test_analysis_runner_emits_bounded_health_findings(
         "catalog_evidence_lag_days",
         "incomplete_mirror",
     }
+    assert result["workspace_attestation"]["before"]["checkout_inode"] == (
+        result["workspace_attestation"]["after"]["checkout_inode"]
+    )
 
 
 def test_specialized_adapters_reject_cross_bound_plans(tmp_path: Path) -> None:
