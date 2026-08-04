@@ -15,7 +15,8 @@ from domains.code.adapters import fileboss_operator_code_validate
 from scripts import action_face_plan, apex_catalog_runner
 
 ACTION = "code.fileboss.validate-operator-code-bridge"
-ADAPTER = "fileboss_operator_code_validate"
+DOMAIN_ADAPTER = "fileboss_operator_code_validate"
+ADAPTER = "fileboss-operator-code-validate"
 REPOSITORY = "GlacierEQ/FILEBOSS"
 SHA = "a" * 40
 ATTESTATION = {
@@ -72,7 +73,7 @@ def assert_process_contract(kwargs: dict, workspace: Path) -> None:
 
 def test_registry_contract_is_exact_and_read_only() -> None:
     contract = domain_registry.resolve_action(ACTION, root=ROOT)
-    assert contract["adapter"] == ADAPTER
+    assert contract["adapter"] == DOMAIN_ADAPTER
     assert contract["targetRepository"] == REPOSITORY
     assert contract["executionMode"] == "source-read-only"
     profile = contract["tokenProfileContract"]
@@ -96,7 +97,7 @@ def test_action_face_builds_exact_immutable_plan(tmp_path: Path) -> None:
         },
     )
     assert result["action"] == ACTION
-    assert result["adapter"] == "fileboss-operator-code-validate"
+    assert result["adapter"] == ADAPTER
     assert result["source_repo"] == REPOSITORY
     assert result["target_repo"] == REPOSITORY
     assert result["source_ref"] == SHA
