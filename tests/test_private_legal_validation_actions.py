@@ -166,7 +166,7 @@ def test_monolith_legal_adapter_runs_fixed_commands(
     ]
 
 
-def test_company_adapter_runs_fixed_commands(
+def test_company_adapter_runs_offline_fixed_commands(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     workspace = tmp_path / "workspace"
@@ -190,7 +190,9 @@ def test_company_adapter_runs_fixed_commands(
     assert value == 0
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "completed"
-    assert len(result["steps"]) == 4
+    assert len(result["steps"]) == 2
+    assert all("pip" not in step["command"] for step in result["steps"])
+    assert all("venv" not in step["command"] for step in result["steps"])
 
 
 def test_casey_mcp_adapter_requires_node_20_and_runs_policy_tests(
@@ -222,6 +224,30 @@ def test_casey_mcp_adapter_requires_node_20_and_runs_policy_tests(
     assert result["status"] == "completed"
     assert result["runtime"] == {"node_major": 20}
     assert len(result["steps"]) == 4
+
+
+@pytest.mark.parametrize(
+    ("adapter_module", "action_index"),
+    (
+        (monolith_legal_live_validate, 0),
+        (monolith_company_registry_validate, 1),
+        (casey_legal_mcp_validate, 2),
+    ),
+)
+def test_resolved_sha_must_equal_requested_source_ref(
+    adapter_module, action_index: int, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    result_path = tmp_path / "result.json"
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", "b" * 40)
+    action, adapter, repository = ACTIONS[action_index]
+    assert adapter_module.run(
+        build_plan(action, adapter, repository), workspace, result_path
+    ) == 2
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "blocked"
+    assert result["reason"] == "resolved source SHA does not match requested source_ref"
 
 
 def test_cross_bound_plan_is_blocked(tmp_path: Path) -> None:
