@@ -128,6 +128,11 @@ def validate_shape(payload: object) -> dict[str, str]:
     return normalized
 
 
+def _adapter_identity(value: object) -> str:
+    """Normalize the declared kebab/snake adapter naming convention only."""
+    return str(value or "").replace("_", "-")
+
+
 def _reconcile_domain_contract(action: str, entry: dict) -> None:
     if "." not in action:
         return
@@ -136,13 +141,12 @@ def _reconcile_domain_contract(action: str, entry: dict) -> None:
     except RegistryError as error:
         fail(f"hierarchical action is not active in the domain registry: {error}")
 
-    expected = {
-        "targetRepository": entry.get("target_repo"),
-        "adapter": entry.get("adapter"),
-    }
-    for field, value in expected.items():
-        if domain.get(field) != value:
-            fail(f"flat catalog and domain registry disagree on {field}")
+    if domain.get("targetRepository") != entry.get("target_repo"):
+        fail("flat catalog and domain registry disagree on targetRepository")
+    if _adapter_identity(domain.get("adapter")) != _adapter_identity(
+        entry.get("adapter")
+    ):
+        fail("flat catalog and domain registry disagree on adapter")
     if domain.get("executionMode") != "source-read-only":
         fail("hierarchical action execution mode is not source-read-only")
     profile = domain.get("tokenProfileContract")
