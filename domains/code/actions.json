@@ -53,6 +53,60 @@
       "legacyAliases": [
         "monolith-validate-atlases"
       ]
+    },
+    "code.monolith.validate-legal-live-reconciliation": {
+      "status": "active",
+      "adapter": "monolith_legal_live_validate",
+      "adapterPath": "domains/code/adapters/monolith_legal_live_validate.py",
+      "targetRepository": "GlacierEQ/monolith",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "monolith-legal-live-job-v1",
+      "jobSchemaPath": "domains/code/schemas/monolith-legal-live-job.schema.json",
+      "resultSchema": "monolith-legal-live-result-v1",
+      "resultSchemaPath": "domains/code/schemas/monolith-legal-live-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": [
+        "monolith-validate-legal-live-reconciliation"
+      ]
+    },
+    "code.monolith.validate-company-engineered-registry": {
+      "status": "active",
+      "adapter": "monolith_company_registry_validate",
+      "adapterPath": "domains/code/adapters/monolith_company_registry_validate.py",
+      "targetRepository": "GlacierEQ/monolith",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "monolith-company-registry-job-v1",
+      "jobSchemaPath": "domains/code/schemas/monolith-company-registry-job.schema.json",
+      "resultSchema": "monolith-company-registry-result-v1",
+      "resultSchemaPath": "domains/code/schemas/monolith-company-registry-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": [
+        "monolith-validate-company-engineered-registry"
+      ]
+    },
+    "code.casey-legal-mcp.validate-v2": {
+      "status": "active",
+      "adapter": "casey_legal_mcp_validate",
+      "adapterPath": "domains/code/adapters/casey_legal_mcp_validate.py",
+      "targetRepository": "GlacierEQ/casey-legal-mcp-server",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "casey-legal-mcp-job-v1",
+      "jobSchemaPath": "domains/code/schemas/casey-legal-mcp-job.schema.json",
+      "resultSchema": "casey-legal-mcp-result-v1",
+      "resultSchemaPath": "domains/code/schemas/casey-legal-mcp-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": [
+        "casey-legal-mcp-validate-v2"
+      ]
     }
   },
   "plannedActions": [
