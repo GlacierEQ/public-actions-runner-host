@@ -46,6 +46,9 @@ ADAPTER_TASK = {
     "monolith-evolution": "test",
     "monolith-ip-governance": "test",
     "fileboss-operator-code-validate": "test",
+    "monolith_legal_live_validate": "test",
+    "monolith_company_registry_validate": "test",
+    "casey_legal_mcp_validate": "test",
     "action-face-selftest": "validate",
     "master-strand-inventory": "audit",
     "master-strand-extinction": "audit",
@@ -78,6 +81,9 @@ FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 IMMUTABLE_SOURCE_ACTIONS = {
     "code.monolith.validate-atlases",
     "code.fileboss.validate-operator-code-bridge",
+    "code.monolith.validate-legal-live-reconciliation",
+    "code.monolith.validate-company-engineered-registry",
+    "code.casey-legal-mcp.validate-v2",
     "docs.monolith.validate-integrity",
     "analysis.monolith.estate-health",
 }
