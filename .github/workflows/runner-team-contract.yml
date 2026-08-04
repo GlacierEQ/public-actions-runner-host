@@ -5,14 +5,26 @@ on:
     branches: [main, develop]
     paths:
       - ".github/workflows/**"
+      - "config/action-face-actions.json"
       - "config/public-runner-team.json"
+      - "domains/**"
+      - "registry/**"
+      - "scripts/action_face_*.py"
+      - "scripts/apex_catalog_runner.py"
       - "scripts/public_runner_team_guard.py"
+      - "scripts/workload_isolation.py"
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/**"
+      - "config/action-face-actions.json"
       - "config/public-runner-team.json"
+      - "domains/**"
+      - "registry/**"
+      - "scripts/action_face_*.py"
+      - "scripts/apex_catalog_runner.py"
       - "scripts/public_runner_team_guard.py"
+      - "scripts/workload_isolation.py"
   workflow_dispatch:
 
 permissions:
