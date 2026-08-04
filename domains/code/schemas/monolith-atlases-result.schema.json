@@ -38,6 +38,36 @@
       "maxItems": 4,
       "items": {"type": "string", "maxLength": 64}
     },
+    "workspace_attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before", "after"],
+      "properties": {
+        "before": {"$ref": "#/$defs/workspaceAttestation"},
+        "after": {
+          "anyOf": [
+            {"$ref": "#/$defs/workspaceAttestation"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
     "reason": {"type": "string", "maxLength": 2048}
+  },
+  "$defs": {
+    "workspaceAttestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resolved_source_sha",
+        "tracked_clean",
+        "tracked_diff_sha256"
+      ],
+      "properties": {
+        "resolved_source_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tracked_clean": {"const": true},
+        "tracked_diff_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
   }
 }
