@@ -142,7 +142,7 @@
       "source_event": "coding-deploy",
       "target_repo": "GlacierEQ/monolith",
       "legacy_event": "monolith-validate-atlases",
-      "adapter": "test",
+      "adapter": "monolith-evolution",
       "gate": "standard",
       "approval_required": false
     },
@@ -152,7 +152,7 @@
       "source_event": "document-processing",
       "target_repo": "GlacierEQ/monolith",
       "legacy_event": "monolith-docs-integrity",
-      "adapter": "validate",
+      "adapter": "monolith-evolution",
       "gate": "standard",
       "approval_required": false
     },
@@ -162,7 +162,7 @@
       "source_event": "evolution-optimize",
       "target_repo": "GlacierEQ/monolith",
       "legacy_event": "monolith-estate-health",
-      "adapter": "audit",
+      "adapter": "monolith-evolution",
       "gate": "standard",
       "approval_required": false
     }
