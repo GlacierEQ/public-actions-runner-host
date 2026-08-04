@@ -222,6 +222,11 @@ def test_company_adapter_runs_offline_fixed_commands(
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
     monkeypatch.setattr(
         monolith_company_registry_validate,
+        "pytest_runtime",
+        lambda: (True, "8.4.1", None),
+    )
+    monkeypatch.setattr(
+        monolith_company_registry_validate,
         "attest_workspace",
         lambda *_: dict(ATTESTATION),
     )
@@ -250,9 +255,34 @@ def test_company_adapter_runs_offline_fixed_commands(
     assert calls == expected
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "completed"
+    assert result["runtime"] == {"pytest": "8.4.1"}
     assert len(result["steps"]) == 2
     assert all("pip" not in step["command"] for step in result["steps"])
     assert all("venv" not in step["command"] for step in result["steps"])
+
+
+def test_company_adapter_blocks_without_governed_pytest_runtime(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    result_path = tmp_path / "result.json"
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
+    monkeypatch.setattr(
+        monolith_company_registry_validate,
+        "pytest_runtime",
+        lambda: (False, None, "governed pytest runtime is unavailable"),
+    )
+
+    assert monolith_company_registry_validate.run(
+        build_plan(ACTIONS[1][0], ACTIONS[1][1], ACTIONS[1][2]),
+        workspace,
+        result_path,
+    ) == 2
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "blocked"
+    assert result["reason"] == "governed pytest runtime is unavailable"
+    assert result["runtime"] == {"pytest": None}
 
 
 def test_casey_mcp_adapter_requires_node_20_and_runs_policy_tests(
