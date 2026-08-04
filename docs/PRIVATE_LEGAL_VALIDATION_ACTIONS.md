@@ -25,6 +25,10 @@ GitHub Actions are forbidden inside private GlacierEQ legal repositories. Valida
 - Detailed receipt stays private; public status is sanitized.
 - No case evidence, legal narrative, credential, or private source content is published.
 
+## Foundation state
+
+The workload-isolation and immutable-source controls from public-runner PR #80 are merged into `main`. These validation actions therefore target the merged security boundary rather than an unmerged architecture branch.
+
 ## Activation boundary
 
-The actions depend on the hardened workload-isolation changes in PR #80. Live private checkout and receipt publication remain blocked until the owner configures the dedicated GitHub App client ID and private key required by the public action face. No PAT fallback is permitted.
+Live private checkout and receipt publication remain blocked until the owner configures the dedicated GitHub App client ID and private key required by the public action face. No PAT fallback is permitted.
