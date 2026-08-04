@@ -36,6 +36,12 @@ EXPECTED_ENVELOPE_FIELDS = {
     "task",
     "approval_id",
 }
+SPECIALIZED_ACTIONS = (
+    ("C", "code.monolith.validate-atlases", "canary-code-monolith-001"),
+    ("B", "docs.monolith.validate-integrity", "canary-docs-monolith-001"),
+    ("D", "analysis.monolith.estate-health", "canary-analysis-monolith-001"),
+)
+CANARY_SOURCE_SHA = "a" * 40
 
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
@@ -177,6 +183,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         '"NPM_CONFIG_USERCONFIG": os.devnull',
         "tracked workload files changed during execution",
         "workload HEAD changed after checkout binding",
+        "path contains a symlink component",
+        "checkout escapes its allowed parent",
+        "secure_checkout_path",
     ]
     isolation_missing = [item for item in isolation_required if item not in isolation]
     isolation_forbidden = [
@@ -211,6 +220,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     )
     postrun_required = [
         "--workload-root",
+        "secure_checkout_path",
+        "allowed_parent=runner_root",
         "verify_checkout(runner_root, workflow_sha",
         "verify_checkout(control_root, workflow_sha",
         "verify_checkout(\n            workload_root",
@@ -269,6 +280,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         auth_output = temporary_path / "auth-output.txt"
         valid_event = temporary_path / "valid.json"
         invalid_event = temporary_path / "invalid.json"
+        manual_event = temporary_path / "manual.json"
+        manual_event.write_text("{}\n", encoding="utf-8")
         valid_event.write_text(
             json.dumps(
                 {
@@ -334,6 +347,59 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "planner-positive-negative",
             valid.returncode == 0 and invalid.returncode != 0,
             f"valid={valid.returncode}; invalid={invalid.returncode}",
+        )
+
+        specialized_results: list[str] = []
+        specialized_ok = True
+        for pillar, action, job_id in SPECIALIZED_ACTIONS:
+            specialized_output = temporary_path / f"{pillar}-specialized-output.txt"
+            specialized_env = {
+                **planner_env,
+                "GITHUB_OUTPUT": str(specialized_output),
+            }
+            command = [
+                sys.executable,
+                "scripts/action_face_plan.py",
+                "--event",
+                str(manual_event),
+                "--pillar",
+                pillar,
+                "--action",
+                action,
+                "--job-id",
+                job_id,
+            ]
+            accepted = subprocess.run(
+                [*command, "--source-ref", CANARY_SOURCE_SHA],
+                cwd=workspace,
+                env=specialized_env,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=30,
+                check=False,
+                shell=False,
+            )
+            mutable = subprocess.run(
+                [*command, "--source-ref", "main"],
+                cwd=workspace,
+                env=specialized_env,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=30,
+                check=False,
+                shell=False,
+            )
+            specialized_results.append(
+                f"{action}:accepted={accepted.returncode},mutable={mutable.returncode}"
+            )
+            if accepted.returncode != 0 or mutable.returncode == 0:
+                specialized_ok = False
+        record(
+            "specialized-planner-positive-negative",
+            specialized_ok,
+            "; ".join(specialized_results),
         )
 
         issue_event = temporary_path / "issue.json"

@@ -13,9 +13,10 @@ import apex_catalog_runner as catalog
 
 from scripts.workload_isolation import (
     WorkloadIsolationError,
-    attest_workspace,
+    attest_checkout,
     build_environment,
     command_contract_sha256,
+    open_checkout,
 )
 
 EXPECTED_ACTION = "code.monolith.validate-atlases"
@@ -106,7 +107,6 @@ def commands(result_path: Path, job_id: str) -> list[list[str]]:
 
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
-    workspace = workspace.resolve()
     result_path = result_path.resolve()
     try:
         validate_plan(plan)
@@ -122,17 +122,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="resolved source SHA is unavailable or invalid",
         )
 
-    missing = [path for path in REQUIRED_PATHS if not (workspace / path).is_file()]
-    if missing:
-        return catalog.write_result(
-            plan,
-            result_path,
-            "blocked",
-            reason="required Monolith atlas files are missing: " + ", ".join(missing),
-        )
-
     try:
-        pre_attestation = attest_workspace(workspace, resolved_sha)
+        checkout = open_checkout(workspace, label="workload")
         env = build_environment(result_path, str(plan["job_id"]))
     except WorkloadIsolationError as error:
         return catalog.write_result(
@@ -142,71 +133,102 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason=f"workload isolation failed before execution: {error}",
         )
 
-    sequence = commands(result_path, str(plan["job_id"]))
-    steps: list[dict] = []
-    status = "completed"
-    for command in sequence:
+    with checkout:
         try:
-            process = subprocess.run(
-                command,
-                cwd=workspace,
-                text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                timeout=1800,
-                check=False,
-                shell=False,
-                env=env,
+            pre_attestation = attest_checkout(checkout, resolved_sha)
+        except WorkloadIsolationError as error:
+            return catalog.write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason=f"workload isolation failed before execution: {error}",
             )
-            output = (process.stdout or "")[-100_000:]
-            steps.append(
-                {
-                    "command": command,
-                    "exit_code": process.returncode,
-                    "status": "completed" if process.returncode == 0 else "failed",
-                    "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
-                    "output_tail": output[-24_000:],
-                }
+
+        workspace_root = checkout.proc_path
+        missing = [
+            path for path in REQUIRED_PATHS if not (workspace_root / path).is_file()
+        ]
+        if missing:
+            return catalog.write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason=(
+                    "required Monolith atlas files are missing: "
+                    + ", ".join(missing)
+                ),
             )
-            if process.returncode != 0:
+
+        sequence = commands(result_path, str(plan["job_id"]))
+        steps: list[dict] = []
+        status = "completed"
+        for command in sequence:
+            try:
+                process = subprocess.run(
+                    command,
+                    cwd=workspace_root,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    timeout=1800,
+                    check=False,
+                    shell=False,
+                    env=env,
+                    pass_fds=checkout.pass_fds,
+                )
+                output = (process.stdout or "")[-100_000:]
+                steps.append(
+                    {
+                        "command": command,
+                        "exit_code": process.returncode,
+                        "status": (
+                            "completed" if process.returncode == 0 else "failed"
+                        ),
+                        "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
+                        "output_tail": output[-24_000:],
+                    }
+                )
+                if process.returncode != 0:
+                    status = "failed"
+                    break
+            except subprocess.TimeoutExpired as error:
+                output = error.stdout if isinstance(error.stdout, str) else ""
+                steps.append(
+                    {
+                        "command": command,
+                        "status": "failed",
+                        "reason": "timeout after 1800 seconds",
+                        "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
+                        "output_tail": output[-24_000:],
+                    }
+                )
                 status = "failed"
                 break
-        except subprocess.TimeoutExpired as error:
-            output = error.stdout if isinstance(error.stdout, str) else ""
-            steps.append(
-                {
-                    "command": command,
-                    "status": "failed",
-                    "reason": "timeout after 1800 seconds",
-                    "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
-                    "output_tail": output[-24_000:],
-                }
-            )
-            status = "failed"
-            break
-        except OSError as error:
-            steps.append(
-                {
-                    "command": command,
-                    "status": "failed",
-                    "reason": f"process start failed: {type(error).__name__}: {error}",
-                }
-            )
-            status = "failed"
-            break
+            except OSError as error:
+                steps.append(
+                    {
+                        "command": command,
+                        "status": "failed",
+                        "reason": (
+                            f"process start failed: {type(error).__name__}: {error}"
+                        ),
+                    }
+                )
+                status = "failed"
+                break
 
-    post_attestation: dict[str, object] | None = None
-    try:
-        post_attestation = attest_workspace(workspace, resolved_sha)
-    except WorkloadIsolationError as error:
-        status = "failed"
-        steps.append(
-            {
-                "command": ["workload-attestation"],
-                "status": "failed",
-                "reason": str(error),
-            }
-        )
+        post_attestation: dict[str, object] | None = None
+        try:
+            post_attestation = attest_checkout(checkout, resolved_sha)
+        except WorkloadIsolationError as error:
+            status = "failed"
+            steps.append(
+                {
+                    "command": ["workload-attestation"],
+                    "status": "failed",
+                    "reason": str(error),
+                }
+            )
 
     return catalog.write_result(
         plan,
