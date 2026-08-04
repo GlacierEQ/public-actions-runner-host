@@ -23,7 +23,9 @@ class WorkloadIsolationError(RuntimeError):
 def _secure_directory(path: Path) -> Path:
     path.mkdir(parents=True, exist_ok=True, mode=0o700)
     if path.is_symlink() or not path.is_dir():
-        raise WorkloadIsolationError(f"sandbox path is not a regular directory: {path.name}")
+        raise WorkloadIsolationError(
+            f"sandbox path is not a regular directory: {path.name}"
+        )
     path.chmod(0o700)
     return path
 
@@ -71,15 +73,20 @@ def build_environment(
 
     for key, value in (extra or {}).items():
         if key not in SAFE_EXTRA_ENV:
-            raise WorkloadIsolationError(f"extra workload environment key is forbidden: {key}")
+            raise WorkloadIsolationError(
+                f"extra workload environment key is forbidden: {key}"
+            )
         if not isinstance(value, str):
-            raise WorkloadIsolationError(f"extra workload environment value is invalid: {key}")
+            raise WorkloadIsolationError(
+                f"extra workload environment value is invalid: {key}"
+            )
         environment[key] = value
 
     return environment
 
 
 def _git(workspace: Path, *args: str) -> str:
+    git_home = _secure_directory(workspace.parent / ".apex-git-home")
     process = subprocess.run(
         ["git", "-C", str(workspace), *args],
         text=True,
@@ -90,7 +97,7 @@ def _git(workspace: Path, *args: str) -> str:
         shell=False,
         env={
             "PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin"),
-            "HOME": os.devnull,
+            "HOME": str(git_home),
             "LANG": "C.UTF-8",
             "LC_ALL": "C.UTF-8",
             "GIT_CONFIG_NOSYSTEM": "1",
