@@ -32,6 +32,7 @@ OWNED_FILES=(
   tests/test_monolith_evolution_adapter.py
   tests/test_tool_system_validate_adapter.py
   tests/test_specialized_monolith_runners.py
+  tests/test_workload_isolation.py
 )
 
 ruff check "${OWNED_FILES[@]}"
