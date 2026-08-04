@@ -38,7 +38,9 @@ def test_no_workflow_contains_retired_fail_open_executor() -> None:
     )
     for name, text in workflow_texts().items():
         for marker in forbidden:
-            assert marker not in text, f"{name} retains retired executor marker: {marker}"
+            assert marker not in text, (
+                f"{name} retains retired executor marker: {marker}"
+            )
 
 
 def test_canonical_issue_ingress_is_read_only_to_source() -> None:
