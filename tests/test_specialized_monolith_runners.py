@@ -82,7 +82,9 @@ def test_action_face_plans_all_three_specialized_actions(tmp_path: Path) -> None
         assert resolved["target_repo"] == "GlacierEQ/monolith"
 
 
-def test_catalog_dispatch_is_bound_to_exact_action(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_catalog_dispatch_is_bound_to_exact_action(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     calls: list[str] = []
 
     monkeypatch.setattr(
@@ -151,7 +153,9 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     assert len(result["steps"]) == 11
     commands = [step["command"] for step in result["steps"]]
     assert any("scripts/validate_function_atlas.py" in command for command in commands)
-    assert any("scripts/build_monolith_command_atlas.py" in command for command in commands)
+    assert any(
+        "scripts/build_monolith_command_atlas.py" in command for command in commands
+    )
     assert any("tests/test_query_monolith.py" in command for command in commands)
 
 
