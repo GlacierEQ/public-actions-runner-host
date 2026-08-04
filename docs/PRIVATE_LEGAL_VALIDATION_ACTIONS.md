@@ -13,10 +13,13 @@ GitHub Actions are forbidden inside private GlacierEQ legal repositories. Valida
 ## Security boundary
 
 - Full lowercase 40-character commit SHA required.
+- The resolved checkout SHA must equal the requested source SHA.
 - One catalog-selected private repository per action.
 - Contents-read token only.
 - Checkout credential is not exposed to workload code.
 - Fixed commands only; callers cannot provide shell commands.
+- Specialized adapters do not install packages or download executable dependencies at runtime.
+- Runtime dependencies are supplied by the governed public-runner image and fail closed when absent.
 - Private workspace is attested before and after execution.
 - Tracked source mutation fails the run.
 - Detailed receipt stays private; public status is sanitized.
