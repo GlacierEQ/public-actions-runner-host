@@ -19,7 +19,7 @@ from scripts.workload_isolation import (
 
 EXPECTED_ACTION = "code.fileboss.validate-operator-code-bridge"
 EXPECTED_REPOSITORY = "GlacierEQ/FILEBOSS"
-EXPECTED_ADAPTER = "fileboss_operator_code_validate"
+EXPECTED_ADAPTER = "fileboss-operator-code-validate"
 SHA = re.compile(r"^[0-9a-f]{40}$")
 REQUIRED_PATHS = (
     "genius/shared/integrations/operator_code_gateway.py",
