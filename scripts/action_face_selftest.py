@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Security and contract canary for the APEX public action face."""
+
 from __future__ import annotations
 
 import hashlib
@@ -13,47 +14,103 @@ from pathlib import Path
 import apex_catalog_runner as catalog
 
 CHECKOUT_PIN = "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
-SENSITIVE_ENV = {"APEX_CONTROL_TOKEN", "APEX_PRIVATE_READ_TOKEN", "GH_PAT", "GITHUB_TOKEN"}
-EXPECTED_ENVELOPE_FIELDS = {"job_id", "pillar", "action", "source_repo", "source_ref", "task", "approval_id"}
+APP_TOKEN_PIN = (
+    "actions/create-github-app-token@"
+    "bcd2ba49218906704ab6c1aa796996da409d3eb1"
+)
+SENSITIVE_ENV = {
+    "APEX_CONTROL_TOKEN",
+    "APEX_PRIVATE_READ_TOKEN",
+    "APEX_RUNNER_APP_PRIVATE_KEY",
+    "ACTIONS_ID_TOKEN_REQUEST_TOKEN",
+    "ACTIONS_RUNTIME_TOKEN",
+    "GH_PAT",
+    "GITHUB_TOKEN",
+}
+EXPECTED_ENVELOPE_FIELDS = {
+    "job_id",
+    "pillar",
+    "action",
+    "source_repo",
+    "source_ref",
+    "task",
+    "approval_id",
+}
 
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
-    checks: list[dict] = []
+    checks: list[dict[str, str]] = []
 
     def record(name: str, passed: bool, detail: str = "") -> None:
-        checks.append({"name": name, "status": "pass" if passed else "fail", "detail": detail[:500]})
+        checks.append(
+            {
+                "name": name,
+                "status": "pass" if passed else "fail",
+                "detail": detail[:500],
+            }
+        )
 
     leaked = sorted(key for key in SENSITIVE_ENV if os.environ.get(key))
-    record("workload-secret-isolation", not leaked, "no protected token names are populated" if not leaked else f"unexpected variables: {', '.join(leaked)}")
+    record(
+        "control-secret-isolation",
+        not leaked,
+        "no protected token names are populated"
+        if not leaked
+        else f"unexpected variables: {', '.join(leaked)}",
+    )
 
     script_files = sorted((workspace / "scripts").glob("*.py"))
     syntax_failures: list[str] = []
     for path in script_files:
         try:
             compile(path.read_text(encoding="utf-8"), str(path), "exec")
-        except SyntaxError as exc:
-            syntax_failures.append(f"{path.name}:{exc.lineno}")
-    record("python-syntax", bool(script_files) and not syntax_failures, ", ".join(syntax_failures) or f"{len(script_files)} scripts compiled")
+        except SyntaxError as error:
+            syntax_failures.append(f"{path.name}:{error.lineno}")
+    record(
+        "python-syntax",
+        bool(script_files) and not syntax_failures,
+        ", ".join(syntax_failures) or f"{len(script_files)} scripts compiled",
+    )
 
+    json_paths = [
+        *(workspace / "config").glob("*.json"),
+        *(workspace / "registry").glob("*.json"),
+        *(workspace / "domains").glob("*/actions.json"),
+        *(workspace / "domains").glob("*/token-profiles.json"),
+        *(workspace / "domains").glob("*/schemas/*.json"),
+    ]
     json_failures: list[str] = []
-    json_files = sorted((workspace / "config").glob("*.json"))
-    parsed_json: dict[str, object] = {}
-    for path in json_files:
+    parsed_config: dict[str, object] = {}
+    for path in sorted(set(json_paths)):
         try:
-            parsed_json[path.name] = json.loads(path.read_text(encoding="utf-8"))
-        except Exception as exc:  # noqa: BLE001
-            json_failures.append(f"{path.name}:{type(exc).__name__}")
-    record("json-contracts", bool(json_files) and not json_failures, ", ".join(json_failures) or f"{len(json_files)} JSON files parsed")
+            value = json.loads(path.read_text(encoding="utf-8"))
+            if path.parent.name == "config":
+                parsed_config[path.name] = value
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            json_failures.append(f"{path.relative_to(workspace)}:{type(error).__name__}")
+    record(
+        "json-contracts",
+        bool(json_paths) and not json_failures,
+        ", ".join(json_failures) or f"{len(set(json_paths))} JSON files parsed",
+    )
 
-    schema = parsed_json.get("job-envelope.schema.json")
-    schema_fields = set(schema.get("properties", {})) if isinstance(schema, dict) else set()
-    record("schema-field-alignment", schema_fields == EXPECTED_ENVELOPE_FIELDS, f"fields={sorted(schema_fields)}")
+    schema = parsed_config.get("job-envelope.schema.json")
+    schema_fields = (
+        set(schema.get("properties", {})) if isinstance(schema, dict) else set()
+    )
+    record(
+        "schema-field-alignment",
+        schema_fields == EXPECTED_ENVELOPE_FIELDS,
+        f"fields={sorted(schema_fields)}",
+    )
 
     workflow_path = workspace / ".github" / "workflows" / "apex-pillar-runner.yml"
-    workflow = workflow_path.read_text(encoding="utf-8") if workflow_path.exists() else ""
-    required_fragments = [
+    workflow = (
+        workflow_path.read_text(encoding="utf-8") if workflow_path.exists() else ""
+    )
+    required_workflow = [
         "name: APEX Public Action Face",
         "runs-on: ubuntu-latest",
         "scripts/action_face_authorize.py",
@@ -63,124 +120,191 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         ".apex-postrun-control/scripts/action_face_pipeline_result.py",
         ".apex-postrun-control/scripts/action_face_postrun_guard.py",
         ".apex-postrun-control/scripts/action_face_publish_verified.py",
-        "claim-job",
-        "resolved_source_sha",
-        "APEX_RESOLVED_SOURCE_SHA",
-        "AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}",
-        "result_file_sha256",
-        "REPLAY_OUTCOME",
-        "PIPELINE_RESULT_SYNTHESIZED",
+        "--workload-root workload",
+        "Verify post-run control, workload, and result integrity",
+        "steps.plan.outputs.action == 'akos-echo-policy-ci'",
+        "permission-contents: read",
+        "permission-contents: write",
+        "persist-credentials: false",
         "steps.synthesize.outputs.synthesized == 'true'",
         CHECKOUT_PIN,
+        APP_TOKEN_PIN,
     ]
-    forbidden_fragments = [
+    forbidden_workflow = [
         "runs-on: self-hosted",
         "secrets.GH_PAT",
         "actions/github-script@",
         "actions/checkout@v",
-        "assert-new-result",
+        "actions/create-github-app-token@v",
+        "AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}",
         "python3 scripts/apex_pillar_runner.py publish",
     ]
-    missing = [fragment for fragment in required_fragments if fragment not in workflow]
-    forbidden = [fragment for fragment in forbidden_fragments if fragment in workflow]
-    record("workflow-invariants", bool(workflow) and not missing and not forbidden, f"missing={missing}; forbidden={forbidden}")
+    missing = [item for item in required_workflow if item not in workflow]
+    forbidden = [item for item in forbidden_workflow if item in workflow]
+    record(
+        "workflow-authority-boundary",
+        bool(workflow) and not missing and not forbidden,
+        f"missing={missing}; forbidden={forbidden}",
+    )
 
-    bind_script = (workspace / "scripts" / "action_face_bind_checkout.py").read_text(encoding="utf-8")
-    bind_fragments = [
-        'git(workspace, "rev-parse", "HEAD")',
-        'git(workspace, "config", "--get", "remote.origin.url")',
-        'git(workspace, "status", "--porcelain", "--untracked-files=no")',
-        'output("resolved_source_sha", resolved_sha)',
+    retired = (
+        workspace
+        / ".github"
+        / "workflows"
+        / "apex-intelligent-issue-resolver.yml"
+    )
+    issue_ingress = [
+        path.name
+        for path in sorted((workspace / ".github" / "workflows").glob("*.y*ml"))
+        if "issues:" in path.read_text(encoding="utf-8")
+        and "action_face_issue_plan.py" in path.read_text(encoding="utf-8")
     ]
-    missing_bind = [fragment for fragment in bind_fragments if fragment not in bind_script]
-    record("checkout-binding-invariants", not missing_bind, f"missing={missing_bind}")
+    record(
+        "single-issue-ingress",
+        not retired.exists() and issue_ingress == ["apex-pillar-runner.yml"],
+        f"ingress={issue_ingress}",
+    )
 
-    pillar_runner = (workspace / "scripts" / "apex_pillar_runner.py").read_text(encoding="utf-8")
-    receipt_fragments = [
-        "claims/{job_id}.json",
-        "results/{job_id}.json",
-        "immutable result path already exists",
-        "untrusted result already contains a receipt",
-        "claim_blob_sha",
-        "payload_sha256",
-        "resolved_source_sha",
-        "adapter result is missing a valid resolved source SHA",
-        'stage_outcomes.get("checkout_binding") != "success"',
+    isolation = (workspace / "scripts" / "workload_isolation.py").read_text(
+        encoding="utf-8"
+    )
+    isolation_required = [
+        "SAFE_EXTRA_ENV = {\"APEX_RESOLVED_SOURCE_SHA\"}",
+        '"GITHUB_TOKEN"',
+        '"ACTIONS_RUNTIME_TOKEN"',
+        '"ACTIONS_ID_TOKEN_REQUEST_TOKEN"',
+        '"PIP_CONFIG_FILE": os.devnull',
+        '"NPM_CONFIG_USERCONFIG": os.devnull',
+        "tracked workload files changed during execution",
+        "workload HEAD changed after checkout binding",
     ]
-    missing_receipt = [fragment for fragment in receipt_fragments if fragment not in pillar_runner]
-    record("claim-receipt-invariants", not missing_receipt, f"missing={missing_receipt}")
-
-    pipeline_result = (workspace / "scripts" / "action_face_pipeline_result.py").read_text(encoding="utf-8")
-    synth_fragments = [
-        'output("synthesized", "false")',
-        'output("synthesized", "true")',
-        '"status": "blocked"',
-        '"synthesized": True',
-        '"resolved_source_sha": os.environ.get("APEX_RESOLVED_SOURCE_SHA", "")',
+    isolation_missing = [item for item in isolation_required if item not in isolation]
+    isolation_forbidden = [
+        item for item in ("os.environ.copy()", "env=os.environ") if item in isolation
     ]
-    missing_synth = [fragment for fragment in synth_fragments if fragment not in pipeline_result]
-    record("synthesized-result-invariants", not missing_synth, f"missing={missing_synth}")
+    record(
+        "workload-capability-minimization",
+        not isolation_missing and not isolation_forbidden,
+        f"missing={isolation_missing}; forbidden={isolation_forbidden}",
+    )
 
-    postrun_guard = (workspace / "scripts" / "action_face_postrun_guard.py").read_text(encoding="utf-8")
-    postrun_fragments = [
+    planner = (workspace / "scripts" / "action_face_plan.py").read_text(
+        encoding="utf-8"
+    )
+    planner_required = [
+        "resolve_domain_action",
+        "IMMUTABLE_SOURCE_ACTIONS",
+        "this specialized action requires a full lowercase commit SHA",
+        "flat catalog and domain registry disagree",
+        "hierarchical action token profile exceeds contents:read",
+        "hierarchical action source writes are not forbidden",
+    ]
+    planner_missing = [item for item in planner_required if item not in planner]
+    record(
+        "runtime-registry-reconciliation",
+        not planner_missing,
+        f"missing={planner_missing}",
+    )
+
+    postrun = (workspace / "scripts" / "action_face_postrun_guard.py").read_text(
+        encoding="utf-8"
+    )
+    postrun_required = [
+        "--workload-root",
         "verify_checkout(runner_root, workflow_sha",
         "verify_checkout(control_root, workflow_sha",
+        "verify_checkout(\n            workload_root",
+        "private workload",
+        'output("workload_verified", "true")',
         "current plan does not match the immutable claim hash",
         "result resolved source SHA does not match checkout binding",
         'output("result_file_sha256", digest)',
     ]
-    missing_postrun = [fragment for fragment in postrun_fragments if fragment not in postrun_guard]
-    record("fresh-postrun-control-invariants", not missing_postrun, f"missing={missing_postrun}")
+    postrun_missing = [item for item in postrun_required if item not in postrun]
+    record(
+        "postrun-source-and-receipt-attestation",
+        not postrun_missing,
+        f"missing={postrun_missing}",
+    )
 
-    verified_publish = (workspace / "scripts" / "action_face_publish_verified.py").read_text(encoding="utf-8")
-    publish_fragments = [
+    verified_publish = (
+        workspace / "scripts" / "action_face_publish_verified.py"
+    ).read_text(encoding="utf-8")
+    publish_required = [
         "result bytes changed after post-run verification",
         "NamedTemporaryFile",
         "os.chmod(handle.name, 0o600)",
         "base.publish(args.job_id, Path(temporary_path))",
     ]
-    missing_publish = [fragment for fragment in publish_fragments if fragment not in verified_publish]
-    record("verified-publication-invariants", not missing_publish, f"missing={missing_publish}")
+    publish_missing = [
+        item for item in publish_required if item not in verified_publish
+    ]
+    record(
+        "verified-publication",
+        not publish_missing,
+        f"missing={publish_missing}",
+    )
 
     catalog_entries: list[dict] = []
     for name in ("pillar-actions.json", "action-face-actions.json"):
-        data = parsed_json.get(name)
-        if isinstance(data, dict):
-            catalog_entries.extend(data.get("actions", []))
+        value = parsed_config.get(name)
+        if isinstance(value, dict):
+            entries = value.get("actions", [])
+            if isinstance(entries, list):
+                catalog_entries.extend(
+                    item for item in entries if isinstance(item, dict)
+                )
     keys = [(item.get("pillar"), item.get("action")) for item in catalog_entries]
     targets = [str(item.get("target_repo", "")) for item in catalog_entries]
-    catalog_ok = bool(keys) and len(keys) == len(set(keys)) and all(target.startswith("GlacierEQ/") for target in targets)
-    record("catalog-uniqueness", catalog_ok, f"{len(keys)} catalog actions checked")
-
-    adapter_script = (workspace / "scripts" / "action_face_catalog_runner.py").read_text(encoding="utf-8")
-    planner_script = (workspace / "scripts" / "action_face_plan.py").read_text(encoding="utf-8")
-    akos_entries = [item for item in catalog_entries if item.get("action") == "akos-echo-policy-ci"]
-    akos_ok = (
-        len(akos_entries) == 1
-        and akos_entries[0].get("pillar") == "C"
-        and akos_entries[0].get("target_repo") == "GlacierEQ/FILEBOSS"
-        and akos_entries[0].get("adapter") == "akos-echo-policy-ci"
-        and '"akos-echo-policy-ci": "test"' in planner_script
-        and 'if adapter == "akos-echo-policy-ci"' in adapter_script
-        and "AKOS_POLICY_SHA256" in workflow
+    catalog_ok = (
+        bool(keys)
+        and len(keys) == len(set(keys))
+        and all(target.startswith("GlacierEQ/") for target in targets)
     )
-    record("akos-echo-policy-adapter", akos_ok, f"entries={len(akos_entries)}")
+    record("catalog-uniqueness", catalog_ok, f"{len(keys)} actions checked")
 
-    with tempfile.TemporaryDirectory() as temp:
-        temp_path = Path(temp)
-        planner_output = temp_path / "planner-output.txt"
-        auth_output = temp_path / "auth-output.txt"
-
-        valid_event = temp_path / "valid.json"
-        valid_event.write_text(json.dumps({"action": "action-face-canary", "client_payload": {"job_id": "canary-20260716-001", "source_ref": "main"}}), encoding="utf-8")
-        invalid_event = temp_path / "invalid.json"
-        invalid_event.write_text(json.dumps({"action": "action-face-canary", "client_payload": {"job_id": "canary-20260716-002", "source_ref": "main", "unexpected": "blocked"}}), encoding="utf-8")
+    with tempfile.TemporaryDirectory() as temporary:
+        temporary_path = Path(temporary)
+        planner_output = temporary_path / "planner-output.txt"
+        auth_output = temporary_path / "auth-output.txt"
+        valid_event = temporary_path / "valid.json"
+        invalid_event = temporary_path / "invalid.json"
+        valid_event.write_text(
+            json.dumps(
+                {
+                    "action": "action-face-canary",
+                    "client_payload": {
+                        "job_id": "canary-20260716-001",
+                        "source_ref": "main",
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        invalid_event.write_text(
+            json.dumps(
+                {
+                    "action": "action-face-canary",
+                    "client_payload": {
+                        "job_id": "canary-20260716-002",
+                        "source_ref": "main",
+                        "unexpected": "blocked",
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
 
         planner_env = {**os.environ, "GITHUB_OUTPUT": str(planner_output)}
         for secret_name in SENSITIVE_ENV:
             planner_env.pop(secret_name, None)
         valid = subprocess.run(
-            [sys.executable, "scripts/action_face_plan.py", "--event", str(valid_event)],
+            [
+                sys.executable,
+                "scripts/action_face_plan.py",
+                "--event",
+                str(valid_event),
+            ],
             cwd=workspace,
             env=planner_env,
             text=True,
@@ -188,9 +312,15 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             stderr=subprocess.STDOUT,
             timeout=30,
             check=False,
+            shell=False,
         )
         invalid = subprocess.run(
-            [sys.executable, "scripts/action_face_plan.py", "--event", str(invalid_event)],
+            [
+                sys.executable,
+                "scripts/action_face_plan.py",
+                "--event",
+                str(invalid_event),
+            ],
             cwd=workspace,
             env=planner_env,
             text=True,
@@ -198,11 +328,26 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             stderr=subprocess.STDOUT,
             timeout=30,
             check=False,
+            shell=False,
         )
-        record("planner-positive-negative", valid.returncode == 0 and invalid.returncode != 0, f"valid={valid.returncode}; invalid={invalid.returncode}")
+        record(
+            "planner-positive-negative",
+            valid.returncode == 0 and invalid.returncode != 0,
+            f"valid={valid.returncode}; invalid={invalid.returncode}",
+        )
 
-        issue_event = temp_path / "issue.json"
-        issue_event.write_text(json.dumps({"issue": {"user": {"login": "GlacierEQ", "id": 194243768}, "author_association": "OWNER"}}), encoding="utf-8")
+        issue_event = temporary_path / "issue.json"
+        issue_event.write_text(
+            json.dumps(
+                {
+                    "issue": {
+                        "user": {"login": "GlacierEQ", "id": 194243768},
+                        "author_association": "OWNER",
+                    }
+                }
+            ),
+            encoding="utf-8",
+        )
         auth_env = {
             **os.environ,
             "GITHUB_REPOSITORY": "GlacierEQ/public-actions-runner-host",
@@ -223,23 +368,49 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             stderr=subprocess.STDOUT,
             timeout=30,
             check=False,
+            shell=False,
         )
-        issue_event.write_text(json.dumps({"issue": {"user": {"login": "intruder", "id": 999}, "author_association": "NONE"}}), encoding="utf-8")
+        issue_event.write_text(
+            json.dumps(
+                {
+                    "issue": {
+                        "user": {"login": "intruder", "id": 999},
+                        "author_association": "NONE",
+                    }
+                }
+            ),
+            encoding="utf-8",
+        )
         unauthorized = subprocess.run(
             [sys.executable, "scripts/action_face_authorize.py"],
             cwd=workspace,
-            env={**auth_env, "GITHUB_ACTOR": "intruder", "GITHUB_ACTOR_ID": "999"},
+            env={
+                **auth_env,
+                "GITHUB_ACTOR": "intruder",
+                "GITHUB_ACTOR_ID": "999",
+            },
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             timeout=30,
             check=False,
+            shell=False,
         )
-        record("authorization-positive-negative", authorized.returncode == 0 and unauthorized.returncode != 0, f"authorized={authorized.returncode}; unauthorized={unauthorized.returncode}")
-        record("subprocess-output-isolation", planner_output.exists() and auth_output.exists(), "canary subprocesses wrote only to temporary output files")
+        record(
+            "authorization-positive-negative",
+            authorized.returncode == 0 and unauthorized.returncode != 0,
+            f"authorized={authorized.returncode}; unauthorized={unauthorized.returncode}",
+        )
+        record(
+            "subprocess-output-isolation",
+            planner_output.exists() and auth_output.exists(),
+            "canary subprocesses wrote only to temporary output files",
+        )
 
     failed = [check for check in checks if check["status"] != "pass"]
-    digest = hashlib.sha256(json.dumps(checks, sort_keys=True).encode("utf-8")).hexdigest()
+    digest = hashlib.sha256(
+        json.dumps(checks, sort_keys=True).encode("utf-8")
+    ).hexdigest()
     return catalog.write_result(
         plan,
         result_path,
