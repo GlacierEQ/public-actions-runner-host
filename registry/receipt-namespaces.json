@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "namespaces": {
     "docs": {
-      "status": "reserved",
+      "status": "active",
       "root": "receipts/docs",
       "pattern": "^receipts/docs/[A-Za-z0-9][A-Za-z0-9._-]{7,63}\\.json$"
     },
@@ -12,7 +12,7 @@
       "pattern": "^receipts/code/[A-Za-z0-9][A-Za-z0-9._-]{7,63}\\.json$"
     },
     "analysis": {
-      "status": "reserved",
+      "status": "active",
       "root": "receipts/analysis",
       "pattern": "^receipts/analysis/[A-Za-z0-9][A-Za-z0-9._-]{7,63}\\.json$"
     }
