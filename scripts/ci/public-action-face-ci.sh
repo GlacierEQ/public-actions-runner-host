@@ -36,7 +36,9 @@ OWNED_FILES=(
   tests/test_workload_isolation.py
 )
 
-ruff check "${OWNED_FILES[@]}"
+# The GitHub contents API cannot set executable mode bits, so EXE001 is the
+# only suppressed rule for the fully owned hardening files.
+ruff check --ignore EXE001 "${OWNED_FILES[@]}"
 ruff format --check "${OWNED_FILES[@]}"
 
 # These established files contain pre-existing style debt. Enforce correctness
