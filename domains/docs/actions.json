@@ -4,7 +4,7 @@
   "actions": {
     "docs.monolith.validate-integrity": {
       "status": "active",
-      "adapter": "validate",
+      "adapter": "monolith_evolution",
       "adapterPath": "domains/docs/adapters/monolith_docs_validate.py",
       "targetRepository": "GlacierEQ/monolith",
       "tokenProfile": "private-source-read",
