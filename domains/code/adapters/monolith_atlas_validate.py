@@ -11,17 +11,17 @@ from pathlib import Path
 
 import apex_catalog_runner as catalog
 
+from scripts.workload_isolation import (
+    WorkloadIsolationError,
+    attest_workspace,
+    build_environment,
+    command_contract_sha256,
+)
+
 EXPECTED_ACTION = "code.monolith.validate-atlases"
 EXPECTED_REPOSITORY = "GlacierEQ/monolith"
 EXPECTED_ADAPTER = "test"
 SHA = re.compile(r"^[0-9a-f]{40}$")
-SENSITIVE_ENV = {
-    "APEX_BRANCH_WRITE_TOKEN",
-    "APEX_CONTROL_TOKEN",
-    "APEX_PRIVATE_READ_TOKEN",
-    "GH_PAT",
-    "GITHUB_TOKEN",
-}
 REQUIRED_PATHS = (
     "scripts/validate_function_atlas.py",
     "tests/test_function_atlas.py",
@@ -47,21 +47,6 @@ def validate_plan(plan: dict) -> None:
     for field, value in expected.items():
         if plan.get(field) != value:
             raise ValueError(f"{field} identity mismatch")
-
-
-def isolated_env() -> dict[str, str]:
-    env = os.environ.copy()
-    for key in SENSITIVE_ENV:
-        env.pop(key, None)
-    env.update(
-        {
-            "CI": "true",
-            "PIP_DISABLE_PIP_VERSION_CHECK": "1",
-            "PIP_NO_INPUT": "1",
-            "PYTHONNOUSERSITE": "1",
-        }
-    )
-    return env
 
 
 def commands(result_path: Path, job_id: str) -> list[list[str]]:
@@ -146,10 +131,20 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="required Monolith atlas files are missing: " + ", ".join(missing),
         )
 
+    try:
+        pre_attestation = attest_workspace(workspace, resolved_sha)
+        env = build_environment(result_path, str(plan["job_id"]))
+    except WorkloadIsolationError as error:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason=f"workload isolation failed before execution: {error}",
+        )
+
     sequence = commands(result_path, str(plan["job_id"]))
     steps: list[dict] = []
     status = "completed"
-    env = isolated_env()
     for command in sequence:
         try:
             process = subprocess.run(
@@ -200,11 +195,31 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             status = "failed"
             break
 
+    post_attestation: dict[str, object] | None = None
+    try:
+        post_attestation = attest_workspace(workspace, resolved_sha)
+    except WorkloadIsolationError as error:
+        status = "failed"
+        steps.append(
+            {
+                "command": ["workload-attestation"],
+                "status": "failed",
+                "reason": str(error),
+            }
+        )
+
     return catalog.write_result(
         plan,
         result_path,
         status,
         steps=steps,
-        command_contract_sha256=hashlib.sha256(repr(sequence).encode()).hexdigest(),
+        command_contract_sha256=command_contract_sha256(
+            sequence,
+            volatile_roots=(result_path.parent,),
+        ),
         validated_gates=["core-function-atlas", "monolith-command-atlas"],
+        workspace_attestation={
+            "before": pre_attestation,
+            "after": post_attestation,
+        },
     )

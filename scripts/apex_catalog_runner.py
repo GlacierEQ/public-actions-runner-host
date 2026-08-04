@@ -11,6 +11,10 @@ import sys
 import zipfile
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import apex_pillar_runner as base
 
 BASE_TASKS = {
@@ -19,7 +23,18 @@ BASE_TASKS = {
     "test": "test",
     "audit": "audit",
 }
-MEDIA_SUFFIXES = {".aac", ".flac", ".m4a", ".mkv", ".mov", ".mp3", ".mp4", ".ogg", ".wav", ".webm"}
+MEDIA_SUFFIXES = {
+    ".aac",
+    ".flac",
+    ".m4a",
+    ".mkv",
+    ".mov",
+    ".mp3",
+    ".mp4",
+    ".ogg",
+    ".wav",
+    ".webm",
+}
 OFFICE_SUFFIXES = {".docx", ".odt", ".ods", ".odp", ".pptx", ".xlsx"}
 
 
@@ -41,15 +56,29 @@ def write_result(plan: dict, result_path: Path, status: str, **details) -> int:
     }
     result_path = result_path.resolve()
     result_path.parent.mkdir(parents=True, exist_ok=True)
-    result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    result_path.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     print(f"Action {plan.get('action') or plan.get('task')} finished with status {status}.")
     return 0 if status == "completed" else 2
 
 
-def bounded_process(command: list[str], cwd: Path, timeout: int) -> tuple[int | None, str, str]:
+def bounded_process(
+    command: list[str], cwd: Path, timeout: int
+) -> tuple[int | None, str, str]:
     try:
-        proc = subprocess.run(command, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout, check=False)
-        return proc.returncode, proc.stdout[-32_000:], ""
+        proc = subprocess.run(
+            command,
+            cwd=cwd,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=timeout,
+            check=False,
+            shell=False,
+        )
+        return proc.returncode, (proc.stdout or "")[-32_000:], ""
     except subprocess.TimeoutExpired as exc:
         output = exc.stdout if isinstance(exc.stdout, str) else ""
         return None, output[-32_000:], f"timeout after {timeout} seconds"
@@ -61,12 +90,20 @@ def media_queue(plan: dict, workspace: Path, result_path: Path) -> int:
     items = []
     for path in base.files(workspace):
         if path.suffix.lower() in MEDIA_SUFFIXES:
-            items.append({
-                "path": path.relative_to(workspace).as_posix(),
-                "bytes": path.stat().st_size,
-                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-            })
-    return write_result(plan, result_path, "completed", media_count=len(items), media=items)
+            items.append(
+                {
+                    "path": path.relative_to(workspace).as_posix(),
+                    "bytes": path.stat().st_size,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                }
+            )
+    return write_result(
+        plan,
+        result_path,
+        "completed",
+        media_count=len(items),
+        media=items,
+    )
 
 
 def pdf_analyze(plan: dict, workspace: Path, result_path: Path) -> int:
@@ -85,7 +122,13 @@ def pdf_analyze(plan: dict, workspace: Path, result_path: Path) -> int:
         documents.append(item)
         if not item["valid_header"]:
             invalid.append(item["path"])
-    status = "completed" if documents and not invalid else "blocked" if not documents else "failed"
+    status = (
+        "completed"
+        if documents and not invalid
+        else "blocked"
+        if not documents
+        else "failed"
+    )
     return write_result(
         plan,
         result_path,
@@ -114,7 +157,13 @@ def document_validate(plan: dict, workspace: Path, result_path: Path) -> int:
         documents.append(item)
         if not valid:
             invalid.append(item["path"])
-    status = "completed" if documents and not invalid else "blocked" if not documents else "failed"
+    status = (
+        "completed"
+        if documents and not invalid
+        else "blocked"
+        if not documents
+        else "failed"
+    )
     return write_result(
         plan,
         result_path,
@@ -132,9 +181,18 @@ def latex_compile(plan: dict, workspace: Path, result_path: Path) -> int:
     if not sources:
         return write_result(plan, result_path, "blocked", reason="No TeX source found")
     if not engine:
-        return write_result(plan, result_path, "blocked", reason="Tectonic or latexmk runtime is not installed")
+        return write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="Tectonic or latexmk runtime is not installed",
+        )
     source = sources[0]
-    command = [engine, source.name] if Path(engine).name == "tectonic" else [engine, "-pdf", "-interaction=nonstopmode", source.name]
+    command = (
+        [engine, source.name]
+        if Path(engine).name == "tectonic"
+        else [engine, "-pdf", "-interaction=nonstopmode", source.name]
+    )
     exit_code, output, error = bounded_process(command, source.parent, 1800)
     status = "completed" if exit_code == 0 and not error else "failed"
     return write_result(
@@ -154,10 +212,20 @@ def xcode_validate(plan: dict, workspace: Path, result_path: Path) -> int:
     projects = sorted(workspace.rglob("*.xcodeproj"))
     workspaces = sorted(workspace.rglob("*.xcworkspace"))
     if not xcodebuild:
-        return write_result(plan, result_path, "blocked", reason="xcodebuild requires a public macOS runner")
+        return write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="xcodebuild requires a public macOS runner",
+        )
     target = workspaces[0] if workspaces else projects[0] if projects else None
     if target is None:
-        return write_result(plan, result_path, "blocked", reason="No Xcode project or workspace found")
+        return write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="No Xcode project or workspace found",
+        )
     flag = "-workspace" if target.suffix == ".xcworkspace" else "-project"
     command = [xcodebuild, flag, str(target), "-list"]
     exit_code, output, error = bounded_process(command, workspace, 900)
@@ -235,7 +303,12 @@ def main() -> int:
         "whisperx": "WhisperX model runtime and a private media artifact reference",
         "railway": "RAILWAY_TOKEN, Railway CLI, and deployment approval",
     }
-    return write_result(plan, result_path, "blocked", reason=f"Adapter requires {requirements.get(adapter, 'a dedicated runtime contract')}")
+    return write_result(
+        plan,
+        result_path,
+        "blocked",
+        reason=f"Adapter requires {requirements.get(adapter, 'a dedicated runtime contract')}",
+    )
 
 
 if __name__ == "__main__":
