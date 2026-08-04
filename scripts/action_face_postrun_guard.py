@@ -1,4 +1,5 @@
 """Verify runner, workload, and result integrity before private publication."""
+
 from __future__ import annotations
 
 import argparse
