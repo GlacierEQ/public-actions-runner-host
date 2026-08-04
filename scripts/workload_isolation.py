@@ -13,6 +13,19 @@ from pathlib import Path
 JOB_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
 SAFE_EXTRA_ENV = {"APEX_RESOLVED_SOURCE_SHA"}
+FORBIDDEN_AMBIENT_ENV = {
+    "ACTIONS_ID_TOKEN_REQUEST_TOKEN",
+    "ACTIONS_RUNTIME_TOKEN",
+    "AKOS_POLICY_SHA256",
+    "APEX_CONTROL_TOKEN",
+    "APEX_PRIVATE_READ_TOKEN",
+    "APEX_RUNNER_APP_PRIVATE_KEY",
+    "GITHUB_ENV",
+    "GITHUB_OUTPUT",
+    "GITHUB_TOKEN",
+    "GH_PAT",
+}
+FORBIDDEN_AMBIENT_PREFIXES = ("ACTIONS_", "GITHUB_")
 
 
 class WorkloadIsolationError(RuntimeError):
@@ -70,6 +83,23 @@ def _secure_directory(path: Path) -> Path:
     return path
 
 
+def _assert_environment_is_capability_minimized(environment: Mapping[str, str]) -> None:
+    forbidden = sorted(
+        key
+        for key in environment
+        if key in FORBIDDEN_AMBIENT_ENV
+        or (
+            key not in SAFE_EXTRA_ENV
+            and key.startswith(FORBIDDEN_AMBIENT_PREFIXES)
+        )
+    )
+    if forbidden:
+        raise WorkloadIsolationError(
+            "forbidden ambient authority entered workload environment: "
+            + ", ".join(forbidden)
+        )
+
+
 def build_environment(
     result_path: Path,
     job_id: str,
@@ -122,6 +152,7 @@ def build_environment(
             )
         environment[key] = value
 
+    _assert_environment_is_capability_minimized(environment)
     return environment
 
 
