@@ -104,7 +104,10 @@ def test_action_face_builds_exact_immutable_plan(tmp_path: Path) -> None:
     assert result["task"] == "test"
 
 
-def test_action_face_rejects_mutable_operator_source(tmp_path: Path) -> None:
+@pytest.mark.parametrize("source_ref", ["main", SHA.upper()])
+def test_action_face_rejects_noncanonical_operator_source(
+    tmp_path: Path, source_ref: str
+) -> None:
     event = tmp_path / "event.json"
     event.write_text("{}\n", encoding="utf-8")
     with pytest.raises(SystemExit, match="full lowercase commit SHA"):
@@ -114,7 +117,7 @@ def test_action_face_rejects_mutable_operator_source(tmp_path: Path) -> None:
                 "job_id": "Operator01",
                 "pillar": "C",
                 "action": ACTION,
-                "source_ref": "main",
+                "source_ref": source_ref,
             },
         )
 
