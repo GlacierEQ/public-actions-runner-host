@@ -13,9 +13,14 @@ sys.path.insert(0, str(ROOT))
 from domains.analysis.adapters import monolith_estate_health
 from domains.code.adapters import monolith_atlas_validate
 from domains.docs.adapters import monolith_docs_validate
-from scripts import action_face_plan, apex_catalog_runner
+from scripts import action_face_plan, apex_catalog_runner, workload_isolation
 
 SHA = "a" * 40
+ATTESTATION = {
+    "resolved_source_sha": SHA,
+    "tracked_clean": True,
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+}
 
 
 def plan(action: str, pillar: str, adapter: str, task: str) -> dict:
@@ -26,7 +31,7 @@ def plan(action: str, pillar: str, adapter: str, task: str) -> dict:
         "adapter": adapter,
         "task": task,
         "source_repo": "GlacierEQ/monolith",
-        "source_ref": "main",
+        "source_ref": SHA,
         "target_repo": "GlacierEQ/monolith",
         "approval_id": "",
         "workflow_run_id": "1",
@@ -72,7 +77,7 @@ def test_action_face_plans_all_three_specialized_actions(tmp_path: Path) -> None
                 "job_id": f"Plan{pillar}Job01",
                 "pillar": pillar,
                 "action": action,
-                "source_ref": "main",
+                "source_ref": SHA,
             },
         )
         assert resolved["action"] == action
@@ -80,6 +85,30 @@ def test_action_face_plans_all_three_specialized_actions(tmp_path: Path) -> None
         assert resolved["task"] == task
         assert resolved["source_repo"] == "GlacierEQ/monolith"
         assert resolved["target_repo"] == "GlacierEQ/monolith"
+        assert resolved["source_ref"] == SHA
+
+
+def test_specialized_actions_reject_mutable_source_refs(tmp_path: Path) -> None:
+    event = tmp_path / "event.json"
+    event.write_text("{}\n", encoding="utf-8")
+    for pillar, action in (
+        ("C", "code.monolith.validate-atlases"),
+        ("B", "docs.monolith.validate-integrity"),
+        ("D", "analysis.monolith.estate-health"),
+    ):
+        with pytest.raises(
+            SystemExit,
+            match="requires a full lowercase commit SHA",
+        ):
+            action_face_plan.build_plan(
+                str(event),
+                {
+                    "job_id": f"Mutable{pillar}Job01",
+                    "pillar": pillar,
+                    "action": action,
+                    "source_ref": "main",
+                },
+            )
 
 
 def test_catalog_dispatch_is_bound_to_exact_action(
@@ -124,6 +153,49 @@ def test_catalog_dispatch_is_bound_to_exact_action(
     )
 
 
+def test_workload_environment_removes_ambient_runner_authority(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    protected = {
+        "GITHUB_TOKEN": "github-secret",
+        "GITHUB_OUTPUT": "/tmp/github-output",
+        "GITHUB_ENV": "/tmp/github-env",
+        "ACTIONS_RUNTIME_TOKEN": "actions-secret",
+        "ACTIONS_ID_TOKEN_REQUEST_TOKEN": "oidc-secret",
+        "APEX_CONTROL_TOKEN": "control-secret",
+        "APEX_RUNNER_APP_PRIVATE_KEY": "private-key",
+        "AKOS_POLICY_SHA256": "b" * 64,
+    }
+    for key, value in protected.items():
+        monkeypatch.setenv(key, value)
+    monkeypatch.setenv("HOME", "/home/runner")
+
+    environment = workload_isolation.build_environment(
+        tmp_path / "results" / "result.json",
+        "IsolationJob01",
+        extra={"APEX_RESOLVED_SOURCE_SHA": SHA},
+    )
+
+    assert environment["APEX_RESOLVED_SOURCE_SHA"] == SHA
+    assert environment["HOME"] != "/home/runner"
+    assert environment["PIP_CONFIG_FILE"] == "/dev/null"
+    assert environment["NPM_CONFIG_USERCONFIG"] == "/dev/null"
+    assert all(key not in environment for key in protected)
+    assert "GITHUB_OUTPUT" not in environment
+    assert "GITHUB_ENV" not in environment
+
+    with pytest.raises(
+        workload_isolation.WorkloadIsolationError,
+        match="extra workload environment key is forbidden",
+    ):
+        workload_isolation.build_environment(
+            tmp_path / "results" / "other.json",
+            "IsolationJob02",
+            extra={"GITHUB_TOKEN": "forbidden"},
+        )
+
+
 def test_code_runner_reproduces_both_failed_monolith_gates(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -132,6 +204,11 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     write_required_atlas_files(workspace)
     result_path = tmp_path / "result.json"
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
+    monkeypatch.setattr(
+        monolith_atlas_validate,
+        "attest_workspace",
+        lambda *_: dict(ATTESTATION),
+    )
     monkeypatch.setattr(
         monolith_atlas_validate.subprocess,
         "run",
@@ -151,12 +228,58 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
         "monolith-command-atlas",
     ]
     assert len(result["steps"]) == 11
+    assert result["workspace_attestation"] == {
+        "before": ATTESTATION,
+        "after": ATTESTATION,
+    }
     commands = [step["command"] for step in result["steps"]]
     assert any("scripts/validate_function_atlas.py" in command for command in commands)
     assert any(
         "scripts/build_monolith_command_atlas.py" in command for command in commands
     )
     assert any("tests/test_query_monolith.py" in command for command in commands)
+
+
+def test_code_runner_fails_when_private_source_mutates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    write_required_atlas_files(workspace)
+    result_path = tmp_path / "result.json"
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
+    attestations: list[object] = [
+        dict(ATTESTATION),
+        workload_isolation.WorkloadIsolationError(
+            "tracked workload files changed during execution"
+        ),
+    ]
+
+    def attest(*_: object) -> dict[str, object]:
+        value = attestations.pop(0)
+        if isinstance(value, Exception):
+            raise value
+        assert isinstance(value, dict)
+        return value
+
+    monkeypatch.setattr(monolith_atlas_validate, "attest_workspace", attest)
+    monkeypatch.setattr(
+        monolith_atlas_validate.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="ok\n"),
+    )
+
+    value = monolith_atlas_validate.run(
+        plan("code.monolith.validate-atlases", "C", "test", "test"),
+        workspace,
+        result_path,
+    )
+    assert value == 2
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["workspace_attestation"]["after"] is None
+    assert result["steps"][-1]["command"] == ["workload-attestation"]
+    assert "tracked workload files changed" in result["steps"][-1]["reason"]
 
 
 def test_docs_runner_detects_private_structure_without_leaking_targets(
