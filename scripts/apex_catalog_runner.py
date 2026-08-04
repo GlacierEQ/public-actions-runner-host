@@ -174,6 +174,25 @@ def xcode_validate(plan: dict, workspace: Path, result_path: Path) -> int:
     )
 
 
+def run_registered_specialization(
+    plan: dict, workspace: Path, result_path: Path
+) -> int | None:
+    action = plan.get("action")
+    if action == "code.monolith.validate-atlases":
+        from domains.code.adapters.monolith_atlas_validate import run
+
+        return run(plan, workspace, result_path)
+    if action == "docs.monolith.validate-integrity":
+        from domains.docs.adapters.monolith_docs_validate import run
+
+        return run(plan, workspace, result_path)
+    if action == "analysis.monolith.estate-health":
+        from domains.analysis.adapters.monolith_estate_health import run
+
+        return run(plan, workspace, result_path)
+    return None
+
+
 def main() -> int:
     if len(sys.argv) != 4:
         raise SystemExit("usage: apex_catalog_runner.py PLAN WORKSPACE RESULT")
@@ -182,6 +201,10 @@ def main() -> int:
     adapter = plan.get("adapter")
     if not adapter:
         return base.execute(plan, workspace, result_path)
+
+    specialized = run_registered_specialization(plan, workspace, result_path)
+    if specialized is not None:
+        return specialized
 
     task = BASE_TASKS.get(adapter)
     if task:
