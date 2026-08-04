@@ -71,6 +71,13 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "blocked",
             reason="resolved source SHA is unavailable or invalid",
         )
+    if resolved_sha != plan.get("source_ref"):
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="resolved source SHA does not match requested source_ref",
+        )
 
     missing = [relative for relative in REQUIRED_PATHS if not (workspace / relative).is_file()]
     if missing:
@@ -170,13 +177,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         post_attestation = attest_workspace(workspace, resolved_sha)
     except WorkloadIsolationError as error:
         status = "failed"
-        steps.append(
-            {
-                "command": ["workload-attestation"],
-                "status": "failed",
-                "reason": str(error),
-            }
-        )
+        steps.append({"command": ["workload-attestation"], "status": "failed", "reason": str(error)})
 
     return catalog.write_result(
         plan,
