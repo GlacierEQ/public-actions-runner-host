@@ -250,3 +250,29 @@ def test_adapter_blocks_cross_repository_plan(
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "blocked"
     assert result["reason"] == "target_repo identity mismatch"
+
+
+def test_adapter_blocks_symlinked_required_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    write_required_files(workspace)
+    outside = tmp_path / "outside.py"
+    outside.write_text("raise SystemExit('outside executed')\n", encoding="utf-8")
+    relative = "genius/shared/integrations/operator_code_gateway.py"
+    candidate = workspace / relative
+    candidate.unlink()
+    candidate.symlink_to(outside)
+    result_path = tmp_path / "result.json"
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
+
+    assert fileboss_operator_code_validate.run(
+        build_plan(), workspace, result_path
+    ) == 2
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "blocked"
+    assert result["reason"] == (
+        "required Operator Code bridge paths are not regular contained files: "
+        + relative
+    )
