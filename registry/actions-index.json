@@ -16,6 +16,21 @@
       "status": "active",
       "catalog": "domains/code/actions.json"
     },
+    "code.monolith.validate-legal-live-reconciliation": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
+    "code.monolith.validate-company-engineered-registry": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
+    "code.casey-legal-mcp.validate-v2": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
     "docs.monolith.validate-integrity": {
       "domain": "docs",
       "status": "active",
@@ -40,6 +55,21 @@
     },
     "monolith-validate-atlases": {
       "canonicalAction": "code.monolith.validate-atlases",
+      "status": "temporary",
+      "removeAfter": "canonical-action-face-ingress-verified"
+    },
+    "monolith-validate-legal-live-reconciliation": {
+      "canonicalAction": "code.monolith.validate-legal-live-reconciliation",
+      "status": "temporary",
+      "removeAfter": "canonical-action-face-ingress-verified"
+    },
+    "monolith-validate-company-engineered-registry": {
+      "canonicalAction": "code.monolith.validate-company-engineered-registry",
+      "status": "temporary",
+      "removeAfter": "canonical-action-face-ingress-verified"
+    },
+    "casey-legal-mcp-validate-v2": {
+      "canonicalAction": "code.casey-legal-mcp.validate-v2",
       "status": "temporary",
       "removeAfter": "canonical-action-face-ingress-verified"
     },
