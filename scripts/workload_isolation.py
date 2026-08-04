@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Build capability-minimized workload environments and attest private checkouts."""
 
 from __future__ import annotations
@@ -8,8 +7,8 @@ import json
 import os
 import re
 import subprocess
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Mapping, Sequence
 
 JOB_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -90,8 +89,7 @@ def _git(workspace: Path, *args: str) -> str:
     process = subprocess.run(
         ["git", "-C", str(workspace), *args],
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         timeout=30,
         check=False,
         shell=False,
