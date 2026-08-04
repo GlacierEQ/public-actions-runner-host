@@ -11,8 +11,15 @@ import subprocess
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import apex_catalog_runner as catalog
 from action_face_selftest import run as run_selftest
+from domains.code.adapters.tool_system_validate import (
+    run as run_tool_system_validate,
+)
 from master_strand_extinction import ExtinctionError, run as run_master_strand
 from monolith_evolution_adapter import run as run_monolith_evolution
 from monolith_ip_governance_adapter import run as run_monolith_ip_governance
@@ -310,6 +317,8 @@ def main() -> int:
         return python_ci(plan, workspace, result_path)
     if adapter == "akos-echo-policy-ci":
         return akos_echo_policy_ci(plan, workspace, result_path)
+    if adapter == "tool-system-validate":
+        return run_tool_system_validate(plan, workspace, result_path)
     if adapter == "monolith-evolution":
         return run_monolith_evolution(plan, workspace, result_path)
     if adapter == "monolith-ip-governance":

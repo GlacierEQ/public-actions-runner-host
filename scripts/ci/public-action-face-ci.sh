@@ -10,11 +10,15 @@ python -m pip install \
 python -m json.tool config/action-face-actions.json >/dev/null
 
 ruff check \
+  domains/code/adapters/tool_system_validate.py \
   scripts/monolith_evolution_adapter.py \
-  tests/test_monolith_evolution_adapter.py
+  tests/test_monolith_evolution_adapter.py \
+  tests/test_tool_system_validate_adapter.py
 ruff format --check \
+  domains/code/adapters/tool_system_validate.py \
   scripts/monolith_evolution_adapter.py \
-  tests/test_monolith_evolution_adapter.py
+  tests/test_monolith_evolution_adapter.py \
+  tests/test_tool_system_validate_adapter.py
 
 # These established files contain pre-existing style debt. Enforce correctness
 # rules while explicitly excluding only the known legacy executable/import rules.

@@ -15,7 +15,9 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DOMAIN = re.compile(r"^[a-z][a-z0-9-]{1,31}$")
-ACTION = re.compile(r"^[a-z][a-z0-9-]{1,31}\.[a-z][a-z0-9-]{1,63}$")
+ACTION = re.compile(
+    r"^[a-z][a-z0-9-]{1,31}(?:\.[a-z][a-z0-9-]{0,63})+$"
+)
 ADAPTER = re.compile(r"^[a-z][a-z0-9_]{1,63}$")
 PROFILE = re.compile(r"^[a-z][a-z0-9-]{1,63}$")
 REPOSITORY = re.compile(r"^GlacierEQ/[A-Za-z0-9_.-]{1,100}$")
@@ -259,14 +261,13 @@ def validate_registry(root: Path = ROOT) -> dict[str, dict[str, Any]]:
         token_path = safe_repository_path(
             root, str(contract["tokenProfiles"]), must_exist=True
         )
-        job_schema_path = safe_repository_path(
+        default_job_schema_path = safe_repository_path(
             root, str(contract["jobSchema"]), must_exist=True
         )
-        result_schema_path = safe_repository_path(
+        default_result_schema_path = safe_repository_path(
             root, str(contract["resultSchema"]), must_exist=True
         )
-        job_schema = _load_json(job_schema_path)
-        result_schema = _load_json(result_schema_path)
+        schema_root = catalog_path.parent / "schemas"
 
         catalog = _load_json(catalog_path)
         if catalog.get("schema_version") != "1.0" or catalog.get("domain") != domain_name:
@@ -370,6 +371,26 @@ def validate_registry(root: Path = ROOT) -> dict[str, dict[str, Any]]:
             ):
                 raise RegistryError(f"action {action_name} concurrency key is invalid")
 
+            action_job_schema_path = safe_repository_path(
+                root,
+                str(action.get("jobSchemaPath", contract["jobSchema"])),
+                must_exist=True,
+            )
+            action_result_schema_path = safe_repository_path(
+                root,
+                str(action.get("resultSchemaPath", contract["resultSchema"])),
+                must_exist=True,
+            )
+            for schema_path in (action_job_schema_path, action_result_schema_path):
+                try:
+                    schema_path.resolve().relative_to(schema_root.resolve())
+                except ValueError as error:
+                    raise RegistryError(
+                        f"action {action_name} schema escapes its domain schema root"
+                    ) from error
+
+            job_schema = _load_json(action_job_schema_path)
+            result_schema = _load_json(action_result_schema_path)
             validate_schema_identity(
                 job_schema,
                 domain_name=domain_name,

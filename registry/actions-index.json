@@ -5,6 +5,11 @@
       "domain": "code",
       "status": "active",
       "catalog": "domains/code/actions.json"
+    },
+    "code.tool-system.validate": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
     }
   },
   "aliases": {
@@ -12,6 +17,11 @@
       "canonicalAction": "code.validate-governance",
       "status": "temporary",
       "removeAfter": "verified-private-domain-run"
+    },
+    "tool-system-validate": {
+      "canonicalAction": "code.tool-system.validate",
+      "status": "temporary",
+      "removeAfter": "canonical-action-face-ingress-verified"
     }
   }
 }

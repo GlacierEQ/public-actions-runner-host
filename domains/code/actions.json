@@ -17,11 +17,28 @@
       "legacyAliases": [
         "monolith-ip-governance"
       ]
+    },
+    "code.tool-system.validate": {
+      "status": "active",
+      "adapter": "tool_system_validate",
+      "adapterPath": "domains/code/adapters/tool_system_validate.py",
+      "targetRepository": "GlacierEQ/computer-user",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "tool-system-job-v1",
+      "jobSchemaPath": "domains/code/schemas/tool-system-job.schema.json",
+      "resultSchema": "tool-system-result-v1",
+      "resultSchemaPath": "domains/code/schemas/tool-system-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": [
+        "tool-system-validate"
+      ]
     }
   },
   "plannedActions": [
     "code.audit",
-    "code.test",
     "code.security-scan",
     "code.patch-branch",
     "code.build-release"

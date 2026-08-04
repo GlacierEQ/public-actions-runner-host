@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glaciereq.dev/schemas/code/tool-system-result-v1.json",
+  "title": "Tool System Validation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_id",
+    "pillar",
+    "action",
+    "adapter",
+    "task",
+    "source_repo",
+    "source_ref",
+    "expected_source_sha",
+    "resolved_source_sha",
+    "target_repo",
+    "provenance",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "job_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"},
+    "pillar": {"const": "C"},
+    "action": {"const": "code.tool-system.validate"},
+    "adapter": {"const": "tool-system-validate"},
+    "task": {"const": "test"},
+    "source_repo": {"const": "GlacierEQ/computer-user"},
+    "source_ref": {"type": "string", "maxLength": 128},
+    "expected_source_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+    "resolved_source_sha": {"type": "string", "pattern": "^(?:[0-9a-f]{40})?$"},
+    "target_repo": {"const": "GlacierEQ/computer-user"},
+    "provenance": {"type": "object"},
+    "status": {"enum": ["completed", "failed", "blocked"]},
+    "steps": {"type": "array", "maxItems": 8},
+    "command_contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reason": {"type": "string", "maxLength": 2048}
+  }
+}
