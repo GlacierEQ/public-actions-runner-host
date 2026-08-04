@@ -250,6 +250,18 @@ def run_registered_specialization(
         from domains.code.adapters.monolith_atlas_validate import run
 
         return run(plan, workspace, result_path)
+    if action == "code.monolith.validate-legal-live-reconciliation":
+        from domains.code.adapters.monolith_legal_live_validate import run
+
+        return run(plan, workspace, result_path)
+    if action == "code.monolith.validate-company-engineered-registry":
+        from domains.code.adapters.monolith_company_registry_validate import run
+
+        return run(plan, workspace, result_path)
+    if action == "code.casey-legal-mcp.validate-v2":
+        from domains.code.adapters.casey_legal_mcp_validate import run
+
+        return run(plan, workspace, result_path)
     if action == "docs.monolith.validate-integrity":
         from domains.docs.adapters.monolith_docs_validate import run
 
