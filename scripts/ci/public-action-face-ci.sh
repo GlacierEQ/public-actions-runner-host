@@ -30,6 +30,7 @@ OWNED_FILES=(
   scripts/workload_isolation.py
   tests/conftest.py
   tests/test_apex_job_ingress_exclusivity.py
+  tests/test_bounded_file_receipts.py
   tests/test_monolith_evolution_adapter.py
   tests/test_tool_system_validate_adapter.py
   tests/test_specialized_monolith_runners.py
@@ -46,6 +47,7 @@ FORMAT_FILES=(
   scripts/workload_isolation.py
   tests/conftest.py
   tests/test_apex_job_ingress_exclusivity.py
+  tests/test_bounded_file_receipts.py
   tests/test_monolith_evolution_adapter.py
   tests/test_tool_system_validate_adapter.py
   tests/test_specialized_monolith_runners.py
