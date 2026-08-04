@@ -9,7 +9,7 @@
     "job_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"},
     "pillar": {"const": "C"},
     "action": {"const": "code.fileboss.validate-operator-code-bridge"},
-    "adapter": {"const": "fileboss_operator_code_validate"},
+    "adapter": {"const": "fileboss-operator-code-validate"},
     "task": {"const": "test"},
     "source_repo": {"const": "GlacierEQ/FILEBOSS"},
     "source_ref": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
