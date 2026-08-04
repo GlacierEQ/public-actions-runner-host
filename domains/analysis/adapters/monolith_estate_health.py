@@ -139,7 +139,11 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             priority = str(item.get("priority", "unknown"))
             priority_counts[priority] = priority_counts.get(priority, 0) + 1
 
-    status = "completed" if catalog_entries > 0 and inspected <= catalog_entries else "failed"
+    status = (
+        "completed"
+        if catalog_entries > 0 and inspected <= catalog_entries
+        else "failed"
+    )
     return catalog.write_result(
         plan,
         result_path,
