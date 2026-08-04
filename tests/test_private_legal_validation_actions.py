@@ -69,7 +69,25 @@ def write_files(workspace: Path, required: tuple[str, ...]) -> None:
     for relative in required:
         path = workspace / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text("{}\n" if path.suffix == ".json" else "# fixture\n", encoding="utf-8")
+        if path.suffix == ".json":
+            content = "{}\n"
+        elif path.suffix == ".py":
+            content = "pass\n"
+        elif path.suffix == ".js":
+            content = "export {};\n"
+        else:
+            content = "# fixture\n"
+        path.write_text(content, encoding="utf-8")
+
+
+def assert_run_contract(kwargs: dict, workspace: Path) -> None:
+    assert kwargs["cwd"] == workspace
+    assert kwargs["text"] is True
+    assert kwargs["stdout"] is not None
+    assert kwargs["stderr"] is not None
+    assert kwargs["check"] is False
+    assert kwargs["shell"] is False
+    assert kwargs["env"] == {}
 
 
 def test_domain_registry_resolves_all_three_actions() -> None:
@@ -122,14 +140,28 @@ def test_actions_reject_mutable_refs(tmp_path: Path) -> None:
 
 def test_catalog_dispatch_is_exact(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
-    monkeypatch.setattr(monolith_legal_live_validate, "run", lambda *_: calls.append("legal") or 0)
-    monkeypatch.setattr(monolith_company_registry_validate, "run", lambda *_: calls.append("company") or 0)
-    monkeypatch.setattr(casey_legal_mcp_validate, "run", lambda *_: calls.append("mcp") or 0)
+    monkeypatch.setattr(
+        monolith_legal_live_validate,
+        "run",
+        lambda *_: calls.append("legal") or 0,
+    )
+    monkeypatch.setattr(
+        monolith_company_registry_validate,
+        "run",
+        lambda *_: calls.append("company") or 0,
+    )
+    monkeypatch.setattr(
+        casey_legal_mcp_validate,
+        "run",
+        lambda *_: calls.append("mcp") or 0,
+    )
 
     expected = ("legal", "company", "mcp")
     for (action, adapter, repository), marker in zip(ACTIONS, expected, strict=True):
         assert apex_catalog_runner.run_registered_specialization(
-            build_plan(action, adapter, repository), Path("workspace"), Path("result.json")
+            build_plan(action, adapter, repository),
+            Path("workspace"),
+            Path("result.json"),
         ) == 0
         assert calls[-1] == marker
 
@@ -142,13 +174,26 @@ def test_monolith_legal_adapter_runs_fixed_commands(
     write_files(workspace, monolith_legal_live_validate.REQUIRED_PATHS)
     result_path = tmp_path / "result.json"
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
-    monkeypatch.setattr(monolith_legal_live_validate, "attest_workspace", lambda *_: dict(ATTESTATION))
-    monkeypatch.setattr(monolith_legal_live_validate, "build_environment", lambda *_: {})
     monkeypatch.setattr(
-        monolith_legal_live_validate.subprocess,
-        "run",
-        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="ok\n"),
+        monolith_legal_live_validate,
+        "attest_workspace",
+        lambda *_: dict(ATTESTATION),
     )
+    monkeypatch.setattr(
+        monolith_legal_live_validate,
+        "build_environment",
+        lambda *_: {},
+    )
+    expected = monolith_legal_live_validate.commands()
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], **kwargs):
+        assert command == expected[len(calls)]
+        assert_run_contract(kwargs, workspace)
+        calls.append(command)
+        return SimpleNamespace(returncode=0, stdout="ok\n")
+
+    monkeypatch.setattr(monolith_legal_live_validate.subprocess, "run", fake_run)
 
     value = monolith_legal_live_validate.run(
         build_plan(ACTIONS[0][0], ACTIONS[0][1], ACTIONS[0][2]),
@@ -156,6 +201,7 @@ def test_monolith_legal_adapter_runs_fixed_commands(
         result_path,
     )
     assert value == 0
+    assert calls == expected
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "completed"
     assert len(result["steps"]) == 3
@@ -174,13 +220,26 @@ def test_company_adapter_runs_offline_fixed_commands(
     write_files(workspace, monolith_company_registry_validate.REQUIRED_PATHS)
     result_path = tmp_path / "result.json"
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
-    monkeypatch.setattr(monolith_company_registry_validate, "attest_workspace", lambda *_: dict(ATTESTATION))
-    monkeypatch.setattr(monolith_company_registry_validate, "build_environment", lambda *_: {})
     monkeypatch.setattr(
-        monolith_company_registry_validate.subprocess,
-        "run",
-        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="ok\n"),
+        monolith_company_registry_validate,
+        "attest_workspace",
+        lambda *_: dict(ATTESTATION),
     )
+    monkeypatch.setattr(
+        monolith_company_registry_validate,
+        "build_environment",
+        lambda *_: {},
+    )
+    expected = monolith_company_registry_validate.commands()
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], **kwargs):
+        assert command == expected[len(calls)]
+        assert_run_contract(kwargs, workspace)
+        calls.append(command)
+        return SimpleNamespace(returncode=0, stdout="ok\n")
+
+    monkeypatch.setattr(monolith_company_registry_validate.subprocess, "run", fake_run)
 
     value = monolith_company_registry_validate.run(
         build_plan(ACTIONS[1][0], ACTIONS[1][1], ACTIONS[1][2]),
@@ -188,6 +247,7 @@ def test_company_adapter_runs_offline_fixed_commands(
         result_path,
     )
     assert value == 0
+    assert calls == expected
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "completed"
     assert len(result["steps"]) == 2
@@ -203,16 +263,33 @@ def test_casey_mcp_adapter_requires_node_20_and_runs_policy_tests(
     write_files(workspace, casey_legal_mcp_validate.REQUIRED_PATHS)
     result_path = tmp_path / "result.json"
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
-    monkeypatch.setattr(casey_legal_mcp_validate, "attest_workspace", lambda *_: dict(ATTESTATION))
-    monkeypatch.setattr(casey_legal_mcp_validate, "build_environment", lambda *_: {})
-    monkeypatch.setattr(casey_legal_mcp_validate.shutil, "which", lambda _: "/usr/bin/node")
-
-    outputs = iter(("v20.19.0\n", "", "", "12 tests passed\n"))
     monkeypatch.setattr(
-        casey_legal_mcp_validate.subprocess,
-        "run",
-        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=next(outputs)),
+        casey_legal_mcp_validate,
+        "attest_workspace",
+        lambda *_: dict(ATTESTATION),
     )
+    monkeypatch.setattr(
+        casey_legal_mcp_validate,
+        "build_environment",
+        lambda *_: {},
+    )
+    monkeypatch.setattr(
+        casey_legal_mcp_validate.shutil,
+        "which",
+        lambda _: "/usr/bin/node",
+    )
+
+    expected = casey_legal_mcp_validate.commands("/usr/bin/node")
+    outputs = iter(("v20.19.0\n", "", "", "12 tests passed\n"))
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], **kwargs):
+        assert command == expected[len(calls)]
+        assert_run_contract(kwargs, workspace)
+        calls.append(command)
+        return SimpleNamespace(returncode=0, stdout=next(outputs))
+
+    monkeypatch.setattr(casey_legal_mcp_validate.subprocess, "run", fake_run)
 
     value = casey_legal_mcp_validate.run(
         build_plan(ACTIONS[2][0], ACTIONS[2][1], ACTIONS[2][2]),
@@ -220,10 +297,59 @@ def test_casey_mcp_adapter_requires_node_20_and_runs_policy_tests(
         result_path,
     )
     assert value == 0
+    assert calls == expected
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "completed"
     assert result["runtime"] == {"node_major": 20}
     assert len(result["steps"]) == 4
+
+
+def test_adapter_failure_stops_sequence_and_records_failed_step(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    write_files(workspace, monolith_legal_live_validate.REQUIRED_PATHS)
+    result_path = tmp_path / "result.json"
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
+    monkeypatch.setattr(
+        monolith_legal_live_validate,
+        "attest_workspace",
+        lambda *_: dict(ATTESTATION),
+    )
+    monkeypatch.setattr(
+        monolith_legal_live_validate,
+        "build_environment",
+        lambda *_: {},
+    )
+    expected = monolith_legal_live_validate.commands()
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], **kwargs):
+        assert command == expected[0]
+        assert_run_contract(kwargs, workspace)
+        calls.append(command)
+        return SimpleNamespace(returncode=7, stdout="validation failed\n")
+
+    monkeypatch.setattr(monolith_legal_live_validate.subprocess, "run", fake_run)
+
+    assert monolith_legal_live_validate.run(
+        build_plan(ACTIONS[0][0], ACTIONS[0][1], ACTIONS[0][2]),
+        workspace,
+        result_path,
+    ) == 2
+    assert calls == expected[:1]
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["steps"] == [
+        {
+            "command": expected[0],
+            "exit_code": 7,
+            "output_sha256": result["steps"][0]["output_sha256"],
+            "output_tail": "validation failed\n",
+            "status": "failed",
+        }
+    ]
 
 
 @pytest.mark.parametrize(
@@ -250,10 +376,13 @@ def test_resolved_sha_must_equal_requested_source_ref(
     assert result["reason"] == "resolved source SHA does not match requested source_ref"
 
 
-def test_cross_bound_plan_is_blocked(tmp_path: Path) -> None:
+def test_cross_bound_plan_is_blocked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     result_path = tmp_path / "result.json"
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SHA)
     bad = build_plan(ACTIONS[2][0], ACTIONS[2][1], ACTIONS[2][2])
     bad["target_repo"] = "GlacierEQ/monolith"
     assert casey_legal_mcp_validate.run(bad, workspace, result_path) == 2
