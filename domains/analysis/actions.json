@@ -4,7 +4,7 @@
   "actions": {
     "analysis.monolith.estate-health": {
       "status": "active",
-      "adapter": "monolith_evolution",
+      "adapter": "audit",
       "adapterPath": "domains/analysis/adapters/monolith_estate_health.py",
       "targetRepository": "GlacierEQ/monolith",
       "tokenProfile": "private-source-read",
