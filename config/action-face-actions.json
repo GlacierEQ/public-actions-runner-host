@@ -4,167 +4,25 @@
   "execution_plane": "GlacierEQ/public-actions-runner-host",
   "bootstrap_execution_plane": "GlacierEQ/clonezone",
   "actions": [
-    {
-      "pillar": "C",
-      "action": "apex-verification",
-      "source_event": "apex-verification",
-      "target_repo": "GlacierEQ/mastermind",
-      "legacy_event": "apex-verification",
-      "adapter": "apex-verify",
-      "gate": "standard"
-    },
-    {
-      "pillar": "C",
-      "action": "casebrain-validation",
-      "source_event": "casebrain-validation",
-      "target_repo": "GlacierEQ/AEON-777",
-      "legacy_event": "casebrain-validation",
-      "adapter": "node-ci",
-      "gate": "standard"
-    },
-    {
-      "pillar": "C",
-      "action": "akos-operational-cognition-ci",
-      "source_event": "coding-deploy",
-      "target_repo": "GlacierEQ/AKOS",
-      "legacy_event": "akos-operational-cognition-ci",
-      "adapter": "test",
-      "gate": "standard"
-    },
-    {
-      "pillar": "C",
-      "action": "akos-echo-policy-ci",
-      "source_event": "coding-deploy",
-      "target_repo": "GlacierEQ/FILEBOSS",
-      "legacy_event": "akos-echo-policy-ci",
-      "adapter": "akos-echo-policy-ci",
-      "gate": "standard"
-    },
-    {
-      "pillar": "C",
-      "action": "master-grove-verify",
-      "source_event": "coding-deploy",
-      "target_repo": "GlacierEQ/Z-BACKUP-aspen-grove-operator-v7",
-      "legacy_event": "master-grove-verify",
-      "adapter": "node-ci",
-      "gate": "standard"
-    },
-    {
-      "pillar": "H",
-      "action": "anthropic-agent-coordinator-ci",
-      "source_event": "orchestrate",
-      "target_repo": "GlacierEQ/anthropic-agent-coordinator",
-      "legacy_event": "anthropic-agent-coordinator-ci",
-      "adapter": "python-ci",
-      "gate": "elevated",
-      "approval_required": false
-    },
-    {
-      "pillar": "F",
-      "action": "master-strand-inventory",
-      "source_event": "infra-gateway",
-      "target_repo": "GlacierEQ/public-actions-runner-host",
-      "legacy_event": "master-strand-inventory",
-      "adapter": "master-strand-inventory",
-      "gate": "elevated",
-      "approval_required": false
-    },
-    {
-      "pillar": "F",
-      "action": "master-strand-extinction",
-      "source_event": "infra-gateway",
-      "target_repo": "GlacierEQ/public-actions-runner-host",
-      "legacy_event": "master-strand-extinction",
-      "adapter": "master-strand-extinction",
-      "gate": "destructive-explicit",
-      "approval_required": true
-    },
-    {
-      "pillar": "F",
-      "action": "gateway-ci",
-      "source_event": "gateway-ci",
-      "target_repo": "GlacierEQ/Pro-Gateway",
-      "legacy_event": "gateway-ci",
-      "adapter": "python-ci",
-      "gate": "standard"
-    },
-    {
-      "pillar": "C",
-      "action": "comet-agent-ci",
-      "source_event": "comet-agent-ci",
-      "target_repo": "GlacierEQ/Pro-comet-agent",
-      "legacy_event": "comet-agent-ci",
-      "adapter": "node-ci",
-      "gate": "standard"
-    },
-    {
-      "pillar": "F",
-      "action": "action-face-canary",
-      "source_event": "action-face-canary",
-      "target_repo": "GlacierEQ/public-actions-runner-host",
-      "legacy_event": "action-face-canary",
-      "adapter": "action-face-selftest",
-      "gate": "standard"
-    },
-    {
-      "pillar": "D",
-      "action": "monolith-evolution-map",
-      "source_event": "evolution-optimize",
-      "target_repo": "GlacierEQ/monolith",
-      "legacy_event": "monolith-evolution-map",
-      "adapter": "monolith-evolution",
-      "gate": "standard",
-      "approval_required": false
-    },
-    {
-      "pillar": "D",
-      "action": "monolith-ip-governance",
-      "source_event": "evolution-optimize",
-      "target_repo": "GlacierEQ/monolith",
-      "legacy_event": "monolith-ip-governance",
-      "adapter": "monolith-ip-governance",
-      "gate": "standard",
-      "approval_required": false
-    },
-    {
-      "pillar": "C",
-      "action": "code.tool-system.validate",
-      "source_event": "coding-deploy",
-      "target_repo": "GlacierEQ/computer-user",
-      "legacy_event": "tool-system-validate",
-      "adapter": "tool-system-validate",
-      "gate": "standard",
-      "approval_required": false
-    },
-    {
-      "pillar": "C",
-      "action": "code.monolith.validate-atlases",
-      "source_event": "coding-deploy",
-      "target_repo": "GlacierEQ/monolith",
-      "legacy_event": "monolith-validate-atlases",
-      "adapter": "test",
-      "gate": "standard",
-      "approval_required": false
-    },
-    {
-      "pillar": "B",
-      "action": "docs.monolith.validate-integrity",
-      "source_event": "document-processing",
-      "target_repo": "GlacierEQ/monolith",
-      "legacy_event": "monolith-docs-integrity",
-      "adapter": "validate",
-      "gate": "standard",
-      "approval_required": false
-    },
-    {
-      "pillar": "D",
-      "action": "analysis.monolith.estate-health",
-      "source_event": "evolution-optimize",
-      "target_repo": "GlacierEQ/monolith",
-      "legacy_event": "monolith-estate-health",
-      "adapter": "audit",
-      "gate": "standard",
-      "approval_required": false
-    }
+    {"pillar":"C","action":"apex-verification","source_event":"apex-verification","target_repo":"GlacierEQ/mastermind","legacy_event":"apex-verification","adapter":"apex-verify","gate":"standard"},
+    {"pillar":"C","action":"casebrain-validation","source_event":"casebrain-validation","target_repo":"GlacierEQ/AEON-777","legacy_event":"casebrain-validation","adapter":"node-ci","gate":"standard"},
+    {"pillar":"C","action":"akos-operational-cognition-ci","source_event":"coding-deploy","target_repo":"GlacierEQ/AKOS","legacy_event":"akos-operational-cognition-ci","adapter":"test","gate":"standard"},
+    {"pillar":"C","action":"akos-echo-policy-ci","source_event":"coding-deploy","target_repo":"GlacierEQ/FILEBOSS","legacy_event":"akos-echo-policy-ci","adapter":"akos-echo-policy-ci","gate":"standard"},
+    {"pillar":"C","action":"master-grove-verify","source_event":"coding-deploy","target_repo":"GlacierEQ/Z-BACKUP-aspen-grove-operator-v7","legacy_event":"master-grove-verify","adapter":"node-ci","gate":"standard"},
+    {"pillar":"H","action":"anthropic-agent-coordinator-ci","source_event":"orchestrate","target_repo":"GlacierEQ/anthropic-agent-coordinator","legacy_event":"anthropic-agent-coordinator-ci","adapter":"python-ci","gate":"elevated","approval_required":false},
+    {"pillar":"F","action":"master-strand-inventory","source_event":"infra-gateway","target_repo":"GlacierEQ/public-actions-runner-host","legacy_event":"master-strand-inventory","adapter":"master-strand-inventory","gate":"elevated","approval_required":false},
+    {"pillar":"F","action":"master-strand-extinction","source_event":"infra-gateway","target_repo":"GlacierEQ/public-actions-runner-host","legacy_event":"master-strand-extinction","adapter":"master-strand-extinction","gate":"destructive-explicit","approval_required":true},
+    {"pillar":"F","action":"gateway-ci","source_event":"gateway-ci","target_repo":"GlacierEQ/Pro-Gateway","legacy_event":"gateway-ci","adapter":"python-ci","gate":"standard"},
+    {"pillar":"C","action":"comet-agent-ci","source_event":"comet-agent-ci","target_repo":"GlacierEQ/Pro-comet-agent","legacy_event":"comet-agent-ci","adapter":"node-ci","gate":"standard"},
+    {"pillar":"F","action":"action-face-canary","source_event":"action-face-canary","target_repo":"GlacierEQ/public-actions-runner-host","legacy_event":"action-face-canary","adapter":"action-face-selftest","gate":"standard"},
+    {"pillar":"D","action":"monolith-evolution-map","source_event":"evolution-optimize","target_repo":"GlacierEQ/monolith","legacy_event":"monolith-evolution-map","adapter":"monolith-evolution","gate":"standard","approval_required":false},
+    {"pillar":"D","action":"monolith-ip-governance","source_event":"evolution-optimize","target_repo":"GlacierEQ/monolith","legacy_event":"monolith-ip-governance","adapter":"monolith-ip-governance","gate":"standard","approval_required":false},
+    {"pillar":"C","action":"code.tool-system.validate","source_event":"coding-deploy","target_repo":"GlacierEQ/computer-user","legacy_event":"tool-system-validate","adapter":"tool-system-validate","gate":"standard","approval_required":false},
+    {"pillar":"C","action":"code.monolith.validate-atlases","source_event":"coding-deploy","target_repo":"GlacierEQ/monolith","legacy_event":"monolith-validate-atlases","adapter":"test","gate":"standard","approval_required":false},
+    {"pillar":"B","action":"docs.monolith.validate-integrity","source_event":"document-processing","target_repo":"GlacierEQ/monolith","legacy_event":"monolith-docs-integrity","adapter":"validate","gate":"standard","approval_required":false},
+    {"pillar":"D","action":"analysis.monolith.estate-health","source_event":"evolution-optimize","target_repo":"GlacierEQ/monolith","legacy_event":"monolith-estate-health","adapter":"audit","gate":"standard","approval_required":false},
+    {"pillar":"C","action":"code.monolith.validate-legal-live-reconciliation","source_event":"coding-deploy","target_repo":"GlacierEQ/monolith","legacy_event":"monolith-validate-legal-live-reconciliation","adapter":"monolith_legal_live_validate","gate":"standard","approval_required":false},
+    {"pillar":"C","action":"code.monolith.validate-company-engineered-registry","source_event":"coding-deploy","target_repo":"GlacierEQ/monolith","legacy_event":"monolith-validate-company-engineered-registry","adapter":"monolith_company_registry_validate","gate":"standard","approval_required":false},
+    {"pillar":"C","action":"code.casey-legal-mcp.validate-v2","source_event":"coding-deploy","target_repo":"GlacierEQ/casey-legal-mcp-server","legacy_event":"casey-legal-mcp-validate-v2","adapter":"casey_legal_mcp_validate","gate":"standard","approval_required":false}
   ]
 }
