@@ -56,7 +56,7 @@
     },
     "code.fileboss.validate-operator-code-bridge": {
       "status": "active",
-      "adapter": "fileboss-operator-code-validate",
+      "adapter": "fileboss_operator_code_validate",
       "adapterPath": "domains/code/adapters/fileboss_operator_code_validate.py",
       "targetRepository": "GlacierEQ/FILEBOSS",
       "tokenProfile": "private-source-read",
