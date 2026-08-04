@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import os
 import re
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -74,6 +75,34 @@ def commands() -> list[list[str]]:
     ]
 
 
+def inspect_required_paths(workspace: Path) -> tuple[list[str], list[str]]:
+    """Return missing and unsafe required paths without following symlinks."""
+    missing: list[str] = []
+    unsafe: list[str] = []
+    for relative in REQUIRED_PATHS:
+        candidate = workspace / relative
+        try:
+            metadata = candidate.lstat()
+        except FileNotFoundError:
+            missing.append(relative)
+            continue
+        except OSError:
+            unsafe.append(relative)
+            continue
+
+        if not stat.S_ISREG(metadata.st_mode):
+            unsafe.append(relative)
+            continue
+        try:
+            resolved = candidate.resolve(strict=True)
+        except OSError:
+            unsafe.append(relative)
+            continue
+        if not resolved.is_relative_to(workspace):
+            unsafe.append(relative)
+    return missing, unsafe
+
+
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -98,13 +127,23 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="resolved source SHA does not match requested source_ref",
         )
 
-    missing = [relative for relative in REQUIRED_PATHS if not (workspace / relative).is_file()]
+    missing, unsafe = inspect_required_paths(workspace)
     if missing:
         return catalog.write_result(
             plan,
             result_path,
             "blocked",
             reason="required Operator Code bridge files are missing: " + ", ".join(missing),
+        )
+    if unsafe:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason=(
+                "required Operator Code bridge paths are not regular contained files: "
+                + ", ".join(unsafe)
+            ),
         )
 
     try:
