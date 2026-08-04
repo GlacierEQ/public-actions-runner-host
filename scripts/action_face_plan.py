@@ -48,6 +48,9 @@ ADAPTER_TASK = {
     "action-face-selftest": "validate",
     "master-strand-inventory": "audit",
     "master-strand-extinction": "audit",
+    "monolith_legal_live_validate": "test",
+    "monolith_company_registry_validate": "test",
+    "casey_legal_mcp_validate": "test",
 }
 ALLOWED_KEYS = {
     "job_id",
@@ -76,6 +79,9 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 IMMUTABLE_SOURCE_ACTIONS = {
     "code.monolith.validate-atlases",
+    "code.monolith.validate-legal-live-reconciliation",
+    "code.monolith.validate-company-engineered-registry",
+    "code.casey-legal-mcp.validate-v2",
     "docs.monolith.validate-integrity",
     "analysis.monolith.estate-health",
 }
@@ -159,7 +165,6 @@ def _reconcile_domain_contract(action: str, entry: dict) -> None:
 
 
 def resolve_action(action: str, pillar: str) -> dict | None:
-    """Resolve one catalog action while enforcing the active domain contract."""
     if not action:
         return None
     if not ACTION.fullmatch(action):
