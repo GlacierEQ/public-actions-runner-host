@@ -24,16 +24,8 @@ BASE_TASKS = {
     "audit": "audit",
 }
 MEDIA_SUFFIXES = {
-    ".aac",
-    ".flac",
-    ".m4a",
-    ".mkv",
-    ".mov",
-    ".mp3",
-    ".mp4",
-    ".ogg",
-    ".wav",
-    ".webm",
+    ".aac", ".flac", ".m4a", ".mkv", ".mov", ".mp3", ".mp4",
+    ".ogg", ".wav", ".webm",
 }
 OFFICE_SUFFIXES = {".docx", ".odt", ".ods", ".odp", ".pptx", ".xlsx"}
 
@@ -64,9 +56,7 @@ def write_result(plan: dict, result_path: Path, status: str, **details) -> int:
     return 0 if status == "completed" else 2
 
 
-def bounded_process(
-    command: list[str], cwd: Path, timeout: int
-) -> tuple[int | None, str, str]:
+def bounded_process(command: list[str], cwd: Path, timeout: int) -> tuple[int | None, str, str]:
     try:
         proc = subprocess.run(
             command,
@@ -90,20 +80,12 @@ def media_queue(plan: dict, workspace: Path, result_path: Path) -> int:
     items = []
     for path in base.files(workspace):
         if path.suffix.lower() in MEDIA_SUFFIXES:
-            items.append(
-                {
-                    "path": path.relative_to(workspace).as_posix(),
-                    "bytes": path.stat().st_size,
-                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                }
-            )
-    return write_result(
-        plan,
-        result_path,
-        "completed",
-        media_count=len(items),
-        media=items,
-    )
+            items.append({
+                "path": path.relative_to(workspace).as_posix(),
+                "bytes": path.stat().st_size,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            })
+    return write_result(plan, result_path, "completed", media_count=len(items), media=items)
 
 
 def pdf_analyze(plan: dict, workspace: Path, result_path: Path) -> int:
@@ -122,13 +104,7 @@ def pdf_analyze(plan: dict, workspace: Path, result_path: Path) -> int:
         documents.append(item)
         if not item["valid_header"]:
             invalid.append(item["path"])
-    status = (
-        "completed"
-        if documents and not invalid
-        else "blocked"
-        if not documents
-        else "failed"
-    )
+    status = "completed" if documents and not invalid else "blocked" if not documents else "failed"
     return write_result(
         plan,
         result_path,
@@ -157,13 +133,7 @@ def document_validate(plan: dict, workspace: Path, result_path: Path) -> int:
         documents.append(item)
         if not valid:
             invalid.append(item["path"])
-    status = (
-        "completed"
-        if documents and not invalid
-        else "blocked"
-        if not documents
-        else "failed"
-    )
+    status = "completed" if documents and not invalid else "blocked" if not documents else "failed"
     return write_result(
         plan,
         result_path,
@@ -181,18 +151,9 @@ def latex_compile(plan: dict, workspace: Path, result_path: Path) -> int:
     if not sources:
         return write_result(plan, result_path, "blocked", reason="No TeX source found")
     if not engine:
-        return write_result(
-            plan,
-            result_path,
-            "blocked",
-            reason="Tectonic or latexmk runtime is not installed",
-        )
+        return write_result(plan, result_path, "blocked", reason="Tectonic or latexmk runtime is not installed")
     source = sources[0]
-    command = (
-        [engine, source.name]
-        if Path(engine).name == "tectonic"
-        else [engine, "-pdf", "-interaction=nonstopmode", source.name]
-    )
+    command = [engine, source.name] if Path(engine).name == "tectonic" else [engine, "-pdf", "-interaction=nonstopmode", source.name]
     exit_code, output, error = bounded_process(command, source.parent, 1800)
     status = "completed" if exit_code == 0 and not error else "failed"
     return write_result(
@@ -212,20 +173,10 @@ def xcode_validate(plan: dict, workspace: Path, result_path: Path) -> int:
     projects = sorted(workspace.rglob("*.xcodeproj"))
     workspaces = sorted(workspace.rglob("*.xcworkspace"))
     if not xcodebuild:
-        return write_result(
-            plan,
-            result_path,
-            "blocked",
-            reason="xcodebuild requires a public macOS runner",
-        )
+        return write_result(plan, result_path, "blocked", reason="xcodebuild requires a public macOS runner")
     target = workspaces[0] if workspaces else projects[0] if projects else None
     if target is None:
-        return write_result(
-            plan,
-            result_path,
-            "blocked",
-            reason="No Xcode project or workspace found",
-        )
+        return write_result(plan, result_path, "blocked", reason="No Xcode project or workspace found")
     flag = "-workspace" if target.suffix == ".xcworkspace" else "-project"
     command = [xcodebuild, flag, str(target), "-list"]
     exit_code, output, error = bounded_process(command, workspace, 900)
@@ -242,21 +193,25 @@ def xcode_validate(plan: dict, workspace: Path, result_path: Path) -> int:
     )
 
 
-def run_registered_specialization(
-    plan: dict, workspace: Path, result_path: Path
-) -> int | None:
+def run_registered_specialization(plan: dict, workspace: Path, result_path: Path) -> int | None:
     action = plan.get("action")
     if action == "code.monolith.validate-atlases":
         from domains.code.adapters.monolith_atlas_validate import run
-
+        return run(plan, workspace, result_path)
+    if action == "code.monolith.validate-legal-live-reconciliation":
+        from domains.code.adapters.monolith_legal_live_validate import run
+        return run(plan, workspace, result_path)
+    if action == "code.monolith.validate-company-engineered-registry":
+        from domains.code.adapters.monolith_company_registry_validate import run
+        return run(plan, workspace, result_path)
+    if action == "code.casey-legal-mcp.validate-v2":
+        from domains.code.adapters.casey_legal_mcp_validate import run
         return run(plan, workspace, result_path)
     if action == "docs.monolith.validate-integrity":
         from domains.docs.adapters.monolith_docs_validate import run
-
         return run(plan, workspace, result_path)
     if action == "analysis.monolith.estate-health":
         from domains.analysis.adapters.monolith_estate_health import run
-
         return run(plan, workspace, result_path)
     return None
 
