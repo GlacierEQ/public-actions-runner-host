@@ -25,6 +25,7 @@ OWNED_FILES=(
   domains/docs/adapters/monolith_docs_validate.py
   domains/analysis/adapters/monolith_estate_health.py
   scripts/action_face_postrun_guard.py
+  scripts/action_face_publish_verified.py
   scripts/action_face_selftest.py
   scripts/monolith_evolution_adapter.py
   scripts/workload_isolation.py
@@ -32,6 +33,7 @@ OWNED_FILES=(
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_bounded_file_receipts.py
   tests/test_monolith_evolution_adapter.py
+  tests/test_publish_verified_boundary.py
   tests/test_tool_system_validate_adapter.py
   tests/test_specialized_monolith_runners.py
   tests/test_workload_isolation.py
@@ -43,12 +45,14 @@ FORMAT_FILES=(
   domains/docs/adapters/monolith_docs_validate.py
   domains/analysis/adapters/monolith_estate_health.py
   scripts/action_face_postrun_guard.py
+  scripts/action_face_publish_verified.py
   scripts/monolith_evolution_adapter.py
   scripts/workload_isolation.py
   tests/conftest.py
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_bounded_file_receipts.py
   tests/test_monolith_evolution_adapter.py
+  tests/test_publish_verified_boundary.py
   tests/test_tool_system_validate_adapter.py
   tests/test_specialized_monolith_runners.py
   tests/test_workload_isolation.py
