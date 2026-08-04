@@ -21,6 +21,21 @@
       "status": "active",
       "catalog": "domains/code/actions.json"
     },
+    "code.monolith.validate-legal-live-reconciliation": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
+    "code.monolith.validate-company-engineered-registry": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
+    "code.casey-legal-mcp.validate-v2": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
     "docs.monolith.validate-integrity": {
       "domain": "docs",
       "status": "active",
