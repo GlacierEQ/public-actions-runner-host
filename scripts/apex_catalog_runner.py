@@ -36,6 +36,8 @@ MEDIA_SUFFIXES = {
     ".webm",
 }
 OFFICE_SUFFIXES = {".docx", ".odt", ".ods", ".odp", ".pptx", ".xlsx"}
+MAX_EMBEDDED_RECORDS = 256
+HASH_CHUNK_BYTES = 1024 * 1024
 
 
 def write_result(plan: dict, result_path: Path, status: str, **details) -> int:
@@ -86,92 +88,176 @@ def bounded_process(
         return None, "", f"process start failed: {type(exc).__name__}: {exc}"
 
 
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(HASH_CHUNK_BYTES), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def canonical_record_bytes(record: dict) -> bytes:
+    return json.dumps(
+        record,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode("utf-8")
+
+
 def media_queue(plan: dict, workspace: Path, result_path: Path) -> int:
-    items = []
-    for path in base.files(workspace):
-        if path.suffix.lower() in MEDIA_SUFFIXES:
-            items.append(
-                {
-                    "path": path.relative_to(workspace).as_posix(),
-                    "bytes": path.stat().st_size,
-                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                }
-            )
+    items: list[dict] = []
+    manifest = hashlib.sha256()
+    media_count = 0
+    total_bytes = 0
+    try:
+        for path in sorted(base.files(workspace)):
+            if path.suffix.lower() not in MEDIA_SUFFIXES:
+                continue
+            record = {
+                "path": path.relative_to(workspace).as_posix(),
+                "bytes": path.stat().st_size,
+                "sha256": file_sha256(path),
+            }
+            media_count += 1
+            total_bytes += record["bytes"]
+            manifest.update(canonical_record_bytes(record))
+            manifest.update(b"\n")
+            if len(items) < MAX_EMBEDDED_RECORDS:
+                items.append(record)
+    except OSError as error:
+        return write_result(
+            plan,
+            result_path,
+            "failed",
+            reason=f"media inventory failed: {type(error).__name__}: {error}",
+        )
+
     return write_result(
         plan,
         result_path,
         "completed",
-        media_count=len(items),
+        media_count=media_count,
+        media_total_bytes=total_bytes,
+        media_records_included=len(items),
+        media_records_truncated=media_count > len(items),
+        media_manifest_sha256=manifest.hexdigest(),
         media=items,
     )
 
 
 def pdf_analyze(plan: dict, workspace: Path, result_path: Path) -> int:
-    documents = []
-    invalid = []
-    for path in base.files(workspace):
-        if path.suffix.lower() != ".pdf":
-            continue
-        header = path.read_bytes()[:8]
-        item = {
-            "path": path.relative_to(workspace).as_posix(),
-            "bytes": path.stat().st_size,
-            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-            "valid_header": header.startswith(b"%PDF-"),
-        }
-        documents.append(item)
-        if not item["valid_header"]:
-            invalid.append(item["path"])
+    documents: list[dict] = []
+    invalid: list[str] = []
+    manifest = hashlib.sha256()
+    pdf_count = 0
+    invalid_count = 0
+    try:
+        for path in sorted(base.files(workspace)):
+            if path.suffix.lower() != ".pdf":
+                continue
+            header = path.read_bytes()[:8]
+            item = {
+                "path": path.relative_to(workspace).as_posix(),
+                "bytes": path.stat().st_size,
+                "sha256": file_sha256(path),
+                "valid_header": header.startswith(b"%PDF-"),
+            }
+            pdf_count += 1
+            manifest.update(canonical_record_bytes(item))
+            manifest.update(b"\n")
+            if len(documents) < MAX_EMBEDDED_RECORDS:
+                documents.append(item)
+            if not item["valid_header"]:
+                invalid_count += 1
+                if len(invalid) < MAX_EMBEDDED_RECORDS:
+                    invalid.append(item["path"])
+    except OSError as error:
+        return write_result(
+            plan,
+            result_path,
+            "failed",
+            reason=f"PDF analysis failed: {type(error).__name__}: {error}",
+        )
+
     status = (
         "completed"
-        if documents and not invalid
+        if pdf_count and not invalid_count
         else "blocked"
-        if not documents
+        if not pdf_count
         else "failed"
     )
     return write_result(
         plan,
         result_path,
         status,
-        pdf_count=len(documents),
+        pdf_count=pdf_count,
+        pdf_records_included=len(documents),
+        pdf_records_truncated=pdf_count > len(documents),
+        pdf_manifest_sha256=manifest.hexdigest(),
+        invalid_pdf_header_count=invalid_count,
         invalid_pdf_headers=invalid,
+        invalid_pdf_headers_truncated=invalid_count > len(invalid),
         documents=documents,
-        reason="No PDF files found" if not documents else "",
+        reason="No PDF files found" if not pdf_count else "",
     )
 
 
 def document_validate(plan: dict, workspace: Path, result_path: Path) -> int:
-    documents = []
-    invalid = []
-    for path in base.files(workspace):
-        suffix = path.suffix.lower()
-        if suffix not in OFFICE_SUFFIXES:
-            continue
-        valid = zipfile.is_zipfile(path)
-        item = {
-            "path": path.relative_to(workspace).as_posix(),
-            "bytes": path.stat().st_size,
-            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-            "valid_container": valid,
-        }
-        documents.append(item)
-        if not valid:
-            invalid.append(item["path"])
+    documents: list[dict] = []
+    invalid: list[str] = []
+    manifest = hashlib.sha256()
+    document_count = 0
+    invalid_count = 0
+    try:
+        for path in sorted(base.files(workspace)):
+            suffix = path.suffix.lower()
+            if suffix not in OFFICE_SUFFIXES:
+                continue
+            valid = zipfile.is_zipfile(path)
+            item = {
+                "path": path.relative_to(workspace).as_posix(),
+                "bytes": path.stat().st_size,
+                "sha256": file_sha256(path),
+                "valid_container": valid,
+            }
+            document_count += 1
+            manifest.update(canonical_record_bytes(item))
+            manifest.update(b"\n")
+            if len(documents) < MAX_EMBEDDED_RECORDS:
+                documents.append(item)
+            if not valid:
+                invalid_count += 1
+                if len(invalid) < MAX_EMBEDDED_RECORDS:
+                    invalid.append(item["path"])
+    except OSError as error:
+        return write_result(
+            plan,
+            result_path,
+            "failed",
+            reason=f"document validation failed: {type(error).__name__}: {error}",
+        )
+
     status = (
         "completed"
-        if documents and not invalid
+        if document_count and not invalid_count
         else "blocked"
-        if not documents
+        if not document_count
         else "failed"
     )
     return write_result(
         plan,
         result_path,
         status,
-        document_count=len(documents),
+        document_count=document_count,
+        document_records_included=len(documents),
+        document_records_truncated=document_count > len(documents),
+        document_manifest_sha256=manifest.hexdigest(),
+        invalid_container_count=invalid_count,
         invalid_containers=invalid,
+        invalid_containers_truncated=invalid_count > len(invalid),
         documents=documents,
-        reason="No supported office documents found" if not documents else "",
+        reason="No supported office documents found" if not document_count else "",
     )
 
 
