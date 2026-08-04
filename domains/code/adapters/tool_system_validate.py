@@ -8,8 +8,9 @@ import re
 import shutil
 import subprocess
 import sys
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 import apex_catalog_runner as catalog
 
@@ -146,7 +147,7 @@ def blocked_plan(plan: object) -> dict[str, Any]:
 
 def normalize_plan(plan: object) -> dict[str, Any]:
     if not isinstance(plan, Mapping):
-        raise ValueError("plan must be an object")
+        raise TypeError("plan must be an object")
 
     is_canonical = "domain" in plan
     allowed = CANONICAL_JOB_KEYS if is_canonical else LEGACY_PLAN_KEYS
@@ -240,7 +241,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     result_path = result_path.resolve()
     try:
         normalized = normalize_plan(plan)
-    except ValueError as error:
+    except (TypeError, ValueError) as error:
         return write_blocked(plan, result_path, str(error))
 
     missing = [path for path in REQUIRED_PATHS if not (workspace / path).is_file()]
@@ -282,8 +283,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             failed = True
             break
         try:
-            # This list comes only from command_sequence after strict job-ID
-            # validation. No caller-provided command or shell evaluation exists.
             process = subprocess.run(  # nosemgrep: python.lang.security.audit.dangerous-subprocess-use-audit
                 command,
                 cwd=workspace,
