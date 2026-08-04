@@ -98,8 +98,10 @@ def isolated_env(source: Mapping[str, str] | None = None) -> dict[str, str]:
 
 
 def _valid_source_ref(value: object) -> bool:
-    return isinstance(value, str) and 1 <= len(value) <= 128 and bool(
-        SOURCE_REF.fullmatch(value)
+    return (
+        isinstance(value, str)
+        and 1 <= len(value) <= 128
+        and bool(SOURCE_REF.fullmatch(value))
     )
 
 
@@ -220,7 +222,11 @@ def command_sequence(result_path: Path, job_id: str) -> list[list[str]]:
 
 
 def write_blocked(
-    plan: object, result_path: Path, reason: str, *, expected_source_sha: str | None = None
+    plan: object,
+    result_path: Path,
+    reason: str,
+    *,
+    expected_source_sha: str | None = None,
 ) -> int:
     normalized = blocked_plan(plan)
     expectation = expected_source_sha
