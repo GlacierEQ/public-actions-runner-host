@@ -35,6 +35,24 @@
       "legacyAliases": [
         "tool-system-validate"
       ]
+    },
+    "code.monolith.validate-atlases": {
+      "status": "active",
+      "adapter": "test",
+      "adapterPath": "domains/code/adapters/monolith_atlas_validate.py",
+      "targetRepository": "GlacierEQ/monolith",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "monolith-atlases-job-v1",
+      "jobSchemaPath": "domains/code/schemas/monolith-atlases-job.schema.json",
+      "resultSchema": "monolith-atlases-result-v1",
+      "resultSchemaPath": "domains/code/schemas/monolith-atlases-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": [
+        "monolith-validate-atlases"
+      ]
     }
   },
   "plannedActions": [
