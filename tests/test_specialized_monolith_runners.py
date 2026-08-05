@@ -251,6 +251,7 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     source_sha = commit_workspace(workspace)
     result_path = tmp_path / "result.json"
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", source_sha)
+    real_commands = monolith_atlas_validate.commands
     monkeypatch.setattr(
         monolith_atlas_validate,
         "commands",
@@ -292,7 +293,7 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     assert after["resolved_source_sha"] == source_sha
     assert before["checkout_inode"] == after["checkout_inode"]
 
-    sequence = monolith_atlas_validate.commands(result_path, "RunnerJob01")
+    sequence = real_commands(result_path, "RunnerJob01")
     assert len(sequence) == 11
     assert any("scripts/validate_function_atlas.py" in command for command in sequence)
     assert any(
