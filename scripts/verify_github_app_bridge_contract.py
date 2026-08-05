@@ -111,7 +111,7 @@ def main() -> int:
             fail(f"Windows launcher invariant missing: {fragment}")
 
     powershell_fragments = [
-        "gh auth login --web",
+        "'auth', 'login', '--web'",
         "bootstrap_apex_github_app.py",
         "No private key is displayed, copied, pasted, written to disk, or transported through chat.",
     ]
