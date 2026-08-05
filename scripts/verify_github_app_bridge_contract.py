@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "github-app" / "app-manifest.json"
 CONTRACT = ROOT / "github-app" / "bridge-contract.json"
+REQUIRED_SECRETS = ROOT / "config" / "required-secrets.json"
 ACTIVATION = ROOT / "github-app" / "ACTIVATION.md"
 BOOTSTRAP = ROOT / "github-app" / "bootstrap_apex_github_app.py"
 WINDOWS_LAUNCHER = ROOT / "START_APEX_RUNNER_BRIDGE.cmd"
@@ -36,6 +37,7 @@ def main() -> int:
     required_paths = (
         MANIFEST,
         CONTRACT,
+        REQUIRED_SECRETS,
         ACTIVATION,
         BOOTSTRAP,
         WINDOWS_LAUNCHER,
@@ -49,6 +51,7 @@ def main() -> int:
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
+    required_secrets = json.loads(REQUIRED_SECRETS.read_text(encoding="utf-8"))
     activation = ACTIVATION.read_text(encoding="utf-8")
     launcher = WINDOWS_LAUNCHER.read_text(encoding="utf-8")
     powershell = POWERSHELL_LAUNCHER.read_text(encoding="utf-8")
@@ -91,6 +94,47 @@ def main() -> int:
         fail("stored configuration contract is missing")
     if stored.get("manual_transport_forbidden") is not True:
         fail("manual Client ID or PEM transport must remain forbidden")
+
+    if required_secrets.get("fallback_pat_allowed") is not False:
+        fail("required-secret contract must prohibit PAT fallback")
+    if required_secrets.get("secret_values_in_repository") is not False:
+        fail("secret values must not be committed to the repository")
+    provisioning = required_secrets.get("provisioning")
+    if not isinstance(provisioning, dict):
+        fail("required-secret provisioning contract is missing")
+    expected_provisioning = {
+        "mode": "github_app_manifest_bootstrap",
+        "windows_launcher": "START_APEX_RUNNER_BRIDGE.cmd",
+        "powershell_launcher": "github-app/start_apex_runner_bridge.ps1",
+        "cross_platform_command": "python github-app/bootstrap_apex_github_app.py",
+        "target_repository": "GlacierEQ/public-actions-runner-host",
+        "manual_client_id_entry": False,
+        "manual_private_key_generation": False,
+        "manual_private_key_download": False,
+        "manual_private_key_transport": False,
+        "owner_interaction": "github_account_consent_and_selected_repository_installation_approval_only",
+        "completion_requires_verified_private_receipt": True,
+    }
+    for key, expected in expected_provisioning.items():
+        if provisioning.get(key) != expected:
+            fail(f"required-secret provisioning drifted: {key}")
+
+    required_entries = required_secrets.get("required")
+    if not isinstance(required_entries, list):
+        fail("required-secret entries must be a list")
+    by_name = {
+        entry.get("name"): entry
+        for entry in required_entries
+        if isinstance(entry, dict) and isinstance(entry.get("name"), str)
+    }
+    private_key_entry = by_name.get("APEX_RUNNER_APP_PRIVATE_KEY")
+    client_id_entry = by_name.get("APEX_RUNNER_APP_CLIENT_ID")
+    if not isinstance(private_key_entry, dict) or not isinstance(client_id_entry, dict):
+        fail("App Client ID and private-key entries are required")
+    if private_key_entry.get("provisioned_by") != "github_app_manifest_bootstrap_stdin_only":
+        fail("private key must remain stdin-only manifest-bootstrap provisioned")
+    if client_id_entry.get("provisioned_by") != "github_app_manifest_bootstrap":
+        fail("Client ID must remain manifest-bootstrap provisioned")
 
     activation_fragments = [
         "START_APEX_RUNNER_BRIDGE.cmd",
@@ -170,6 +214,7 @@ def main() -> int:
         "permissions": manifest.get("default_permissions"),
         "installation_repositories": EXPECTED_REPOSITORIES,
         "windows_launcher": str(WINDOWS_LAUNCHER.relative_to(ROOT)),
+        "provisioning": provisioning.get("mode"),
         "manual_credential_handling": False,
         "token_profiles": 2,
         "token_action_revision": PINNED_TOKEN_ACTION.rsplit("@", 1)[1],
