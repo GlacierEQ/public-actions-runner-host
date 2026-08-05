@@ -20,6 +20,7 @@ from monolith_ip_governance_adapter import (
 )
 
 SOURCE_SHA = "a" * 40
+LEGAL_SENTINEL = "DO-NOT-RETURN-RAW-LEGAL-RECORD"
 
 
 def plan() -> dict:
@@ -37,6 +38,7 @@ def plan() -> dict:
 
 def write_fixture(root: Path, *, include_test: bool = True) -> None:
     (root / "catalog").mkdir(parents=True)
+    (root / "examples" / "legal").mkdir(parents=True)
     (root / "schemas").mkdir()
     (root / "scripts").mkdir()
     (root / "tests").mkdir()
@@ -56,6 +58,14 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
         },
     }
     schema = {"type": "object"}
+    legal_example = {
+        "schemaVersion": "1.0",
+        "recordClass": "authorization",
+        "authorizationId": "GEQ-EVAL-EXAMPLE-001",
+        "authorizationType": "evaluation",
+        "status": "template",
+        "privateSentinel": LEGAL_SENTINEL,
+    }
     (root / "ip-manifest.json").write_text(
         json.dumps(manifest) + "\n", encoding="utf-8"
     )
@@ -65,11 +75,18 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
     (root / "schemas" / "ip-manifest.schema.json").write_text(
         json.dumps(schema) + "\n", encoding="utf-8"
     )
+    (root / "schemas" / "legal-authorization.schema.json").write_text(
+        json.dumps(schema) + "\n", encoding="utf-8"
+    )
+    (root / "examples" / "legal" / "evaluation-authorization.example.json").write_text(
+        json.dumps(legal_example) + "\n", encoding="utf-8"
+    )
     for name in (
         "generate_publication_receipt.py",
         "json_schema_subset.py",
         "validate_evidence_records.py",
         "validate_ip_manifest.py",
+        "validate_legal_authorization.py",
         "validate_publication_authorization.py",
         "validate_release_evidence.py",
         "verify_publication_readiness.py",
@@ -103,6 +120,10 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
             "        self.assertTrue(True)\n",
             encoding="utf-8",
         )
+
+
+def read_result(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def test_action_is_narrowly_catalogued() -> None:
@@ -190,7 +211,45 @@ def test_scan_summary_is_bounded() -> None:
     }
 
 
-def test_adapter_executes_repository_owned_gate(
+def test_legal_authorization_controls_are_critical_and_canonical() -> None:
+    assert adapter.LEGAL_AUTHORIZATION_SCHEMA_PATH in adapter.CRITICAL_PATHS
+    assert adapter.LEGAL_AUTHORIZATION_VALIDATOR_PATH in adapter.CRITICAL_PATHS
+    assert adapter.LEGAL_AUTHORIZATION_EXAMPLE_PATH in adapter.CRITICAL_PATHS
+
+
+def test_adapter_blocks_non_object_legal_schema(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    (tmp_path / adapter.LEGAL_AUTHORIZATION_SCHEMA_PATH).write_text(
+        "[]\n", encoding="utf-8"
+    )
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-legal-schema-shape.json"
+
+    assert run(plan(), tmp_path, result_path) != 0
+    result = read_result(result_path)
+    assert result["status"] == "blocked"
+    assert "legal authorization schema must contain a JSON object" in result["reason"]
+
+
+def test_adapter_blocks_non_object_legal_example(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    (tmp_path / adapter.LEGAL_AUTHORIZATION_EXAMPLE_PATH).write_text(
+        '"not-an-object"\n', encoding="utf-8"
+    )
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-legal-example-shape.json"
+
+    assert run(plan(), tmp_path, result_path) != 0
+    result = read_result(result_path)
+    assert result["status"] == "blocked"
+    assert "legal authorization example must contain a JSON object" in result["reason"]
+
+
+def test_adapter_executes_repository_owned_gate_without_raw_legal_output(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     write_fixture(tmp_path)
@@ -198,7 +257,7 @@ def test_adapter_executes_repository_owned_gate(
     result_path = tmp_path.parent / "result.json"
 
     assert run(plan(), tmp_path, result_path) == 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_result(result_path)
     assert result["status"] == "completed"
     assert result["resolved_source_sha"] == SOURCE_SHA
     assert result["test_count"] == 1
@@ -206,6 +265,25 @@ def test_adapter_executes_repository_owned_gate(
     assert result["secret_scan"]["status"] == "passed"
     assert result["secret_scan"]["scanned_commit"] == SOURCE_SHA
     assert set(result["critical_file_sha256"]) == set(adapter.CRITICAL_PATHS)
+    commands = [step["command"] for step in result["steps"]]
+    assert any(adapter.LEGAL_AUTHORIZATION_VALIDATOR_PATH in command for command in commands)
+    assert LEGAL_SENTINEL not in json.dumps(result)
+
+
+def test_adapter_fails_when_legal_authorization_gate_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    (tmp_path / adapter.LEGAL_AUTHORIZATION_VALIDATOR_PATH).write_text(
+        "raise SystemExit(1)\n", encoding="utf-8"
+    )
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-legal.json"
+
+    assert run(plan(), tmp_path, result_path) != 0
+    result = read_result(result_path)
+    assert result["status"] == "failed"
+    assert result["failed_step"] == 4
 
 
 def test_adapter_fails_when_release_evidence_gate_fails(
@@ -219,9 +297,9 @@ def test_adapter_fails_when_release_evidence_gate_fails(
     result_path = tmp_path.parent / "result-evidence.json"
 
     assert run(plan(), tmp_path, result_path) != 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_result(result_path)
     assert result["status"] == "failed"
-    assert result["failed_step"] == 4
+    assert result["failed_step"] == 5
 
 
 def test_adapter_fails_when_publication_readiness_gate_fails(
@@ -235,9 +313,40 @@ def test_adapter_fails_when_publication_readiness_gate_fails(
     result_path = tmp_path.parent / "result-readiness.json"
 
     assert run(plan(), tmp_path, result_path) != 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_result(result_path)
     assert result["status"] == "failed"
-    assert result["failed_step"] == 5
+    assert result["failed_step"] == 6
+
+
+def test_adapter_rejects_mid_run_legal_schema_mutation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-legal-mutation.json"
+    original_run_command = adapter.run_command
+    mutated = False
+
+    def mutating_run_command(
+        command: list[str], workspace: Path, timeout: int = 900
+    ) -> dict:
+        nonlocal mutated
+        result = original_run_command(command, workspace, timeout)
+        if not mutated and adapter.LEGAL_AUTHORIZATION_VALIDATOR_PATH in command:
+            target = workspace / adapter.LEGAL_AUTHORIZATION_SCHEMA_PATH
+            target.write_text(
+                target.read_text(encoding="utf-8") + "\n",
+                encoding="utf-8",
+            )
+            mutated = True
+        return result
+
+    monkeypatch.setattr(adapter, "run_command", mutating_run_command)
+    assert adapter.run(plan(), tmp_path, result_path) != 0
+    result = read_result(result_path)
+    assert result["status"] == "failed"
+    assert result["reason"] == "critical governance files changed during execution"
+    assert adapter.LEGAL_AUTHORIZATION_SCHEMA_PATH in result["changed_critical_files"]
 
 
 def test_adapter_rejects_mid_run_receipt_generator_mutation(
@@ -265,7 +374,7 @@ def test_adapter_rejects_mid_run_receipt_generator_mutation(
 
     monkeypatch.setattr(adapter, "run_command", mutating_run_command)
     assert adapter.run(plan(), tmp_path, result_path) != 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_result(result_path)
     assert result["status"] == "failed"
     assert result["reason"] == "critical governance files changed during execution"
     assert "scripts/generate_publication_receipt.py" in result["changed_critical_files"]
@@ -279,7 +388,7 @@ def test_adapter_rejects_zero_test_execution(
     result_path = tmp_path.parent / "result-zero.json"
 
     assert run(plan(), tmp_path, result_path) != 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_result(result_path)
     assert result["status"] == "failed"
     assert "zero tests" in result["reason"]
 
@@ -289,7 +398,7 @@ def test_adapter_blocks_missing_source_sha(tmp_path: Path) -> None:
     result_path = tmp_path.parent / "result-no-sha.json"
 
     assert run(plan(), tmp_path, result_path) != 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_result(result_path)
     assert result["status"] == "blocked"
     assert "APEX_RESOLVED_SOURCE_SHA" in result["reason"]
 
@@ -301,6 +410,6 @@ def test_adapter_blocks_missing_governance_paths(
     result_path = tmp_path.parent / "result-missing.json"
 
     assert run(plan(), tmp_path, result_path) != 0
-    result = json.loads(result_path.read_text(encoding="utf-8"))
+    result = read_result(result_path)
     assert result["status"] == "blocked"
     assert "ip-manifest.json" in result["reason"]

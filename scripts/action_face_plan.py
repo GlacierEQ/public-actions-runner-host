@@ -6,9 +6,15 @@ import argparse
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import apex_pillar_runner as base
+from dispatcher.domain_registry import RegistryError, resolve_action as resolve_domain_action
 
 EVENT_PILLARS = {
     **base.PILLARS,
@@ -36,13 +42,23 @@ ADAPTER_TASK = {
     "python-ci": "test",
     "node-ci": "test",
     "akos-echo-policy-ci": "test",
+    "tool-system-validate": "test",
     "monolith-evolution": "test",
     "monolith-ip-governance": "test",
+    "fileboss-operator-code-validate": "test",
     "action-face-selftest": "validate",
     "master-strand-inventory": "audit",
     "master-strand-extinction": "audit",
 }
-ALLOWED_KEYS = {"job_id", "pillar", "action", "source_repo", "source_ref", "task", "approval_id"}
+ALLOWED_KEYS = {
+    "job_id",
+    "pillar",
+    "action",
+    "source_repo",
+    "source_ref",
+    "task",
+    "approval_id",
+}
 MAX_ENVELOPE_BYTES = 4096
 MAX_LENGTH = {
     "job_id": 64,
@@ -53,8 +69,18 @@ MAX_LENGTH = {
     "task": 32,
     "approval_id": 64,
 }
-ACTION = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
+ACTION = re.compile(
+    r"^(?:[a-z0-9][a-z0-9-]{0,63}|"
+    r"[a-z][a-z0-9-]{1,31}(?:\.[a-z][a-z0-9-]{0,63})+)$"
+)
 CONTROL = re.compile(r"[\x00-\x1f\x7f]")
+FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
+IMMUTABLE_SOURCE_ACTIONS = {
+    "code.monolith.validate-atlases",
+    "code.fileboss.validate-operator-code-bridge",
+    "docs.monolith.validate-integrity",
+    "analysis.monolith.estate-health",
+}
 
 
 def fail(message: str) -> None:
@@ -72,13 +98,18 @@ def catalog_actions() -> list[dict]:
 
 
 def approved_workloads() -> set[str]:
-    return {"GlacierEQ/public-actions-runner-host", *(str(item.get("target_repo", "")) for item in catalog_actions())}
+    return {
+        "GlacierEQ/public-actions-runner-host",
+        *(str(item.get("target_repo", "")) for item in catalog_actions()),
+    }
 
 
 def validate_shape(payload: object) -> dict[str, str]:
     if not isinstance(payload, dict):
         fail("job envelope must be a JSON object")
-    encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode(
+        "utf-8"
+    )
     if len(encoded) > MAX_ENVELOPE_BYTES:
         fail(f"job envelope exceeds {MAX_ENVELOPE_BYTES} bytes")
     unknown = sorted(set(payload) - ALLOWED_KEYS)
@@ -99,15 +130,56 @@ def validate_shape(payload: object) -> dict[str, str]:
     return normalized
 
 
+def _adapter_identity(value: object) -> str:
+    """Normalize the declared kebab/snake adapter naming convention only."""
+    return str(value or "").replace("_", "-")
+
+
+def _reconcile_domain_contract(action: str, entry: dict) -> None:
+    if "." not in action:
+        return
+    try:
+        domain = resolve_domain_action(action, root=ROOT)
+    except RegistryError as error:
+        fail(f"hierarchical action is not active in the domain registry: {error}")
+
+    if domain.get("targetRepository") != entry.get("target_repo"):
+        fail("flat catalog and domain registry disagree on targetRepository")
+    if _adapter_identity(domain.get("adapter")) != _adapter_identity(
+        entry.get("adapter")
+    ):
+        fail("flat catalog and domain registry disagree on adapter")
+    if domain.get("executionMode") != "source-read-only":
+        fail("hierarchical action execution mode is not source-read-only")
+    profile = domain.get("tokenProfileContract")
+    if not isinstance(profile, dict) or profile.get("permissions") != {
+        "contents": "read"
+    }:
+        fail("hierarchical action token profile exceeds contents:read")
+    if profile.get("repositoryCount") != 1:
+        fail("hierarchical action token profile is not single-repository")
+    if profile.get("exposeCredentialToWorkload") is not False:
+        fail("hierarchical action may expose its credential to workload code")
+    if profile.get("sourceWrites") != "forbidden":
+        fail("hierarchical action source writes are not forbidden")
+
+
 def resolve_action(action: str, pillar: str) -> dict | None:
+    """Resolve one catalog action while enforcing the active domain contract."""
     if not action:
         return None
     if not ACTION.fullmatch(action):
         fail("action name is invalid")
-    matches = [item for item in catalog_actions() if item.get("action") == action and item.get("pillar") == pillar]
+    matches = [
+        item
+        for item in catalog_actions()
+        if item.get("action") == action and item.get("pillar") == pillar
+    ]
     if len(matches) != 1:
         fail("action is not registered to the requested pillar")
-    return matches[0]
+    entry = matches[0]
+    _reconcile_domain_contract(action, entry)
+    return entry
 
 
 def validate_ref(value: str) -> None:
@@ -115,7 +187,12 @@ def validate_ref(value: str) -> None:
         fail("invalid source_ref")
     if any(token in value for token in ("..", "//", "@{", "\\")):
         fail("invalid source_ref")
-    if value.startswith("/") or value.endswith("/") or value.endswith(".") or value.endswith(".lock"):
+    if (
+        value.startswith("/")
+        or value.endswith("/")
+        or value.endswith(".")
+        or value.endswith(".lock")
+    ):
         fail("invalid source_ref")
 
 
@@ -159,6 +236,8 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
     entry = resolve_action(action, pillar)
     source_ref = payload.get("source_ref", "main")
     validate_ref(source_ref)
+    if action in IMMUTABLE_SOURCE_ACTIONS and not FULL_SHA.fullmatch(source_ref):
+        fail("this specialized action requires a full lowercase commit SHA")
 
     if entry:
         if "source_repo" in payload or "task" in payload:
@@ -180,7 +259,9 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
     if not base.REPO.fullmatch(source_repo):
         fail("source_repo must be an approved GlacierEQ repository")
 
-    approval_required = pillar in {"G", "I"} or bool(entry and entry.get("approval_required"))
+    approval_required = pillar in {"G", "I"} or bool(
+        entry and entry.get("approval_required")
+    )
     approval_id = payload.get("approval_id", "")
     if approval_required and not base.JOB_ID.fullmatch(approval_id):
         fail("this action requires a valid private approval_id")
@@ -206,7 +287,15 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--event", required=True)
-    for name in ("pillar", "job-id", "source-repo", "source-ref", "task", "approval-id", "action"):
+    for name in (
+        "pillar",
+        "job-id",
+        "source-repo",
+        "source-ref",
+        "task",
+        "approval-id",
+        "action",
+    ):
         parser.add_argument(f"--{name}", default="")
     args = parser.parse_args()
     manual = {
@@ -218,7 +307,7 @@ def main() -> int:
         "approval_id": args.approval_id,
         "action": args.action,
     }
-    base.emit_outputs(build_plan( args.event, manual))
+    base.emit_outputs(build_plan(args.event, manual))
     return 0
 
 

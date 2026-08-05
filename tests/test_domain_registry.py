@@ -17,7 +17,8 @@ from dispatcher import domain_registry as registry
 def copy_registry_fixture(tmp_path: Path) -> Path:
     shutil.copytree(ROOT / "registry", tmp_path / "registry")
     (tmp_path / "domains").mkdir()
-    shutil.copytree(ROOT / "domains" / "code", tmp_path / "domains" / "code")
+    for domain in ("code", "docs", "analysis"):
+        shutil.copytree(ROOT / "domains" / domain, tmp_path / "domains" / domain)
     return tmp_path
 
 
@@ -27,9 +28,16 @@ def mutate_json(path: Path, mutation: Callable[[dict], None]) -> None:
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
-def test_registry_validates_and_only_code_is_executable() -> None:
+def test_registry_validates_all_specialized_domains() -> None:
     actions = registry.validate_registry()
-    assert set(actions) == {"code.validate-governance"}
+    assert set(actions) == {
+        "code.tool-system.validate",
+        "code.validate-governance",
+        "code.monolith.validate-atlases",
+        "code.fileboss.validate-operator-code-bridge",
+        "docs.monolith.validate-integrity",
+        "analysis.monolith.estate-health",
+    }
     action = actions["code.validate-governance"]
     assert action["domain"] == "code"
     assert action["canonicalAction"] == "code.validate-governance"
@@ -37,6 +45,65 @@ def test_registry_validates_and_only_code_is_executable() -> None:
     assert action["adapter"] == "monolith_ip_governance"
     assert action["receiptRoot"] == "receipts/code"
     assert action["receiptPattern"] == registry.expected_receipt_pattern("code")
+
+    tool_system = actions["code.tool-system.validate"]
+    assert tool_system["targetRepository"] == "GlacierEQ/computer-user"
+    assert tool_system["adapter"] == "tool_system_validate"
+    assert tool_system["tokenProfile"] == "private-source-read"
+
+    atlases = actions["code.monolith.validate-atlases"]
+    assert atlases["adapter"] == "test"
+    assert atlases["receiptRoot"] == "receipts/code"
+
+    operator_code = actions["code.fileboss.validate-operator-code-bridge"]
+    assert operator_code["adapter"] == "fileboss_operator_code_validate"
+    assert operator_code["targetRepository"] == "GlacierEQ/FILEBOSS"
+    assert operator_code["receiptRoot"] == "receipts/code"
+
+    docs = actions["docs.monolith.validate-integrity"]
+    assert docs["domain"] == "docs"
+    assert docs["adapter"] == "validate"
+    assert docs["receiptRoot"] == "receipts/docs"
+
+    analysis = actions["analysis.monolith.estate-health"]
+    assert analysis["domain"] == "analysis"
+    assert analysis["adapter"] == "audit"
+    assert analysis["receiptRoot"] == "receipts/analysis"
+
+
+def test_tool_system_alias_resolves_to_canonical_code_action() -> None:
+    canonical = registry.resolve_action(
+        "code.tool-system.validate", requested_domain="code"
+    )
+    alias = registry.resolve_action(
+        "tool-system-validate", requested_domain="code"
+    )
+    assert canonical["wasAlias"] is False
+    assert alias["wasAlias"] is True
+    assert alias["canonicalAction"] == canonical["canonicalAction"]
+    assert alias["targetRepository"] == "GlacierEQ/computer-user"
+
+
+def test_specialized_aliases_resolve_to_their_domains() -> None:
+    aliases = {
+        "monolith-validate-atlases": ("code.monolith.validate-atlases", "code"),
+        "monolith-docs-integrity": ("docs.monolith.validate-integrity", "docs"),
+        "monolith-estate-health": ("analysis.monolith.estate-health", "analysis"),
+    }
+    for alias, (canonical, domain) in aliases.items():
+        resolved = registry.resolve_action(alias, requested_domain=domain)
+        assert resolved["wasAlias"] is True
+        assert resolved["canonicalAction"] == canonical
+        assert resolved["domain"] == domain
+        assert resolved["targetRepository"] == "GlacierEQ/monolith"
+
+
+def test_tool_system_action_uses_closed_action_specific_schemas() -> None:
+    action = registry.resolve_action("code.tool-system.validate")
+    assert action["jobSchema"] == "tool-system-job-v1"
+    assert action["resultSchema"] == "tool-system-result-v1"
+    assert action["jobSchemaPath"].endswith("tool-system-job.schema.json")
+    assert action["resultSchemaPath"].endswith("tool-system-result.schema.json")
 
 
 def test_legacy_alias_resolves_to_the_same_canonical_action() -> None:
@@ -103,6 +170,22 @@ def test_code_token_profile_is_exact_and_read_only() -> None:
     assert profile["revocation"] == "automatic-at-job-completion"
 
 
+def test_all_active_domains_use_the_same_read_only_ceiling() -> None:
+    for action_name in (
+        "code.monolith.validate-atlases",
+        "code.fileboss.validate-operator-code-bridge",
+        "docs.monolith.validate-integrity",
+        "analysis.monolith.estate-health",
+    ):
+        profile = registry.resolve_action(action_name)["tokenProfileContract"]
+        assert profile["permissions"] == {"contents": "read"}
+        assert profile["repositoryCount"] == 1
+        assert profile["persistCredentials"] is False
+        assert profile["exposeCredentialToWorkload"] is False
+        assert profile["sourceWrites"] == "forbidden"
+        assert profile["resultWrites"] == "control-plane-receipt-only"
+
+
 def test_repository_paths_cannot_escape_the_checkout(tmp_path: Path) -> None:
     with pytest.raises(registry.RegistryError, match="unsafe registry path"):
         registry.safe_repository_path(
@@ -152,6 +235,18 @@ def test_receipt_namespace_is_executable_not_dead_configuration(
             "../../escape",
             root=root,
         )
+
+
+def test_each_domain_receipt_namespace_is_isolated(tmp_path: Path) -> None:
+    root = copy_registry_fixture(tmp_path)
+    expected = {
+        "code.monolith.validate-atlases": root / "receipts" / "code" / "DomainJob01.json",
+        "code.fileboss.validate-operator-code-bridge": root / "receipts" / "code" / "DomainJob01.json",
+        "docs.monolith.validate-integrity": root / "receipts" / "docs" / "DomainJob01.json",
+        "analysis.monolith.estate-health": root / "receipts" / "analysis" / "DomainJob01.json",
+    }
+    for action, path in expected.items():
+        assert registry.receipt_path_for(action, "DomainJob01", root=root) == path
 
 
 def test_disabled_action_index_entry_fails_closed(tmp_path: Path) -> None:

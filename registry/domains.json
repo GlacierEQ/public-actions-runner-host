@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "domains": {
     "docs": {
-      "status": "planned",
-      "executionEnabled": false,
+      "status": "active",
+      "executionEnabled": true,
       "adapterRoot": "domains/docs/adapters",
       "actionCatalog": "domains/docs/actions.json",
       "tokenProfiles": "domains/docs/token-profiles.json",
@@ -24,8 +24,8 @@
       "concurrencyPrefix": "code"
     },
     "analysis": {
-      "status": "planned",
-      "executionEnabled": false,
+      "status": "active",
+      "executionEnabled": true,
       "adapterRoot": "domains/analysis/adapters",
       "actionCatalog": "domains/analysis/actions.json",
       "tokenProfiles": "domains/analysis/token-profiles.json",
