@@ -47,15 +47,35 @@ bash scripts/ci/public-action-face-ci.sh
 
 The standalone `action_face_selftest.run(...)` canary completed with zero failed checks against the same branch candidate.
 
-## Release boundary
+## Release boundary at issuance
 
-Merge remains contingent on successful GitHub-hosted `CI` and `Public Runner Team Contract` checks attached to this receipt commit.
+Merge remained contingent on successful GitHub-hosted `CI` and `Public Runner Team Contract` checks attached to this receipt commit.
 
-Live private-source execution remains blocked until the repository owner configures:
+At the time this receipt was issued, live private-source execution was blocked until these repository settings existed:
 
 ```text
 APEX_RUNNER_APP_CLIENT_ID
 APEX_RUNNER_APP_PRIVATE_KEY
 ```
 
-No private key is stored, generated, requested, or exposed by this change.
+No private key was stored, generated, requested, or exposed by the 2026-08-03 hardening change.
+
+## Superseding activation record — 2026-08-05
+
+The earlier manual owner-configuration implication is superseded.
+
+Merged PRs #87, #88, and #89 established the canonical automated ignition path:
+
+```text
+START_APEX_RUNNER_BRIDGE.cmd
+  -> github-app/start_apex_runner_bridge.ps1
+  -> github-app/bootstrap_apex_github_app.py
+  -> GitHub App Manifest flow
+  -> direct repository variable and secret writes
+  -> exact installation verification
+  -> workflow rerun and completion-contract validation
+```
+
+The owner no longer generates, views, downloads, copies, pastes, stores, or transmits the App private key. The only human boundary is GitHub's own account-consent and selected-repository installation approval screen.
+
+This supersession does not claim the bridge is active. Activation remains unverified until the launcher completes and a new private workload rerun produces an independently verified bounded receipt.
