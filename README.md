@@ -14,6 +14,26 @@ authorized external ingress
   -> truthful sanitized public status
 ```
 
+## Start the bridge
+
+On Windows, clone or download this repository and double-click:
+
+```text
+START_APEX_RUNNER_BRIDGE.cmd
+```
+
+That launcher checks GitHub CLI and Python, opens browser authentication only when necessary, and runs the hardened GitHub App Manifest bootstrap. The owner may need to approve GitHub's account-consent and selected-repository installation screens, but does **not** generate, view, download, copy, paste, store, or transmit a private key.
+
+The cross-platform command behind the launcher is:
+
+```bash
+python github-app/bootstrap_apex_github_app.py
+```
+
+The bootstrap creates the owner-only App, receives the generated Client ID and PEM in process memory, writes the repository variable and encrypted secret, enforces the exact installation allowlist, reruns the existing failed workflow, and requires every completion-contract step to succeed. No PAT fallback exists.
+
+See [Automated Owner Bootstrap](github-app/ACTIVATION.md).
+
 ## Canonical split
 
 | Plane | Repository | Responsibility | GitHub Actions |
@@ -91,18 +111,27 @@ apex-verification
 action-face-canary
 ```
 
-## Dedicated bridge credentials
+## Dedicated GitHub App bridge
 
-No broad PAT fallback is allowed.
+No broad PAT fallback is allowed. The only stored bridge identity is:
 
-| Secret | Minimum purpose | Workload exposure |
+| Name | Kind | Purpose | Workload exposure |
+|---|---|---|---|
+| `APEX_RUNNER_APP_CLIENT_ID` | Repository variable | Identifies the owner-only APEX Runner Bridge App | Token-minting configuration only |
+| `APEX_RUNNER_APP_PRIVATE_KEY` | Repository secret | Mints short-lived installation tokens | Never exported to workload processes |
+
+The stored identity is created and written by the automated manifest bootstrap. It is not manually transported.
+
+At runtime the workflow mints two separate, short-lived tokens:
+
+| Runtime token | Scope | Permission |
 |---|---|---|
-| `APEX_PRIVATE_READ_TOKEN` | Contents-read checkout of catalog-approved private workloads | Never exported to workload processes |
-| `APEX_CONTROL_TOKEN` | Read private approvals/policies and create immutable private receipts | Approval, replay, control-plane guard, and publish steps only |
+| `APEX_CONTROL_TOKEN` | `GlacierEQ/llm-runner-teams` only | Contents read/write for claims, approvals, and immutable receipts |
+| `APEX_PRIVATE_READ_TOKEN` | Exactly one catalog-approved workload repository | Contents read only |
 
-Both checkout operations use an immutable `actions/checkout` revision and `persist-credentials: false`. The workload process environment strips all bridge-token names and `GITHUB_TOKEN`.
+Both checkout operations use immutable action revisions and `persist-credentials: false`. Runtime tokens are revoked automatically and stripped from the workload process environment.
 
-See `config/required-secrets.json` for the least-privilege contract.
+See `config/required-secrets.json` and `github-app/bridge-contract.json` for the least-privilege contract.
 
 ## Private control-plane gate
 
@@ -155,7 +184,11 @@ Public status contains only identifiers, lane, outcome, private-receipt state, a
 
 ## Core files
 
+- [One-click Windows launcher](START_APEX_RUNNER_BRIDGE.cmd)
+- [Automated Owner Bootstrap](github-app/ACTIVATION.md)
+- [Bridge Contract](github-app/bridge-contract.json)
 - [Action Face Contract](docs/ACTION_FACE_CONTRACT.md)
+- [Public Runner Security](docs/PUBLIC_RUNNER_SECURITY.md)
 - [Canary Protocol](docs/CANARY_PROTOCOL.md)
 - [Required Secrets Contract](config/required-secrets.json)
 - [Immutable Identity](config/action-face-identity.json)
@@ -167,4 +200,6 @@ Public status contains only identifiers, lane, outcome, private-receipt state, a
 
 ## Current activation condition
 
-The repository must be public before the installed identity guard permits execution. Until public visibility and the two dedicated secrets are verified through a successful canary, runtime activation remains blocked.
+Repository code, the no-manual-key bootstrap, the Windows launcher, and their verification tests are merged. The private bridge itself becomes active only after the launcher completes GitHub's consent flow and the rerun returns every required completion record as `success`.
+
+Until that receipt exists, private execution is **not activated**. PR #63 and Monolith PR #3 remain open and unmerged.

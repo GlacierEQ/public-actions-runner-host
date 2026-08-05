@@ -1,6 +1,14 @@
 {
-  "schema_version": "1.1",
-  "status": "staged_owner_activation_required",
+  "schema_version": "1.2",
+  "status": "automated_bootstrap_ready_not_activated",
+  "canonical_activation": {
+    "windows_launcher": "START_APEX_RUNNER_BRIDGE.cmd",
+    "powershell_launcher": "github-app/start_apex_runner_bridge.ps1",
+    "cross_platform_command": "python github-app/bootstrap_apex_github_app.py",
+    "human_interaction": "GitHub account consent and selected-repository installation approval only",
+    "manual_credential_handling": false,
+    "completion_requires_verified_private_receipt": true
+  },
   "app": {
     "name": "APEX Runner Bridge",
     "owner_login": "GlacierEQ",
@@ -13,7 +21,9 @@
   "stored_configuration": {
     "repository": "GlacierEQ/public-actions-runner-host",
     "variable": "APEX_RUNNER_APP_CLIENT_ID",
-    "secret": "APEX_RUNNER_APP_PRIVATE_KEY"
+    "secret": "APEX_RUNNER_APP_PRIVATE_KEY",
+    "writer": "automated GitHub App Manifest bootstrap",
+    "manual_transport_forbidden": true
   },
   "installation_repositories": [
     "GlacierEQ/mastermind",
@@ -68,6 +78,7 @@
     "installation access to all GlacierEQ repositories",
     "unscoped installation tokens",
     "PAT fallback",
+    "manual Client ID or PEM transport",
     "private key exposure to workload processes",
     "publishing private MEGA-PDF inventory artifacts to the public action-face repository"
   ]

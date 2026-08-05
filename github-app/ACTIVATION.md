@@ -1,12 +1,24 @@
 # APEX Runner Bridge — Automated Owner Bootstrap
 
-The bridge must not depend on a human copying a Client ID, downloading a PEM, or pasting that PEM into repository settings. The canonical activation path is the local GitHub App Manifest bootstrap:
+The bridge must not depend on a human copying a Client ID, downloading a PEM, or pasting that PEM into repository settings.
+
+## Canonical ignition
+
+On Windows, clone or download this repository and double-click:
+
+```text
+START_APEX_RUNNER_BRIDGE.cmd
+```
+
+The launcher verifies GitHub CLI and Python, opens browser authentication only when necessary, and then invokes the hardened bootstrap through `github-app/start_apex_runner_bridge.ps1`.
+
+The cross-platform command behind the launcher is:
 
 ```bash
 python github-app/bootstrap_apex_github_app.py
 ```
 
-Run it from an authenticated desktop-agent session with GitHub CLI available. The process opens GitHub's owner-consent screens in the controlled browser and performs the credential plumbing itself.
+Run it only from an authenticated desktop-agent session with GitHub CLI available. The process opens GitHub's owner-consent screens in the controlled browser and performs the credential plumbing itself.
 
 ## What the bootstrap performs
 
@@ -58,12 +70,12 @@ The bootstrap fails closed when the observed installation contains any repositor
 
 ## Human boundary
 
-GitHub may require the signed-in account owner to approve the App creation or installation screen. That is an account-consent boundary, not a credential-transport task. The desktop agent handles credential exchange, repository settings, verification, rerun, and reporting. The owner does not generate, view, copy, paste, store, or transmit the key.
+GitHub may require the signed-in account owner to approve the App creation or installation screen. That is an account-consent boundary, not a credential-transport task. The desktop agent handles authentication, credential exchange, repository settings, installation verification, rerun, and reporting. The owner does not generate, view, copy, paste, store, or transmit the key.
 
 ## Verification
 
 ```bash
-python -m pytest -q tests/test_github_app_manifest_bootstrap.py
+python -m pytest -q tests/test_github_app_manifest_bootstrap.py tests/test_apex_windows_launcher.py
 python -m py_compile github-app/bootstrap_apex_github_app.py
 ```
 
@@ -79,7 +91,10 @@ Tests enforce:
 - PEM injection through standard input only;
 - rollback after a partial credential write;
 - new-attempt detection after rerun;
-- rejection of missing, skipped, or failed completion records.
+- rejection of missing, skipped, or failed completion records;
+- a real Windows double-click entrypoint;
+- browser consent as the only human interaction;
+- no manual private-key prompt, display, or transport path.
 
 ## Completion condition
 
