@@ -1,14 +1,43 @@
-# APEX Runner Bridge — Owner Activation
+# APEX Runner Bridge — Automated Owner Bootstrap
 
-The repository-side bridge, MEGA-PDF relay, security checks, and observable canary are installed. GitHub requires the personal-account owner to create the App registration, generate its private key, choose installation repositories, and store the key. Those owner-only settings are not exposed by the connected repository API.
+The bridge must not depend on a human copying a Client ID, downloading a PEM, or pasting that PEM into repository settings. The canonical activation path is now the local GitHub App Manifest bootstrap:
 
-## 1. Register the private App
+```bash
+python github-app/bootstrap_apex_github_app.py
+```
 
-Use the prefilled owner registration page:
+Run it from an authenticated desktop-agent session with GitHub CLI available. The process opens GitHub's owner-consent screens in the controlled browser and performs the credential plumbing itself.
 
-[Create APEX Runner Bridge](https://github.com/settings/apps/new?name=APEX%20Runner%20Bridge&description=Owner-only%20short-lived%20least-privilege%20bridge%20for%20the%20APEX%20public%20action%20face.&url=https%3A%2F%2Fgithub.com%2FGlacierEQ%2Fpublic-actions-runner-host&public=false&contents=write&webhook_active=false)
+## What the bootstrap performs
 
-Confirm this exact configuration before creating it:
+1. Loads `github-app/app-manifest.json`.
+2. Starts a loopback-only callback server on `127.0.0.1`.
+3. Opens GitHub's App Manifest registration flow.
+4. Validates the returned anti-forgery `state` value.
+5. Exchanges the one-time manifest code for the App configuration.
+6. Keeps the generated PEM only in process memory.
+7. Writes the App Client ID to the repository variable:
+
+   ```text
+   APEX_RUNNER_APP_CLIENT_ID
+   ```
+
+8. Pipes the PEM through standard input directly into the encrypted repository secret:
+
+   ```text
+   APEX_RUNNER_APP_PRIVATE_KEY
+   ```
+
+9. Removes the PEM, client secret, and webhook secret from the response object before reporting.
+10. Opens the App installation screen.
+11. Polls GitHub until the installation contains exactly the approved repositories.
+12. Rejects any unexpected repository access.
+13. Reruns only the failed jobs in workflow run `30964992458`.
+14. Waits for completion and prints the workflow, job, and step conclusions.
+
+The PEM is never printed, placed in a command-line argument, written to disk, committed, uploaded as an artifact, or transported through chat.
+
+## Fixed App contract
 
 | Setting | Required value |
 |---|---|
@@ -22,17 +51,9 @@ Confirm this exact configuration before creating it:
 | Account permissions | **No access** |
 | OAuth authorization on install | **Off** |
 
-Contents write is registered because the bridge writes bounded receipts to explicitly selected private repositories. Each runtime token is down-scoped to one exact repository and expires automatically.
+GitHub supplies read-only Metadata access automatically when required.
 
-## 2. Generate one private key
-
-On the new App settings page, generate a private key and retain the downloaded PEM file securely.
-
-Do not commit the PEM, paste it into an issue, upload it as an artifact, or send it through chat.
-
-## 3. Install on selected repositories only
-
-Install the App on the `GlacierEQ` personal account using **Only select repositories**:
+## Exact installation allowlist
 
 ```text
 GlacierEQ/mastermind
@@ -41,76 +62,47 @@ GlacierEQ/monolith
 GlacierEQ/MEGA-PDF
 ```
 
-Do not select `All repositories`.
+The bootstrap fails closed when the observed installation contains any repository outside this set or omits an approved repository after the bounded installation window.
 
-For MEGA-PDF, the token is limited at runtime to `GlacierEQ/MEGA-PDF` with `contents:write`. The relay reads the selected source ref and writes generated inventory artifacts only to:
+## Human boundary
 
-```text
-automation/mega-pdf-function-genome-results
+GitHub may require the signed-in account owner to approve the App creation or installation screen. That is an account-consent boundary, not a credential-transport task. The desktop agent handles navigation and repository selection; the owner does not generate, view, copy, paste, store, or transmit the key.
+
+## Verification
+
+```bash
+python -m pytest -q tests/test_github_app_manifest_bootstrap.py
+python -m py_compile github-app/bootstrap_apex_github_app.py
 ```
 
-No private inventory artifact is uploaded to the public action-face repository.
+Tests enforce:
 
-## 4. Store the App identity on the canonical action face
+- private owner-only App configuration;
+- inactive webhooks and no events;
+- `contents:write` as the only declared permission;
+- anti-forgery state separation;
+- exact four-repository installation allowlist;
+- PEM injection through standard input only;
+- no PEM in command arguments.
 
-In `GlacierEQ/public-actions-runner-host` repository settings, create exactly:
+## Completion condition
 
-```text
-Actions variable
-APEX_RUNNER_APP_CLIENT_ID = <Client ID shown on the App settings page>
-
-Actions secret
-APEX_RUNNER_APP_PRIVATE_KEY = <entire downloaded PEM contents>
-```
-
-The secret must include the complete `BEGIN ... PRIVATE KEY` and `END ... PRIVATE KEY` lines.
-
-No App ID or installation ID needs to be stored. The workflow resolves installations dynamically. Static PAT fallback is prohibited.
-
-## 5. Public visibility gate
-
-`GlacierEQ/public-actions-runner-host` must remain public. The identity guard blocks execution if GitHub reports any other visibility or repository identity.
-
-## 6. MEGA-PDF activation run
-
-After the variable and secret exist, rerun PR:
+The bridge is complete only when the rerun records:
 
 ```text
-GlacierEQ/public-actions-runner-host #67
-Workflow: MEGA-PDF Private Relay PR Trigger
-Source: GlacierEQ/MEGA-PDF
-Ref: upgrade/mega-pdf-document-intelligence-v2
+Require GitHub App bridge configuration = success
+Mint one-repository private control token = success
+Assert private non-executing control plane = success
+Atomically claim immutable job ID = success
+Verify private dual-confirmation record = success
+Mint one-repository private workload token = success
+Checkout catalog-approved workload = success
+Bind exact workload repository and commit = success
+Execute isolated public action adapter = success
+Verify post-run control, workload, and result integrity = success
+Return verified detailed result to private control plane = success
+Publish truthful sanitized issue status = success
+workflow conclusion = success
 ```
 
-The relay will:
-
-1. verify the public action-face identity;
-2. mint one short-lived token scoped only to `GlacierEQ/MEGA-PDF`;
-3. checkout and bind the exact private source commit;
-4. compile the governed control plane;
-5. run the focused governance and ingestion tests;
-6. execute the real monorepo Function Genome ingestion;
-7. verify every receipt, chain link, terminal root, and promotion invariant;
-8. publish the private artifacts to `automation/mega-pdf-function-genome-results`;
-9. revoke the installation token automatically at job completion.
-
-## Acceptance evidence
-
-The bridge is activated for MEGA-PDF only when all of these are observed:
-
-```text
-public relay workflow conclusion = success
-exact private source SHA recorded
-installation token scope = GlacierEQ/MEGA-PDF only
-contents permission = write; all unrelated permissions absent
-focused tests pass
-receipt_chain_valid = true
-discovered = promoted_to_probed + blocked
-receipts = discovered
-approved = 0
-defaults_promoted = 0
-private results branch exists
-no PAT fallback used
-no private Actions minutes used
-no private inventory artifact published publicly
-```
+No PAT fallback is permitted. PR #63 and Monolith PR #3 remain unmerged until the bounded private receipt is independently verified.
