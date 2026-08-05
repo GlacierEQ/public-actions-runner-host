@@ -10,6 +10,7 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import unquote
 
 import apex_catalog_runner as catalog
+
 from scripts.workload_isolation import (
     WorkloadIsolationError,
     attest_checkout,

@@ -8,9 +8,7 @@ import pytest
 
 from scripts import workload_isolation
 
-EMPTY_SHA256 = (
-    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-)
+EMPTY_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
 
 def git(root: Path, *args: str) -> str:
@@ -156,12 +154,14 @@ def test_relative_read_rejects_file_symlink(tmp_path: Path) -> None:
     outside.write_text("do-not-read\n", encoding="utf-8")
     (repository / "leak.txt").symlink_to(outside)
 
-    with workload_isolation.open_checkout(repository, label="workload") as checkout:
-        with pytest.raises(
+    with (
+        workload_isolation.open_checkout(repository, label="workload") as checkout,
+        pytest.raises(
             workload_isolation.WorkloadIsolationError,
             match="open/read failed without following symlinks",
-        ):
-            workload_isolation.read_relative_regular_file(checkout, "leak.txt")
+        ),
+    ):
+        workload_isolation.read_relative_regular_file(checkout, "leak.txt")
 
 
 def test_untracked_runtime_artifacts_do_not_change_source_attestation(

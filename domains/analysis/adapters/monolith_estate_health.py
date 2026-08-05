@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 import apex_catalog_runner as catalog
+
 from scripts.workload_isolation import (
     WorkloadIsolationError,
     attest_checkout,
@@ -53,9 +54,7 @@ def read_object(checkout, relative: str) -> dict:
             f"invalid analysis source: {Path(relative).name}: {type(error).__name__}"
         ) from error
     if not isinstance(value, dict):
-        raise TypeError(
-            f"analysis source must be an object: {Path(relative).name}"
-        )
+        raise TypeError(f"analysis source must be an object: {Path(relative).name}")
     return value
 
 

@@ -12,6 +12,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from types import TracebackType
+from typing import Self
 
 JOB_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -121,7 +122,7 @@ class CheckoutHandle:
         os.close(self.fd)
         os.close(self.parent_fd)
 
-    def __enter__(self) -> CheckoutHandle:
+    def __enter__(self) -> Self:
         self.assert_path_identity()
         return self
 
