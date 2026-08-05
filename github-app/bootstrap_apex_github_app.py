@@ -25,6 +25,8 @@ PRIVATE_KEY_SECRET: Final = "APEX_RUNNER_APP_PRIVATE_KEY"
 DEFAULT_RUN_ID: Final = 30964992458
 DEFAULT_HOST: Final = "127.0.0.1"
 DEFAULT_PORT: Final = 8765
+DEFAULT_GH_TIMEOUT_SECONDS: Final = 120
+
 EXPECTED_REPOSITORIES: Final[frozenset[str]] = frozenset(
     {
         "GlacierEQ/mastermind",
@@ -32,6 +34,21 @@ EXPECTED_REPOSITORIES: Final[frozenset[str]] = frozenset(
         "GlacierEQ/monolith",
         "GlacierEQ/MEGA-PDF",
     }
+)
+
+REQUIRED_COMPLETION_RECORDS: Final[tuple[str, ...]] = (
+    "Require GitHub App bridge configuration",
+    "Mint one-repository private control token",
+    "Assert private non-executing control plane",
+    "Atomically claim immutable job ID",
+    "Verify private dual-confirmation record",
+    "Mint one-repository private workload token",
+    "Checkout catalog-approved workload",
+    "Bind exact workload repository and commit",
+    "Execute isolated public action adapter",
+    "Verify post-run control, workload, and result integrity",
+    "Return verified detailed result to private control plane",
+    "Publish truthful sanitized issue status",
 )
 
 
@@ -44,15 +61,23 @@ def run_gh(
     *,
     input_text: str | None = None,
     check: bool = True,
+    timeout_seconds: int = DEFAULT_GH_TIMEOUT_SECONDS,
 ) -> subprocess.CompletedProcess[str]:
     """Run GitHub CLI without echoing arguments or stdin."""
-    completed = subprocess.run(
-        ["gh", *args],
-        input=input_text,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    try:
+        completed = subprocess.run(
+            ["gh", *args],
+            input=input_text,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise BootstrapError(
+            f"GitHub CLI command timed out after {timeout_seconds} seconds."
+        ) from exc
+
     if check and completed.returncode != 0:
         detail = completed.stderr.strip() or completed.stdout.strip() or "unknown gh error"
         raise BootstrapError(f"GitHub CLI command failed: {detail}")
@@ -71,7 +96,21 @@ def require_prerequisites() -> None:
 
 
 def load_manifest(path: Path, redirect_url: str) -> dict[str, Any]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    try:
+        content = path.read_text(encoding="utf-8")
+    except FileNotFoundError as exc:
+        raise BootstrapError(f"Manifest file not found: {path}") from exc
+    except OSError as exc:
+        raise BootstrapError(f"Failed to read manifest file {path}: {exc}") from exc
+
+    try:
+        payload = json.loads(content)
+    except json.JSONDecodeError as exc:
+        raise BootstrapError(f"Manifest file {path} contains invalid JSON: {exc}") from exc
+
+    if not isinstance(payload, dict):
+        raise BootstrapError("Manifest root must be a JSON object.")
+
     payload["redirect_url"] = redirect_url
     payload["public"] = False
     payload["default_events"] = []
@@ -80,6 +119,8 @@ def load_manifest(path: Path, redirect_url: str) -> dict[str, Any]:
     payload["setup_on_update"] = False
 
     hook_attributes = payload.setdefault("hook_attributes", {})
+    if not isinstance(hook_attributes, dict):
+        raise BootstrapError("Manifest hook_attributes must be a JSON object.")
     hook_attributes["active"] = False
     hook_attributes.pop("url", None)
 
@@ -118,6 +159,13 @@ def callback_page(success: bool, message: str) -> bytes:
     ).encode("utf-8")
 
 
+def _validate_loopback_host(host: str) -> None:
+    if host != DEFAULT_HOST:
+        raise BootstrapError(
+            f"Callback host must remain loopback-only at {DEFAULT_HOST}; received {host!r}."
+        )
+
+
 def receive_manifest_code(
     manifest: dict[str, Any],
     *,
@@ -125,8 +173,10 @@ def receive_manifest_code(
     port: int,
     timeout_seconds: int,
 ) -> str:
+    _validate_loopback_host(host)
     callback_queue: queue.Queue[tuple[str, str]] = queue.Queue(maxsize=1)
     expected_state = secrets.token_urlsafe(32)
+    expected_host_header = f"{host}:{port}"
     manifest["redirect_url"] = f"http://{host}:{port}/callback"
     start_page = registration_page(manifest, expected_state)
 
@@ -138,10 +188,16 @@ def receive_manifest_code(
             self.send_response(status)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(payload)))
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
             self.end_headers()
             self.wfile.write(payload)
 
         def do_GET(self) -> None:  # noqa: N802
+            if self.headers.get("Host") != expected_host_header:
+                self.send_html(403, callback_page(False, "Invalid Host header."))
+                return
+
             parsed = urllib.parse.urlparse(self.path)
             if parsed.path == "/":
                 self.send_html(200, start_page)
@@ -190,11 +246,21 @@ def receive_manifest_code(
         thread.join(timeout=5)
 
 
+def _parse_json_object(raw: str, context: str) -> dict[str, Any]:
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise BootstrapError(f"{context} returned invalid JSON: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise BootstrapError(f"{context} must return a JSON object.")
+    return payload
+
+
 def exchange_manifest_code(code: str) -> dict[str, Any]:
     result = run_gh(
         ["api", "--method", "POST", f"/app-manifests/{code}/conversions"]
     )
-    payload = json.loads(result.stdout)
+    payload = _parse_json_object(result.stdout, "GitHub manifest conversion")
     required = ("client_id", "pem", "slug")
     missing = [key for key in required if not payload.get(key)]
     if missing:
@@ -207,7 +273,52 @@ def exchange_manifest_code(code: str) -> dict[str, Any]:
     return payload
 
 
+def _read_existing_variable() -> str | None:
+    result = run_gh(
+        [
+            "api",
+            f"/repos/{TARGET_REPO}/actions/variables/{CLIENT_ID_VARIABLE}",
+        ],
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    payload = _parse_json_object(result.stdout, "Existing repository variable lookup")
+    value = payload.get("value")
+    return str(value) if value is not None else None
+
+
+def _restore_variable(previous_value: str | None) -> None:
+    if previous_value is None:
+        result = run_gh(
+            [
+                "api",
+                "--method",
+                "DELETE",
+                f"/repos/{TARGET_REPO}/actions/variables/{CLIENT_ID_VARIABLE}",
+            ],
+            check=False,
+        )
+        if result.returncode != 0:
+            detail = result.stderr.strip() or result.stdout.strip() or "unknown rollback error"
+            raise BootstrapError(f"Credential rollback failed while deleting variable: {detail}")
+        return
+
+    run_gh(
+        [
+            "variable",
+            "set",
+            CLIENT_ID_VARIABLE,
+            "--repo",
+            TARGET_REPO,
+            "--body",
+            previous_value,
+        ]
+    )
+
+
 def write_repository_settings(client_id: str, pem: str) -> None:
+    previous_value = _read_existing_variable()
     run_gh(
         [
             "variable",
@@ -219,24 +330,42 @@ def write_repository_settings(client_id: str, pem: str) -> None:
             client_id,
         ]
     )
-    run_gh(
-        [
-            "secret",
-            "set",
-            PRIVATE_KEY_SECRET,
-            "--repo",
-            TARGET_REPO,
-        ],
-        input_text=pem,
-    )
+    try:
+        run_gh(
+            [
+                "secret",
+                "set",
+                PRIVATE_KEY_SECRET,
+                "--repo",
+                TARGET_REPO,
+            ],
+            input_text=pem,
+        )
+    except BootstrapError as secret_error:
+        try:
+            _restore_variable(previous_value)
+        except BootstrapError as rollback_error:
+            raise BootstrapError(
+                f"Secret write failed ({secret_error}); rollback also failed ({rollback_error})."
+            ) from secret_error
+        raise BootstrapError(
+            f"Secret write failed; the Client ID variable was rolled back: {secret_error}"
+        ) from secret_error
 
 
 def list_installation_repositories(app_slug: str) -> frozenset[str] | None:
-    installations = json.loads(run_gh(["api", "/user/installations"]).stdout)
+    installations = _parse_json_object(
+        run_gh(["api", "/user/installations"]).stdout,
+        "GitHub installations API",
+    )
+    raw_installations = installations.get("installations", [])
+    if not isinstance(raw_installations, list):
+        raise BootstrapError("GitHub installations API returned an invalid installations list.")
+
     candidates = [
         item
-        for item in installations.get("installations", [])
-        if item.get("app_slug") == app_slug
+        for item in raw_installations
+        if isinstance(item, dict) and item.get("app_slug") == app_slug
     ]
     if not candidates:
         return None
@@ -246,19 +375,38 @@ def list_installation_repositories(app_slug: str) -> frozenset[str] | None:
         installation_id = installation.get("id")
         if not installation_id:
             continue
-        payload = json.loads(
-            run_gh(
-                [
-                    "api",
-                    "--paginate",
-                    "--slurp",
-                    f"/user/installations/{installation_id}/repositories",
-                ]
-            ).stdout
-        )
+        raw = run_gh(
+            [
+                "api",
+                "--paginate",
+                "--slurp",
+                f"/user/installations/{installation_id}/repositories",
+            ]
+        ).stdout
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise BootstrapError(
+                f"GitHub repositories API for installation {installation_id} "
+                f"returned invalid JSON: {exc}"
+            ) from exc
+
         pages = payload if isinstance(payload, list) else [payload]
         for page in pages:
-            for repository in page.get("repositories", []):
+            if not isinstance(page, dict):
+                raise BootstrapError(
+                    f"GitHub repositories API for installation {installation_id} "
+                    "returned an invalid page."
+                )
+            repositories = page.get("repositories", [])
+            if not isinstance(repositories, list):
+                raise BootstrapError(
+                    f"GitHub repositories API for installation {installation_id} "
+                    "returned an invalid repositories list."
+                )
+            for repository in repositories:
+                if not isinstance(repository, dict):
+                    continue
                 full_name = repository.get("full_name")
                 if full_name:
                     repository_names.add(str(full_name))
@@ -304,41 +452,110 @@ def wait_for_exact_installation(
     raise BootstrapError(f"Timed out waiting for the exact installation; {detail}.")
 
 
+def _view_run(run_id: int) -> dict[str, Any]:
+    view = run_gh(
+        [
+            "run",
+            "view",
+            str(run_id),
+            "--repo",
+            TARGET_REPO,
+            "--json",
+            "attempt,status,conclusion,jobs,url",
+        ]
+    )
+    return _parse_json_object(view.stdout, "GitHub workflow view")
+
+
+def validate_completion_records(run: dict[str, Any]) -> None:
+    if run.get("status") != "completed":
+        raise BootstrapError("Workflow has not completed.")
+    if run.get("conclusion") != "success":
+        raise BootstrapError(
+            f"Workflow conclusion is not success: {run.get('conclusion') or 'unknown'}."
+        )
+
+    observed: dict[str, str | None] = {}
+    jobs = run.get("jobs", [])
+    if not isinstance(jobs, list):
+        raise BootstrapError("Workflow jobs payload is invalid.")
+
+    for job in jobs:
+        if not isinstance(job, dict):
+            continue
+        job_name = job.get("name")
+        if job_name:
+            observed[str(job_name)] = (
+                str(job.get("conclusion")) if job.get("conclusion") is not None else None
+            )
+        steps = job.get("steps", [])
+        if not isinstance(steps, list):
+            raise BootstrapError(f"Workflow steps payload is invalid for job {job_name!r}.")
+        for step in steps:
+            if not isinstance(step, dict):
+                continue
+            step_name = step.get("name")
+            if step_name:
+                observed[str(step_name)] = (
+                    str(step.get("conclusion"))
+                    if step.get("conclusion") is not None
+                    else None
+                )
+
+    missing = [name for name in REQUIRED_COMPLETION_RECORDS if name not in observed]
+    if missing:
+        raise BootstrapError(
+            "Workflow is missing required completion records: " + ", ".join(missing)
+        )
+
+    unsuccessful = [
+        f"{name}={observed[name] or 'unknown'}"
+        for name in REQUIRED_COMPLETION_RECORDS
+        if observed[name] != "success"
+    ]
+    if unsuccessful:
+        raise BootstrapError(
+            "Required completion records did not succeed: " + ", ".join(unsuccessful)
+        )
+
+
 def rerun_and_report(run_id: int, *, timeout_seconds: int) -> int:
+    baseline = _view_run(run_id)
+    baseline_attempt = baseline.get("attempt")
+    if not isinstance(baseline_attempt, int):
+        raise BootstrapError("Workflow view omitted a numeric attempt value.")
+
     run_gh(["run", "rerun", str(run_id), "--failed", "--repo", TARGET_REPO])
     deadline = time.monotonic() + timeout_seconds
     latest: dict[str, Any] = {}
 
     while time.monotonic() < deadline:
-        view = run_gh(
-            [
-                "run",
-                "view",
-                str(run_id),
-                "--repo",
-                TARGET_REPO,
-                "--json",
-                "status,conclusion,jobs,url",
-            ]
-        )
-        latest = json.loads(view.stdout)
-        if latest.get("status") == "completed":
-            break
+        latest = _view_run(run_id)
+        attempt = latest.get("attempt")
+        if isinstance(attempt, int) and attempt > baseline_attempt:
+            if latest.get("status") == "completed":
+                break
         time.sleep(8)
     else:
-        raise BootstrapError("Timed out waiting for the workflow rerun.")
+        raise BootstrapError("Timed out waiting for the new workflow rerun attempt.")
 
     print(f"Workflow: {latest.get('url', '')}")
+    print(f"Attempt: {latest.get('attempt')}")
     print(f"Conclusion: {latest.get('conclusion') or 'unknown'}")
     for job in latest.get("jobs", []):
+        if not isinstance(job, dict):
+            continue
         print(f"Job {job.get('name')}: {job.get('conclusion') or job.get('status')}")
         for step in job.get("steps", []):
+            if not isinstance(step, dict):
+                continue
             print(
                 f"  {step.get('name')}: "
                 f"{step.get('conclusion') or step.get('status')}"
             )
 
-    return 0 if latest.get("conclusion") == "success" else 2
+    validate_completion_records(latest)
+    return 0
 
 
 def parse_args() -> argparse.Namespace:
@@ -350,7 +567,6 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path(__file__).with_name("app-manifest.json"),
     )
-    parser.add_argument("--host", default=DEFAULT_HOST)
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     parser.add_argument("--run-id", type=int, default=DEFAULT_RUN_ID)
     parser.add_argument("--registration-timeout", type=int, default=900)
@@ -363,22 +579,21 @@ def main() -> int:
     args = parse_args()
     try:
         require_prerequisites()
-        redirect_url = f"http://{args.host}:{args.port}/callback"
+        redirect_url = f"http://{DEFAULT_HOST}:{args.port}/callback"
         manifest = load_manifest(args.manifest, redirect_url)
         code = receive_manifest_code(
             manifest,
-            host=args.host,
+            host=DEFAULT_HOST,
             port=args.port,
             timeout_seconds=args.registration_timeout,
         )
         app = exchange_manifest_code(code)
         client_id = str(app["client_id"])
-        pem = str(app["pem"])
+        pem = str(app.pop("pem"))
         app_slug = str(app["slug"])
 
         write_repository_settings(client_id, pem)
-        del pem
-        app.pop("pem", None)
+        pem = ""
         app.pop("client_secret", None)
         app.pop("webhook_secret", None)
 
@@ -387,7 +602,7 @@ def main() -> int:
             timeout_seconds=args.installation_timeout,
         )
         return rerun_and_report(args.run_id, timeout_seconds=args.workflow_timeout)
-    except (BootstrapError, json.JSONDecodeError, OSError) as exc:
+    except (BootstrapError, OSError) as exc:
         print(f"BOOTSTRAP_FAILED: {exc}", file=sys.stderr)
         return 1
 
