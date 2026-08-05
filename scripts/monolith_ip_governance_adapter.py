@@ -26,19 +26,24 @@ ENV_ALLOWLIST = ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR")
 MAX_OUTPUT = 24_000
 TEST_COUNT = re.compile(r"Ran\s+(\d+)\s+tests?", re.IGNORECASE)
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
+LEGAL_AUTHORIZATION_EXAMPLE_PATH = (
+    "examples/legal/evaluation-authorization.example.json"
+)
+LEGAL_AUTHORIZATION_SCHEMA_PATH = "schemas/legal-authorization.schema.json"
+LEGAL_AUTHORIZATION_VALIDATOR_PATH = "scripts/validate_legal_authorization.py"
 CRITICAL_PATHS = (
     "ip-manifest.json",
     "catalog/rights_overlay.json",
-    "examples/legal/evaluation-authorization.example.json",
+    LEGAL_AUTHORIZATION_EXAMPLE_PATH,
     "schemas/ip-manifest.schema.json",
-    "schemas/legal-authorization.schema.json",
+    LEGAL_AUTHORIZATION_SCHEMA_PATH,
     "scripts/generate_publication_receipt.py",
     "scripts/json_schema_subset.py",
     "scripts/load_governed_catalog.py",
     "scripts/scan_secrets.py",
     "scripts/validate_evidence_records.py",
     "scripts/validate_ip_manifest.py",
-    "scripts/validate_legal_authorization.py",
+    LEGAL_AUTHORIZATION_VALIDATOR_PATH,
     "scripts/validate_publication_authorization.py",
     "scripts/validate_release_evidence.py",
     "scripts/verify_publication_readiness.py",
@@ -204,17 +209,10 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             )
         )
         legal_schema = json.loads(
-            (workspace / "schemas" / "legal-authorization.schema.json").read_text(
-                encoding="utf-8"
-            )
+            (workspace / LEGAL_AUTHORIZATION_SCHEMA_PATH).read_text(encoding="utf-8")
         )
         legal_example = json.loads(
-            (
-                workspace
-                / "examples"
-                / "legal"
-                / "evaluation-authorization.example.json"
-            ).read_text(encoding="utf-8")
+            (workspace / LEGAL_AUTHORIZATION_EXAMPLE_PATH).read_text(encoding="utf-8")
         )
         if not isinstance(manifest_schema, dict):
             raise TypeError("IP manifest schema must contain a JSON object")
@@ -258,10 +256,10 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         ],
         [
             sys.executable,
-            "scripts/validate_legal_authorization.py",
-            "examples/legal/evaluation-authorization.example.json",
+            LEGAL_AUTHORIZATION_VALIDATOR_PATH,
+            LEGAL_AUTHORIZATION_EXAMPLE_PATH,
             "--schema",
-            "schemas/legal-authorization.schema.json",
+            LEGAL_AUTHORIZATION_SCHEMA_PATH,
         ],
         [sys.executable, "scripts/validate_release_evidence.py", "ip-manifest.json"],
         [
@@ -293,18 +291,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "-m",
             "json.tool",
             "schemas/ip-manifest.schema.json",
-        ],
-        [
-            sys.executable,
-            "-m",
-            "json.tool",
-            "schemas/legal-authorization.schema.json",
-        ],
-        [
-            sys.executable,
-            "-m",
-            "json.tool",
-            "examples/legal/evaluation-authorization.example.json",
         ],
         [sys.executable, "-m", "json.tool", str(scan_path)],
     ]
