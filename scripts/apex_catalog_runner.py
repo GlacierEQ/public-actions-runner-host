@@ -392,7 +392,7 @@ def document_validate(plan: dict, workspace: Path, result_path: Path) -> int:
         try:
             with os.fdopen(duplicate, "rb") as handle:
                 valid = zipfile.is_zipfile(handle)
-        except Exception as error:  # noqa: BLE001
+        except Exception as error:
             raise InventoryBoundaryError(
                 f"office container validation failed: {type(error).__name__}"
             ) from error
