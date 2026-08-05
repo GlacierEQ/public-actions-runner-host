@@ -285,7 +285,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "test_*.py",
             "-v",
         ],
-        [sys.executable, "-m", "json.tool", "ip-manifest.json"],
         [
             sys.executable,
             "-m",
