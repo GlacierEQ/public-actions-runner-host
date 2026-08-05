@@ -226,9 +226,8 @@ def write_repository_settings(client_id: str, pem: str) -> None:
             PRIVATE_KEY_SECRET,
             "--repo",
             TARGET_REPO,
-            "--body",
-            pem,
-        ]
+        ],
+        input_text=pem,
     )
 
 
