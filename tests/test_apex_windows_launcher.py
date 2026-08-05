@@ -11,7 +11,8 @@ def test_windows_launcher_is_one_click_and_never_prompts_for_a_key() -> None:
 
     assert "start_apex_runner_bridge.ps1" in cmd
     assert "bootstrap_apex_github_app.py" in ps1
-    assert "auth", "login", "--web" in ps1
+    for token in ("auth", "login", "--web"):
+        assert token in ps1
     assert "Read-Host" not in ps1
     assert "set /p" not in cmd.lower()
     assert "APEX_RUNNER_APP_PRIVATE_KEY" not in cmd
