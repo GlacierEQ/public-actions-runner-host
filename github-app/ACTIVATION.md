@@ -1,6 +1,6 @@
 # APEX Runner Bridge — Automated Owner Bootstrap
 
-The bridge must not depend on a human copying a Client ID, downloading a PEM, or pasting that PEM into repository settings. The canonical activation path is now the local GitHub App Manifest bootstrap:
+The bridge must not depend on a human copying a Client ID, downloading a PEM, or pasting that PEM into repository settings. The canonical activation path is the local GitHub App Manifest bootstrap:
 
 ```bash
 python github-app/bootstrap_apex_github_app.py
@@ -10,30 +10,22 @@ Run it from an authenticated desktop-agent session with GitHub CLI available. Th
 
 ## What the bootstrap performs
 
-1. Loads `github-app/app-manifest.json`.
-2. Starts a loopback-only callback server on `127.0.0.1`.
+1. Loads and validates `github-app/app-manifest.json`.
+2. Starts a callback server fixed to `127.0.0.1` and rejects an unexpected `Host` header.
 3. Opens GitHub's App Manifest registration flow.
 4. Validates the returned anti-forgery `state` value.
 5. Exchanges the one-time manifest code for the App configuration.
-6. Keeps the generated PEM only in process memory.
-7. Writes the App Client ID to the repository variable:
-
-   ```text
-   APEX_RUNNER_APP_CLIENT_ID
-   ```
-
-8. Pipes the PEM through standard input directly into the encrypted repository secret:
-
-   ```text
-   APEX_RUNNER_APP_PRIVATE_KEY
-   ```
-
-9. Removes the PEM, client secret, and webhook secret from the response object before reporting.
-10. Opens the App installation screen.
-11. Polls GitHub until the installation contains exactly the approved repositories.
-12. Rejects any unexpected repository access.
-13. Reruns only the failed jobs in workflow run `30964992458`.
-14. Waits for completion and prints the workflow, job, and step conclusions.
+6. Keeps the generated PEM in process memory only; Python cannot guarantee byte-for-byte memory zeroization.
+7. Records the current Client ID variable so a failed secret write can roll back cleanly.
+8. Writes the App Client ID to `APEX_RUNNER_APP_CLIENT_ID`.
+9. Pipes the PEM through standard input directly into `APEX_RUNNER_APP_PRIVATE_KEY`.
+10. Discards application-response references to the PEM, client secret, and webhook secret before reporting.
+11. Opens the App installation screen.
+12. Polls GitHub until the installation contains exactly the approved repositories.
+13. Rejects any unexpected repository access.
+14. Reruns only the failed jobs in workflow run `30964992458`.
+15. Waits for a new workflow attempt rather than accepting the pre-rerun result.
+16. Requires every named completion record to exist and conclude `success` before returning success.
 
 The PEM is never printed, placed in a command-line argument, written to disk, committed, uploaded as an artifact, or transported through chat.
 
@@ -66,7 +58,7 @@ The bootstrap fails closed when the observed installation contains any repositor
 
 ## Human boundary
 
-GitHub may require the signed-in account owner to approve the App creation or installation screen. That is an account-consent boundary, not a credential-transport task. The desktop agent handles navigation and repository selection; the owner does not generate, view, copy, paste, store, or transmit the key.
+GitHub may require the signed-in account owner to approve the App creation or installation screen. That is an account-consent boundary, not a credential-transport task. The desktop agent handles credential exchange, repository settings, verification, rerun, and reporting. The owner does not generate, view, copy, paste, store, or transmit the key.
 
 ## Verification
 
@@ -81,28 +73,32 @@ Tests enforce:
 - inactive webhooks and no events;
 - `contents:write` as the only declared permission;
 - anti-forgery state separation;
+- loopback-only callback binding;
+- bounded GitHub CLI execution;
 - exact four-repository installation allowlist;
 - PEM injection through standard input only;
-- no PEM in command arguments.
+- rollback after a partial credential write;
+- new-attempt detection after rerun;
+- rejection of missing, skipped, or failed completion records.
 
 ## Completion condition
 
-The bridge is complete only when the rerun records:
+The bridge is complete only when the new rerun records every item below as `success`:
 
 ```text
-Require GitHub App bridge configuration = success
-Mint one-repository private control token = success
-Assert private non-executing control plane = success
-Atomically claim immutable job ID = success
-Verify private dual-confirmation record = success
-Mint one-repository private workload token = success
-Checkout catalog-approved workload = success
-Bind exact workload repository and commit = success
-Execute isolated public action adapter = success
-Verify post-run control, workload, and result integrity = success
-Return verified detailed result to private control plane = success
-Publish truthful sanitized issue status = success
-workflow conclusion = success
+Require GitHub App bridge configuration
+Mint one-repository private control token
+Assert private non-executing control plane
+Atomically claim immutable job ID
+Verify private dual-confirmation record
+Mint one-repository private workload token
+Checkout catalog-approved workload
+Bind exact workload repository and commit
+Execute isolated public action adapter
+Verify post-run control, workload, and result integrity
+Return verified detailed result to private control plane
+Publish truthful sanitized issue status
+workflow conclusion
 ```
 
 No PAT fallback is permitted. PR #63 and Monolith PR #3 remain unmerged until the bounded private receipt is independently verified.
