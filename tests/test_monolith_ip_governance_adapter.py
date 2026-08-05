@@ -37,6 +37,7 @@ def plan() -> dict:
 
 def write_fixture(root: Path, *, include_test: bool = True) -> None:
     (root / "catalog").mkdir(parents=True)
+    (root / "examples" / "legal").mkdir(parents=True)
     (root / "schemas").mkdir()
     (root / "scripts").mkdir()
     (root / "tests").mkdir()
@@ -56,6 +57,13 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
         },
     }
     schema = {"type": "object"}
+    legal_example = {
+        "schemaVersion": "1.0",
+        "recordClass": "authorization",
+        "authorizationId": "GEQ-EVAL-EXAMPLE-001",
+        "authorizationType": "evaluation",
+        "status": "template",
+    }
     (root / "ip-manifest.json").write_text(
         json.dumps(manifest) + "\n", encoding="utf-8"
     )
@@ -65,11 +73,18 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
     (root / "schemas" / "ip-manifest.schema.json").write_text(
         json.dumps(schema) + "\n", encoding="utf-8"
     )
+    (root / "schemas" / "legal-authorization.schema.json").write_text(
+        json.dumps(schema) + "\n", encoding="utf-8"
+    )
+    (root / "examples" / "legal" / "evaluation-authorization.example.json").write_text(
+        json.dumps(legal_example) + "\n", encoding="utf-8"
+    )
     for name in (
         "generate_publication_receipt.py",
         "json_schema_subset.py",
         "validate_evidence_records.py",
         "validate_ip_manifest.py",
+        "validate_legal_authorization.py",
         "validate_publication_authorization.py",
         "validate_release_evidence.py",
         "verify_publication_readiness.py",
@@ -190,6 +205,15 @@ def test_scan_summary_is_bounded() -> None:
     }
 
 
+def test_legal_authorization_controls_are_critical() -> None:
+    assert "schemas/legal-authorization.schema.json" in adapter.CRITICAL_PATHS
+    assert "scripts/validate_legal_authorization.py" in adapter.CRITICAL_PATHS
+    assert (
+        "examples/legal/evaluation-authorization.example.json"
+        in adapter.CRITICAL_PATHS
+    )
+
+
 def test_adapter_executes_repository_owned_gate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -206,6 +230,24 @@ def test_adapter_executes_repository_owned_gate(
     assert result["secret_scan"]["status"] == "passed"
     assert result["secret_scan"]["scanned_commit"] == SOURCE_SHA
     assert set(result["critical_file_sha256"]) == set(adapter.CRITICAL_PATHS)
+    commands = [step["command"] for step in result["steps"]]
+    assert any("scripts/validate_legal_authorization.py" in command for command in commands)
+
+
+def test_adapter_fails_when_legal_authorization_gate_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    (tmp_path / "scripts" / "validate_legal_authorization.py").write_text(
+        "raise SystemExit(1)\n", encoding="utf-8"
+    )
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-legal.json"
+
+    assert run(plan(), tmp_path, result_path) != 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["failed_step"] == 4
 
 
 def test_adapter_fails_when_release_evidence_gate_fails(
@@ -221,7 +263,7 @@ def test_adapter_fails_when_release_evidence_gate_fails(
     assert run(plan(), tmp_path, result_path) != 0
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "failed"
-    assert result["failed_step"] == 4
+    assert result["failed_step"] == 5
 
 
 def test_adapter_fails_when_publication_readiness_gate_fails(
@@ -237,7 +279,38 @@ def test_adapter_fails_when_publication_readiness_gate_fails(
     assert run(plan(), tmp_path, result_path) != 0
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "failed"
-    assert result["failed_step"] == 5
+    assert result["failed_step"] == 6
+
+
+def test_adapter_rejects_mid_run_legal_schema_mutation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_fixture(tmp_path)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    result_path = tmp_path.parent / "result-legal-mutation.json"
+    original_run_command = adapter.run_command
+    mutated = False
+
+    def mutating_run_command(
+        command: list[str], workspace: Path, timeout: int = 900
+    ) -> dict:
+        nonlocal mutated
+        result = original_run_command(command, workspace, timeout)
+        if not mutated and "scripts/validate_legal_authorization.py" in command:
+            target = workspace / "schemas" / "legal-authorization.schema.json"
+            target.write_text(
+                target.read_text(encoding="utf-8") + "\n",
+                encoding="utf-8",
+            )
+            mutated = True
+        return result
+
+    monkeypatch.setattr(adapter, "run_command", mutating_run_command)
+    assert adapter.run(plan(), tmp_path, result_path) != 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["reason"] == "critical governance files changed during execution"
+    assert "schemas/legal-authorization.schema.json" in result["changed_critical_files"]
 
 
 def test_adapter_rejects_mid_run_receipt_generator_mutation(
