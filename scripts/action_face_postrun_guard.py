@@ -230,9 +230,7 @@ def main() -> int:
                 if not SHA.fullmatch(expected_resolved):
                     fail("workflow did not provide a valid resolved source SHA")
                 if resolved != expected_resolved:
-                    fail(
-                        "result resolved source SHA does not match checkout binding"
-                    )
+                    fail("result resolved source SHA does not match checkout binding")
                 workload_attestation = verify_checkout(
                     workload_handle,
                     expected_resolved,
