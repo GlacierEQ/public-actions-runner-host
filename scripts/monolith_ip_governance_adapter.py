@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Run Monolith's commit-bound IP governance gate through the public action face.
+"""Run Monolith's commit-bound IP and legal governance gate.
 
 The adapter is read-only with respect to the workload. It executes the exact
-repository-owned overlay, scanner, schema-backed manifest validator, substantive
-release-evidence gate, publication-receipt readiness gate, and tests; proves that
-at least one test ran; and returns only bounded verification metadata through the
-private result plane. Critical control bytes are hashed before execution and must
-remain unchanged afterward.
+repository-owned overlay, scanner, schema-backed manifest validator, bounded
+legal-authorization validator, substantive release-evidence gate,
+publication-receipt readiness gate, and tests; proves that at least one test
+ran; and returns only bounded verification metadata through the private result
+plane. Critical control bytes are hashed before execution and must remain
+unchanged afterward.
 """
 from __future__ import annotations
 
@@ -28,13 +29,16 @@ SHA40 = re.compile(r"^[0-9a-f]{40}$")
 CRITICAL_PATHS = (
     "ip-manifest.json",
     "catalog/rights_overlay.json",
+    "examples/legal/evaluation-authorization.example.json",
     "schemas/ip-manifest.schema.json",
+    "schemas/legal-authorization.schema.json",
     "scripts/generate_publication_receipt.py",
     "scripts/json_schema_subset.py",
     "scripts/load_governed_catalog.py",
     "scripts/scan_secrets.py",
     "scripts/validate_evidence_records.py",
     "scripts/validate_ip_manifest.py",
+    "scripts/validate_legal_authorization.py",
     "scripts/validate_publication_authorization.py",
     "scripts/validate_release_evidence.py",
     "scripts/verify_publication_readiness.py",
@@ -194,13 +198,30 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     try:
         critical_files_before = hash_critical_files(workspace)
         manifest = json.loads((workspace / "ip-manifest.json").read_text(encoding="utf-8"))
-        schema = json.loads(
+        manifest_schema = json.loads(
             (workspace / "schemas" / "ip-manifest.schema.json").read_text(
                 encoding="utf-8"
             )
         )
-        if not isinstance(schema, dict):
+        legal_schema = json.loads(
+            (workspace / "schemas" / "legal-authorization.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        legal_example = json.loads(
+            (
+                workspace
+                / "examples"
+                / "legal"
+                / "evaluation-authorization.example.json"
+            ).read_text(encoding="utf-8")
+        )
+        if not isinstance(manifest_schema, dict):
             raise TypeError("IP manifest schema must contain a JSON object")
+        if not isinstance(legal_schema, dict):
+            raise TypeError("legal authorization schema must contain a JSON object")
+        if not isinstance(legal_example, dict):
+            raise TypeError("legal authorization example must contain a JSON object")
         summary = manifest_summary(manifest)
     except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError) as error:
         return catalog.write_result(
@@ -235,6 +256,13 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "--expected-commit",
             resolved_source_sha,
         ],
+        [
+            sys.executable,
+            "scripts/validate_legal_authorization.py",
+            "examples/legal/evaluation-authorization.example.json",
+            "--schema",
+            "schemas/legal-authorization.schema.json",
+        ],
         [sys.executable, "scripts/validate_release_evidence.py", "ip-manifest.json"],
         [
             sys.executable,
@@ -266,6 +294,18 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "json.tool",
             "schemas/ip-manifest.schema.json",
         ],
+        [
+            sys.executable,
+            "-m",
+            "json.tool",
+            "schemas/legal-authorization.schema.json",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "json.tool",
+            "examples/legal/evaluation-authorization.example.json",
+        ],
         [sys.executable, "-m", "json.tool", str(scan_path)],
     ]
 
@@ -275,7 +315,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         step = run_command(command, workspace)
         steps.append(step)
 
-        if index == 5:
+        if index == 6:
             try:
                 test_count = parse_test_count(step.get("output_tail", ""))
             except ValueError as error:
