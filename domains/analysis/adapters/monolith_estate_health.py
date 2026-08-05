@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 import apex_catalog_runner as catalog
+
 from scripts.workload_isolation import (
     WorkloadIsolationError,
     attest_checkout,
