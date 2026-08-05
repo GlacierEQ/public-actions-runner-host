@@ -154,8 +154,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 result_path,
                 "blocked",
                 reason=(
-                    "required Monolith atlas files are missing: "
-                    + ", ".join(missing)
+                    "required Monolith atlas files are missing: " + ", ".join(missing)
                 ),
             )
 
