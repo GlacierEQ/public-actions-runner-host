@@ -8,9 +8,7 @@ import pytest
 
 from scripts import workload_isolation
 
-EMPTY_SHA256 = (
-    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-)
+EMPTY_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
 
 def git(root: Path, *args: str) -> str:
