@@ -175,6 +175,6 @@ jobs:
         with:
           name: ${{ inputs.repo_name }}-verification
           path: .verification-artifacts/
-          if-no-files-found: warn
-          include-hidden-files: false
+          if-no-files-found: error
+          include-hidden-files: true
           retention-days: 14
