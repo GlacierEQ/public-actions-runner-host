@@ -1,0 +1,52 @@
+name: Actions Storage Relief
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/actions-storage-relief.yml
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  purge-rebuildable-caches:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Delete all rebuildable Actions caches in this repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          deleted=0
+          freed=0
+          page=1
+          while :; do
+            response="$(curl -fsSL \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$REPO/actions/caches?per_page=100&page=$page")"
+            count="$(jq '.actions_caches | length' <<<"$response")"
+            [ "$count" -gt 0 ] || break
+            while IFS=$'\t' read -r id size; do
+              curl -fsSL -X DELETE \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/$REPO/actions/caches/$id"
+              deleted=$((deleted + 1))
+              freed=$((freed + size))
+            done < <(jq -r '.actions_caches[] | [.id, .size_in_bytes] | @tsv' <<<"$response")
+            page=$((page + 1))
+          done
+          printf 'deleted_caches=%s\nfreed_bytes=%s\n' "$deleted" "$freed" | tee actions-storage-relief.txt
+
+      - name: Publish cleanup summary
+        shell: bash
+        run: cat actions-storage-relief.txt >> "$GITHUB_STEP_SUMMARY"
