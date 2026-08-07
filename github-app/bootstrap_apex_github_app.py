@@ -22,7 +22,6 @@ from typing import Any, Final
 TARGET_REPO: Final = "GlacierEQ/public-actions-runner-host"
 CLIENT_ID_VARIABLE: Final = "APEX_RUNNER_APP_CLIENT_ID"
 PRIVATE_KEY_SECRET: Final = "APEX_RUNNER_APP_PRIVATE_KEY"
-DEFAULT_RUN_ID: Final = 30964992458
 DEFAULT_HOST: Final = "127.0.0.1"
 DEFAULT_PORT: Final = 8765
 DEFAULT_GH_TIMEOUT_SECONDS: Final = 120
@@ -568,7 +567,7 @@ def parse_args() -> argparse.Namespace:
         default=Path(__file__).with_name("app-manifest.json"),
     )
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
-    parser.add_argument("--run-id", type=int, default=DEFAULT_RUN_ID)
+    parser.add_argument("--run-id", type=int, required=True)
     parser.add_argument("--registration-timeout", type=int, default=900)
     parser.add_argument("--installation-timeout", type=int, default=900)
     parser.add_argument("--workflow-timeout", type=int, default=1200)
