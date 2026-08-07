@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -235,3 +236,18 @@ def test_rerun_waits_for_new_attempt(monkeypatch) -> None:
     assert rerun_calls == [
         ["run", "rerun", "123", "--failed", "--repo", bootstrap.TARGET_REPO]
     ]
+
+
+def test_bootstrap_requires_explicit_run_id(monkeypatch) -> None:
+    monkeypatch.setattr(sys, "argv", ["bootstrap_apex_github_app.py"])
+    with pytest.raises(SystemExit) as error:
+        bootstrap.parse_args()
+    assert error.value.code == 2
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["bootstrap_apex_github_app.py", "--run-id", "31170532956"],
+    )
+    args = bootstrap.parse_args()
+    assert args.run_id == 31170532956
