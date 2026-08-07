@@ -75,3 +75,35 @@ ruff check --ignore EXE001,I001,PIE810 \
 python -m compileall -q dispatcher domains scripts tests
 pytest -x -q
 python scripts/verify_github_app_bridge_contract.py
+
+# The reusable CI contract requires a bounded proof artifact. Emit it only after
+# every repository-owned verification command above succeeds so artifact upload
+# and verification truth cannot diverge.
+mkdir -p .verification-artifacts
+python - <<'PY'
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+
+receipt = {
+    "schema": "glaciereq.public-action-face-verification-receipt.v1",
+    "status": "pass",
+    "repository": os.environ.get("GITHUB_REPOSITORY", "local"),
+    "commit": os.environ.get("GITHUB_SHA", "local"),
+    "workflow_run_id": os.environ.get("GITHUB_RUN_ID", "local"),
+    "checks": [
+        "catalog-json",
+        "ruff",
+        "format",
+        "compileall",
+        "pytest",
+        "github-app-bridge-contract",
+    ],
+}
+Path(".verification-artifacts/public-action-face-verification.json").write_text(
+    json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8",
+)
+PY
