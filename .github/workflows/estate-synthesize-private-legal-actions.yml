@@ -1,0 +1,67 @@
+name: Estate synthesize private legal actions
+
+on:
+  push:
+    branches:
+      - synth/private-legal-validation-actions-20260807
+    paths:
+      - .github/workflows/estate-synthesize-private-legal-actions.yml
+
+permissions:
+  contents: write
+
+jobs:
+  synthesize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out fresh synthesis branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Guard source and synthesize exact PR 83 delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_main=0f30e73e4932611d1b9e631db7b267bb2dc9064f
+          expected_source=b78410c34999d31015dad67305f83df36b36c686
+          source_base=8f2e50c2934b4ccf29f758b933cdbe78ef32b67a
+          git merge-base --is-ancestor "$expected_main" HEAD
+          git fetch --no-tags origin legal/private-validation-actions-v2-20260804
+          test "$(git rev-parse FETCH_HEAD)" = "$expected_source"
+          git diff --binary "$source_base" "$expected_source" -- \
+            config/action-face-actions.json \
+            docs/PRIVATE_LEGAL_VALIDATION_ACTIONS.md \
+            domains/code/actions.json \
+            domains/code/adapters/casey_legal_mcp_validate.py \
+            domains/code/adapters/monolith_company_registry_validate.py \
+            domains/code/adapters/monolith_legal_live_validate.py \
+            domains/code/schemas/casey-legal-mcp-job.schema.json \
+            domains/code/schemas/casey-legal-mcp-result.schema.json \
+            domains/code/schemas/monolith-company-registry-job.schema.json \
+            domains/code/schemas/monolith-company-registry-result.schema.json \
+            domains/code/schemas/monolith-legal-live-job.schema.json \
+            domains/code/schemas/monolith-legal-live-result.schema.json \
+            registry/actions-index.json \
+            scripts/action_face_plan.py \
+            scripts/apex_catalog_runner.py \
+            tests/test_domain_registry.py \
+            tests/test_private_legal_validation_actions.py > /tmp/pr83.patch
+          git apply --3way --index /tmp/pr83.patch
+
+      - name: Run repository-native action-face verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/ci/public-action-face-ci.sh
+
+      - name: Commit verified synthesis and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/estate-synthesize-private-legal-actions.yml
+          git add -A
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "synthesize(runner): replay private legal validation actions on current main"
+          git push origin HEAD:synth/private-legal-validation-actions-20260807
