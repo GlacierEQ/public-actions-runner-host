@@ -3,78 +3,20 @@
   "domain": "code",
   "actions": {
     "code.validate-governance": {
-      "status": "active",
-      "adapter": "monolith_ip_governance",
-      "adapterPath": "domains/code/adapters/monolith_ip_governance.py",
-      "targetRepository": "GlacierEQ/monolith",
-      "tokenProfile": "private-source-read",
-      "jobSchema": "governance-job-v1",
-      "resultSchema": "governance-result-v1",
-      "approvalPolicy": "owner-dispatched",
-      "executionMode": "source-read-only",
-      "receiptNamespace": "code",
-      "concurrencyKeyTemplate": "code:{targetRepository}",
-      "legacyAliases": [
-        "monolith-ip-governance"
-      ]
+      "status": "active", "adapter": "monolith_ip_governance", "adapterPath": "domains/code/adapters/monolith_ip_governance.py", "targetRepository": "GlacierEQ/monolith", "tokenProfile": "private-source-read", "jobSchema": "governance-job-v1", "resultSchema": "governance-result-v1", "approvalPolicy": "owner-dispatched", "executionMode": "source-read-only", "receiptNamespace": "code", "concurrencyKeyTemplate": "code:{targetRepository}", "legacyAliases": ["monolith-ip-governance"]
     },
     "code.tool-system.validate": {
-      "status": "active",
-      "adapter": "tool_system_validate",
-      "adapterPath": "domains/code/adapters/tool_system_validate.py",
-      "targetRepository": "GlacierEQ/computer-user",
-      "tokenProfile": "private-source-read",
-      "jobSchema": "tool-system-job-v1",
-      "jobSchemaPath": "domains/code/schemas/tool-system-job.schema.json",
-      "resultSchema": "tool-system-result-v1",
-      "resultSchemaPath": "domains/code/schemas/tool-system-result.schema.json",
-      "approvalPolicy": "owner-dispatched",
-      "executionMode": "source-read-only",
-      "receiptNamespace": "code",
-      "concurrencyKeyTemplate": "code:{targetRepository}",
-      "legacyAliases": [
-        "tool-system-validate"
-      ]
+      "status": "active", "adapter": "tool_system_validate", "adapterPath": "domains/code/adapters/tool_system_validate.py", "targetRepository": "GlacierEQ/computer-user", "tokenProfile": "private-source-read", "jobSchema": "tool-system-job-v1", "jobSchemaPath": "domains/code/schemas/tool-system-job.schema.json", "resultSchema": "tool-system-result-v1", "resultSchemaPath": "domains/code/schemas/tool-system-result.schema.json", "approvalPolicy": "owner-dispatched", "executionMode": "source-read-only", "receiptNamespace": "code", "concurrencyKeyTemplate": "code:{targetRepository}", "legacyAliases": ["tool-system-validate"]
     },
     "code.monolith.validate-atlases": {
-      "status": "active",
-      "adapter": "test",
-      "adapterPath": "domains/code/adapters/monolith_atlas_validate.py",
-      "targetRepository": "GlacierEQ/monolith",
-      "tokenProfile": "private-source-read",
-      "jobSchema": "monolith-atlases-job-v1",
-      "jobSchemaPath": "domains/code/schemas/monolith-atlases-job.schema.json",
-      "resultSchema": "monolith-atlases-result-v1",
-      "resultSchemaPath": "domains/code/schemas/monolith-atlases-result.schema.json",
-      "approvalPolicy": "owner-dispatched",
-      "executionMode": "source-read-only",
-      "receiptNamespace": "code",
-      "concurrencyKeyTemplate": "code:{targetRepository}",
-      "legacyAliases": [
-        "monolith-validate-atlases"
-      ]
+      "status": "active", "adapter": "test", "adapterPath": "domains/code/adapters/monolith_atlas_validate.py", "targetRepository": "GlacierEQ/monolith", "tokenProfile": "private-source-read", "jobSchema": "monolith-atlases-job-v1", "jobSchemaPath": "domains/code/schemas/monolith-atlases-job.schema.json", "resultSchema": "monolith-atlases-result-v1", "resultSchemaPath": "domains/code/schemas/monolith-atlases-result.schema.json", "approvalPolicy": "owner-dispatched", "executionMode": "source-read-only", "receiptNamespace": "code", "concurrencyKeyTemplate": "code:{targetRepository}", "legacyAliases": ["monolith-validate-atlases"]
+    },
+    "code.monolith.validate-legal-live-reconciliation": {
+      "status": "active", "adapter": "test", "adapterPath": "domains/code/adapters/monolith_legal_live_validate.py", "targetRepository": "GlacierEQ/monolith", "tokenProfile": "private-source-read", "jobSchema": "monolith-legal-live-job-v1", "jobSchemaPath": "domains/code/schemas/monolith-legal-live-job.schema.json", "resultSchema": "monolith-legal-live-result-v1", "resultSchemaPath": "domains/code/schemas/monolith-legal-live-result.schema.json", "approvalPolicy": "owner-dispatched", "executionMode": "source-read-only", "receiptNamespace": "code", "concurrencyKeyTemplate": "code:{targetRepository}", "legacyAliases": []
     },
     "code.fileboss.validate-operator-code-bridge": {
-      "status": "active",
-      "adapter": "fileboss_operator_code_validate",
-      "adapterPath": "domains/code/adapters/fileboss_operator_code_validate.py",
-      "targetRepository": "GlacierEQ/FILEBOSS",
-      "tokenProfile": "private-source-read",
-      "jobSchema": "fileboss-operator-code-job-v1",
-      "jobSchemaPath": "domains/code/schemas/fileboss-operator-code-job.schema.json",
-      "resultSchema": "fileboss-operator-code-result-v1",
-      "resultSchemaPath": "domains/code/schemas/fileboss-operator-code-result.schema.json",
-      "approvalPolicy": "owner-dispatched",
-      "executionMode": "source-read-only",
-      "receiptNamespace": "code",
-      "concurrencyKeyTemplate": "code:{targetRepository}",
-      "legacyAliases": []
+      "status": "active", "adapter": "fileboss_operator_code_validate", "adapterPath": "domains/code/adapters/fileboss_operator_code_validate.py", "targetRepository": "GlacierEQ/FILEBOSS", "tokenProfile": "private-source-read", "jobSchema": "fileboss-operator-code-job-v1", "jobSchemaPath": "domains/code/schemas/fileboss-operator-code-job.schema.json", "resultSchema": "fileboss-operator-code-result-v1", "resultSchemaPath": "domains/code/schemas/fileboss-operator-code-result.schema.json", "approvalPolicy": "owner-dispatched", "executionMode": "source-read-only", "receiptNamespace": "code", "concurrencyKeyTemplate": "code:{targetRepository}", "legacyAliases": []
     }
   },
-  "plannedActions": [
-    "code.audit",
-    "code.security-scan",
-    "code.patch-branch",
-    "code.build-release"
-  ]
+  "plannedActions": ["code.audit", "code.security-scan", "code.patch-branch", "code.build-release"]
 }
