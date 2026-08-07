@@ -51,8 +51,8 @@ jobs:
           find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
           git rm .github/workflows/estate-clean-synthesis-artifacts.yml
           git add -A
-          if git diff --cached --name-only | grep -E '(^|/)(__pycache__/|.*\.py[co]$)'; then
-            echo 'generated Python cache artifact remains staged' >&2
+          if git diff --cached --name-only --diff-filter=ACMRTUXB | grep -E '(^|/)(__pycache__/|.*\.py[co]$)'; then
+            echo 'generated Python cache artifact is being added or modified' >&2
             exit 1
           fi
           git config user.name "github-actions[bot]"
