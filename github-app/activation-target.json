@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "target_id": "estate-monolith-legal-live-20260807",
+  "workflow": "APEX Public Action Face",
+  "workflow_run_id": 31170532956,
+  "issue_number": 95,
+  "action": "code.monolith.validate-legal-live-reconciliation",
+  "source_repo": "GlacierEQ/monolith",
+  "source_ref": "f686505aa521faf5f9511e423124832ad08aae3a",
+  "runner_head_at_failure": "8f4af0d4f8bb3783759716a5ca8068a0f5ac0d51",
+  "failure_boundary": "Require GitHub App bridge configuration",
+  "failure_reason": "APEX_RUNNER_APP_CLIENT_ID and APEX_RUNNER_APP_PRIVATE_KEY were empty",
+  "preservation": "Rerun the same failed workflow attempt after owner-consent bootstrap; do not create a replacement job envelope."
+}

@@ -10,15 +10,32 @@ On Windows, clone or download this repository and double-click:
 START_APEX_RUNNER_BRIDGE.cmd
 ```
 
-The launcher verifies GitHub CLI and Python, opens browser authentication only when necessary, and then invokes the hardened bootstrap through `github-app/start_apex_runner_bridge.ps1`.
+The launcher verifies GitHub CLI and Python, opens browser authentication only when necessary, loads the pinned activation target from `github-app/activation-target.json`, and then invokes the hardened bootstrap through `github-app/start_apex_runner_bridge.ps1`.
 
 The cross-platform command behind the launcher is:
 
 ```bash
-python github-app/bootstrap_apex_github_app.py
+python github-app/bootstrap_apex_github_app.py --run-id <pinned-workflow-run-id>
 ```
 
 Run it only from an authenticated desktop-agent session with GitHub CLI available. The process opens GitHub's owner-consent screens in the controlled browser and performs the credential plumbing itself.
+
+## Current activation target
+
+The owning control plane pins the exact failed workflow that must resume after App activation in `github-app/activation-target.json`. The launcher refuses to run if that target is missing, malformed, references a non-APEX workflow, or does not bind a full lowercase source commit SHA.
+
+Current target:
+
+```text
+target_id:        estate-monolith-legal-live-20260807
+workflow_run_id:  31170532956
+issue:            #95
+action:           code.monolith.validate-legal-live-reconciliation
+source_repo:      GlacierEQ/monolith
+source_ref:       f686505aa521faf5f9511e423124832ad08aae3a
+```
+
+Do not create a replacement job envelope merely because activation was blocked. After owner consent and exact installation complete, rerun the pinned failed workflow so the immutable source identity remains unchanged.
 
 ## What the bootstrap performs
 
@@ -35,7 +52,7 @@ Run it only from an authenticated desktop-agent session with GitHub CLI availabl
 11. Opens the App installation screen.
 12. Polls GitHub until the installation contains exactly the approved repositories.
 13. Rejects any unexpected repository access.
-14. Reruns only the failed jobs in workflow run `30964992458`.
+14. Reruns only the failed jobs in the workflow pinned by `github-app/activation-target.json`.
 15. Waits for a new workflow attempt rather than accepting the pre-rerun result.
 16. Requires every named completion record to exist and conclude `success` before returning success.
 
@@ -93,6 +110,7 @@ Tests enforce:
 - new-attempt detection after rerun;
 - rejection of missing, skipped, or failed completion records;
 - a real Windows double-click entrypoint;
+- pinned live activation-target loading and immutable source validation;
 - browser consent as the only human interaction;
 - no manual private-key prompt, display, or transport path.
 
@@ -116,4 +134,4 @@ Publish truthful sanitized issue status
 workflow conclusion
 ```
 
-No PAT fallback is permitted. PR #63 and Monolith PR #3 remain unmerged until the bounded private receipt is independently verified.
+No PAT fallback is permitted. Canonical legal promotion remains blocked until the bounded private receipt is independently verified.
