@@ -45,12 +45,40 @@ function Invoke-Checked {
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $bootstrapPath = Join-Path $PSScriptRoot 'bootstrap_apex_github_app.py'
 $manifestPath = Join-Path $PSScriptRoot 'app-manifest.json'
+$activationTargetPath = Join-Path $PSScriptRoot 'activation-target.json'
 
 if (-not (Test-Path -LiteralPath $bootstrapPath -PathType Leaf)) {
     throw "Bootstrap script not found: $bootstrapPath"
 }
 if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
     throw "GitHub App manifest not found: $manifestPath"
+}
+if (-not (Test-Path -LiteralPath $activationTargetPath -PathType Leaf)) {
+    throw "Activation target not found: $activationTargetPath"
+}
+
+try {
+    $activationTarget = Get-Content -LiteralPath $activationTargetPath -Raw | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    throw "Activation target is not valid JSON: $activationTargetPath"
+}
+
+if ([string]$activationTarget.workflow -ne 'APEX Public Action Face') {
+    throw 'Activation target workflow must be exactly APEX Public Action Face.'
+}
+if ([string]::IsNullOrWhiteSpace([string]$activationTarget.target_id)) {
+    throw 'Activation target must include target_id.'
+}
+if ([string]$activationTarget.source_repo -notmatch '^GlacierEQ/[A-Za-z0-9._-]+$') {
+    throw 'Activation target source_repo is invalid.'
+}
+if ([string]$activationTarget.source_ref -notmatch '^[0-9a-f]{40}$') {
+    throw 'Activation target source_ref must be a full lowercase commit SHA.'
+}
+[long]$runId = 0
+if (-not [long]::TryParse([string]$activationTarget.workflow_run_id, [ref]$runId) -or $runId -le 0) {
+    throw 'Activation target workflow_run_id must be a positive integer.'
 }
 
 $gh = Resolve-Executable -Names @('gh.exe', 'gh') -KnownPaths @(
@@ -91,10 +119,15 @@ if ([System.IO.Path]::GetFileName($python).ToLowerInvariant().StartsWith('py')) 
 $pythonArguments += @(
     $bootstrapPath,
     '--manifest',
-    $manifestPath
+    $manifestPath,
+    '--run-id',
+    $runId.ToString([System.Globalization.CultureInfo]::InvariantCulture)
 )
 
 Write-Host ''
+Write-Host "Activation target: $($activationTarget.target_id)"
+Write-Host "Pinned workflow run: $runId"
+Write-Host "Pinned source: $($activationTarget.source_repo)@$($activationTarget.source_ref)"
 Write-Host 'Launching the no-manual-key GitHub App bootstrap...'
 Write-Host 'The only human boundary is GitHub account consent and repository-install approval in the browser.'
 Write-Host 'No private key is displayed, copied, pasted, written to disk, or transported through chat.'
