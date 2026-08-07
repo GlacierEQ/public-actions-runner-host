@@ -1,62 +1,19 @@
 {
   "schema_version": "1.0",
   "canonicalActions": {
-    "code.validate-governance": {
-      "domain": "code",
-      "status": "active",
-      "catalog": "domains/code/actions.json"
-    },
-    "code.tool-system.validate": {
-      "domain": "code",
-      "status": "active",
-      "catalog": "domains/code/actions.json"
-    },
-    "code.monolith.validate-atlases": {
-      "domain": "code",
-      "status": "active",
-      "catalog": "domains/code/actions.json"
-    },
-    "code.fileboss.validate-operator-code-bridge": {
-      "domain": "code",
-      "status": "active",
-      "catalog": "domains/code/actions.json"
-    },
-    "docs.monolith.validate-integrity": {
-      "domain": "docs",
-      "status": "active",
-      "catalog": "domains/docs/actions.json"
-    },
-    "analysis.monolith.estate-health": {
-      "domain": "analysis",
-      "status": "active",
-      "catalog": "domains/analysis/actions.json"
-    }
+    "code.validate-governance": {"domain":"code","status":"active","catalog":"domains/code/actions.json"},
+    "code.tool-system.validate": {"domain":"code","status":"active","catalog":"domains/code/actions.json"},
+    "code.monolith.validate-atlases": {"domain":"code","status":"active","catalog":"domains/code/actions.json"},
+    "code.monolith.validate-legal-live-reconciliation": {"domain":"code","status":"active","catalog":"domains/code/actions.json"},
+    "code.fileboss.validate-operator-code-bridge": {"domain":"code","status":"active","catalog":"domains/code/actions.json"},
+    "docs.monolith.validate-integrity": {"domain":"docs","status":"active","catalog":"domains/docs/actions.json"},
+    "analysis.monolith.estate-health": {"domain":"analysis","status":"active","catalog":"domains/analysis/actions.json"}
   },
   "aliases": {
-    "monolith-ip-governance": {
-      "canonicalAction": "code.validate-governance",
-      "status": "temporary",
-      "removeAfter": "verified-private-domain-run"
-    },
-    "tool-system-validate": {
-      "canonicalAction": "code.tool-system.validate",
-      "status": "temporary",
-      "removeAfter": "canonical-action-face-ingress-verified"
-    },
-    "monolith-validate-atlases": {
-      "canonicalAction": "code.monolith.validate-atlases",
-      "status": "temporary",
-      "removeAfter": "canonical-action-face-ingress-verified"
-    },
-    "monolith-docs-integrity": {
-      "canonicalAction": "docs.monolith.validate-integrity",
-      "status": "temporary",
-      "removeAfter": "canonical-action-face-ingress-verified"
-    },
-    "monolith-estate-health": {
-      "canonicalAction": "analysis.monolith.estate-health",
-      "status": "temporary",
-      "removeAfter": "canonical-action-face-ingress-verified"
-    }
+    "monolith-ip-governance": {"canonicalAction":"code.validate-governance","status":"temporary","removeAfter":"verified-private-domain-run"},
+    "tool-system-validate": {"canonicalAction":"code.tool-system.validate","status":"temporary","removeAfter":"canonical-action-face-ingress-verified"},
+    "monolith-validate-atlases": {"canonicalAction":"code.monolith.validate-atlases","status":"temporary","removeAfter":"canonical-action-face-ingress-verified"},
+    "monolith-docs-integrity": {"canonicalAction":"docs.monolith.validate-integrity","status":"temporary","removeAfter":"canonical-action-face-ingress-verified"},
+    "monolith-estate-health": {"canonicalAction":"analysis.monolith.estate-health","status":"temporary","removeAfter":"canonical-action-face-ingress-verified"}
   }
 }
