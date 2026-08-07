@@ -31,4 +31,10 @@ The workload-isolation and immutable-source controls from public-runner PR #80 a
 
 ## Activation boundary
 
-Live private checkout and receipt publication remain blocked until the owner configures the dedicated GitHub App client ID and private key required by the public action face. No PAT fallback is permitted.
+The public action face uses the repository's governed GitHub App manifest/bootstrap path. Manual private-key handling and PAT fallback are not part of the production contract.
+
+A validation action may execute only when the runtime App installation actually includes its target repository and can mint the required read-scoped token. App existence or successful runner self-verification does not imply access to every private repository; missing installation scope fails closed.
+
+### Current observed scope checkpoint — 2026-08-07
+
+Repository-native verification reported manifest-based provisioning with `manual_credential_handling: false`. The verified installation set included `GlacierEQ/monolith` but did not include `GlacierEQ/casey-legal-mcp-server` at that checkpoint. Therefore the Monolith validation actions may proceed to live execution testing, while `code.casey-legal-mcp.validate-v2` remains blocked until installation scope for its exact source repository is proven.
