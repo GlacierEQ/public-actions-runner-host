@@ -30,7 +30,7 @@ jobs:
           fixture_anchor = '        "tests/test_function_atlas.py": "import unittest\\n",\n'
           fixture_add = (
               fixture_anchor
-              + '        "scripts/validate_category_heads.py": "print(\\\"validated\\\")\\n",\n'
+              + '        "scripts/validate_category_heads.py": \'print("validated")\\n\',\n'
               + '        "tests/test_category_heads.py": "import unittest\\n",\n'
               + '        "catalog/category_heads.json": "{}\\n",\n'
               + '        "foundations/category-heads.md": "# Category Heads\\n",\n'
