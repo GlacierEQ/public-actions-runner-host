@@ -1,0 +1,172 @@
+name: One-shot repair SpaceX atlas surface
+
+on:
+  push:
+    branches:
+      - evolve/monolith-spacex-surface-20260808
+
+permissions:
+  contents: write
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: evolve/monolith-spacex-surface-20260808
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Add SpaceX surface with formatting-stable test updates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: expected block exactly once: {old[:90]!r}')
+              p.write_text(text.replace(old, new), encoding='utf-8')
+
+          def append_false_to_named_call(text: str, job_id: str) -> str:
+              pattern = re.compile(
+                  rf'(result,\s*"{re.escape(job_id)}",\s*False(?:\s*,\s*(?:True|False)){{5}})(\s*\))',
+                  re.S,
+              )
+              updated, count = pattern.subn(r'\1, False\2', text, count=1)
+              if count != 1:
+                  raise SystemExit(f'expected one commands call for {job_id}, found {count}')
+              return updated
+
+          adapter = 'domains/code/adapters/monolith_atlas_validate.py'
+          replace_once(
+              adapter,
+              '''COLOSSUS_REQUIRED_PATHS = (\n    "scripts/validate_colossus_xai_atlas.py",\n    "tests/test_colossus_xai_atlas.py",\n    "domains/colossus_xai.md",\n    "status/COLOSSUS_XAI_ATLAS.md",\n)\nCATEGORY_REQUIRED_PATHS = (\n''',
+              '''COLOSSUS_REQUIRED_PATHS = (\n    "scripts/validate_colossus_xai_atlas.py",\n    "tests/test_colossus_xai_atlas.py",\n    "domains/colossus_xai.md",\n    "status/COLOSSUS_XAI_ATLAS.md",\n)\nSPACEX_REQUIRED_PATHS = (\n    "scripts/validate_spacex_aerospace_atlas.py",\n    "tests/test_spacex_aerospace_atlas.py",\n    "domains/spacex_aerospace.md",\n    "status/SPACEX_AEROSPACE_ATLAS.md",\n)\nCATEGORY_REQUIRED_PATHS = (\n''',
+          )
+          replace_once(
+              adapter,
+              '''    {\n        "key": "category_heads",\n''',
+              '''    {\n        "key": "spacex",\n        "label": "spacex-aerospace",\n        "required_paths": SPACEX_REQUIRED_PATHS,\n        "compile_targets": (\n            "scripts/validate_spacex_aerospace_atlas.py",\n            "tests/test_spacex_aerospace_atlas.py",\n        ),\n        "validator": "scripts/validate_spacex_aerospace_atlas.py",\n        "test_pattern": "test_spacex_aerospace_atlas.py",\n        "gate": "spacex-aerospace-atlas",\n    },\n    {\n        "key": "category_heads",\n''',
+          )
+          replace_once(
+              adapter,
+              '''def category_surface_state(workspace: Path) -> str:\n''',
+              '''def spacex_surface_state(workspace: Path) -> str:\n    return _surface_state(workspace, SPACEX_REQUIRED_PATHS)\n\n\ndef category_surface_state(workspace: Path) -> str:\n''',
+          )
+          replace_once(
+              adapter,
+              '''    include_lab_hire: bool = True,\n    include_colossus: bool = True,\n) -> list[list[str]]:\n''',
+              '''    include_lab_hire: bool = True,\n    include_colossus: bool = True,\n    include_spacex: bool = True,\n) -> list[list[str]]:\n''',
+          )
+          replace_once(
+              adapter,
+              '''        "lab_hire": include_lab_hire,\n        "colossus": include_colossus,\n        "category_heads": include_category_heads,\n''',
+              '''        "lab_hire": include_lab_hire,\n        "colossus": include_colossus,\n        "spacex": include_spacex,\n        "category_heads": include_category_heads,\n''',
+          )
+          replace_once(
+              adapter,
+              '''            enabled_surfaces["lab_hire"],\n            enabled_surfaces["colossus"],\n        )\n''',
+              '''            enabled_surfaces["lab_hire"],\n            enabled_surfaces["colossus"],\n            enabled_surfaces["spacex"],\n        )\n''',
+          )
+
+          schema = 'domains/code/schemas/monolith-atlases-result.schema.json'
+          replace_once(schema, '"steps": {"type": "array", "maxItems": 24}', '"steps": {"type": "array", "maxItems": 26}')
+          replace_once(schema, '"maxItems": 8,\n      "items": {"type": "string", "maxLength": 64}', '"maxItems": 9,\n      "items": {"type": "string", "maxLength": 64}')
+
+          tests_path = Path('tests/test_monolith_atlas_optional_category.py')
+          tests = tests_path.read_text(encoding='utf-8')
+          if tests.count('    assert len(sequence) == 23\n') != 1:
+              raise SystemExit('unexpected default command-count assertion')
+          tests = tests.replace('    assert len(sequence) == 23\n', '    assert len(sequence) == 25\n', 1)
+          old = '''    assert any("test_colossus_xai_atlas.py" in command for command in sequence)\n    assert any("scripts/validate_category_heads.py" in command for command in sequence)\n'''
+          new = '''    assert any("test_colossus_xai_atlas.py" in command for command in sequence)\n    assert any("scripts/validate_spacex_aerospace_atlas.py" in command for command in sequence)\n    assert any("test_spacex_aerospace_atlas.py" in command for command in sequence)\n    assert any("scripts/validate_category_heads.py" in command for command in sequence)\n'''
+          if tests.count(old) != 1:
+              raise SystemExit('default Colossus assertion boundary missing')
+          tests = tests.replace(old, new, 1)
+          for job_id in (
+              'CoreOnly01',
+              'ConnectorGate01',
+              'MemoryGate01',
+              'LegalGate01',
+              'LabHireGate01',
+              'ColossusGate01',
+          ):
+              tests = append_false_to_named_call(tests, job_id)
+
+          marker = 'def test_connector_surface_state_distinguishes_absent_partial_complete(\n'
+          insertion = '''def test_commands_support_spacex_without_other_optional_gates(tmp_path: Path) -> None:\n    result = tmp_path / "result.json"\n\n    sequence = adapter.commands(\n        result, "SpaceXGate01", False, False, False, False, False, False, True\n    )\n\n    assert len(sequence) == 13\n    assert any("scripts/validate_spacex_aerospace_atlas.py" in command for command in sequence)\n    assert any("test_spacex_aerospace_atlas.py" in command for command in sequence)\n    assert not any("scripts/validate_connector_fabric.py" in command for command in sequence)\n    assert not any("scripts/validate_memory_aspen.py" in command for command in sequence)\n    assert not any("scripts/validate_legal_case.py" in command for command in sequence)\n    assert not any("scripts/validate_lab_hire_atlas.py" in command for command in sequence)\n    assert not any("scripts/validate_colossus_xai_atlas.py" in command for command in sequence)\n    assert not any("scripts/validate_category_heads.py" in command for command in sequence)\n\n\n'''
+          if tests.count(marker) != 1:
+              raise SystemExit('connector state-test marker missing')
+          tests = tests.replace(marker, insertion + marker, 1)
+
+          marker = 'def test_category_surface_state_distinguishes_absent_partial_complete(\n'
+          insertion = '''def test_spacex_surface_state_distinguishes_absent_partial_complete(\n    tmp_path: Path,\n) -> None:\n    assert adapter.spacex_surface_state(tmp_path) == "absent"\n\n    first = tmp_path / adapter.SPACEX_REQUIRED_PATHS[0]\n    first.parent.mkdir(parents=True, exist_ok=True)\n    first.write_text("fixture\\n", encoding="utf-8")\n    assert adapter.spacex_surface_state(tmp_path) == "partial"\n\n    for relative in adapter.SPACEX_REQUIRED_PATHS[1:]:\n        path = tmp_path / relative\n        path.parent.mkdir(parents=True, exist_ok=True)\n        path.write_text("fixture\\n", encoding="utf-8")\n    assert adapter.spacex_surface_state(tmp_path) == "complete"\n\n\n'''
+          if tests.count(marker) != 1:
+              raise SystemExit('category state-test marker missing')
+          tests = tests.replace(marker, insertion + marker, 1)
+
+          marker = 'def test_partial_category_surface_blocks_before_execution(\n'
+          insertion = '''def test_partial_spacex_surface_blocks_before_execution(\n    tmp_path: Path,\n    monkeypatch,\n) -> None:\n    workspace = tmp_path / "workspace"\n    workspace.mkdir()\n    for relative in adapter.CORE_REQUIRED_PATHS:\n        path = workspace / relative\n        path.parent.mkdir(parents=True, exist_ok=True)\n        path.write_text("fixture\\n", encoding="utf-8")\n    partial = workspace / adapter.SPACEX_REQUIRED_PATHS[0]\n    partial.parent.mkdir(parents=True, exist_ok=True)\n    partial.write_text("fixture\\n", encoding="utf-8")\n\n    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", "a" * 40)\n    monkeypatch.setattr(adapter, "open_checkout", lambda *_args, **_kwargs: _checkout_for(workspace))\n    monkeypatch.setattr(adapter, "build_environment", lambda *_args, **_kwargs: {})\n    monkeypatch.setattr(adapter, "attest_checkout", lambda *_args, **_kwargs: _attestation())\n\n    result_path = tmp_path / "result.json"\n    assert adapter.run(_plan("PartialSpaceX01"), workspace, result_path) == 2\n    payload = json.loads(result_path.read_text(encoding="utf-8"))\n    assert payload["status"] == "blocked"\n    assert "partial spacex-aerospace surface" in payload["reason"]\n\n\n'''
+          if tests.count(marker) != 1:
+              raise SystemExit('partial category-test marker missing')
+          tests = tests.replace(marker, insertion + marker, 1)
+          tests_path.write_text(tests, encoding='utf-8')
+
+          specialized_path = Path('tests/test_specialized_monolith_runners.py')
+          specialized = specialized_path.read_text(encoding='utf-8')
+          if specialized.count('    assert len(sequence) == 23\n') != 1:
+              raise SystemExit('unexpected specialized command-count assertion')
+          specialized = specialized.replace('    assert len(sequence) == 23\n', '    assert len(sequence) == 25\n', 1)
+          old = '''    assert any("test_colossus_xai_atlas.py" in command for command in sequence)\n    assert any("scripts/validate_category_heads.py" in command for command in sequence)\n'''
+          new = '''    assert any("test_colossus_xai_atlas.py" in command for command in sequence)\n    assert any("scripts/validate_spacex_aerospace_atlas.py" in command for command in sequence)\n    assert any("test_spacex_aerospace_atlas.py" in command for command in sequence)\n    assert any("scripts/validate_category_heads.py" in command for command in sequence)\n'''
+          if specialized.count(old) != 1:
+              raise SystemExit('specialized Colossus assertion boundary missing')
+          specialized_path.write_text(specialized.replace(old, new, 1), encoding='utf-8')
+          PY
+
+          python -m pip install --disable-pip-version-check ruff==0.16.1 pytest==9.1.1
+          ruff format domains/code/adapters/monolith_atlas_validate.py tests/test_monolith_atlas_optional_category.py tests/test_specialized_monolith_runners.py
+          ruff check domains/code/adapters/monolith_atlas_validate.py tests/test_monolith_atlas_optional_category.py tests/test_specialized_monolith_runners.py
+          python -m pytest -q tests/test_monolith_atlas_optional_category.py tests/test_specialized_monolith_runners.py
+          python -m json.tool domains/code/schemas/monolith-atlases-result.schema.json >/dev/null
+          git diff --name-only | sort > /tmp/changed.txt
+          printf '%s\n' \
+            domains/code/adapters/monolith_atlas_validate.py \
+            domains/code/schemas/monolith-atlases-result.schema.json \
+            tests/test_monolith_atlas_optional_category.py \
+            tests/test_specialized_monolith_runners.py | sort > /tmp/expected.txt
+          diff -u /tmp/expected.txt /tmp/changed.txt
+
+      - name: Remove both temporary evolvers and commit exact scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm \
+            .github/workflows/one-shot-add-spacex-atlas-surface.yml \
+            .github/workflows/one-shot-repair-spacex-atlas-surface.yml
+          git add \
+            domains/code/adapters/monolith_atlas_validate.py \
+            domains/code/schemas/monolith-atlases-result.schema.json \
+            tests/test_monolith_atlas_optional_category.py \
+            tests/test_specialized_monolith_runners.py
+          git diff --cached --name-only | sort > /tmp/staged.txt
+          printf '%s\n' \
+            .github/workflows/one-shot-add-spacex-atlas-surface.yml \
+            .github/workflows/one-shot-repair-spacex-atlas-surface.yml \
+            domains/code/adapters/monolith_atlas_validate.py \
+            domains/code/schemas/monolith-atlases-result.schema.json \
+            tests/test_monolith_atlas_optional_category.py \
+            tests/test_specialized_monolith_runners.py | sort > /tmp/expected-staged.txt
+          diff -u /tmp/expected-staged.txt /tmp/staged.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'evolve(runner): add SpaceX aerospace atlas proof surface'
+          git push origin HEAD:evolve/monolith-spacex-surface-20260808
