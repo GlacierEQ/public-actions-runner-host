@@ -230,10 +230,6 @@ jobs:
           cache: npm
           cache-dependency-path: ${{ inputs.working_directory }}/package-lock.json
 
-      - name: Install locked dependencies
-        working-directory: ${{ inputs.working_directory }}
-        run: npm ci --ignore-scripts --no-audit --no-fund
-
       - name: Test
         if: inputs.node_test_script != ''
         working-directory: ${{ inputs.working_directory }}
@@ -282,19 +278,47 @@ jobs:
     runs-on: ubuntu-latest
     needs: [validate-inputs]
     if: inputs.run_security
+    env:
+      SECRET_SCAN_PATTERN: >-
+        gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{40,}|sk_live_[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}|password[[:space:]]*=[[:space:]]*["'][^"']{8,}["']
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate secret scan patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          if printf '%s\n' \
+            'ghp_' \
+            'sk_live' \
+            'AKIA' \
+            'password = getenv("PASSWORD")' \
+            | grep -Eq "$SECRET_SCAN_PATTERN"; then
+            echo "Secret detector is too broad for scanner vocabulary" >&2
+            exit 1
+          fi
+          for candidate in \
+            'ghp_AAAAAAAAAAAAAAAAAAAA' \
+            'github_pat_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' \
+            'sk_live_AAAAAAAAAAAAAAAA' \
+            'AKIAABCDEFGHIJKLMNOP' \
+            'password = "correct-horse-battery-staple"'; do
+            if ! printf '%s\n' "$candidate" | grep -Eq "$SECRET_SCAN_PATTERN"; then
+              echo "Secret detector missed a credential-shaped fixture" >&2
+              exit 1
+            fi
+          done
 
       - name: Secret scan
         working-directory: ${{ inputs.working_directory }}
         run: |
-          echo "🔍 Scanning for secrets..."
-          ! grep -rn "ghp_\|sk_live\|AKIA\|password\s*=" \
+          echo "🔍 Scanning for credential-shaped secrets..."
+          if grep -rEn "$SECRET_SCAN_PATTERN" \
             --include="*.py" --include="*.ts" --include="*.js" \
-            --include="*.go" --include="*.env" . 2>/dev/null || {
-            echo "⚠️ Potential secrets found"
+            --include="*.go" --include="*.env" . 2>/dev/null; then
+            echo "⚠️ Potential credential-shaped secrets found"
             exit 1
-          }
+          fi
           echo "✅ Clean"
 
       - name: Dependency audit
