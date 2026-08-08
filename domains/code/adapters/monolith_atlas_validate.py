@@ -68,8 +68,7 @@ def category_surface_state(workspace: Path) -> str:
 def commands(
     result_path: Path,
     job_id: str,
-    *,
-    include_category_heads: bool,
+    include_category_heads: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
@@ -238,7 +237,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         sequence = commands(
             result_path,
             str(plan["job_id"]),
-            include_category_heads=include_category_heads,
+            include_category_heads,
         )
         steps: list[dict] = []
         status = "completed"
