@@ -77,6 +77,24 @@ def test_canonical_issue_ingress_separates_source_and_receipt_authority() -> Non
     assert "Enforce governed release result" in text
 
 
+def test_keymaster_tokens_are_explicitly_revoked_before_release_completion() -> None:
+    text = CANONICAL.read_text(encoding="utf-8")
+    workload_revoke = workflow_step_block(text, "Revoke private workload token")
+    control_revoke = workflow_step_block(text, "Revoke private control token")
+    for block, source_step in (
+        (workload_revoke, "steps.workload_token.outputs.token"),
+        (control_revoke, "steps.control_token.outputs.token"),
+    ):
+        assert "if: always()" in block
+        assert "continue-on-error: true" in block
+        assert f"GITHUB_INSTALLATION_TOKEN: ${{{{ {source_step} }}}}" in block
+        assert "scripts/revoke_github_installation_token.py" in block
+
+    enforce = workflow_step_block(text, "Enforce governed release result")
+    assert "steps.workload_token_revoke.outcome != 'success'" in enforce
+    assert "steps.control_token_revoke.outcome != 'success'" in enforce
+
+
 def test_workload_secret_and_postrun_boundaries_are_explicit() -> None:
     text = CANONICAL.read_text(encoding="utf-8")
     assert "steps.plan.outputs.action == 'akos-echo-policy-ci'" in text
