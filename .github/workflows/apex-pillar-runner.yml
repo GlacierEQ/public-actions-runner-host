@@ -332,6 +332,22 @@ jobs:
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
         run: python3 .apex-postrun-control/scripts/action_face_issue_status.py
 
+      - name: Revoke private workload token
+        if: always() && steps.workload_token.outcome == 'success'
+        id: workload_token_revoke
+        continue-on-error: true
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
+
+      - name: Revoke private control token
+        if: always() && steps.control_token.outcome == 'success'
+        id: control_token_revoke
+        continue-on-error: true
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
+
       - name: Enforce governed release result
         if: >-
           always() &&
@@ -350,5 +366,7 @@ jobs:
            steps.synthesize.outcome == 'failure' ||
            steps.synthesize.outputs.synthesized == 'true' ||
            steps.postrun_guard.outcome == 'failure' ||
-           steps.publish.outcome == 'failure')
+           steps.publish.outcome == 'failure' ||
+           (steps.workload_token.outcome == 'success' && steps.workload_token_revoke.outcome != 'success') ||
+           (steps.control_token.outcome == 'success' && steps.control_token_revoke.outcome != 'success'))
         run: exit 1
