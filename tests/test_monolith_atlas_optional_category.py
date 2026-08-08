@@ -141,7 +141,7 @@ md_out.write_text('# Fresh Command Atlas\\n', encoding='utf-8')
         path.write_text(content, encoding="utf-8")
 
     stale_outputs = {
-        "catalog/monolith_command_atlas.json": "{\"stale\": true}\n",
+        "catalog/monolith_command_atlas.json": '{"stale": true}\n',
         "status/MONOLITH_COMMAND_ATLAS.md": "# Stale Command Atlas\n",
     }
     for relative, content in stale_outputs.items():
@@ -208,7 +208,9 @@ def test_failed_command_atlas_check_publishes_repair_without_promoting_success(
     }
     monkeypatch.setattr(adapter, "open_checkout", lambda *_args, **_kwargs: Checkout())
     monkeypatch.setattr(adapter, "build_environment", lambda *_args, **_kwargs: {})
-    monkeypatch.setattr(adapter, "attest_checkout", lambda *_args, **_kwargs: attestation)
+    monkeypatch.setattr(
+        adapter, "attest_checkout", lambda *_args, **_kwargs: attestation
+    )
     monkeypatch.setattr(
         adapter,
         "commands",
@@ -234,7 +236,7 @@ def test_failed_command_atlas_check_publishes_repair_without_promoting_success(
             {
                 "path": "catalog/monolith_command_atlas.json",
                 "bytes": 2,
-                "sha256": hashlib.sha256(b"{}" ).hexdigest(),
+                "sha256": hashlib.sha256(b"{}").hexdigest(),
                 "content": "{}",
             },
             {
