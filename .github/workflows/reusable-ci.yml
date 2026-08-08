@@ -230,6 +230,10 @@ jobs:
           cache: npm
           cache-dependency-path: ${{ inputs.working_directory }}/package-lock.json
 
+      - name: Install locked dependencies
+        working-directory: ${{ inputs.working_directory }}
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
       - name: Test
         if: inputs.node_test_script != ''
         working-directory: ${{ inputs.working_directory }}
