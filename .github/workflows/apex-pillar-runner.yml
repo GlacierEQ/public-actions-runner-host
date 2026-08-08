@@ -200,9 +200,11 @@ jobs:
            steps.approval.outcome == 'success')
         id: workload_token
         continue-on-error: true
+        env:
+          APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.source_repo }}
         run: |
           python3 scripts/keymaster_oidc_token.py \
-            --repository "${{ steps.plan.outputs.source_repo }}" \
+            --repository "$APEX_WORKLOAD_REPOSITORY" \
             --permission contents=read \
             --operation public-action-workload
 
