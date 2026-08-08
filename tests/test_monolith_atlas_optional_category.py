@@ -15,7 +15,9 @@ def test_commands_default_to_full_category_and_connector_gate(tmp_path: Path) ->
     sequence = adapter.commands(result, "DefaultGate01")
 
     assert len(sequence) == 15
-    assert any("scripts/validate_connector_fabric.py" in command for command in sequence)
+    assert any(
+        "scripts/validate_connector_fabric.py" in command for command in sequence
+    )
     assert any("test_connector_fabric.py" in command for command in sequence)
     assert any("scripts/validate_category_heads.py" in command for command in sequence)
     assert any("test_category_heads.py" in command for command in sequence)
@@ -44,7 +46,9 @@ def test_commands_support_connector_without_category_gate(tmp_path: Path) -> Non
     sequence = adapter.commands(result, "ConnectorGate01", False, True)
 
     assert len(sequence) == 13
-    assert any("scripts/validate_connector_fabric.py" in command for command in sequence)
+    assert any(
+        "scripts/validate_connector_fabric.py" in command for command in sequence
+    )
     assert any("test_connector_fabric.py" in command for command in sequence)
     assert not any(
         "scripts/validate_category_heads.py" in command for command in sequence

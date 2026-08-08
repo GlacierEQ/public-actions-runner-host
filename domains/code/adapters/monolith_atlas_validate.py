@@ -81,7 +81,9 @@ def validate_plan(plan: dict) -> None:
 
 
 def connector_surface_state(workspace: Path) -> str:
-    present = [path for path in CONNECTOR_REQUIRED_PATHS if (workspace / path).is_file()]
+    present = [
+        path for path in CONNECTOR_REQUIRED_PATHS if (workspace / path).is_file()
+    ]
     if not present:
         return "absent"
     if len(present) == len(CONNECTOR_REQUIRED_PATHS):
