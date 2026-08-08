@@ -60,6 +60,14 @@ def commands() -> list[list[str]]:
     ]
 
 
+def bind_attested_python_root(env: dict[str, str], workspace: Path) -> dict[str, str]:
+    """Expose only the exact attested workload root when safe-path isolation is active."""
+
+    if env.get("PYTHONSAFEPATH") == "1":
+        env["PYTHONPATH"] = str(workspace)
+    return env
+
+
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -95,7 +103,10 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
     try:
         pre_attestation = attest_workspace(workspace, resolved_sha)
-        env = build_environment(result_path, str(plan["job_id"]))
+        env = bind_attested_python_root(
+            build_environment(result_path, str(plan["job_id"])),
+            workspace,
+        )
     except WorkloadIsolationError as error:
         return catalog.write_result(
             plan,
