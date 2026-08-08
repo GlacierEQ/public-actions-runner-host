@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 from pathlib import Path
+from types import SimpleNamespace
 
 from domains.code.adapters import monolith_atlas_validate as adapter
 
@@ -102,3 +105,167 @@ def test_partial_category_surface_blocks_before_execution(
     payload = json.loads(result_path.read_text(encoding="utf-8"))
     assert payload["status"] == "blocked"
     assert "partial category-head surface" in payload["reason"]
+
+
+def test_command_atlas_projection_repair_is_non_mutating_and_content_addressed(
+    tmp_path: Path,
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    result_path = tmp_path / "results" / "result.json"
+
+    generator = workspace / adapter.COMMAND_ATLAS_GENERATOR
+    generator.parent.mkdir(parents=True, exist_ok=True)
+    generator.write_text(
+        """from pathlib import Path
+root = Path(__file__).resolve().parents[1]
+json_out = root / 'catalog' / 'monolith_command_atlas.json'
+md_out = root / 'status' / 'MONOLITH_COMMAND_ATLAS.md'
+json_out.parent.mkdir(parents=True, exist_ok=True)
+md_out.parent.mkdir(parents=True, exist_ok=True)
+json_out.write_text('{\"fresh\": true}\\n', encoding='utf-8')
+md_out.write_text('# Fresh Command Atlas\\n', encoding='utf-8')
+""",
+        encoding="utf-8",
+    )
+    for relative, content in (
+        ("catalog/library.json", "{}\n"),
+        ("evidence/system_maps/control_plane_orchestration.json", "{}\n"),
+        (
+            "evidence/repository_fact_cards/control_plane_orchestration/repo.json",
+            "{}\n",
+        ),
+    ):
+        path = workspace / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+
+    stale_outputs = {
+        "catalog/monolith_command_atlas.json": "{\"stale\": true}\n",
+        "status/MONOLITH_COMMAND_ATLAS.md": "# Stale Command Atlas\n",
+    }
+    for relative, content in stale_outputs.items():
+        path = workspace / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+
+    repair = adapter.command_atlas_projection_repair(
+        workspace,
+        result_path,
+        "ProjectionRepair01",
+        dict(os.environ),
+        "a" * 40,
+    )
+
+    assert repair["status"] == "available"
+    assert repair["resolved_source_sha"] == "a" * 40
+    assert repair["fact_card_count"] == 1
+    assert {item["path"] for item in repair["files"]} == set(
+        adapter.COMMAND_ATLAS_OUTPUTS
+    )
+    assert repair["total_bytes"] == sum(item["bytes"] for item in repair["files"])
+    for item in repair["files"]:
+        payload = item["content"].encode("utf-8")
+        assert item["bytes"] == len(payload)
+        assert item["sha256"] == hashlib.sha256(payload).hexdigest()
+
+    contents = {item["path"]: item["content"] for item in repair["files"]}
+    assert contents["catalog/monolith_command_atlas.json"] == '{"fresh": true}\n'
+    assert contents["status/MONOLITH_COMMAND_ATLAS.md"] == "# Fresh Command Atlas\n"
+    for relative, stale_content in stale_outputs.items():
+        assert (workspace / relative).read_text(encoding="utf-8") == stale_content
+
+
+def test_failed_command_atlas_check_publishes_repair_without_promoting_success(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    for relative in adapter.CORE_REQUIRED_PATHS:
+        path = workspace / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("fixture\n", encoding="utf-8")
+
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", "a" * 40)
+
+    class Checkout:
+        proc_path = workspace
+        pass_fds = ()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return None
+
+    attestation = {
+        "resolved_source_sha": "a" * 40,
+        "tracked_clean": True,
+        "tracked_diff_sha256": "b" * 64,
+        "checkout_device": 1,
+        "checkout_inode": 1,
+    }
+    monkeypatch.setattr(adapter, "open_checkout", lambda *_args, **_kwargs: Checkout())
+    monkeypatch.setattr(adapter, "build_environment", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(adapter, "attest_checkout", lambda *_args, **_kwargs: attestation)
+    monkeypatch.setattr(
+        adapter,
+        "commands",
+        lambda *_args: [
+            ["python", adapter.COMMAND_ATLAS_GENERATOR, "--check"],
+        ],
+    )
+    monkeypatch.setattr(
+        adapter.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            returncode=1,
+            stdout="Monolith Command Atlas JSON drift detected.\n",
+        ),
+    )
+    expected_repair = {
+        "status": "available",
+        "generator": adapter.COMMAND_ATLAS_GENERATOR,
+        "resolved_source_sha": "a" * 40,
+        "fact_card_count": 1,
+        "total_bytes": 4,
+        "files": [
+            {
+                "path": "catalog/monolith_command_atlas.json",
+                "bytes": 2,
+                "sha256": hashlib.sha256(b"{}" ).hexdigest(),
+                "content": "{}",
+            },
+            {
+                "path": "status/MONOLITH_COMMAND_ATLAS.md",
+                "bytes": 2,
+                "sha256": hashlib.sha256(b"#\n").hexdigest(),
+                "content": "#\n",
+            },
+        ],
+    }
+    monkeypatch.setattr(
+        adapter,
+        "command_atlas_projection_repair",
+        lambda *_args, **_kwargs: expected_repair,
+    )
+
+    plan = {
+        "job_id": "RepairPublish01",
+        "pillar": "C",
+        "action": adapter.EXPECTED_ACTION,
+        "adapter": adapter.EXPECTED_ADAPTER,
+        "task": "test",
+        "source_repo": adapter.EXPECTED_REPOSITORY,
+        "source_ref": "a" * 40,
+        "target_repo": adapter.EXPECTED_REPOSITORY,
+    }
+    result_path = tmp_path / "result.json"
+
+    assert adapter.run(plan, workspace, result_path) == 2
+    payload = json.loads(result_path.read_text(encoding="utf-8"))
+    assert payload["status"] == "failed"
+    assert payload["projection_repair"] == expected_repair
+    assert payload["workspace_attestation"]["before"] == attestation
+    assert payload["workspace_attestation"]["after"] == attestation
