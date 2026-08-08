@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0",
-  "target_id": "estate-monolith-legal-live-20260807",
+  "target_id": "estate-monolith-legal-live-20260808-0650z",
   "workflow": "APEX Public Action Face",
-  "workflow_run_id": 31170532956,
+  "workflow_run_id": 31245107591,
   "issue_number": 95,
   "action": "code.monolith.validate-legal-live-reconciliation",
   "source_repo": "GlacierEQ/monolith",
-  "source_ref": "f686505aa521faf5f9511e423124832ad08aae3a",
-  "runner_head_at_failure": "8f4af0d4f8bb3783759716a5ca8068a0f5ac0d51",
+  "source_ref": "7ed43326f0a621e8275b24e489b8fbbaa55f67c8",
+  "runner_head_at_failure": "489682cd356c3ae91344c5944eadf330f2c41982",
   "failure_boundary": "Require GitHub App bridge configuration",
-  "failure_reason": "APEX_RUNNER_APP_CLIENT_ID and APEX_RUNNER_APP_PRIVATE_KEY were empty",
-  "preservation": "Rerun the same failed workflow attempt after owner-consent bootstrap; do not create a replacement job envelope."
+  "failure_reason": "APEX_RUNNER_APP_CLIENT_ID and APEX_RUNNER_APP_PRIVATE_KEY were empty at runtime; control/workload token steps were skipped",
+  "preservation": "Run the owner-consent bootstrap against this exact failed workflow run, then rerun only its failed jobs; do not advance the Monolith source_ref without a new guarded Estate receipt."
 }
