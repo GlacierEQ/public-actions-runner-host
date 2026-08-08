@@ -166,6 +166,31 @@ def test_catalog_dispatch_is_exact(monkeypatch: pytest.MonkeyPatch) -> None:
         assert calls[-1] == marker
 
 
+def test_monolith_legal_adapter_matches_declared_full_promotion_gate() -> None:
+    assert monolith_legal_live_validate.commands() == [
+        [
+            sys.executable,
+            "-m",
+            "py_compile",
+            "scripts/validate_legal_live_reconciliation.py",
+            "tests/test_legal_live_reconciliation.py",
+        ],
+        [sys.executable, "scripts/validate_legal_live_reconciliation.py"],
+        [sys.executable, "-m", "unittest", "tests.test_legal_live_reconciliation"],
+        [sys.executable, "scripts/validate_legal_case.py"],
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "tests.test_legal_case",
+            "tests.test_legal_spine",
+            "tests.test_sync_legal_spines",
+        ],
+        [sys.executable, "scripts/sync_legal_spines.py", "--check"],
+        ["git", "diff", "--check"],
+    ]
+
+
 def test_monolith_legal_adapter_runs_fixed_commands(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -204,11 +229,12 @@ def test_monolith_legal_adapter_runs_fixed_commands(
     assert calls == expected
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "completed"
-    assert len(result["steps"]) == 3
+    assert len(result["steps"]) == 7
     assert result["validated_gates"] == [
-        "legal-live-registry",
-        "legal-live-board",
-        "integration-contract",
+        "legal-live-reconciliation",
+        "legal-case",
+        "legal-spine-sync",
+        "tracked-diff-check",
     ]
 
 

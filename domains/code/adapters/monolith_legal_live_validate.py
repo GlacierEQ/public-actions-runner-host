@@ -29,6 +29,11 @@ REQUIRED_PATHS = (
     "docs/legal/LEGAL_MONOLITH_INTEGRATION_CONTRACT.md",
     "scripts/validate_legal_live_reconciliation.py",
     "tests/test_legal_live_reconciliation.py",
+    "scripts/validate_legal_case.py",
+    "tests/test_legal_case.py",
+    "tests/test_legal_spine.py",
+    "tests/test_sync_legal_spines.py",
+    "scripts/sync_legal_spines.py",
     "automation/public-runner/legal-live-reconciliation.request.json",
 )
 
@@ -48,6 +53,8 @@ def validate_plan(plan: dict) -> None:
 
 
 def commands() -> list[list[str]]:
+    """Return the exact promotion gate declared by Monolith legal-live PR #54."""
+
     return [
         [
             sys.executable,
@@ -58,6 +65,17 @@ def commands() -> list[list[str]]:
         ],
         [sys.executable, "scripts/validate_legal_live_reconciliation.py"],
         [sys.executable, "-m", "unittest", "tests.test_legal_live_reconciliation"],
+        [sys.executable, "scripts/validate_legal_case.py"],
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "tests.test_legal_case",
+            "tests.test_legal_spine",
+            "tests.test_sync_legal_spines",
+        ],
+        [sys.executable, "scripts/sync_legal_spines.py", "--check"],
+        ["git", "diff", "--check"],
     ]
 
 
@@ -192,9 +210,10 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         steps=steps,
         command_contract_sha256=command_contract_sha256(sequence),
         validated_gates=[
-            "legal-live-registry",
-            "legal-live-board",
-            "integration-contract",
+            "legal-live-reconciliation",
+            "legal-case",
+            "legal-spine-sync",
+            "tracked-diff-check",
         ],
         workspace_attestation={"before": pre_attestation, "after": post_attestation},
     )

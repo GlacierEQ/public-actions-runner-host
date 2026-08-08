@@ -1,0 +1,136 @@
+name: One-shot full Monolith legal gate proof
+
+on:
+  push:
+    branches:
+      - synthesize/monolith-full-legal-gate-20260808
+
+permissions:
+  contents: write
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: synthesize/monolith-full-legal-gate-20260808
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconcile fixed-command regression with seven-step gate
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("tests/test_private_legal_validation_actions.py")
+          lines = path.read_text(encoding="utf-8").splitlines()
+
+          len_indexes = [
+              index
+              for index, line in enumerate(lines)
+              if line.strip() == 'assert len(result["steps"]) == 3'
+          ]
+          if len(len_indexes) != 1:
+              raise SystemExit(f"expected one three-step assertion, found {len(len_indexes)}")
+          index = len_indexes[0]
+          indent = lines[index][: len(lines[index]) - len(lines[index].lstrip())]
+          lines[index] = f'{indent}assert len(result["steps"]) == 7'
+
+          gate_start = next(
+              i
+              for i in range(index + 1, len(lines))
+              if lines[i].strip() == 'assert result["validated_gates"] == ['
+          )
+          gate_end = next(
+              i
+              for i in range(gate_start + 1, len(lines))
+              if lines[i].strip() == "]"
+          )
+          replacement = [
+              f'{indent}assert result["validated_gates"] == [',
+              f'{indent}    "legal-live-reconciliation",',
+              f'{indent}    "legal-case",',
+              f'{indent}    "legal-spine-sync",',
+              f'{indent}    "tracked-diff-check",',
+              f'{indent}]',
+              f'{indent}assert expected[-2] == [',
+              f'{indent}    sys.executable,',
+              f'{indent}    "scripts/sync_legal_spines.py",',
+              f'{indent}    "--check",',
+              f'{indent}]',
+              f'{indent}assert expected[-1] == ["git", "diff", "--check"]',
+          ]
+          lines[gate_start : gate_end + 1] = replacement
+          path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+      - name: Add schema-to-command contract regression
+        shell: bash
+        run: |
+          cat > tests/test_monolith_full_legal_gate_contract.py <<'PY'
+          from __future__ import annotations
+
+          import json
+          from pathlib import Path
+
+          from domains.code.adapters import monolith_legal_live_validate as adapter
+
+          ROOT = Path(__file__).resolve().parents[1]
+          SCHEMA = ROOT / "domains/code/schemas/monolith-legal-live-result.schema.json"
+
+
+          def test_full_monolith_legal_gate_is_exact_and_schema_bounded() -> None:
+              commands = adapter.commands()
+              assert len(commands) == 7
+              assert commands[-2][1:] == ["scripts/sync_legal_spines.py", "--check"]
+              assert commands[-1] == ["git", "diff", "--check"]
+
+              schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+              assert schema["properties"]["steps"]["maxItems"] >= len(commands)
+              assert schema["properties"]["validated_gates"]["maxItems"] >= 4
+
+
+          def test_full_gate_requires_legal_case_and_spine_sources() -> None:
+              required = set(adapter.REQUIRED_PATHS)
+              assert "scripts/validate_legal_case.py" in required
+              assert "tests/test_legal_case.py" in required
+              assert "tests/test_legal_spine.py" in required
+              assert "tests/test_sync_legal_spines.py" in required
+              assert "scripts/sync_legal_spines.py" in required
+          PY
+
+      - name: Add new regression to owned CI lists
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("scripts/ci/public-action-face-ci.sh")
+          text = path.read_text(encoding="utf-8")
+          needle = "  tests/test_monolith_legal_live_safe_path.py\n"
+          if text.count(needle) != 2:
+              raise SystemExit("owned CI list anchor changed unexpectedly")
+          text = text.replace(
+              needle,
+              needle + "  tests/test_monolith_full_legal_gate_contract.py\n",
+          )
+          path.write_text(text, encoding="utf-8")
+
+      - name: Remove one-shot workflow before verification
+        run: git rm .github/workflows/one-shot-full-monolith-gate-proof.yml
+
+      - name: Run complete public action face verification
+        run: bash scripts/ci/public-action-face-ci.sh
+
+      - name: Commit proven contract only after full CI
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "casey"
+          git config user.email "GLACIER.EQUILIBRIUM@GMAIL.COM"
+          git add \
+            tests/test_private_legal_validation_actions.py \
+            tests/test_monolith_full_legal_gate_contract.py \
+            scripts/ci/public-action-face-ci.sh
+          git commit -m "test: lock full Monolith legal gate contract"
+          git push origin HEAD:synthesize/monolith-full-legal-gate-20260808
