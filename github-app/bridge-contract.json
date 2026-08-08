@@ -1,7 +1,18 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "status": "automated_bootstrap_ready_not_activated",
+  "scope": "legacy_app_bridge_canary_and_recovery_only",
+  "canonical_runner_auth": {
+    "workflow": ".github/workflows/apex-pillar-runner.yml",
+    "mode": "github_actions_oidc_to_keymaster",
+    "repository_app_client_id_required": false,
+    "repository_app_private_key_required": false,
+    "runtime_credentials": "short-lived one-repository GitHub App installation tokens minted through Keymaster",
+    "revocation": "explicit at job completion",
+    "manual_credential_handling": false
+  },
   "canonical_activation": {
+    "scope": "legacy_app_bridge_canary_and_recovery_only",
     "windows_launcher": "START_APEX_RUNNER_BRIDGE.cmd",
     "powershell_launcher": "github-app/start_apex_runner_bridge.ps1",
     "cross_platform_command": "python github-app/bootstrap_apex_github_app.py",
@@ -19,11 +30,13 @@
     "installation_repository_selection": "selected"
   },
   "stored_configuration": {
+    "scope": ".github/workflows/apex-github-app-bridge-canary.yml only",
     "repository": "GlacierEQ/public-actions-runner-host",
     "variable": "APEX_RUNNER_APP_CLIENT_ID",
     "secret": "APEX_RUNNER_APP_PRIVATE_KEY",
     "writer": "automated GitHub App Manifest bootstrap",
-    "manual_transport_forbidden": true
+    "manual_transport_forbidden": true,
+    "canonical_runner_consumes_this_configuration": false
   },
   "installation_repositories": [
     "GlacierEQ/mastermind",
@@ -75,11 +88,11 @@
   "forbidden_routes": [
     "GitHub Actions in a private workload repository",
     "GitHub Actions in GlacierEQ/llm-runner-teams",
-    "installation access to all GlacierEQ repositories",
     "unscoped installation tokens",
     "PAT fallback",
     "manual Client ID or PEM transport",
     "private key exposure to workload processes",
+    "using the legacy canary App secret or variable from the canonical APEX Public Action Face",
     "publishing private MEGA-PDF inventory artifacts to the public action-face repository"
   ]
 }
