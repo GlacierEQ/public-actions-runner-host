@@ -1,0 +1,36 @@
+name: Keymaster OIDC Cutover Patch V2
+
+on:
+  push:
+    branches: [fix/keymaster-oidc-public-runner]
+    paths:
+      - .github/workflows/oidc-cutover-patch-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: fix/keymaster-oidc-public-runner
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Apply cutover
+        run: python3 scripts/apply_oidc_cutover.py
+      - name: Verify patch shape
+        run: |
+          git diff --check
+          python3 -m py_compile scripts/keymaster_oidc_token.py scripts/apply_oidc_cutover.py
+          grep -q 'id-token: write' .github/workflows/apex-pillar-runner.yml
+          ! grep -q 'secrets.APEX_RUNNER_APP_PRIVATE_KEY' .github/workflows/apex-pillar-runner.yml
+          ! grep -q 'vars.APEX_RUNNER_APP_CLIENT_ID' .github/workflows/apex-pillar-runner.yml
+      - name: Commit cutover
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/workflows/apex-pillar-runner.yml scripts/action_face_selftest.py tests/test_apex_job_ingress_exclusivity.py
+          git commit -m 'auth: cut public runner over to Keymaster OIDC'
+          git push origin HEAD:fix/keymaster-oidc-public-runner
