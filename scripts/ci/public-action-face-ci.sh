@@ -22,6 +22,7 @@ python -m json.tool domains/analysis/schemas/job.schema.json >/dev/null
 OWNED_FILES=(
   domains/code/adapters/tool_system_validate.py
   domains/code/adapters/monolith_atlas_validate.py
+  domains/code/adapters/monolith_legal_live_validate.py
   domains/docs/adapters/monolith_docs_validate.py
   domains/analysis/adapters/monolith_estate_health.py
   scripts/action_face_postrun_guard.py
@@ -33,6 +34,7 @@ OWNED_FILES=(
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_bounded_file_receipts.py
   tests/test_isolated_catalog_runner_import.py
+  tests/test_monolith_legal_live_safe_path.py
   tests/test_monolith_evolution_adapter.py
   tests/test_publish_verified_boundary.py
   tests/test_tool_system_validate_adapter.py
@@ -43,6 +45,7 @@ OWNED_FILES=(
 FORMAT_FILES=(
   domains/code/adapters/tool_system_validate.py
   domains/code/adapters/monolith_atlas_validate.py
+  domains/code/adapters/monolith_legal_live_validate.py
   domains/docs/adapters/monolith_docs_validate.py
   domains/analysis/adapters/monolith_estate_health.py
   scripts/action_face_postrun_guard.py
@@ -53,6 +56,7 @@ FORMAT_FILES=(
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_bounded_file_receipts.py
   tests/test_isolated_catalog_runner_import.py
+  tests/test_monolith_legal_live_safe_path.py
   tests/test_monolith_evolution_adapter.py
   tests/test_publish_verified_boundary.py
   tests/test_tool_system_validate_adapter.py
