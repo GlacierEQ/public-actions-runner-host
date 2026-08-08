@@ -35,6 +35,12 @@ CORE_REQUIRED_PATHS = (
     "catalog/monolith_command_atlas.json",
     "status/MONOLITH_COMMAND_ATLAS.md",
 )
+CONNECTOR_REQUIRED_PATHS = (
+    "scripts/validate_connector_fabric.py",
+    "tests/test_connector_fabric.py",
+    "domains/mcp_connectors.md",
+    "status/CONNECTOR_FABRIC_ATLAS.md",
+)
 CATEGORY_REQUIRED_PATHS = (
     "scripts/validate_category_heads.py",
     "tests/test_category_heads.py",
@@ -74,6 +80,17 @@ def validate_plan(plan: dict) -> None:
             raise ValueError(f"{field} identity mismatch")
 
 
+def connector_surface_state(workspace: Path) -> str:
+    present = [
+        path for path in CONNECTOR_REQUIRED_PATHS if (workspace / path).is_file()
+    ]
+    if not present:
+        return "absent"
+    if len(present) == len(CONNECTOR_REQUIRED_PATHS):
+        return "complete"
+    return "partial"
+
+
 def category_surface_state(workspace: Path) -> str:
     present = [path for path in CATEGORY_REQUIRED_PATHS if (workspace / path).is_file()]
     if not present:
@@ -87,6 +104,7 @@ def commands(
     result_path: Path,
     job_id: str,
     include_category_heads: bool = True,
+    include_connectors: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
@@ -94,6 +112,13 @@ def commands(
         "scripts/validate_function_atlas.py",
         "tests/test_function_atlas.py",
     ]
+    if include_connectors:
+        compile_targets.extend(
+            [
+                "scripts/validate_connector_fabric.py",
+                "tests/test_connector_fabric.py",
+            ]
+        )
     if include_category_heads:
         compile_targets.extend(
             [
@@ -126,6 +151,23 @@ def commands(
             "test_function_atlas.py",
         ],
     ]
+
+    if include_connectors:
+        sequence.extend(
+            [
+                [str(python), "scripts/validate_connector_fabric.py"],
+                [
+                    str(python),
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    "tests",
+                    "-p",
+                    "test_connector_fabric.py",
+                ],
+            ]
+        )
 
     if include_category_heads:
         sequence.extend(
@@ -341,6 +383,23 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 ),
             )
 
+        connector_state = connector_surface_state(workspace_root)
+        if connector_state == "partial":
+            missing_connectors = [
+                path
+                for path in CONNECTOR_REQUIRED_PATHS
+                if not (workspace_root / path).is_file()
+            ]
+            return catalog.write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason=(
+                    "partial connector-fabric surface is not verifiable; missing: "
+                    + ", ".join(missing_connectors)
+                ),
+            )
+
         category_state = category_surface_state(workspace_root)
         if category_state == "partial":
             missing_category = [
@@ -358,11 +417,13 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 ),
             )
 
+        include_connectors = connector_state == "complete"
         include_category_heads = category_state == "complete"
         sequence = commands(
             result_path,
             str(plan["job_id"]),
             include_category_heads,
+            include_connectors,
         )
         steps: list[dict] = []
         status = "completed"
@@ -452,6 +513,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             )
 
     gates = ["core-function-atlas"]
+    if include_connectors:
+        gates.append("connector-fabric-atlas")
     if include_category_heads:
         gates.append("category-head-hierarchy")
     gates.append("monolith-command-atlas")
