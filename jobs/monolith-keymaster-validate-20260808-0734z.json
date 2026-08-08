@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-keymaster-validate-20260808-0734z",
+  "pillar": "B",
+  "action": "docs.monolith.validate-integrity",
+  "source_ref": "3718eb3214b6d9bf70f175af3f6e1a918d647fdd"
+}
