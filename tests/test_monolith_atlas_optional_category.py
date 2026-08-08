@@ -22,7 +22,9 @@ def test_commands_support_core_only_gate(tmp_path: Path) -> None:
     sequence = adapter.commands(result, "CoreOnly01", False)
 
     assert len(sequence) == 11
-    assert not any("scripts/validate_category_heads.py" in command for command in sequence)
+    assert not any(
+        "scripts/validate_category_heads.py" in command for command in sequence
+    )
     assert not any("test_category_heads.py" in command for command in sequence)
     assert any("test_function_atlas.py" in command for command in sequence)
 
