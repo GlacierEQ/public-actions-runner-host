@@ -71,6 +71,12 @@ SPACEX_REQUIRED_PATHS = (
     "domains/spacex_aerospace.md",
     "status/SPACEX_AEROSPACE_ATLAS.md",
 )
+PRO_CONTROL_REQUIRED_PATHS = (
+    "scripts/validate_pro_control_surfaces.py",
+    "tests/test_pro_control_surfaces.py",
+    "domains/pro_control_surfaces.md",
+    "status/PRO_CONTROL_SURFACE_ATLAS.md",
+)
 CATEGORY_REQUIRED_PATHS = (
     "scripts/validate_category_heads.py",
     "tests/test_category_heads.py",
@@ -152,6 +158,18 @@ OPTIONAL_SURFACES = (
         "gate": "spacex-aerospace-atlas",
     },
     {
+        "key": "pro_control",
+        "label": "pro-control-surface",
+        "required_paths": PRO_CONTROL_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_pro_control_surfaces.py",
+            "tests/test_pro_control_surfaces.py",
+        ),
+        "validator": "scripts/validate_pro_control_surfaces.py",
+        "test_pattern": "test_pro_control_surfaces.py",
+        "gate": "pro-control-surface-atlas",
+    },
+    {
         "key": "category_heads",
         "label": "category-head",
         "required_paths": CATEGORY_REQUIRED_PATHS,
@@ -230,6 +248,10 @@ def spacex_surface_state(workspace: Path) -> str:
     return _surface_state(workspace, SPACEX_REQUIRED_PATHS)
 
 
+def pro_control_surface_state(workspace: Path) -> str:
+    return _surface_state(workspace, PRO_CONTROL_REQUIRED_PATHS)
+
+
 def category_surface_state(workspace: Path) -> str:
     return _surface_state(workspace, CATEGORY_REQUIRED_PATHS)
 
@@ -244,6 +266,7 @@ def commands(
     include_lab_hire: bool = True,
     include_colossus: bool = True,
     include_spacex: bool = True,
+    include_pro_control: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
@@ -254,6 +277,7 @@ def commands(
         "lab_hire": include_lab_hire,
         "colossus": include_colossus,
         "spacex": include_spacex,
+        "pro_control": include_pro_control,
         "category_heads": include_category_heads,
     }
     compile_targets = [
@@ -537,6 +561,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             enabled_surfaces["lab_hire"],
             enabled_surfaces["colossus"],
             enabled_surfaces["spacex"],
+            enabled_surfaces["pro_control"],
         )
         steps: list[dict] = []
         status = "completed"
