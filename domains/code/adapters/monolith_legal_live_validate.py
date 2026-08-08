@@ -93,13 +93,16 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             reason="resolved source SHA does not match requested source_ref",
         )
 
-    missing = [relative for relative in REQUIRED_PATHS if not (workspace / relative).is_file()]
+    missing = [
+        relative for relative in REQUIRED_PATHS if not (workspace / relative).is_file()
+    ]
     if missing:
         return catalog.write_result(
             plan,
             result_path,
             "blocked",
-            reason="required legal reconciliation files are missing: " + ", ".join(missing),
+            reason="required legal reconciliation files are missing: "
+            + ", ".join(missing),
         )
 
     try:
@@ -188,6 +191,10 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         status,
         steps=steps,
         command_contract_sha256=command_contract_sha256(sequence),
-        validated_gates=["legal-live-registry", "legal-live-board", "integration-contract"],
+        validated_gates=[
+            "legal-live-registry",
+            "legal-live-board",
+            "integration-contract",
+        ],
         workspace_attestation={"before": pre_attestation, "after": post_attestation},
     )
