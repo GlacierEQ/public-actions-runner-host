@@ -203,7 +203,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
         workspace_root = checkout.proc_path
         missing_core = [
-            path for path in CORE_REQUIRED_PATHS if not (workspace_root / path).is_file()
+            path
+            for path in CORE_REQUIRED_PATHS
+            if not (workspace_root / path).is_file()
         ]
         if missing_core:
             return catalog.write_result(
