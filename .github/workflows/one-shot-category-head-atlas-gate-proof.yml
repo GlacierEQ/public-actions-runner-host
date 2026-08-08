@@ -39,39 +39,66 @@ jobs:
               raise SystemExit("atlas fixture anchor changed unexpectedly")
           text = text.replace(fixture_anchor, fixture_add, 1)
 
-          gates_old = '''    assert result["validated_gates"] == [
-              "core-function-atlas",
-              "monolith-command-atlas",
+          lines = text.splitlines()
+          gate_candidates = [
+              index
+              for index, line in enumerate(lines)
+              if line.strip() == 'assert result["validated_gates"] == ['
+              and index + 1 < len(lines)
+              and lines[index + 1].strip() == '"core-function-atlas",'
           ]
-          '''
-          gates_new = '''    assert result["validated_gates"] == [
-              "core-function-atlas",
-              "category-head-hierarchy",
-              "monolith-command-atlas",
+          if len(gate_candidates) != 1:
+              raise SystemExit(
+                  f"expected one atlas validated_gates block, found {len(gate_candidates)}"
+              )
+          gate_start = gate_candidates[0]
+          gate_end = next(
+              index
+              for index in range(gate_start + 1, len(lines))
+              if lines[index].strip() == "]"
+          )
+          indent = lines[gate_start][: len(lines[gate_start]) - len(lines[gate_start].lstrip())]
+          lines[gate_start : gate_end + 1] = [
+              f'{indent}assert result["validated_gates"] == [',
+              f'{indent}    "core-function-atlas",',
+              f'{indent}    "category-head-hierarchy",',
+              f'{indent}    "monolith-command-atlas",',
+              f"{indent}]",
           ]
-          '''
-          if text.count(gates_old) != 1:
-              raise SystemExit("atlas validated_gates assertion changed unexpectedly")
-          text = text.replace(gates_old, gates_new, 1)
 
-          if text.count("    assert len(sequence) == 11\n") != 1:
-              raise SystemExit("atlas command-count assertion changed unexpectedly")
-          text = text.replace(
-              "    assert len(sequence) == 11\n",
-              "    assert len(sequence) == 13\n",
-              1,
+          count_candidates = [
+              index
+              for index, line in enumerate(lines)
+              if line.strip() == "assert len(sequence) == 11"
+          ]
+          if len(count_candidates) != 1:
+              raise SystemExit(
+                  f"expected one atlas command-count assertion, found {len(count_candidates)}"
+              )
+          lines[count_candidates[0]] = (
+              lines[count_candidates[0]].replace("== 11", "== 13")
           )
 
-          sequence_anchor = '''    assert any("scripts/validate_function_atlas.py" in command for command in sequence)
-          '''
-          sequence_add = sequence_anchor + '''    assert any("scripts/validate_category_heads.py" in command for command in sequence)
-          assert any("test_category_heads.py" in command for command in sequence)
-          '''
-          if text.count(sequence_anchor) != 1:
-              raise SystemExit("atlas sequence assertion anchor changed unexpectedly")
-          text = text.replace(sequence_anchor, sequence_add, 1)
+          sequence_candidates = [
+              index
+              for index, line in enumerate(lines)
+              if 'scripts/validate_function_atlas.py' in line
+              and "assert any" in line
+          ]
+          if len(sequence_candidates) != 1:
+              raise SystemExit(
+                  f"expected one function-atlas sequence assertion, found {len(sequence_candidates)}"
+              )
+          sequence_index = sequence_candidates[0]
+          sequence_indent = lines[sequence_index][
+              : len(lines[sequence_index]) - len(lines[sequence_index].lstrip())
+          ]
+          lines[sequence_index + 1 : sequence_index + 1] = [
+              f'{sequence_indent}assert any("scripts/validate_category_heads.py" in command for command in sequence)',
+              f'{sequence_indent}assert any("test_category_heads.py" in command for command in sequence)',
+          ]
 
-          path.write_text(text, encoding="utf-8")
+          path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
       - name: Remove one-shot workflow before verification
         run: git rm .github/workflows/one-shot-category-head-atlas-gate-proof.yml
