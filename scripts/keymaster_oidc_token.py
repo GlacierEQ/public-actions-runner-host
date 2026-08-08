@@ -26,10 +26,22 @@ class TokenBrokerError(RuntimeError):
     """Fail-closed broker error without credential material."""
 
 
+class _RejectRedirects(urllib.request.HTTPRedirectHandler):
+    """Never forward bearer-authenticated requests across redirects."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001
+        raise TokenBrokerError("broker_redirect_rejected")
+
+
+_NO_REDIRECT_OPENER = urllib.request.build_opener(_RejectRedirects())
+
+
 def _request_json(request: urllib.request.Request) -> dict[str, object]:
     try:
-        with urllib.request.urlopen(request, timeout=20) as response:
+        with _NO_REDIRECT_OPENER.open(request, timeout=20) as response:
             raw = response.read(MAX_RESPONSE_BYTES + 1)
+    except TokenBrokerError:
+        raise
     except urllib.error.HTTPError as error:
         raise TokenBrokerError(f"broker_http_{error.code}") from error
     except urllib.error.URLError as error:
@@ -50,6 +62,10 @@ def _oidc_token() -> str:
     request_token = os.environ.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN", "").strip()
     if not request_url or not request_token:
         raise TokenBrokerError("github_oidc_environment_unavailable")
+    parsed = urllib.parse.urlsplit(request_url)
+    hostname = (parsed.hostname or "").lower()
+    if parsed.scheme != "https" or not hostname.endswith(".actions.githubusercontent.com"):
+        raise TokenBrokerError("github_oidc_endpoint_rejected")
     separator = "&" if "?" in request_url else "?"
     url = f"{request_url}{separator}{urllib.parse.urlencode({'audience': AUDIENCE})}"
     request = urllib.request.Request(
