@@ -41,6 +41,12 @@ CONNECTOR_REQUIRED_PATHS = (
     "domains/mcp_connectors.md",
     "status/CONNECTOR_FABRIC_ATLAS.md",
 )
+MEMORY_REQUIRED_PATHS = (
+    "scripts/validate_memory_aspen.py",
+    "tests/test_memory_aspen.py",
+    "domains/memory_aspen.md",
+    "status/MEMORY_ASPEN_ATLAS.md",
+)
 CATEGORY_REQUIRED_PATHS = (
     "scripts/validate_category_heads.py",
     "tests/test_category_heads.py",
@@ -91,6 +97,15 @@ def connector_surface_state(workspace: Path) -> str:
     return "partial"
 
 
+def memory_surface_state(workspace: Path) -> str:
+    present = [path for path in MEMORY_REQUIRED_PATHS if (workspace / path).is_file()]
+    if not present:
+        return "absent"
+    if len(present) == len(MEMORY_REQUIRED_PATHS):
+        return "complete"
+    return "partial"
+
+
 def category_surface_state(workspace: Path) -> str:
     present = [path for path in CATEGORY_REQUIRED_PATHS if (workspace / path).is_file()]
     if not present:
@@ -105,6 +120,7 @@ def commands(
     job_id: str,
     include_category_heads: bool = True,
     include_connectors: bool = True,
+    include_memory: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
@@ -117,6 +133,13 @@ def commands(
             [
                 "scripts/validate_connector_fabric.py",
                 "tests/test_connector_fabric.py",
+            ]
+        )
+    if include_memory:
+        compile_targets.extend(
+            [
+                "scripts/validate_memory_aspen.py",
+                "tests/test_memory_aspen.py",
             ]
         )
     if include_category_heads:
@@ -165,6 +188,23 @@ def commands(
                     "tests",
                     "-p",
                     "test_connector_fabric.py",
+                ],
+            ]
+        )
+
+    if include_memory:
+        sequence.extend(
+            [
+                [str(python), "scripts/validate_memory_aspen.py"],
+                [
+                    str(python),
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    "tests",
+                    "-p",
+                    "test_memory_aspen.py",
                 ],
             ]
         )
@@ -400,6 +440,23 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 ),
             )
 
+        memory_state = memory_surface_state(workspace_root)
+        if memory_state == "partial":
+            missing_memory = [
+                path
+                for path in MEMORY_REQUIRED_PATHS
+                if not (workspace_root / path).is_file()
+            ]
+            return catalog.write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason=(
+                    "partial memory-aspen surface is not verifiable; missing: "
+                    + ", ".join(missing_memory)
+                ),
+            )
+
         category_state = category_surface_state(workspace_root)
         if category_state == "partial":
             missing_category = [
@@ -418,12 +475,14 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             )
 
         include_connectors = connector_state == "complete"
+        include_memory = memory_state == "complete"
         include_category_heads = category_state == "complete"
         sequence = commands(
             result_path,
             str(plan["job_id"]),
             include_category_heads,
             include_connectors,
+            include_memory,
         )
         steps: list[dict] = []
         status = "completed"
@@ -515,6 +574,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     gates = ["core-function-atlas"]
     if include_connectors:
         gates.append("connector-fabric-atlas")
+    if include_memory:
+        gates.append("memory-aspen-atlas")
     if include_category_heads:
         gates.append("category-head-hierarchy")
     gates.append("monolith-command-atlas")
