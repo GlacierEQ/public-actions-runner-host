@@ -67,6 +67,7 @@ on:
         type: string
 
 permissions:
+  id-token: write
   contents: read
   issues: write
 
@@ -142,32 +143,24 @@ jobs:
           AUTH_REASON: strict metadata envelope validation failed
         run: python3 scripts/action_face_issue_status.py
 
-      - name: Require GitHub App bridge configuration
+      - name: Require GitHub OIDC Keymaster bridge
         if: steps.plan.outcome == 'success'
         id: app_config
         continue-on-error: true
-        env:
-          APP_CLIENT_ID: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
-          APP_PRIVATE_KEY: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
         run: |
-          test -n "$APP_CLIENT_ID" || { echo "APEX_RUNNER_APP_CLIENT_ID repository variable is required" >&2; exit 1; }
-          test -n "$APP_PRIVATE_KEY" || { echo "APEX_RUNNER_APP_PRIVATE_KEY repository secret is required" >&2; exit 1; }
-          case "$APP_PRIVATE_KEY" in
-            *"BEGIN "*"PRIVATE KEY"*) ;;
-            *) echo "APEX_RUNNER_APP_PRIVATE_KEY does not contain a PEM private key" >&2; exit 1 ;;
-          esac
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || { echo "GitHub OIDC request URL unavailable" >&2; exit 1; }
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" || { echo "GitHub OIDC request token unavailable" >&2; exit 1; }
+          python3 -m py_compile scripts/keymaster_oidc_token.py
 
       - name: Mint one-repository private control token
         if: steps.plan.outcome == 'success' && steps.app_config.outcome == 'success'
         id: control_token
         continue-on-error: true
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
-          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
-          owner: GlacierEQ
-          repositories: GlacierEQ/llm-runner-teams
-          permission-contents: write
+        run: |
+          python3 scripts/keymaster_oidc_token.py \
+            --repository GlacierEQ/llm-runner-teams \
+            --permission contents=write \
+            --operation public-action-control
 
       - name: Assert private non-executing control plane
         if: steps.control_token.outcome == 'success'
@@ -207,13 +200,11 @@ jobs:
            steps.approval.outcome == 'success')
         id: workload_token
         continue-on-error: true
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
-          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
-          owner: GlacierEQ
-          repositories: ${{ steps.plan.outputs.source_repo }}
-          permission-contents: read
+        run: |
+          python3 scripts/keymaster_oidc_token.py \
+            --repository "${{ steps.plan.outputs.source_repo }}" \
+            --permission contents=read \
+            --operation public-action-workload
 
       - name: Checkout catalog-approved workload without persisting credentials
         if: steps.workload_token.outcome == 'success'

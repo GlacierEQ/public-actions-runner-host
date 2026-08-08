@@ -45,16 +45,17 @@ def test_no_workflow_contains_retired_fail_open_executor() -> None:
 
 def test_canonical_issue_ingress_separates_source_and_receipt_authority() -> None:
     text = CANONICAL.read_text(encoding="utf-8")
-    assert "permissions:\n  contents: read\n  issues: write" in text
+    assert "permissions:\n  id-token: write\n  contents: read\n  issues: write" in text
     assert "Mint one-repository private control token" in text
-    assert "repositories: GlacierEQ/llm-runner-teams" in text
-    assert "permission-contents: write" in text
+    assert "--repository GlacierEQ/llm-runner-teams" in text
+    assert "--permission contents=write" in text
     assert "Mint one-repository private workload token" in text
-    assert "repositories: ${{ steps.plan.outputs.source_repo }}" in text
-    assert "permission-contents: read" in text
+    assert '--repository "${{ steps.plan.outputs.source_repo }}"' in text
+    assert "--permission contents=read" in text
     assert text.count("persist-credentials: false") >= 3
-    assert "APEX_RUNNER_APP_CLIENT_ID" in text
-    assert "APEX_RUNNER_APP_PRIVATE_KEY" in text
+    assert "APEX_RUNNER_APP_CLIENT_ID" not in text
+    assert "APEX_RUNNER_APP_PRIVATE_KEY" not in text
+    assert "scripts/keymaster_oidc_token.py" in text
     assert "action_face_publish_verified.py" in text
     assert "Enforce governed release result" in text
 

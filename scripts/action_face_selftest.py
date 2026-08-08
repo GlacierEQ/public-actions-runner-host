@@ -129,12 +129,14 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "--workload-root workload",
         "Verify post-run control, workload, and result integrity",
         "steps.plan.outputs.action == 'akos-echo-policy-ci'",
-        "permission-contents: read",
-        "permission-contents: write",
+        "id-token: write",
+        "scripts/keymaster_oidc_token.py",
+        "--permission contents=read",
+        "--permission contents=write",
+        "--repository GlacierEQ/llm-runner-teams",
         "persist-credentials: false",
         "steps.synthesize.outputs.synthesized == 'true'",
         CHECKOUT_PIN,
-        APP_TOKEN_PIN,
     ]
     forbidden_workflow = [
         "runs-on: self-hosted",
@@ -142,6 +144,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "actions/github-script@",
         "actions/checkout@v",
         "actions/create-github-app-token@v",
+        "actions/create-github-app-token@",
+        "secrets.APEX_RUNNER_APP_PRIVATE_KEY",
+        "vars.APEX_RUNNER_APP_CLIENT_ID",
         "AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}",
         "python3 scripts/apex_pillar_runner.py publish",
     ]
