@@ -299,7 +299,7 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     assert before["checkout_inode"] == after["checkout_inode"]
 
     sequence = real_commands(result_path, "RunnerJob01")
-    assert len(sequence) == 19
+    assert len(sequence) == 21
     assert any("scripts/validate_function_atlas.py" in command for command in sequence)
     assert any(
         "scripts/validate_connector_fabric.py" in command for command in sequence
@@ -309,6 +309,8 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     assert any("test_memory_aspen.py" in command for command in sequence)
     assert any("scripts/validate_legal_case.py" in command for command in sequence)
     assert any("test_legal_case.py" in command for command in sequence)
+    assert any("scripts/validate_lab_hire_atlas.py" in command for command in sequence)
+    assert any("test_lab_hire_atlas.py" in command for command in sequence)
     assert any("scripts/validate_category_heads.py" in command for command in sequence)
     assert any("test_category_heads.py" in command for command in sequence)
     assert any(

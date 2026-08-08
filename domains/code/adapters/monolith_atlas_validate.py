@@ -53,11 +53,80 @@ LEGAL_REQUIRED_PATHS = (
     "domains/legal_case.md",
     "status/LEGAL_CASE_ATLAS.md",
 )
+LAB_HIRE_REQUIRED_PATHS = (
+    "scripts/validate_lab_hire_atlas.py",
+    "tests/test_lab_hire_atlas.py",
+    "domains/lab_hire_stamps.md",
+    "status/LAB_HIRE_DOMAIN_ATLAS.md",
+)
 CATEGORY_REQUIRED_PATHS = (
     "scripts/validate_category_heads.py",
     "tests/test_category_heads.py",
     "catalog/category_heads.json",
     "foundations/category-heads.md",
+)
+
+OPTIONAL_SURFACES = (
+    {
+        "key": "connectors",
+        "label": "connector-fabric",
+        "required_paths": CONNECTOR_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_connector_fabric.py",
+            "tests/test_connector_fabric.py",
+        ),
+        "validator": "scripts/validate_connector_fabric.py",
+        "test_pattern": "test_connector_fabric.py",
+        "gate": "connector-fabric-atlas",
+    },
+    {
+        "key": "memory",
+        "label": "memory-aspen",
+        "required_paths": MEMORY_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_memory_aspen.py",
+            "tests/test_memory_aspen.py",
+        ),
+        "validator": "scripts/validate_memory_aspen.py",
+        "test_pattern": "test_memory_aspen.py",
+        "gate": "memory-aspen-atlas",
+    },
+    {
+        "key": "legal",
+        "label": "legal-case",
+        "required_paths": LEGAL_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_legal_case.py",
+            "tests/test_legal_case.py",
+        ),
+        "validator": "scripts/validate_legal_case.py",
+        "test_pattern": "test_legal_case.py",
+        "gate": "legal-case-atlas",
+    },
+    {
+        "key": "lab_hire",
+        "label": "lab-hire",
+        "required_paths": LAB_HIRE_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_lab_hire_atlas.py",
+            "tests/test_lab_hire_atlas.py",
+        ),
+        "validator": "scripts/validate_lab_hire_atlas.py",
+        "test_pattern": "test_lab_hire_atlas.py",
+        "gate": "lab-hire-atlas",
+    },
+    {
+        "key": "category_heads",
+        "label": "category-head",
+        "required_paths": CATEGORY_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_category_heads.py",
+            "tests/test_category_heads.py",
+        ),
+        "validator": "scripts/validate_category_heads.py",
+        "test_pattern": "test_category_heads.py",
+        "gate": "category-head-hierarchy",
+    },
 )
 COMMAND_ATLAS_GENERATOR = "scripts/build_monolith_command_atlas.py"
 COMMAND_ATLAS_REPAIR_INPUTS = (
@@ -92,42 +161,33 @@ def validate_plan(plan: dict) -> None:
             raise ValueError(f"{field} identity mismatch")
 
 
-def connector_surface_state(workspace: Path) -> str:
-    present = [
-        path for path in CONNECTOR_REQUIRED_PATHS if (workspace / path).is_file()
-    ]
+def _surface_state(workspace: Path, required_paths: tuple[str, ...]) -> str:
+    present = [path for path in required_paths if (workspace / path).is_file()]
     if not present:
         return "absent"
-    if len(present) == len(CONNECTOR_REQUIRED_PATHS):
+    if len(present) == len(required_paths):
         return "complete"
     return "partial"
+
+
+def connector_surface_state(workspace: Path) -> str:
+    return _surface_state(workspace, CONNECTOR_REQUIRED_PATHS)
 
 
 def memory_surface_state(workspace: Path) -> str:
-    present = [path for path in MEMORY_REQUIRED_PATHS if (workspace / path).is_file()]
-    if not present:
-        return "absent"
-    if len(present) == len(MEMORY_REQUIRED_PATHS):
-        return "complete"
-    return "partial"
+    return _surface_state(workspace, MEMORY_REQUIRED_PATHS)
 
 
 def legal_surface_state(workspace: Path) -> str:
-    present = [path for path in LEGAL_REQUIRED_PATHS if (workspace / path).is_file()]
-    if not present:
-        return "absent"
-    if len(present) == len(LEGAL_REQUIRED_PATHS):
-        return "complete"
-    return "partial"
+    return _surface_state(workspace, LEGAL_REQUIRED_PATHS)
+
+
+def lab_hire_surface_state(workspace: Path) -> str:
+    return _surface_state(workspace, LAB_HIRE_REQUIRED_PATHS)
 
 
 def category_surface_state(workspace: Path) -> str:
-    present = [path for path in CATEGORY_REQUIRED_PATHS if (workspace / path).is_file()]
-    if not present:
-        return "absent"
-    if len(present) == len(CATEGORY_REQUIRED_PATHS):
-        return "complete"
-    return "partial"
+    return _surface_state(workspace, CATEGORY_REQUIRED_PATHS)
 
 
 def commands(
@@ -137,41 +197,24 @@ def commands(
     include_connectors: bool = True,
     include_memory: bool = True,
     include_legal: bool = True,
+    include_lab_hire: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
+    enabled = {
+        "connectors": include_connectors,
+        "memory": include_memory,
+        "legal": include_legal,
+        "lab_hire": include_lab_hire,
+        "category_heads": include_category_heads,
+    }
     compile_targets = [
         "scripts/validate_function_atlas.py",
         "tests/test_function_atlas.py",
     ]
-    if include_connectors:
-        compile_targets.extend(
-            [
-                "scripts/validate_connector_fabric.py",
-                "tests/test_connector_fabric.py",
-            ]
-        )
-    if include_memory:
-        compile_targets.extend(
-            [
-                "scripts/validate_memory_aspen.py",
-                "tests/test_memory_aspen.py",
-            ]
-        )
-    if include_legal:
-        compile_targets.extend(
-            [
-                "scripts/validate_legal_case.py",
-                "tests/test_legal_case.py",
-            ]
-        )
-    if include_category_heads:
-        compile_targets.extend(
-            [
-                "scripts/validate_category_heads.py",
-                "tests/test_category_heads.py",
-            ]
-        )
+    for surface in OPTIONAL_SURFACES:
+        if enabled[surface["key"]]:
+            compile_targets.extend(surface["compile_targets"])
 
     sequence: list[list[str]] = [
         [sys.executable, "-m", "venv", str(venv)],
@@ -198,10 +241,12 @@ def commands(
         ],
     ]
 
-    if include_connectors:
+    for surface in OPTIONAL_SURFACES:
+        if not enabled[surface["key"]]:
+            continue
         sequence.extend(
             [
-                [str(python), "scripts/validate_connector_fabric.py"],
+                [str(python), surface["validator"]],
                 [
                     str(python),
                     "-m",
@@ -210,58 +255,7 @@ def commands(
                     "-s",
                     "tests",
                     "-p",
-                    "test_connector_fabric.py",
-                ],
-            ]
-        )
-
-    if include_memory:
-        sequence.extend(
-            [
-                [str(python), "scripts/validate_memory_aspen.py"],
-                [
-                    str(python),
-                    "-m",
-                    "unittest",
-                    "discover",
-                    "-s",
-                    "tests",
-                    "-p",
-                    "test_memory_aspen.py",
-                ],
-            ]
-        )
-
-    if include_legal:
-        sequence.extend(
-            [
-                [str(python), "scripts/validate_legal_case.py"],
-                [
-                    str(python),
-                    "-m",
-                    "unittest",
-                    "discover",
-                    "-s",
-                    "tests",
-                    "-p",
-                    "test_legal_case.py",
-                ],
-            ]
-        )
-
-    if include_category_heads:
-        sequence.extend(
-            [
-                [str(python), "scripts/validate_category_heads.py"],
-                [
-                    str(python),
-                    "-m",
-                    "unittest",
-                    "discover",
-                    "-s",
-                    "tests",
-                    "-p",
-                    "test_category_heads.py",
+                    surface["test_pattern"],
                 ],
             ]
         )
@@ -463,85 +457,36 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 ),
             )
 
-        connector_state = connector_surface_state(workspace_root)
-        if connector_state == "partial":
-            missing_connectors = [
-                path
-                for path in CONNECTOR_REQUIRED_PATHS
-                if not (workspace_root / path).is_file()
-            ]
-            return catalog.write_result(
-                plan,
-                result_path,
-                "blocked",
-                reason=(
-                    "partial connector-fabric surface is not verifiable; missing: "
-                    + ", ".join(missing_connectors)
-                ),
-            )
+        surface_states: dict[str, str] = {}
+        enabled_surfaces: dict[str, bool] = {}
+        for surface in OPTIONAL_SURFACES:
+            state = _surface_state(workspace_root, surface["required_paths"])
+            surface_states[surface["key"]] = state
+            if state == "partial":
+                missing = [
+                    path
+                    for path in surface["required_paths"]
+                    if not (workspace_root / path).is_file()
+                ]
+                return catalog.write_result(
+                    plan,
+                    result_path,
+                    "blocked",
+                    reason=(
+                        f"partial {surface['label']} surface is not verifiable; missing: "
+                        + ", ".join(missing)
+                    ),
+                )
+            enabled_surfaces[surface["key"]] = state == "complete"
 
-        memory_state = memory_surface_state(workspace_root)
-        if memory_state == "partial":
-            missing_memory = [
-                path
-                for path in MEMORY_REQUIRED_PATHS
-                if not (workspace_root / path).is_file()
-            ]
-            return catalog.write_result(
-                plan,
-                result_path,
-                "blocked",
-                reason=(
-                    "partial memory-aspen surface is not verifiable; missing: "
-                    + ", ".join(missing_memory)
-                ),
-            )
-
-        legal_state = legal_surface_state(workspace_root)
-        if legal_state == "partial":
-            missing_legal = [
-                path
-                for path in LEGAL_REQUIRED_PATHS
-                if not (workspace_root / path).is_file()
-            ]
-            return catalog.write_result(
-                plan,
-                result_path,
-                "blocked",
-                reason=(
-                    "partial legal-case surface is not verifiable; missing: "
-                    + ", ".join(missing_legal)
-                ),
-            )
-
-        category_state = category_surface_state(workspace_root)
-        if category_state == "partial":
-            missing_category = [
-                path
-                for path in CATEGORY_REQUIRED_PATHS
-                if not (workspace_root / path).is_file()
-            ]
-            return catalog.write_result(
-                plan,
-                result_path,
-                "blocked",
-                reason=(
-                    "partial category-head surface is not verifiable; missing: "
-                    + ", ".join(missing_category)
-                ),
-            )
-
-        include_connectors = connector_state == "complete"
-        include_memory = memory_state == "complete"
-        include_legal = legal_state == "complete"
-        include_category_heads = category_state == "complete"
         sequence = commands(
             result_path,
             str(plan["job_id"]),
-            include_category_heads,
-            include_connectors,
-            include_memory,
-            include_legal,
+            enabled_surfaces["category_heads"],
+            enabled_surfaces["connectors"],
+            enabled_surfaces["memory"],
+            enabled_surfaces["legal"],
+            enabled_surfaces["lab_hire"],
         )
         steps: list[dict] = []
         status = "completed"
@@ -631,14 +576,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             )
 
     gates = ["core-function-atlas"]
-    if include_connectors:
-        gates.append("connector-fabric-atlas")
-    if include_memory:
-        gates.append("memory-aspen-atlas")
-    if include_legal:
-        gates.append("legal-case-atlas")
-    if include_category_heads:
-        gates.append("category-head-hierarchy")
+    for surface in OPTIONAL_SURFACES:
+        if enabled_surfaces[surface["key"]]:
+            gates.append(surface["gate"])
     gates.append("monolith-command-atlas")
 
     details: dict[str, object] = {
