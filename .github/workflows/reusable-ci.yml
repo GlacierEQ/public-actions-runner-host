@@ -282,20 +282,75 @@ jobs:
     runs-on: ubuntu-latest
     needs: [validate-inputs]
     if: inputs.run_security
+    env:
+      SECRET_SCAN_PATTERN: >-
+        gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{40,}|sk_live_[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}|password[[:space:]]*=[[:space:]]*([A-Za-z0-9_!@#$%^&*.+:/?-]{8,}|["'][^"']{8,}["'])
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate secret scan patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          if printf '%s\n' \
+            'ghp_' \
+            'sk_live' \
+            'AKIA' \
+            'password = getenv("PASSWORD")' \
+            | grep -Eq "$SECRET_SCAN_PATTERN"; then
+            echo "Secret detector is too broad for scanner vocabulary" >&2
+            exit 1
+          fi
+
+          github_prefix='ghp_'
+          github_suffix='AAAAAAAAAAAAAAAAAAAA'
+          fine_grained_prefix='github_pat_'
+          fine_grained_suffix='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+          stripe_prefix='sk_live_'
+          stripe_suffix='AAAAAAAAAAAAAAAA'
+          aws_prefix='AKIA'
+          aws_suffix='ABCDEFGHIJKLMNOP'
+          password_label='password'
+          password_value='correct-horse-battery-staple'
+
+          for candidate in \
+            "${github_prefix}${github_suffix}" \
+            "${fine_grained_prefix}${fine_grained_suffix}" \
+            "${stripe_prefix}${stripe_suffix}" \
+            "${aws_prefix}${aws_suffix}" \
+            "${password_label}=correct-horse-battery-staple" \
+            "${password_label} = \"${password_value}\""; do
+            if ! printf '%s\n' "$candidate" | grep -Eq "$SECRET_SCAN_PATTERN"; then
+              echo "Secret detector missed a credential-shaped fixture" >&2
+              exit 1
+            fi
+          done
+
       - name: Secret scan
         working-directory: ${{ inputs.working_directory }}
+        shell: bash
         run: |
-          echo "🔍 Scanning for secrets..."
-          ! grep -rn "ghp_\|sk_live\|AKIA\|password\s*=" \
-            --include="*.py" --include="*.ts" --include="*.js" \
-            --include="*.go" --include="*.env" . 2>/dev/null || {
-            echo "⚠️ Potential secrets found"
-            exit 1
-          }
-          echo "✅ Clean"
+          set -euo pipefail
+          echo "🔍 Scanning all Git-tracked content for credential-shaped secrets..."
+          set +e
+          matches="$(git grep -nE "$SECRET_SCAN_PATTERN" -- . 2>&1)"
+          status=$?
+          set -e
+          case "$status" in
+            0)
+              printf '%s\n' "$matches"
+              echo "⚠️ Potential credential-shaped secrets found"
+              exit 1
+              ;;
+            1)
+              echo "✅ Clean"
+              ;;
+            *)
+              printf '%s\n' "$matches" >&2
+              echo "Secret scanner failed with status $status" >&2
+              exit "$status"
+              ;;
+          esac
 
       - name: Dependency audit
         working-directory: ${{ inputs.working_directory }}
