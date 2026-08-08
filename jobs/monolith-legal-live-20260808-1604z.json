@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-legal-live-20260808-1604z",
+  "pillar": "C",
+  "action": "code.monolith.validate-legal-live-reconciliation",
+  "source_ref": "204b3b30328a476cf43106e5830e36aec9829011"
+}
