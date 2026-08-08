@@ -24,7 +24,15 @@ def request_json(request: urllib.request.Request) -> dict[str, object]:
         with urllib.request.urlopen(request, timeout=20) as response:
             raw = response.read(MAX_BYTES + 1)
     except urllib.error.HTTPError as error:
-        raise RuntimeError(f"http_{error.code}") from error
+        raw = error.read(MAX_BYTES + 1)
+        detail = "unknown"
+        try:
+            parsed = json.loads(raw.decode("utf-8"))
+            if isinstance(parsed, dict) and isinstance(parsed.get("error"), str):
+                detail = parsed["error"][:160]
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            pass
+        raise RuntimeError(f"http_{error.code}:{detail}") from error
     except urllib.error.URLError as error:
         raise RuntimeError("transport_failed") from error
     if len(raw) > MAX_BYTES:
