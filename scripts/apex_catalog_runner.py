@@ -13,9 +13,11 @@ import zipfile
 from collections.abc import Callable
 from pathlib import Path, PurePosixPath
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+SCRIPT_DIR = Path(__file__).resolve().parent
+ROOT = SCRIPT_DIR.parent
+for import_path in (str(ROOT), str(SCRIPT_DIR)):
+    if import_path not in sys.path:
+        sys.path.insert(0, import_path)
 
 import apex_pillar_runner as base
 from workload_isolation import (

@@ -32,6 +32,7 @@ OWNED_FILES=(
   tests/conftest.py
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_bounded_file_receipts.py
+  tests/test_isolated_catalog_runner_import.py
   tests/test_monolith_evolution_adapter.py
   tests/test_publish_verified_boundary.py
   tests/test_tool_system_validate_adapter.py
@@ -51,6 +52,7 @@ FORMAT_FILES=(
   tests/conftest.py
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_bounded_file_receipts.py
+  tests/test_isolated_catalog_runner_import.py
   tests/test_monolith_evolution_adapter.py
   tests/test_publish_verified_boundary.py
   tests/test_tool_system_validate_adapter.py
