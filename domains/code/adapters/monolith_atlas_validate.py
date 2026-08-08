@@ -65,6 +65,12 @@ COLOSSUS_REQUIRED_PATHS = (
     "domains/colossus_xai.md",
     "status/COLOSSUS_XAI_ATLAS.md",
 )
+SPACEX_REQUIRED_PATHS = (
+    "scripts/validate_spacex_aerospace_atlas.py",
+    "tests/test_spacex_aerospace_atlas.py",
+    "domains/spacex_aerospace.md",
+    "status/SPACEX_AEROSPACE_ATLAS.md",
+)
 CATEGORY_REQUIRED_PATHS = (
     "scripts/validate_category_heads.py",
     "tests/test_category_heads.py",
@@ -132,6 +138,18 @@ OPTIONAL_SURFACES = (
         "validator": "scripts/validate_colossus_xai_atlas.py",
         "test_pattern": "test_colossus_xai_atlas.py",
         "gate": "colossus-xai-atlas",
+    },
+    {
+        "key": "spacex",
+        "label": "spacex-aerospace",
+        "required_paths": SPACEX_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_spacex_aerospace_atlas.py",
+            "tests/test_spacex_aerospace_atlas.py",
+        ),
+        "validator": "scripts/validate_spacex_aerospace_atlas.py",
+        "test_pattern": "test_spacex_aerospace_atlas.py",
+        "gate": "spacex-aerospace-atlas",
     },
     {
         "key": "category_heads",
@@ -208,6 +226,10 @@ def colossus_surface_state(workspace: Path) -> str:
     return _surface_state(workspace, COLOSSUS_REQUIRED_PATHS)
 
 
+def spacex_surface_state(workspace: Path) -> str:
+    return _surface_state(workspace, SPACEX_REQUIRED_PATHS)
+
+
 def category_surface_state(workspace: Path) -> str:
     return _surface_state(workspace, CATEGORY_REQUIRED_PATHS)
 
@@ -221,6 +243,7 @@ def commands(
     include_legal: bool = True,
     include_lab_hire: bool = True,
     include_colossus: bool = True,
+    include_spacex: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
@@ -230,6 +253,7 @@ def commands(
         "legal": include_legal,
         "lab_hire": include_lab_hire,
         "colossus": include_colossus,
+        "spacex": include_spacex,
         "category_heads": include_category_heads,
     }
     compile_targets = [
@@ -512,6 +536,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             enabled_surfaces["legal"],
             enabled_surfaces["lab_hire"],
             enabled_surfaces["colossus"],
+            enabled_surfaces["spacex"],
         )
         steps: list[dict] = []
         status = "completed"
