@@ -243,13 +243,19 @@ def command_atlas_projection_repair(
     for relative in COMMAND_ATLAS_OUTPUTS:
         path = scratch / relative
         if path.is_symlink() or not path.is_file():
-            raise ProjectionRepairError(f"generator did not create regular output: {relative}")
+            raise ProjectionRepairError(
+                f"generator did not create regular output: {relative}"
+            )
         payload = path.read_bytes()
         if len(payload) > MAX_REPAIR_FILE_BYTES:
-            raise ProjectionRepairError(f"generated repair file exceeds bound: {relative}")
+            raise ProjectionRepairError(
+                f"generated repair file exceeds bound: {relative}"
+            )
         total_bytes += len(payload)
         if total_bytes > MAX_REPAIR_TOTAL_BYTES:
-            raise ProjectionRepairError("generated repair payload exceeds total byte bound")
+            raise ProjectionRepairError(
+                "generated repair payload exceeds total byte bound"
+            )
         try:
             content = payload.decode("utf-8")
         except UnicodeDecodeError as error:
