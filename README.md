@@ -6,33 +6,34 @@
 authorized external ingress
   -> immutable public repository identity check
   -> strict metadata-only envelope
+  -> GitHub Actions OIDC identity
+  -> Keymaster broker
+  -> short-lived one-repository installation tokens
   -> private control-plane invariant check
   -> duplicate-job replay guard
   -> ephemeral catalog-approved workload checkout
   -> isolated allowlisted adapter on ubuntu-latest
   -> immutable detailed private receipt
+  -> explicit installation-token revocation
   -> truthful sanitized public status
 ```
 
-## Start the bridge
+## Start the canonical bridge
 
-On Windows, clone or download this repository and double-click:
+The canonical `APEX Public Action Face` does **not** require a repository-stored GitHub App Client ID, private key, PAT, HMAC secret, or PEM handoff.
+
+The workflow requests a GitHub Actions OIDC identity (`id-token: write`) and exchanges it with the Keymaster broker. Keymaster validates the exact repository/workflow/actor claims, resolves the centrally managed GitHub App identity behind Vault references, and mints only the short-lived one-repository token required for the current operation. The public runner never receives the App private key.
+
+The older launcher and GitHub App Manifest bootstrap remain in this repository only for the dedicated legacy App-bridge canary/recovery lane:
 
 ```text
 START_APEX_RUNNER_BRIDGE.cmd
-```
-
-That launcher checks GitHub CLI and Python, opens browser authentication only when necessary, and runs the hardened GitHub App Manifest bootstrap. The owner may need to approve GitHub's account-consent and selected-repository installation screens, but does **not** generate, view, download, copy, paste, store, or transmit a private key.
-
-The cross-platform command behind the launcher is:
-
-```bash
+github-app/start_apex_runner_bridge.ps1
 python github-app/bootstrap_apex_github_app.py
+.github/workflows/apex-github-app-bridge-canary.yml
 ```
 
-The bootstrap creates the owner-only App, receives the generated Client ID and PEM in process memory, writes the repository variable and encrypted secret, enforces the exact installation allowlist, reruns the existing failed workflow, and requires every completion-contract step to succeed. No PAT fallback exists.
-
-See [Automated Owner Bootstrap](github-app/ACTIVATION.md).
+That legacy lane still preserves the original no-manual-key property, but its `APEX_RUNNER_APP_CLIENT_ID` and `APEX_RUNNER_APP_PRIVATE_KEY` configuration is **not consumed by the canonical APEX Public Action Face**. See [Automated Owner Bootstrap](github-app/ACTIVATION.md) only when working on that compatibility canary or recovery path.
 
 ## Canonical split
 
@@ -46,14 +47,15 @@ See [Automated Owner Bootstrap](github-app/ACTIVATION.md).
 
 The public runner binds:
 
-- repository full name;
-- immutable repository ID;
+- repository full name and immutable repository ID;
 - owner login and numeric owner ID;
 - public visibility;
-- `main` as default branch;
-- non-archived, non-disabled, non-fork state.
+- exact canonical workflow identity;
+- GitHub actor identity;
+- accepted event/ref boundary;
+- `main` as the canonical execution branch.
 
-A mismatch blocks execution before workload checkout.
+A mismatch blocks token minting and workload checkout.
 
 ## Authorized ingress
 
@@ -111,27 +113,33 @@ apex-verification
 action-face-canary
 ```
 
-## Dedicated GitHub App bridge
+## Keymaster OIDC credential bridge
 
-No broad PAT fallback is allowed. The only stored bridge identity is:
+No broad PAT fallback is allowed. The canonical workflow has **zero GitHub App credentials stored for its own token-mint path**.
 
-| Name | Kind | Purpose | Workload exposure |
-|---|---|---|---|
-| `APEX_RUNNER_APP_CLIENT_ID` | Repository variable | Identifies the owner-only APEX Runner Bridge App | Token-minting configuration only |
-| `APEX_RUNNER_APP_PRIVATE_KEY` | Repository secret | Mints short-lived installation tokens | Never exported to workload processes |
+```text
+GitHub-hosted runner
+  -> GitHub OIDC token
+  -> exact-identity Keymaster broker
+  -> Vault-backed GitHub App identity
+  -> one repository + minimum permissions
+  -> short-lived installation token
+  -> operation
+  -> explicit DELETE /installation/token
+```
 
-The stored identity is created and written by the automated manifest bootstrap. It is not manually transported.
-
-At runtime the workflow mints two separate, short-lived tokens:
+At runtime the workflow mints two separate tokens:
 
 | Runtime token | Scope | Permission |
 |---|---|---|
 | `APEX_CONTROL_TOKEN` | `GlacierEQ/llm-runner-teams` only | Contents read/write for claims, approvals, and immutable receipts |
 | `APEX_PRIVATE_READ_TOKEN` | Exactly one catalog-approved workload repository | Contents read only |
 
-Both checkout operations use immutable action revisions and `persist-credentials: false`. Runtime tokens are revoked automatically and stripped from the workload process environment.
+Repository identity, permission, and operation are bound together by tests. Workload repository data is passed to the mint command through an environment variable rather than shell template interpolation. Both checkout operations use immutable action revisions and `persist-credentials: false`. Neither App private-key material nor runtime tokens are exposed to the workload process.
 
-See `config/required-secrets.json` and `github-app/bridge-contract.json` for the least-privilege contract.
+Both minted tokens are explicitly revoked after publication/status handling. A required revocation failure is part of the governed release failure condition.
+
+See `config/required-secrets.json` for the canonical OIDC contract. `github-app/bridge-contract.json` now explicitly describes the **legacy App-bridge canary/recovery** path rather than the canonical runner.
 
 ## Private control-plane gate
 
@@ -184,22 +192,24 @@ Public status contains only identifiers, lane, outcome, private-receipt state, a
 
 ## Core files
 
-- [One-click Windows launcher](START_APEX_RUNNER_BRIDGE.cmd)
-- [Automated Owner Bootstrap](github-app/ACTIVATION.md)
-- [Bridge Contract](github-app/bridge-contract.json)
+- [Canonical workflow](.github/workflows/apex-pillar-runner.yml)
+- `scripts/keymaster_oidc_token.py` — OIDC-to-Keymaster exchange
+- `scripts/revoke_github_installation_token.py` — explicit token revocation
+- [Required Secrets/Auth Contract](config/required-secrets.json)
 - [Action Face Contract](docs/ACTION_FACE_CONTRACT.md)
 - [Public Runner Security](docs/PUBLIC_RUNNER_SECURITY.md)
 - [Canary Protocol](docs/CANARY_PROTOCOL.md)
-- [Required Secrets Contract](config/required-secrets.json)
 - [Immutable Identity](config/action-face-identity.json)
 - [Authorized Actors](config/authorized-actors.json)
 - [Strict Envelope Schema](config/job-envelope.schema.json)
 - [Primary Action Catalog](config/pillar-actions.json)
 - [Action-Face Catalog](config/action-face-actions.json)
-- [Canonical Workflow](.github/workflows/apex-pillar-runner.yml)
+- [Legacy One-click Windows launcher](START_APEX_RUNNER_BRIDGE.cmd)
+- [Legacy App-bridge Bootstrap](github-app/ACTIVATION.md)
+- [Legacy App-bridge Contract](github-app/bridge-contract.json)
 
 ## Current activation condition
 
-Repository code, the no-manual-key bootstrap, the Windows launcher, and their verification tests are merged. The private bridge itself becomes active only after the launcher completes GitHub's consent flow and the rerun returns every required completion record as `success`.
+The canonical OIDC/Keymaster implementation is code-complete only when its repository CI and review gates are green; **operational activation additionally requires a real APEX Public Action Face run that successfully mints both narrow tokens through Keymaster, checks out the exact private workload revision, executes and publishes the governed result, revokes both tokens, and leaves the private receipt.**
 
-Until that receipt exists, private execution is **not activated**. PR #63 and Monolith PR #3 remain open and unmerged.
+Until that live receipt exists, do not describe the OIDC path as operationally complete.
