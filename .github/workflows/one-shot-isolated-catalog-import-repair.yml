@@ -103,7 +103,8 @@ jobs:
           changed="$(git status --short)"
           printf '%s\n' "$changed"
           test -n "$changed"
-          test "$(printf '%s\n' "$changed" | wc -l)" -eq 3
+          test "$(printf '%s\n' "$changed" | wc -l)" -eq 4
+          printf '%s\n' "$changed" | grep -q '.github/workflows/one-shot-isolated-catalog-import-repair.yml'
           printf '%s\n' "$changed" | grep -q 'scripts/apex_catalog_runner.py'
           printf '%s\n' "$changed" | grep -q 'scripts/ci/public-action-face-ci.sh'
           printf '%s\n' "$changed" | grep -q 'tests/test_isolated_catalog_runner_import.py'
