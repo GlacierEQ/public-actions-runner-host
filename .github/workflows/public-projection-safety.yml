@@ -1,0 +1,170 @@
+name: Public Projection Safety
+
+on:
+  workflow_call:
+    inputs:
+      repository_visibility:
+        description: Repository visibility reported by the caller event
+        required: true
+        type: string
+      base_sha:
+        description: Exact base commit SHA for the delta
+        required: true
+        type: string
+      head_sha:
+        description: Exact head commit SHA for the delta
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  public-projection-safety:
+    if: inputs.repository_visibility == 'public'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Reject sensitive legal/evidence additions to public projection
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          import re
+          import subprocess
+          import sys
+
+          base = os.environ.get("BASE_SHA", "").strip()
+          head = os.environ.get("HEAD_SHA", "").strip()
+          sha_re = re.compile(r"^[0-9a-f]{40}$")
+          zero_sha = "0" * 40
+
+          def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[bytes]:
+              return subprocess.run(
+                  ["git", *args],
+                  check=check,
+                  stdout=subprocess.PIPE,
+                  stderr=subprocess.PIPE,
+              )
+
+          if not sha_re.fullmatch(head):
+              raise SystemExit("public-projection gate: invalid head SHA")
+          if not sha_re.fullmatch(base):
+              raise SystemExit("public-projection gate: invalid base SHA")
+
+          for candidate in (head, base):
+              if candidate == zero_sha:
+                  continue
+              if git("cat-file", "-e", f"{candidate}^{{commit}}", check=False).returncode != 0:
+                  fetched = git("fetch", "--no-tags", "--depth=100", "origin", candidate, check=False)
+                  if fetched.returncode != 0:
+                      raise SystemExit("public-projection gate: required commit is unavailable")
+
+          if base == zero_sha:
+              parent = git("rev-parse", f"{head}^", check=False)
+              if parent.returncode == 0:
+                  base = parent.stdout.decode().strip()
+              else:
+                  base = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+
+          changed = git(
+              "diff",
+              "--name-only",
+              "-z",
+              "--diff-filter=ACMR",
+              base,
+              head,
+          ).stdout.decode("utf-8", errors="strict").split("\0")
+          changed = [path for path in changed if path]
+          if not changed:
+              print("public-projection gate: no added/modified public files")
+              raise SystemExit(0)
+
+          case_id = re.compile(r"(?i)\b1?fd[av][-_ ]?\d{2}[-_ ]?\d{4,7}\b")
+          path_rules = {
+              "family_case_path": re.compile(
+                  r"(?i)(?:^|[/_. -])1?fd[av][-_ ]?\d{2}[-_ ]?\d{4,7}(?:[/_. -]|$)"
+              ),
+              "filing_or_transcript_path": re.compile(
+                  r"(?i)(?:^|/)(?:jefs[_ -]?filing[_ -]?ready|transcribed[_ -]?evidence|bar[_ -]?complaints)(?:/|$)"
+              ),
+              "custody_or_injury_path": re.compile(
+                  r"(?i)(?:custody|minor[_ -]?child|bone[_ -]?fracture|tro[_ -]?forensic)"
+              ),
+          }
+          family_markers = re.compile(
+              r"(?i)\b(?:family court|minor child|temporary physical custody|child custody|custodial)\b"
+          )
+          evidence_markers = re.compile(
+              r"(?i)\b(?:voice memo|forensic transcript|transcribed evidence|broken arm|bone fracture|medical concealment|admission of injury)\b"
+          )
+          filing_markers = re.compile(
+              r"(?i)\b(?:petitioner|defendant|plaintiff|emergency motion|affidavit|declaration|jefs)\b"
+          )
+          sensitive_binary = {
+              ".m4a", ".wav", ".mp3", ".mp4", ".mov", ".heic", ".pdf", ".doc", ".docx", ".rtf"
+          }
+          binary_context = re.compile(
+              r"(?i)(?:evidence|custody|court|case|transcript|voice[_ -]?memo|medical|injury|fracture)"
+          )
+          text_like = {
+              ".md", ".txt", ".json", ".yaml", ".yml", ".toml", ".csv", ".tsv",
+              ".py", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx", ".sh", ".ps1",
+              ".html", ".xml", ".tex", ".rst", ".ini", ".cfg", ".conf", ".env",
+          }
+          max_text_bytes = 2_000_000
+          findings: list[tuple[str, list[str]]] = []
+
+          for path in changed:
+              labels = [name for name, rule in path_rules.items() if rule.search(path)]
+              suffix = os.path.splitext(path.lower())[1]
+              if suffix in sensitive_binary and binary_context.search(path):
+                  labels.append("sensitive_binary_context")
+
+              blob = git("show", f"{head}:{path}", check=False)
+              if blob.returncode != 0:
+                  continue
+              data = blob.stdout
+              if len(data) > max_text_bytes and suffix in text_like:
+                  labels.append("oversized_text_unscanned")
+              elif suffix in text_like or not suffix:
+                  try:
+                      text = data.decode("utf-8")
+                  except UnicodeDecodeError:
+                      text = ""
+                  if text:
+                      has_case_id = bool(case_id.search(text))
+                      has_family = bool(family_markers.search(text))
+                      has_evidence = bool(evidence_markers.search(text))
+                      has_filing = bool(filing_markers.search(text))
+                      if has_case_id:
+                          labels.append("family_case_identifier")
+                      if has_family and has_evidence:
+                          labels.append("family_evidence_content")
+                      if has_family and has_filing:
+                          labels.append("family_filing_content")
+
+              if labels:
+                  findings.append((path, sorted(set(labels))))
+
+          if findings:
+              print("public-projection gate: BLOCKED")
+              print("Sensitive legal/evidence signals were found in the changed public surface.")
+              print("Only file paths and signal classes are emitted; matched content is never echoed.")
+              for path, labels in findings:
+                  print(f"- {path}: {','.join(labels)}")
+              print("Move the material to a private source repository or replace it with a sanitized public projection.")
+              raise SystemExit(1)
+
+          print(f"public-projection gate: PASS ({len(changed)} changed files inspected)")
+          PY
