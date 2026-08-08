@@ -15,6 +15,14 @@ def workflow_texts() -> dict[str, str]:
     }
 
 
+def workflow_step_block(workflow: str, name: str) -> str:
+    marker = f"      - name: {name}\n"
+    start = workflow.find(marker)
+    assert start >= 0, f"missing workflow step: {name}"
+    end = workflow.find("\n      - name: ", start + len(marker))
+    return workflow[start:] if end < 0 else workflow[start:end]
+
+
 def test_only_canonical_workflow_owns_apex_job_issue_ingress() -> None:
     assert CANONICAL.is_file()
     assert not RETIRED.exists()
@@ -46,12 +54,21 @@ def test_no_workflow_contains_retired_fail_open_executor() -> None:
 def test_canonical_issue_ingress_separates_source_and_receipt_authority() -> None:
     text = CANONICAL.read_text(encoding="utf-8")
     assert "permissions:\n  id-token: write\n  contents: read\n  issues: write" in text
-    assert "Mint one-repository private control token" in text
-    assert "--repository GlacierEQ/llm-runner-teams" in text
-    assert "--permission contents=write" in text
-    assert "Mint one-repository private workload token" in text
-    assert '--repository "${{ steps.plan.outputs.source_repo }}"' in text
-    assert "--permission contents=read" in text
+
+    control = workflow_step_block(text, "Mint one-repository private control token")
+    assert "--repository GlacierEQ/llm-runner-teams" in control
+    assert "--permission contents=write" in control
+    assert "--permission contents=read" not in control
+    assert "--operation public-action-control" in control
+
+    workload = workflow_step_block(text, "Mint one-repository private workload token")
+    assert "APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.source_repo }}" in workload
+    assert '--repository "$APEX_WORKLOAD_REPOSITORY"' in workload
+    assert "--permission contents=read" in workload
+    assert "--permission contents=write" not in workload
+    assert "--operation public-action-workload" in workload
+    assert '--repository "${{ steps.plan.outputs.source_repo }}"' not in workload
+
     assert text.count("persist-credentials: false") >= 3
     assert "APEX_RUNNER_APP_CLIENT_ID" not in text
     assert "APEX_RUNNER_APP_PRIVATE_KEY" not in text

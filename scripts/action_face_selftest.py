@@ -44,6 +44,15 @@ SPECIALIZED_ACTIONS = (
 CANARY_SOURCE_SHA = "a" * 40
 
 
+def workflow_step_block(workflow: str, name: str) -> str:
+    marker = f"      - name: {name}\n"
+    start = workflow.find(marker)
+    if start < 0:
+        return ""
+    end = workflow.find("\n      - name: ", start + len(marker))
+    return workflow[start:] if end < 0 else workflow[start:end]
+
+
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -152,10 +161,46 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     ]
     missing = [item for item in required_workflow if item not in workflow]
     forbidden = [item for item in forbidden_workflow if item in workflow]
+    control_token_block = workflow_step_block(
+        workflow, "Mint one-repository private control token"
+    )
+    workload_token_block = workflow_step_block(
+        workflow, "Mint one-repository private workload token"
+    )
+    binding_failures: list[str] = []
+    for label, block, required, forbidden_in_block in (
+        (
+            "control",
+            control_token_block,
+            (
+                "--repository GlacierEQ/llm-runner-teams",
+                "--permission contents=write",
+                "--operation public-action-control",
+            ),
+            ("--permission contents=read",),
+        ),
+        (
+            "workload",
+            workload_token_block,
+            (
+                "APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.source_repo }}",
+                '--repository "$APEX_WORKLOAD_REPOSITORY"',
+                "--permission contents=read",
+                "--operation public-action-workload",
+            ),
+            ("--permission contents=write",),
+        ),
+    ):
+        absent = [item for item in required if item not in block]
+        present_forbidden = [item for item in forbidden_in_block if item in block]
+        if absent or present_forbidden:
+            binding_failures.append(
+                f"{label}:missing={absent}; forbidden={present_forbidden}"
+            )
     record(
         "workflow-authority-boundary",
-        bool(workflow) and not missing and not forbidden,
-        f"missing={missing}; forbidden={forbidden}",
+        bool(workflow) and not missing and not forbidden and not binding_failures,
+        f"missing={missing}; forbidden={forbidden}; bindings={binding_failures}",
     )
 
     retired = (
