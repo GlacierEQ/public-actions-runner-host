@@ -284,7 +284,7 @@ jobs:
     if: inputs.run_security
     env:
       SECRET_SCAN_PATTERN: >-
-        gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{40,}|sk_live_[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}|password[[:space:]]*=[[:space:]]*["'][^"']{8,}["']
+        gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{40,}|sk_live_[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}|password[[:space:]]*=[[:space:]]*([A-Za-z0-9_!@#$%^&*.+:/?-]{8,}|["'][^"']{8,}["'])
     steps:
       - uses: actions/checkout@v4
 
@@ -318,6 +318,7 @@ jobs:
             "${fine_grained_prefix}${fine_grained_suffix}" \
             "${stripe_prefix}${stripe_suffix}" \
             "${aws_prefix}${aws_suffix}" \
+            "${password_label}=correct-horse-battery-staple" \
             "${password_label} = \"${password_value}\""; do
             if ! printf '%s\n' "$candidate" | grep -Eq "$SECRET_SCAN_PATTERN"; then
               echo "Secret detector missed a credential-shaped fixture" >&2
