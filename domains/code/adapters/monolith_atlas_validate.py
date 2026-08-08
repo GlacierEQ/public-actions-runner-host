@@ -47,6 +47,12 @@ MEMORY_REQUIRED_PATHS = (
     "domains/memory_aspen.md",
     "status/MEMORY_ASPEN_ATLAS.md",
 )
+LEGAL_REQUIRED_PATHS = (
+    "scripts/validate_legal_case.py",
+    "tests/test_legal_case.py",
+    "domains/legal_case.md",
+    "status/LEGAL_CASE_ATLAS.md",
+)
 CATEGORY_REQUIRED_PATHS = (
     "scripts/validate_category_heads.py",
     "tests/test_category_heads.py",
@@ -106,6 +112,15 @@ def memory_surface_state(workspace: Path) -> str:
     return "partial"
 
 
+def legal_surface_state(workspace: Path) -> str:
+    present = [path for path in LEGAL_REQUIRED_PATHS if (workspace / path).is_file()]
+    if not present:
+        return "absent"
+    if len(present) == len(LEGAL_REQUIRED_PATHS):
+        return "complete"
+    return "partial"
+
+
 def category_surface_state(workspace: Path) -> str:
     present = [path for path in CATEGORY_REQUIRED_PATHS if (workspace / path).is_file()]
     if not present:
@@ -121,6 +136,7 @@ def commands(
     include_category_heads: bool = True,
     include_connectors: bool = True,
     include_memory: bool = True,
+    include_legal: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
@@ -140,6 +156,13 @@ def commands(
             [
                 "scripts/validate_memory_aspen.py",
                 "tests/test_memory_aspen.py",
+            ]
+        )
+    if include_legal:
+        compile_targets.extend(
+            [
+                "scripts/validate_legal_case.py",
+                "tests/test_legal_case.py",
             ]
         )
     if include_category_heads:
@@ -205,6 +228,23 @@ def commands(
                     "tests",
                     "-p",
                     "test_memory_aspen.py",
+                ],
+            ]
+        )
+
+    if include_legal:
+        sequence.extend(
+            [
+                [str(python), "scripts/validate_legal_case.py"],
+                [
+                    str(python),
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    "tests",
+                    "-p",
+                    "test_legal_case.py",
                 ],
             ]
         )
@@ -457,6 +497,23 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 ),
             )
 
+        legal_state = legal_surface_state(workspace_root)
+        if legal_state == "partial":
+            missing_legal = [
+                path
+                for path in LEGAL_REQUIRED_PATHS
+                if not (workspace_root / path).is_file()
+            ]
+            return catalog.write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason=(
+                    "partial legal-case surface is not verifiable; missing: "
+                    + ", ".join(missing_legal)
+                ),
+            )
+
         category_state = category_surface_state(workspace_root)
         if category_state == "partial":
             missing_category = [
@@ -476,6 +533,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
         include_connectors = connector_state == "complete"
         include_memory = memory_state == "complete"
+        include_legal = legal_state == "complete"
         include_category_heads = category_state == "complete"
         sequence = commands(
             result_path,
@@ -483,6 +541,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             include_category_heads,
             include_connectors,
             include_memory,
+            include_legal,
         )
         steps: list[dict] = []
         status = "completed"
@@ -576,6 +635,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         gates.append("connector-fabric-atlas")
     if include_memory:
         gates.append("memory-aspen-atlas")
+    if include_legal:
+        gates.append("legal-case-atlas")
     if include_category_heads:
         gates.append("category-head-hierarchy")
     gates.append("monolith-command-atlas")

@@ -14,13 +14,15 @@ def test_commands_default_to_full_function_atlas_gate(tmp_path: Path) -> None:
 
     sequence = adapter.commands(result, "DefaultGate01")
 
-    assert len(sequence) == 17
+    assert len(sequence) == 19
     assert any(
         "scripts/validate_connector_fabric.py" in command for command in sequence
     )
     assert any("test_connector_fabric.py" in command for command in sequence)
     assert any("scripts/validate_memory_aspen.py" in command for command in sequence)
     assert any("test_memory_aspen.py" in command for command in sequence)
+    assert any("scripts/validate_legal_case.py" in command for command in sequence)
+    assert any("test_legal_case.py" in command for command in sequence)
     assert any("scripts/validate_category_heads.py" in command for command in sequence)
     assert any("test_category_heads.py" in command for command in sequence)
 
@@ -28,7 +30,7 @@ def test_commands_default_to_full_function_atlas_gate(tmp_path: Path) -> None:
 def test_commands_support_core_only_gate(tmp_path: Path) -> None:
     result = tmp_path / "result.json"
 
-    sequence = adapter.commands(result, "CoreOnly01", False, False, False)
+    sequence = adapter.commands(result, "CoreOnly01", False, False, False, False)
 
     assert len(sequence) == 11
     assert not any(
@@ -39,6 +41,8 @@ def test_commands_support_core_only_gate(tmp_path: Path) -> None:
         "scripts/validate_memory_aspen.py" in command for command in sequence
     )
     assert not any("test_memory_aspen.py" in command for command in sequence)
+    assert not any("scripts/validate_legal_case.py" in command for command in sequence)
+    assert not any("test_legal_case.py" in command for command in sequence)
     assert not any(
         "scripts/validate_category_heads.py" in command for command in sequence
     )
@@ -49,7 +53,7 @@ def test_commands_support_core_only_gate(tmp_path: Path) -> None:
 def test_commands_support_connector_without_category_gate(tmp_path: Path) -> None:
     result = tmp_path / "result.json"
 
-    sequence = adapter.commands(result, "ConnectorGate01", False, True, False)
+    sequence = adapter.commands(result, "ConnectorGate01", False, True, False, False)
 
     assert len(sequence) == 13
     assert any(
@@ -67,13 +71,32 @@ def test_commands_support_connector_without_category_gate(tmp_path: Path) -> Non
 def test_commands_support_memory_without_other_optional_gates(tmp_path: Path) -> None:
     result = tmp_path / "result.json"
 
-    sequence = adapter.commands(result, "MemoryGate01", False, False, True)
+    sequence = adapter.commands(result, "MemoryGate01", False, False, True, False)
 
     assert len(sequence) == 13
     assert any("scripts/validate_memory_aspen.py" in command for command in sequence)
     assert any("test_memory_aspen.py" in command for command in sequence)
     assert not any(
         "scripts/validate_connector_fabric.py" in command for command in sequence
+    )
+    assert not any(
+        "scripts/validate_category_heads.py" in command for command in sequence
+    )
+
+
+def test_commands_support_legal_without_other_optional_gates(tmp_path: Path) -> None:
+    result = tmp_path / "result.json"
+
+    sequence = adapter.commands(result, "LegalGate01", False, False, False, True)
+
+    assert len(sequence) == 13
+    assert any("scripts/validate_legal_case.py" in command for command in sequence)
+    assert any("test_legal_case.py" in command for command in sequence)
+    assert not any(
+        "scripts/validate_connector_fabric.py" in command for command in sequence
+    )
+    assert not any(
+        "scripts/validate_memory_aspen.py" in command for command in sequence
     )
     assert not any(
         "scripts/validate_category_heads.py" in command for command in sequence
@@ -112,6 +135,23 @@ def test_memory_surface_state_distinguishes_absent_partial_complete(
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("fixture\n", encoding="utf-8")
     assert adapter.memory_surface_state(tmp_path) == "complete"
+
+
+def test_legal_surface_state_distinguishes_absent_partial_complete(
+    tmp_path: Path,
+) -> None:
+    assert adapter.legal_surface_state(tmp_path) == "absent"
+
+    first = tmp_path / adapter.LEGAL_REQUIRED_PATHS[0]
+    first.parent.mkdir(parents=True, exist_ok=True)
+    first.write_text("fixture\n", encoding="utf-8")
+    assert adapter.legal_surface_state(tmp_path) == "partial"
+
+    for relative in adapter.LEGAL_REQUIRED_PATHS[1:]:
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("fixture\n", encoding="utf-8")
+    assert adapter.legal_surface_state(tmp_path) == "complete"
 
 
 def test_category_surface_state_distinguishes_absent_partial_complete(
@@ -234,6 +274,36 @@ def test_partial_memory_surface_blocks_before_execution(
     payload = json.loads(result_path.read_text(encoding="utf-8"))
     assert payload["status"] == "blocked"
     assert "partial memory-aspen surface" in payload["reason"]
+
+
+def test_partial_legal_surface_blocks_before_execution(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    for relative in adapter.CORE_REQUIRED_PATHS:
+        path = workspace / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("fixture\n", encoding="utf-8")
+    partial = workspace / adapter.LEGAL_REQUIRED_PATHS[0]
+    partial.parent.mkdir(parents=True, exist_ok=True)
+    partial.write_text("fixture\n", encoding="utf-8")
+
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", "a" * 40)
+    monkeypatch.setattr(
+        adapter, "open_checkout", lambda *_args, **_kwargs: _checkout_for(workspace)
+    )
+    monkeypatch.setattr(adapter, "build_environment", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(
+        adapter, "attest_checkout", lambda *_args, **_kwargs: _attestation()
+    )
+
+    result_path = tmp_path / "result.json"
+    assert adapter.run(_plan("PartialLegal01"), workspace, result_path) == 2
+    payload = json.loads(result_path.read_text(encoding="utf-8"))
+    assert payload["status"] == "blocked"
+    assert "partial legal-case surface" in payload["reason"]
 
 
 def test_partial_category_surface_blocks_before_execution(
