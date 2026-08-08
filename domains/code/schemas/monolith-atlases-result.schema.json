@@ -31,11 +31,11 @@
     "target_repo": {"const": "GlacierEQ/monolith"},
     "provenance": {"type": "object"},
     "status": {"enum": ["completed", "failed", "blocked"]},
-    "steps": {"type": "array", "maxItems": 22},
+    "steps": {"type": "array", "maxItems": 24},
     "command_contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "validated_gates": {
       "type": "array",
-      "maxItems": 7,
+      "maxItems": 8,
       "items": {"type": "string", "maxLength": 64}
     },
     "workspace_attestation": {

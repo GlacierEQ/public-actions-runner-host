@@ -59,6 +59,12 @@ LAB_HIRE_REQUIRED_PATHS = (
     "domains/lab_hire_stamps.md",
     "status/LAB_HIRE_DOMAIN_ATLAS.md",
 )
+COLOSSUS_REQUIRED_PATHS = (
+    "scripts/validate_colossus_xai_atlas.py",
+    "tests/test_colossus_xai_atlas.py",
+    "domains/colossus_xai.md",
+    "status/COLOSSUS_XAI_ATLAS.md",
+)
 CATEGORY_REQUIRED_PATHS = (
     "scripts/validate_category_heads.py",
     "tests/test_category_heads.py",
@@ -114,6 +120,18 @@ OPTIONAL_SURFACES = (
         "validator": "scripts/validate_lab_hire_atlas.py",
         "test_pattern": "test_lab_hire_atlas.py",
         "gate": "lab-hire-atlas",
+    },
+    {
+        "key": "colossus",
+        "label": "colossus-xai",
+        "required_paths": COLOSSUS_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_colossus_xai_atlas.py",
+            "tests/test_colossus_xai_atlas.py",
+        ),
+        "validator": "scripts/validate_colossus_xai_atlas.py",
+        "test_pattern": "test_colossus_xai_atlas.py",
+        "gate": "colossus-xai-atlas",
     },
     {
         "key": "category_heads",
@@ -186,6 +204,10 @@ def lab_hire_surface_state(workspace: Path) -> str:
     return _surface_state(workspace, LAB_HIRE_REQUIRED_PATHS)
 
 
+def colossus_surface_state(workspace: Path) -> str:
+    return _surface_state(workspace, COLOSSUS_REQUIRED_PATHS)
+
+
 def category_surface_state(workspace: Path) -> str:
     return _surface_state(workspace, CATEGORY_REQUIRED_PATHS)
 
@@ -198,6 +220,7 @@ def commands(
     include_memory: bool = True,
     include_legal: bool = True,
     include_lab_hire: bool = True,
+    include_colossus: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
@@ -206,6 +229,7 @@ def commands(
         "memory": include_memory,
         "legal": include_legal,
         "lab_hire": include_lab_hire,
+        "colossus": include_colossus,
         "category_heads": include_category_heads,
     }
     compile_targets = [
@@ -487,6 +511,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             enabled_surfaces["memory"],
             enabled_surfaces["legal"],
             enabled_surfaces["lab_hire"],
+            enabled_surfaces["colossus"],
         )
         steps: list[dict] = []
         status = "completed"
