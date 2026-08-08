@@ -29,6 +29,10 @@ on:
       - "security/RUNNER_HARDENING_RECEIPT_2026-08-03.md"
   workflow_dispatch:
 
+concurrency:
+  group: runner-team-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

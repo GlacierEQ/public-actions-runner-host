@@ -51,8 +51,8 @@ def test_windows_launcher_uses_pinned_activation_target() -> None:
     assert "workflow_run_id" in ps1
     assert "source_ref must be a full lowercase commit SHA" in ps1
     assert target["workflow"] == "APEX Public Action Face"
-    assert target["workflow_run_id"] == 31170532956
+    assert target["workflow_run_id"] == 31246092472
     assert target["issue_number"] == 95
     assert target["action"] == "code.monolith.validate-legal-live-reconciliation"
     assert target["source_repo"] == "GlacierEQ/monolith"
-    assert target["source_ref"] == "f686505aa521faf5f9511e423124832ad08aae3a"
+    assert target["source_ref"] == "204b3b30328a476cf43106e5830e36aec9829011"
