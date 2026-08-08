@@ -31,7 +31,7 @@
     "target_repo": {"const": "GlacierEQ/monolith"},
     "provenance": {"type": "object"},
     "status": {"enum": ["completed", "failed", "blocked"]},
-    "steps": {"type": "array", "maxItems": 12},
+    "steps": {"type": "array", "maxItems": 16},
     "command_contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "validated_gates": {
       "type": "array",

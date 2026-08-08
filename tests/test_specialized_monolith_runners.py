@@ -80,6 +80,10 @@ def write_required_atlas_files(workspace: Path) -> None:
     paths = {
         "scripts/validate_function_atlas.py": "print('validated')\n",
         "tests/test_function_atlas.py": "import unittest\n",
+        "scripts/validate_category_heads.py": 'print("validated")\n',
+        "tests/test_category_heads.py": "import unittest\n",
+        "catalog/category_heads.json": "{}\n",
+        "foundations/category-heads.md": "# Category Heads\n",
         "scripts/build_monolith_command_atlas.py": "print('checked')\n",
         "scripts/query_monolith.py": "print('{}')\n",
         "tests/test_monolith_command_atlas.py": "def test_one(): assert True\n",
@@ -274,6 +278,7 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     assert result["status"] == "completed"
     assert result["validated_gates"] == [
         "core-function-atlas",
+        "category-head-hierarchy",
         "monolith-command-atlas",
     ]
     assert result["steps"] == [
@@ -294,8 +299,10 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     assert before["checkout_inode"] == after["checkout_inode"]
 
     sequence = real_commands(result_path, "RunnerJob01")
-    assert len(sequence) == 11
+    assert len(sequence) == 13
     assert any("scripts/validate_function_atlas.py" in command for command in sequence)
+    assert any("scripts/validate_category_heads.py" in command for command in sequence)
+    assert any("test_category_heads.py" in command for command in sequence)
     assert any(
         "scripts/build_monolith_command_atlas.py" in command for command in sequence
     )
