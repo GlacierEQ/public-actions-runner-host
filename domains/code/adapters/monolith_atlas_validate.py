@@ -23,13 +23,9 @@ EXPECTED_ACTION = "code.monolith.validate-atlases"
 EXPECTED_REPOSITORY = "GlacierEQ/monolith"
 EXPECTED_ADAPTER = "test"
 SHA = re.compile(r"^[0-9a-f]{40}$")
-REQUIRED_PATHS = (
+CORE_REQUIRED_PATHS = (
     "scripts/validate_function_atlas.py",
     "tests/test_function_atlas.py",
-    "scripts/validate_category_heads.py",
-    "tests/test_category_heads.py",
-    "catalog/category_heads.json",
-    "foundations/category-heads.md",
     "scripts/build_monolith_command_atlas.py",
     "scripts/query_monolith.py",
     "tests/test_monolith_command_atlas.py",
@@ -37,6 +33,12 @@ REQUIRED_PATHS = (
     "catalog/library.json",
     "catalog/monolith_command_atlas.json",
     "status/MONOLITH_COMMAND_ATLAS.md",
+)
+CATEGORY_REQUIRED_PATHS = (
+    "scripts/validate_category_heads.py",
+    "tests/test_category_heads.py",
+    "catalog/category_heads.json",
+    "foundations/category-heads.md",
 )
 
 
@@ -54,10 +56,35 @@ def validate_plan(plan: dict) -> None:
             raise ValueError(f"{field} identity mismatch")
 
 
-def commands(result_path: Path, job_id: str) -> list[list[str]]:
+def category_surface_state(workspace: Path) -> str:
+    present = [path for path in CATEGORY_REQUIRED_PATHS if (workspace / path).is_file()]
+    if not present:
+        return "absent"
+    if len(present) == len(CATEGORY_REQUIRED_PATHS):
+        return "complete"
+    return "partial"
+
+
+def commands(
+    result_path: Path,
+    job_id: str,
+    include_category_heads: bool = True,
+) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
-    return [
+    compile_targets = [
+        "scripts/validate_function_atlas.py",
+        "tests/test_function_atlas.py",
+    ]
+    if include_category_heads:
+        compile_targets.extend(
+            [
+                "scripts/validate_category_heads.py",
+                "tests/test_category_heads.py",
+            ]
+        )
+
+    sequence: list[list[str]] = [
         [sys.executable, "-m", "venv", str(venv)],
         [
             str(python),
@@ -68,18 +95,8 @@ def commands(result_path: Path, job_id: str) -> list[list[str]]:
             "--only-binary=:all:",
             "pytest==8.4.1",
         ],
-        [
-            str(python),
-            "-m",
-            "py_compile",
-            "scripts/validate_function_atlas.py",
-            "tests/test_function_atlas.py",
-            "scripts/validate_category_heads.py",
-            "tests/test_category_heads.py",
-        ],
+        [str(python), "-m", "py_compile", *compile_targets],
         [str(python), "scripts/validate_function_atlas.py"],
-        [str(python), "-m", "unittest", "tests.test_function_atlas"],
-        [str(python), "scripts/validate_category_heads.py"],
         [
             str(python),
             "-m",
@@ -88,39 +105,62 @@ def commands(result_path: Path, job_id: str) -> list[list[str]]:
             "-s",
             "tests",
             "-p",
-            "test_category_heads.py",
-        ],
-        [str(python), "scripts/build_monolith_command_atlas.py", "--check"],
-        [str(python), "scripts/query_monolith.py", "summary", "--format", "json"],
-        [
-            str(python),
-            "scripts/query_monolith.py",
-            "repos",
-            "--has-evidence",
-            "--format",
-            "json",
-            "--limit",
-            "0",
-        ],
-        [
-            str(python),
-            "scripts/query_monolith.py",
-            "actions",
-            "--priority",
-            "P0",
-            "--format",
-            "json",
-        ],
-        [str(python), "scripts/query_monolith.py", "domains", "--format", "json"],
-        [
-            str(python),
-            "-m",
-            "pytest",
-            "-q",
-            "tests/test_monolith_command_atlas.py",
-            "tests/test_query_monolith.py",
+            "test_function_atlas.py",
         ],
     ]
+
+    if include_category_heads:
+        sequence.extend(
+            [
+                [str(python), "scripts/validate_category_heads.py"],
+                [
+                    str(python),
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    "tests",
+                    "-p",
+                    "test_category_heads.py",
+                ],
+            ]
+        )
+
+    sequence.extend(
+        [
+            [str(python), "scripts/build_monolith_command_atlas.py", "--check"],
+            [str(python), "scripts/query_monolith.py", "summary", "--format", "json"],
+            [
+                str(python),
+                "scripts/query_monolith.py",
+                "repos",
+                "--has-evidence",
+                "--format",
+                "json",
+                "--limit",
+                "0",
+            ],
+            [
+                str(python),
+                "scripts/query_monolith.py",
+                "actions",
+                "--priority",
+                "P0",
+                "--format",
+                "json",
+            ],
+            [str(python), "scripts/query_monolith.py", "domains", "--format", "json"],
+            [
+                str(python),
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_monolith_command_atlas.py",
+                "tests/test_query_monolith.py",
+            ],
+        ]
+    )
+    return sequence
 
 
 def run(plan: dict, workspace: Path, result_path: Path) -> int:
@@ -162,20 +202,45 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             )
 
         workspace_root = checkout.proc_path
-        missing = [
-            path for path in REQUIRED_PATHS if not (workspace_root / path).is_file()
+        missing_core = [
+            path
+            for path in CORE_REQUIRED_PATHS
+            if not (workspace_root / path).is_file()
         ]
-        if missing:
+        if missing_core:
             return catalog.write_result(
                 plan,
                 result_path,
                 "blocked",
                 reason=(
-                    "required Monolith atlas files are missing: " + ", ".join(missing)
+                    "required Monolith atlas files are missing: "
+                    + ", ".join(missing_core)
                 ),
             )
 
-        sequence = commands(result_path, str(plan["job_id"]))
+        category_state = category_surface_state(workspace_root)
+        if category_state == "partial":
+            missing_category = [
+                path
+                for path in CATEGORY_REQUIRED_PATHS
+                if not (workspace_root / path).is_file()
+            ]
+            return catalog.write_result(
+                plan,
+                result_path,
+                "blocked",
+                reason=(
+                    "partial category-head surface is not verifiable; missing: "
+                    + ", ".join(missing_category)
+                ),
+            )
+
+        include_category_heads = category_state == "complete"
+        sequence = commands(
+            result_path,
+            str(plan["job_id"]),
+            include_category_heads,
+        )
         steps: list[dict] = []
         status = "completed"
         for command in sequence:
@@ -246,6 +311,11 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 }
             )
 
+    gates = ["core-function-atlas"]
+    if include_category_heads:
+        gates.append("category-head-hierarchy")
+    gates.append("monolith-command-atlas")
+
     return catalog.write_result(
         plan,
         result_path,
@@ -255,11 +325,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             sequence,
             volatile_roots=(result_path.parent,),
         ),
-        validated_gates=[
-            "core-function-atlas",
-            "category-head-hierarchy",
-            "monolith-command-atlas",
-        ],
+        validated_gates=gates,
         workspace_attestation={
             "before": pre_attestation,
             "after": post_attestation,
