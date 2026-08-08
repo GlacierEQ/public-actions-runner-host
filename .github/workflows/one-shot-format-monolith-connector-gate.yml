@@ -2,15 +2,12 @@ name: One-shot format Monolith connector gate
 
 on:
   push:
-    branches:
-      - evolve/monolith-connector-function-gate-20260808
 
 permissions:
   contents: write
 
 jobs:
   format:
-    if: github.event.head_commit.message == 'chore: stage connector gate formatter'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact branch head
