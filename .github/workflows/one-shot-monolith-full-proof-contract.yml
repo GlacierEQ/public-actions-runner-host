@@ -1,0 +1,67 @@
+name: One-shot Monolith full legal proof contract
+
+on:
+  push:
+    branches:
+      - evolve/monolith-legal-full-proof-20260808
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: evolve/monolith-legal-full-proof-20260808
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Update fixed-command contract regression
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("tests/test_private_legal_validation_actions.py")
+          text = path.read_text(encoding="utf-8")
+          old = '''    assert len(result["steps"]) == 3
+          assert result["validated_gates"] == [
+              "legal-live-registry",
+              "legal-live-board",
+              "integration-contract",
+          ]
+          '''
+          new = '''    assert len(result["steps"]) == 7
+          assert result["validated_gates"] == [
+              "legal-live-registry",
+              "legal-live-board",
+              "integration-contract",
+              "legal-case",
+              "legal-spine",
+              "legal-spine-sync",
+              "clean-diff",
+          ]
+          assert expected[-2] == [sys.executable, "scripts/sync_legal_spines.py", "--check"]
+          assert expected[-1] == ["git", "diff", "--check"]
+          '''
+          if text.count(old) != 1:
+              raise SystemExit("expected three-step Monolith legal contract assertion not found exactly once")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+      - name: Remove one-shot workflow before proof
+        run: git rm .github/workflows/one-shot-monolith-full-proof-contract.yml
+
+      - name: Run complete public action face verification
+        run: bash scripts/ci/public-action-face-ci.sh
+
+      - name: Commit only after full proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "casey"
+          git config user.email "GLACIER.EQUILIBRIUM@GMAIL.COM"
+          git add tests/test_private_legal_validation_actions.py
+          git commit -m "test: lock full Monolith legal proof contract"
+          git push origin HEAD:evolve/monolith-legal-full-proof-20260808
