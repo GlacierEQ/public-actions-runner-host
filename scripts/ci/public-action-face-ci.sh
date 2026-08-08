@@ -34,6 +34,7 @@ OWNED_FILES=(
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_bounded_file_receipts.py
   tests/test_isolated_catalog_runner_import.py
+  tests/test_monolith_atlas_optional_category.py
   tests/test_monolith_legal_live_safe_path.py
   tests/test_monolith_evolution_adapter.py
   tests/test_publish_verified_boundary.py
@@ -56,6 +57,7 @@ FORMAT_FILES=(
   tests/test_apex_job_ingress_exclusivity.py
   tests/test_bounded_file_receipts.py
   tests/test_isolated_catalog_runner_import.py
+  tests/test_monolith_atlas_optional_category.py
   tests/test_monolith_legal_live_safe_path.py
   tests/test_monolith_evolution_adapter.py
   tests/test_publish_verified_boundary.py
