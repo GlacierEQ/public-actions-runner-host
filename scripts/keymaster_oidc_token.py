@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -20,6 +21,7 @@ BROKER_URL = (
 MAX_RESPONSE_BYTES = 64 * 1024
 ALLOWED_PERMISSIONS = {"contents", "actions"}
 ALLOWED_LEVELS = {"read", "write"}
+REPOSITORY_PART = re.compile(r"^[A-Za-z0-9_.-]+$")
 
 
 class TokenBrokerError(RuntimeError):
@@ -64,7 +66,15 @@ def _oidc_token() -> str:
         raise TokenBrokerError("github_oidc_environment_unavailable")
     parsed = urllib.parse.urlsplit(request_url)
     hostname = (parsed.hostname or "").lower()
-    if parsed.scheme != "https" or not hostname.endswith(".actions.githubusercontent.com"):
+    suffix = ".actions.githubusercontent.com"
+    subdomain = hostname[: -len(suffix)] if hostname.endswith(suffix) else ""
+    if (
+        parsed.scheme != "https"
+        or not hostname.endswith(suffix)
+        or not subdomain
+        or subdomain.startswith(".")
+        or subdomain.endswith(".")
+    ):
         raise TokenBrokerError("github_oidc_endpoint_rejected")
     separator = "&" if "?" in request_url else "?"
     url = f"{request_url}{separator}{urllib.parse.urlencode({'audience': AUDIENCE})}"
@@ -90,6 +100,19 @@ def _permissions(values: list[str]) -> dict[str, str]:
     return output or {"contents": "read"}
 
 
+def _repository(value: str) -> str:
+    parts = value.split("/")
+    if (
+        len(parts) != 2
+        or not parts[0]
+        or not parts[1]
+        or not REPOSITORY_PART.fullmatch(parts[0])
+        or not REPOSITORY_PART.fullmatch(parts[1])
+    ):
+        raise TokenBrokerError("invalid_repository")
+    return value
+
+
 def _request_id(repository: str, operation: str) -> str:
     run_id = os.environ.get("GITHUB_RUN_ID", "unknown")
     attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1")
@@ -104,10 +127,13 @@ def _write_outputs(token: str, expires_at: str, receipt_id: object) -> None:
     if "\n" in token or "\r" in token:
         raise TokenBrokerError("token_contains_control_character")
     print(f"::add-mask::{token}")
-    with Path(output_path).open("a", encoding="utf-8") as handle:
-        handle.write(f"token={token}\n")
-        handle.write(f"expires_at={expires_at}\n")
-        handle.write(f"receipt_id={receipt_id}\n")
+    try:
+        with Path(output_path).open("a", encoding="utf-8") as handle:
+            handle.write(f"token={token}\n")
+            handle.write(f"expires_at={expires_at}\n")
+            handle.write(f"receipt_id={receipt_id}\n")
+    except OSError as error:
+        raise TokenBrokerError("github_output_write_failed") from error
 
 
 def main() -> int:
@@ -117,9 +143,9 @@ def main() -> int:
     parser.add_argument("--operation", required=True)
     args = parser.parse_args()
 
-    repository = args.repository.strip()
+    repository = _repository(args.repository.strip())
     operation = args.operation.strip()
-    if repository.count("/") != 1 or not operation or len(operation) > 256:
+    if not operation or len(operation) > 256:
         raise TokenBrokerError("invalid_request")
 
     oidc = _oidc_token()
