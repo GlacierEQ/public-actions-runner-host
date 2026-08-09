@@ -84,11 +84,9 @@ def sample_ledger() -> dict:
     }
 
 
-def test_monolith_action_is_narrowly_catalogued() -> None:
-    entry = planner.resolve_action("monolith-evolution-map", "D")
-    assert entry is not None
-    assert entry["target_repo"] == "GlacierEQ/monolith"
-    assert entry["adapter"] == "monolith-evolution"
+def test_monolith_evolution_adapter_is_preserved_but_not_executable() -> None:
+    with pytest.raises(SystemExit, match="not registered"):
+        planner.resolve_action("monolith-evolution-map", "D")
     assert planner.ADAPTER_TASK["monolith-evolution"] == "test"
 
 
