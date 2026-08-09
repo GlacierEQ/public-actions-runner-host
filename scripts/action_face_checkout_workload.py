@@ -137,7 +137,9 @@ def checkout_repository(
 
 
 def runner_workspace_path(value: str, runner_root: Path | None = None) -> Path:
-    root = (runner_root or Path(os.environ.get("GITHUB_WORKSPACE", Path.cwd()))).resolve()
+    root = (
+        runner_root or Path(os.environ.get("GITHUB_WORKSPACE", Path.cwd()))
+    ).resolve()
     requested = Path(value)
     workspace = (requested if requested.is_absolute() else root / requested).resolve()
     expected = (root / "workload").resolve()
