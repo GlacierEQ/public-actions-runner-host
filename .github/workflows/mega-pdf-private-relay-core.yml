@@ -4,12 +4,13 @@ on:
   workflow_call:
     inputs:
       source_ref:
-        description: Private MEGA-PDF branch, tag, or commit to verify
+        description: Exact private MEGA-PDF commit SHA to verify
         required: true
         type: string
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   verify-private-mega-pdf:
@@ -35,29 +36,24 @@ jobs:
           APEX_EXPECTED_VISIBILITY: public
         run: python3 scripts/action_face_guard.py
 
-      - name: Require GitHub App bridge configuration
-        env:
-          APP_CLIENT_ID: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
-          APP_PRIVATE_KEY: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+      - name: Require OIDC Keymaster bridge
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$APP_CLIENT_ID" || { echo "APEX_RUNNER_APP_CLIENT_ID is required" >&2; exit 1; }
-          test -n "$APP_PRIVATE_KEY" || { echo "APEX_RUNNER_APP_PRIVATE_KEY is required" >&2; exit 1; }
-          case "$APP_PRIVATE_KEY" in
-            *"BEGIN "*"PRIVATE KEY"*) ;;
-            *) echo "APEX_RUNNER_APP_PRIVATE_KEY is not a PEM private key" >&2; exit 1 ;;
-          esac
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || { echo "GitHub OIDC request URL unavailable" >&2; exit 1; }
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" || { echo "GitHub OIDC request token unavailable" >&2; exit 1; }
+          python3 -m py_compile scripts/keymaster_oidc_token.py scripts/revoke_github_installation_token.py
+          [[ "$SOURCE_REF" =~ ^[0-9a-f]{40}$ ]] || { echo "MEGA-PDF source_ref must be an exact lowercase commit SHA" >&2; exit 1; }
 
       - name: Mint repository-scoped MEGA-PDF token
         id: mega-pdf-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
-          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
-          owner: GlacierEQ
-          repositories: GlacierEQ/MEGA-PDF
-          permission-contents: write
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/keymaster_oidc_token.py \
+            --repository "$SOURCE_REPO" \
+            --permission contents=write \
+            --operation mega-pdf-private-relay
 
       - name: Checkout selected private MEGA-PDF source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -75,7 +71,8 @@ jobs:
         run: |
           set -euo pipefail
           source_sha="$(git -C workload rev-parse HEAD)"
-          test -n "$source_sha"
+          test "$source_sha" = "$SOURCE_REF"
+          test -z "$(git -C workload status --porcelain --untracked-files=no)"
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
 
       - name: Set up Python
@@ -136,13 +133,21 @@ jobs:
           assert report["receipt_root"]
           assert report["receipt_chain_valid"] is True
 
-          rows = [json.loads(line) for line in receipts_path.read_text(encoding="utf-8").splitlines() if line]
+          rows = [
+              json.loads(line)
+              for line in receipts_path.read_text(encoding="utf-8").splitlines()
+              if line
+          ]
           assert len(rows) == summary["receipts"]
           allowed = {field.name for field in fields(ProbeReceipt)}
-          receipts = [ProbeReceipt(**{key: value for key, value in row.items() if key in allowed}) for row in rows]
+          receipts = [
+              ProbeReceipt(**{key: value for key, value in row.items() if key in allowed})
+              for row in rows
+          ]
           assert all(receipt.verify() for receipt in receipts)
           assert all(
-              receipt.previous_receipt_hash == (receipts[index - 1].receipt_hash if index else None)
+              receipt.previous_receipt_hash
+              == (receipts[index - 1].receipt_hash if index else None)
               for index, receipt in enumerate(receipts)
           )
           if receipts:
@@ -163,11 +168,14 @@ jobs:
           from datetime import datetime, timezone
           from pathlib import Path
 
-          report = json.loads(Path("artifacts/function-genome.json").read_text(encoding="utf-8"))
+          report = json.loads(
+              Path("artifacts/function-genome.json").read_text(encoding="utf-8")
+          )
           summary = report["summary"]
           receipt = {
-              "schema_version": "mega-pdf-private-relay/v1",
+              "schema_version": "mega-pdf-private-relay/v2",
               "generated_at": datetime.now(timezone.utc).isoformat(),
+              "credential_path": "github_oidc_keymaster",
               "source_repo": os.environ["SOURCE_REPO"],
               "source_ref": os.environ["SOURCE_REF"],
               "source_sha": os.environ["SOURCE_SHA"],
@@ -207,8 +215,12 @@ jobs:
             artifacts/probe-receipts.jsonl \
             artifacts/function-genome-summary.md \
             artifacts/relay-receipt.json
-          git commit -m "chore: publish Function Genome receipts for ${SOURCE_SHA}"
-          git push --force-with-lease origin "HEAD:refs/heads/$RESULT_BRANCH"
+          if git diff --cached --quiet; then
+            echo "No Function Genome result delta."
+          else
+            git commit -m "chore: publish Function Genome receipts for ${SOURCE_SHA}"
+            git push --force-with-lease origin "HEAD:refs/heads/$RESULT_BRANCH"
+          fi
 
       - name: Publish sanitized execution summary
         working-directory: workload
@@ -217,10 +229,14 @@ jobs:
           python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json
           from pathlib import Path
-          report = json.loads(Path("artifacts/function-genome.json").read_text(encoding="utf-8"))
+
+          report = json.loads(
+              Path("artifacts/function-genome.json").read_text(encoding="utf-8")
+          )
           summary = report["summary"]
           print("## MEGA-PDF Private Verification Relay")
           print()
+          print("- Credential path: short-lived OIDC Keymaster token")
           print("- Private results branch: `automation/mega-pdf-function-genome-results`")
           print(f"- Discovered: {summary['discovered']}")
           print(f"- Promoted to PROBED: {summary['promoted_to_probed']}")
@@ -233,3 +249,9 @@ jobs:
           print(f"- Receipt root: `{report['receipt_root']}`")
           print("- Private artifacts were not uploaded to this public repository.")
           PY
+
+      - name: Revoke MEGA-PDF installation token
+        if: always() && steps.mega-pdf-token.outputs.token != ''
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.mega-pdf-token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
