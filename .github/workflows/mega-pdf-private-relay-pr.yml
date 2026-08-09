@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: mega-pdf-private-relay-pr-${{ github.event.pull_request.number }}
@@ -19,5 +20,4 @@ jobs:
   relay:
     uses: ./.github/workflows/mega-pdf-private-relay-core.yml
     with:
-      source_ref: upgrade/mega-pdf-document-intelligence-v2
-    secrets: inherit
+      source_ref: ebccf699a43c18c73fb98187a1be0ee74b72389d
