@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "retired_at": "2026-08-09",
+  "target_repository": "GlacierEQ/monolith",
+  "source_checkpoint": "827af23d68f0856280e95e9c9c1f2571625a6ff4",
+  "contracts": [
+    {
+      "active_names": [
+        "monolith-evolution-map"
+      ],
+      "adapter": "monolith-evolution",
+      "recovery_job": "MonolithEvolutionRecovery-20260808A",
+      "classification": "SOURCE_CONTRACT_RETIRED",
+      "reason": "The exact Monolith source checkpoint no longer contains the required evolution scripts or tests. No same-name implementation was found in the checkpoint tree.",
+      "missing_paths": [
+        "scripts/evolution.py",
+        "scripts/generate_evolution_map.py",
+        "tests/test_evolution.py"
+      ]
+    },
+    {
+      "active_names": [
+        "monolith-ip-governance",
+        "code.validate-governance"
+      ],
+      "adapter": "monolith-ip-governance",
+      "recovery_job": "MonolithIPRecovery-20260808A",
+      "classification": "SOURCE_CONTRACT_RETIRED",
+      "reason": "The exact Monolith source checkpoint lacks the legacy IP-governance implementation and preserves apex-ip-governance.yml under workflows/private-actions-retired, so the public runner must not keep presenting this route as active.",
+      "source_retirement_marker": "workflows/private-actions-retired/apex-ip-governance.yml"
+    },
+    {
+      "active_names": [
+        "code.monolith.validate-company-engineered-registry",
+        "monolith-validate-company-engineered-registry"
+      ],
+      "adapter": "monolith_company_registry_validate",
+      "recovery_job": "MonolithCompanyRegistryRecovery-20260809B",
+      "classification": "SOURCE_CONTRACT_RETIRED",
+      "reason": "After the runner provisioned its own governed pytest runtime, the exact Monolith checkpoint still lacked every required company-engineered-registry source surface.",
+      "missing_paths": [
+        "catalog/company_engineered_repositories.json",
+        "domains/company_engineered_portfolio.md",
+        "status/COMPANY_ENGINEERED_PROCESSING.md",
+        "docs/CAREER_POSITIONING_TRUTH_BOUNDARY.md",
+        "tests/test_company_engineered_registry.py",
+        "automation/public-runner/company-engineered-registry.request.json"
+      ]
+    }
+  ]
+}
