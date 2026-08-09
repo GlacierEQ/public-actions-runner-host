@@ -87,9 +87,7 @@ def _verify_receipt(row: object, previous_hash: str | None) -> str:
     return expected_hash
 
 
-def verify_generated_outputs(
-    output_root: Path, resolved_sha: str
-) -> dict[str, object]:
+def verify_generated_outputs(output_root: Path, resolved_sha: str) -> dict[str, object]:
     genome_path = output_root / "artifacts/function-genome.json"
     receipts_path = output_root / "artifacts/probe-receipts.jsonl"
     summary_path = output_root / "artifacts/function-genome-summary.md"
@@ -155,8 +153,10 @@ def verify_generated_outputs(
     if rows:
         if previous_hash != receipt_root:
             raise FunctionGenomeError("verified receipt root does not match the report")
-    elif discovered != 0 or not isinstance(receipt_root, str) or not re.fullmatch(
-        r"[0-9a-f]{64}", receipt_root
+    elif (
+        discovered != 0
+        or not isinstance(receipt_root, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", receipt_root)
     ):
         raise FunctionGenomeError("empty receipt population has an invalid root")
     if not isinstance(report.get("inventory_digest"), str) or not re.fullmatch(
