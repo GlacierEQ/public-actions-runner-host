@@ -57,9 +57,14 @@ def recovery_records(job_id: str, raw: bytes) -> list[tuple[str, bytes]]:
             pure.is_absolute()
             or not pure.parts
             or pure.parts[0] != "artifacts"
-            or any(part in {"", ".", ".."} or not SAFE_PART.fullmatch(part) for part in pure.parts)
+            or any(
+                part in {"", ".", ".."} or not SAFE_PART.fullmatch(part)
+                for part in pure.parts
+            )
         ):
-            raise SystemExit("recovery artifact path is outside the bounded artifact namespace")
+            raise SystemExit(
+                "recovery artifact path is outside the bounded artifact namespace"
+            )
         if source_path in seen:
             raise SystemExit("recovery artifact path is duplicated")
         seen.add(source_path)
@@ -116,14 +121,20 @@ def publish_recovery_records(job_id: str, records: list[tuple[str, bytes]]) -> N
     for remote_path, payload in records:
         existing = base.api(remote_path, token, allow_not_found=True)
         if existing is not None:
-            if not isinstance(existing, dict) or not isinstance(existing.get("content"), str):
+            if not isinstance(existing, dict) or not isinstance(
+                existing.get("content"), str
+            ):
                 raise SystemExit("existing recovery artifact record is malformed")
             try:
                 existing_payload = base64.b64decode(existing["content"])
-            except Exception as error:  # noqa: BLE001
-                raise SystemExit("existing recovery artifact content is invalid") from error
+            except Exception as error:
+                raise SystemExit(
+                    "existing recovery artifact content is invalid"
+                ) from error
             if existing_payload != payload:
-                raise SystemExit("immutable recovery artifact path already contains different bytes")
+                raise SystemExit(
+                    "immutable recovery artifact path already contains different bytes"
+                )
             continue
         request = {
             "message": f"runner: materialize recovery artifact {job_id}",
