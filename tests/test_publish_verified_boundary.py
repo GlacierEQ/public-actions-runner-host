@@ -40,24 +40,44 @@ def invoke_publish(
     return action_face_publish_verified.main(), published
 
 
-def recovery_result(path: str = "artifacts/proof.json") -> bytes:
-    content = '{"ok":true}\n'
+def artifact_record(path: str, content: str) -> dict:
     payload = content.encode("utf-8")
+    return {
+        "path": path,
+        "bytes": len(payload),
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "content": content,
+    }
+
+
+def recovery_result(path: str = "artifacts/proof.json") -> bytes:
+    item = artifact_record(path, '{"ok":true}\n')
     result = {
         "job_id": "PublishBoundaryJob01",
         "resolved_source_sha": "a" * 40,
         "recovery_artifacts": {
             "status": "available",
             "resolved_source_sha": "a" * 40,
-            "total_bytes": len(payload),
-            "files": [
-                {
-                    "path": path,
-                    "bytes": len(payload),
-                    "sha256": hashlib.sha256(payload).hexdigest(),
-                    "content": content,
-                }
-            ],
+            "total_bytes": item["bytes"],
+            "files": [item],
+        },
+    }
+    return json.dumps(result).encode("utf-8")
+
+
+def projection_result() -> bytes:
+    files = [
+        artifact_record("catalog/monolith_command_atlas.json", '{"atlas":true}\n'),
+        artifact_record("status/MONOLITH_COMMAND_ATLAS.md", "# Command Atlas\n"),
+    ]
+    result = {
+        "job_id": "PublishBoundaryJob01",
+        "resolved_source_sha": "b" * 40,
+        "projection_repair": {
+            "status": "available",
+            "resolved_source_sha": "b" * 40,
+            "total_bytes": sum(item["bytes"] for item in files),
+            "files": files,
         },
     }
     return json.dumps(result).encode("utf-8")
@@ -142,6 +162,37 @@ def test_recovery_artifacts_are_reverified_and_materialized_under_job_namespace(
     manifest = json.loads(records[1][1])
     assert manifest["resolved_source_sha"] == "a" * 40
     assert manifest["files"][0]["sha256"] == hashlib.sha256(records[0][1]).hexdigest()
+
+
+def test_projection_repair_is_materialized_with_bounded_catalog_and_status_paths() -> None:
+    records = action_face_publish_verified.recovery_records(
+        "PublishBoundaryJob01", projection_result()
+    )
+    assert [record[0] for record in records] == [
+        "recovery-artifacts/PublishBoundaryJob01/catalog/monolith_command_atlas.json",
+        "recovery-artifacts/PublishBoundaryJob01/status/MONOLITH_COMMAND_ATLAS.md",
+        "recovery-artifacts/PublishBoundaryJob01/manifest.json",
+    ]
+    manifest = json.loads(records[-1][1])
+    assert manifest["resolved_source_sha"] == "b" * 40
+    assert [item["path"] for item in manifest["files"]] == [
+        "catalog/monolith_command_atlas.json",
+        "status/MONOLITH_COMMAND_ATLAS.md",
+    ]
+
+
+def test_projection_repair_rejects_paths_outside_catalog_and_status() -> None:
+    result = json.loads(projection_result())
+    result["projection_repair"]["files"][0] = artifact_record(
+        "artifacts/not-a-projection.json", "{}\n"
+    )
+    result["projection_repair"]["total_bytes"] = sum(
+        item["bytes"] for item in result["projection_repair"]["files"]
+    )
+    with pytest.raises(SystemExit, match="bounded artifact namespace"):
+        action_face_publish_verified.recovery_records(
+            "PublishBoundaryJob01", json.dumps(result).encode("utf-8")
+        )
 
 
 def test_recovery_artifact_path_traversal_fails_closed() -> None:
