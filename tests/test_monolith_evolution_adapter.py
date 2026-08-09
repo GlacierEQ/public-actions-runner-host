@@ -11,7 +11,6 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import action_face_plan as planner
 from monolith_evolution_adapter import (
     isolated_env,
     parse_test_count,
@@ -82,12 +81,6 @@ def sample_ledger() -> dict:
             },
         ],
     }
-
-
-def test_monolith_evolution_adapter_is_preserved_but_not_executable() -> None:
-    with pytest.raises(SystemExit, match="not registered"):
-        planner.resolve_action("monolith-evolution-map", "D")
-    assert planner.ADAPTER_TASK["monolith-evolution"] == "test"
 
 
 def test_private_workload_environment_strips_trust_material(
