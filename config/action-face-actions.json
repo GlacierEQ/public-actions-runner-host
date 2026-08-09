@@ -107,26 +107,6 @@
       "gate": "standard"
     },
     {
-      "pillar": "D",
-      "action": "monolith-evolution-map",
-      "source_event": "evolution-optimize",
-      "target_repo": "GlacierEQ/monolith",
-      "legacy_event": "monolith-evolution-map",
-      "adapter": "monolith-evolution",
-      "gate": "standard",
-      "approval_required": false
-    },
-    {
-      "pillar": "D",
-      "action": "monolith-ip-governance",
-      "source_event": "evolution-optimize",
-      "target_repo": "GlacierEQ/monolith",
-      "legacy_event": "monolith-ip-governance",
-      "adapter": "monolith-ip-governance",
-      "gate": "standard",
-      "approval_required": false
-    },
-    {
       "pillar": "C",
       "action": "code.tool-system.validate",
       "source_event": "coding-deploy",
@@ -193,16 +173,6 @@
       "target_repo": "GlacierEQ/monolith",
       "legacy_event": "monolith-validate-legal-live-reconciliation",
       "adapter": "monolith_legal_live_validate",
-      "gate": "standard",
-      "approval_required": false
-    },
-    {
-      "pillar": "C",
-      "action": "code.monolith.validate-company-engineered-registry",
-      "source_event": "coding-deploy",
-      "target_repo": "GlacierEQ/monolith",
-      "legacy_event": "monolith-validate-company-engineered-registry",
-      "adapter": "monolith_company_registry_validate",
       "gate": "standard",
       "approval_required": false
     },

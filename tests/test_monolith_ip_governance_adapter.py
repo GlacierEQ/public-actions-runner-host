@@ -9,7 +9,6 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import action_face_plan as planner
 import monolith_ip_governance_adapter as adapter
 from monolith_ip_governance_adapter import (
     isolated_env,
@@ -124,14 +123,6 @@ def write_fixture(root: Path, *, include_test: bool = True) -> None:
 
 def read_result(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def test_action_is_narrowly_catalogued() -> None:
-    entry = planner.resolve_action("monolith-ip-governance", "D")
-    assert entry is not None
-    assert entry["target_repo"] == "GlacierEQ/monolith"
-    assert entry["adapter"] == "monolith-ip-governance"
-    assert planner.ADAPTER_TASK["monolith-ip-governance"] == "test"
 
 
 def test_subprocess_environment_is_allowlisted(
