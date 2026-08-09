@@ -1,11 +1,6 @@
 {
   "schema_version": "1.0",
   "canonicalActions": {
-    "code.validate-governance": {
-      "domain": "code",
-      "status": "active",
-      "catalog": "domains/code/actions.json"
-    },
     "code.tool-system.validate": {
       "domain": "code",
       "status": "active",
@@ -36,11 +31,6 @@
       "status": "active",
       "catalog": "domains/code/actions.json"
     },
-    "code.monolith.validate-company-engineered-registry": {
-      "domain": "code",
-      "status": "active",
-      "catalog": "domains/code/actions.json"
-    },
     "code.casey-legal-mcp.validate-v2": {
       "domain": "code",
       "status": "active",
@@ -48,11 +38,6 @@
     }
   },
   "aliases": {
-    "monolith-ip-governance": {
-      "canonicalAction": "code.validate-governance",
-      "status": "temporary",
-      "removeAfter": "verified-private-domain-run"
-    },
     "tool-system-validate": {
       "canonicalAction": "code.tool-system.validate",
       "status": "temporary",
@@ -75,11 +60,6 @@
     },
     "monolith-validate-legal-live-reconciliation": {
       "canonicalAction": "code.monolith.validate-legal-live-reconciliation",
-      "status": "temporary",
-      "removeAfter": "canonical-action-face-ingress-verified"
-    },
-    "monolith-validate-company-engineered-registry": {
-      "canonicalAction": "code.monolith.validate-company-engineered-registry",
       "status": "temporary",
       "removeAfter": "canonical-action-face-ingress-verified"
     },
