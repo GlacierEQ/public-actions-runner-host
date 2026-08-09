@@ -1,35 +1,47 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts import action_face_plan
 
 
 def load(relative: str) -> dict:
     return json.loads((ROOT / relative).read_text(encoding="utf-8"))
 
 
-def test_retired_monolith_contracts_cannot_remain_active() -> None:
+def test_retired_monolith_contracts_are_removed_from_execution_admission() -> None:
     retired = load("config/retired-action-contracts.json")
     flat = load("config/action-face-actions.json")
-    domain = load("domains/code/actions.json")
-    index = load("registry/actions-index.json")
-
     retired_names = {
         name
         for contract in retired["contracts"]
         for name in contract["active_names"]
     }
     flat_names = {item["action"] for item in flat["actions"]}
-    domain_names = set(domain["actions"])
-    canonical_names = set(index["canonicalActions"])
-    alias_names = set(index["aliases"])
-
     assert retired_names.isdisjoint(flat_names)
-    assert retired_names.isdisjoint(domain_names)
-    assert retired_names.isdisjoint(canonical_names)
-    assert retired_names.isdisjoint(alias_names)
+
+
+@pytest.mark.parametrize(
+    ("action", "pillar"),
+    (
+        ("monolith-evolution-map", "D"),
+        ("monolith-ip-governance", "D"),
+        ("code.monolith.validate-company-engineered-registry", "C"),
+    ),
+)
+def test_retired_monolith_routes_fail_closed_at_canonical_ingress(
+    action: str, pillar: str
+) -> None:
+    with pytest.raises(SystemExit, match="not registered"):
+        action_face_plan.resolve_action(action, pillar)
 
 
 def test_monolith_recovery_keeps_current_proven_gates_active() -> None:
