@@ -4,6 +4,8 @@ import os
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from scripts import action_face_checkout_workload as checkout
 
 
@@ -28,6 +30,14 @@ def test_credential_environment_is_process_only(monkeypatch) -> None:
     assert env["GIT_CONFIG_KEY_0"] == "http.https://github.com/.extraheader"
     assert env["GIT_CONFIG_VALUE_0"].startswith("AUTHORIZATION: basic ")
     assert "unit-token" not in env["GIT_CONFIG_VALUE_0"]
+
+
+def test_runner_cleanup_is_fixed_to_workload_directory(tmp_path: Path) -> None:
+    assert checkout.runner_workspace_path("workload", tmp_path) == tmp_path / "workload"
+    with pytest.raises(checkout.CheckoutError, match="fixed runner workload directory"):
+        checkout.runner_workspace_path("../outside", tmp_path)
+    with pytest.raises(checkout.CheckoutError, match="fixed runner workload directory"):
+        checkout.runner_workspace_path(str(tmp_path), tmp_path)
 
 
 def test_checkout_ignores_malformed_gitmodules_without_persisting_token(
