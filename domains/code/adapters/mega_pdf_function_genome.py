@@ -45,6 +45,7 @@ OUTPUTS = (
 )
 MAX_OUTPUT_FILE_BYTES = 2_500_000
 MAX_OUTPUT_TOTAL_BYTES = 3_500_000
+MAX_EMBEDDED_PAYLOAD_BYTES = 3_500_000
 
 
 class FunctionGenomeError(RuntimeError):
@@ -74,7 +75,9 @@ def _verify_receipt(row: object, previous_hash: str | None) -> str:
         raise FunctionGenomeError("probe receipt row is not an object")
     payload = dict(row)
     expected_hash = payload.pop("receipt_hash", None)
-    if not isinstance(expected_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", expected_hash):
+    if not isinstance(expected_hash, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", expected_hash
+    ):
         raise FunctionGenomeError("probe receipt hash is unavailable or invalid")
     if payload.get("previous_receipt_hash") != previous_hash:
         raise FunctionGenomeError("probe receipt chain is discontinuous")
@@ -84,20 +87,26 @@ def _verify_receipt(row: object, previous_hash: str | None) -> str:
     return expected_hash
 
 
-def verify_generated_outputs(output_root: Path, resolved_sha: str) -> dict[str, object]:
+def verify_generated_outputs(
+    output_root: Path, resolved_sha: str
+) -> dict[str, object]:
     genome_path = output_root / "artifacts/function-genome.json"
     receipts_path = output_root / "artifacts/probe-receipts.jsonl"
     summary_path = output_root / "artifacts/function-genome-summary.md"
     for path in (genome_path, receipts_path, summary_path):
         if path.is_symlink() or not path.is_file():
-            raise FunctionGenomeError(f"generator did not create regular output: {path.name}")
+            raise FunctionGenomeError(
+                f"generator did not create regular output: {path.name}"
+            )
 
     try:
         report = json.loads(genome_path.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise FunctionGenomeError("Function Genome report is invalid JSON") from error
     if not isinstance(report, dict) or report.get("schema_version") != EXPECTED_SCHEMA:
-        raise FunctionGenomeError("Function Genome schema does not match the recovery contract")
+        raise FunctionGenomeError(
+            "Function Genome schema does not match the recovery contract"
+        )
     summary = report.get("summary")
     if not isinstance(summary, dict):
         raise FunctionGenomeError("Function Genome summary is unavailable")
@@ -111,13 +120,21 @@ def verify_generated_outputs(output_root: Path, resolved_sha: str) -> dict[str, 
     if discovered != promoted + blocked:
         raise FunctionGenomeError("Function Genome lifecycle counts do not reconcile")
     if receipt_count != discovered:
-        raise FunctionGenomeError("Function Genome receipt count does not match discovery count")
+        raise FunctionGenomeError(
+            "Function Genome receipt count does not match discovery count"
+        )
     if int(summary.get("approved", -1)) != 0:
-        raise FunctionGenomeError("static recovery attempted to promote APPROVED functions")
+        raise FunctionGenomeError(
+            "static recovery attempted to promote APPROVED functions"
+        )
     if int(summary.get("defaults_promoted", -1)) != 0:
-        raise FunctionGenomeError("static recovery attempted to promote DEFAULT functions")
+        raise FunctionGenomeError(
+            "static recovery attempted to promote DEFAULT functions"
+        )
     if report.get("receipt_chain_valid") is not True:
-        raise FunctionGenomeError("Function Genome did not assert a valid receipt chain")
+        raise FunctionGenomeError(
+            "Function Genome did not assert a valid receipt chain"
+        )
 
     previous_hash: str | None = None
     rows: list[dict] = []
@@ -131,9 +148,17 @@ def verify_generated_outputs(output_root: Path, resolved_sha: str) -> dict[str, 
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise FunctionGenomeError("probe receipt stream is invalid") from error
     if len(rows) != receipt_count:
-        raise FunctionGenomeError("verified receipt rows do not match the declared count")
-    if previous_hash != report.get("receipt_root"):
-        raise FunctionGenomeError("verified receipt root does not match the report")
+        raise FunctionGenomeError(
+            "verified receipt rows do not match the declared count"
+        )
+    receipt_root = report.get("receipt_root")
+    if rows:
+        if previous_hash != receipt_root:
+            raise FunctionGenomeError("verified receipt root does not match the report")
+    elif discovered != 0 or not isinstance(receipt_root, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", receipt_root
+    ):
+        raise FunctionGenomeError("empty receipt population has an invalid root")
     if not isinstance(report.get("inventory_digest"), str) or not re.fullmatch(
         r"[0-9a-f]{64}", str(report.get("inventory_digest"))
     ):
@@ -172,17 +197,25 @@ def collect_payload(output_root: Path, resolved_sha: str) -> dict[str, object]:
     for relative in OUTPUTS:
         path = output_root / relative
         if path.is_symlink() or not path.is_file():
-            raise FunctionGenomeError(f"expected recovery artifact is unavailable: {relative}")
+            raise FunctionGenomeError(
+                f"expected recovery artifact is unavailable: {relative}"
+            )
         payload = path.read_bytes()
         if len(payload) > MAX_OUTPUT_FILE_BYTES:
-            raise FunctionGenomeError(f"recovery artifact exceeds per-file bound: {relative}")
+            raise FunctionGenomeError(
+                f"recovery artifact exceeds per-file bound: {relative}"
+            )
         total_bytes += len(payload)
         if total_bytes > MAX_OUTPUT_TOTAL_BYTES:
-            raise FunctionGenomeError("recovery artifact payload exceeds total byte bound")
+            raise FunctionGenomeError(
+                "recovery artifact payload exceeds total byte bound"
+            )
         try:
             content = payload.decode("utf-8")
         except UnicodeDecodeError as error:
-            raise FunctionGenomeError(f"recovery artifact is not UTF-8: {relative}") from error
+            raise FunctionGenomeError(
+                f"recovery artifact is not UTF-8: {relative}"
+            ) from error
         files.append(
             {
                 "path": relative,
@@ -191,15 +224,26 @@ def collect_payload(output_root: Path, resolved_sha: str) -> dict[str, object]:
                 "content": content,
             }
         )
+
+    embedded_bytes = len(
+        json.dumps(files, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    )
+    if embedded_bytes > MAX_EMBEDDED_PAYLOAD_BYTES:
+        raise FunctionGenomeError(
+            "embedded recovery artifact payload exceeds result byte bound"
+        )
     return {
         "status": "available",
         "resolved_source_sha": resolved_sha,
         "total_bytes": total_bytes,
+        "embedded_bytes": embedded_bytes,
         "files": files,
     }
 
 
-def commands(result_path: Path, job_id: str, workspace_root: Path, output_root: Path) -> list[list[str]]:
+def commands(
+    result_path: Path, job_id: str, workspace_root: Path, output_root: Path
+) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
     module_launcher = (
@@ -295,6 +339,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     payload: dict[str, object] | None = None
     verification: dict[str, object] | None = None
     post_attestation: dict[str, object] | None = None
+    command_contract = ""
 
     with checkout:
         try:
@@ -308,16 +353,27 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             )
 
         workspace_root = checkout.proc_path
-        missing = [relative for relative in REQUIRED_PATHS if not (workspace_root / relative).is_file()]
+        missing = [
+            relative
+            for relative in REQUIRED_PATHS
+            if not (workspace_root / relative).is_file()
+        ]
         if missing:
             return catalog.write_result(
                 plan,
                 result_path,
                 "blocked",
-                reason="required MEGA-PDF recovery files are missing: " + ", ".join(missing),
+                reason="required MEGA-PDF recovery files are missing: "
+                + ", ".join(missing),
             )
 
-        sequence = commands(result_path, str(plan["job_id"]), workspace_root, output_root)
+        sequence = commands(
+            result_path, str(plan["job_id"]), workspace_root, output_root
+        )
+        command_contract = command_contract_sha256(
+            sequence,
+            volatile_roots=(result_path.parent, workspace_root),
+        )
         for command in sequence:
             try:
                 process = subprocess.run(
@@ -363,7 +419,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                     {
                         "command": command,
                         "status": "failed",
-                        "reason": f"process start failed: {type(error).__name__}: {error}",
+                        "reason": (
+                            f"process start failed: {type(error).__name__}: {error}"
+                        ),
                     }
                 )
                 status = "failed"
@@ -397,10 +455,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
     details: dict[str, object] = {
         "steps": steps,
-        "command_contract_sha256": command_contract_sha256(
-            sequence,
-            volatile_roots=(result_path.parent, workspace_root),
-        ),
+        "command_contract_sha256": command_contract,
         "workspace_attestation": {
             "before": pre_attestation,
             "after": post_attestation,
