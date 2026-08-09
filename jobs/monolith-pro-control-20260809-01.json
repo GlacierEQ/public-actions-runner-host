@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-pro-control-20260809-01",
+  "pillar": "C",
+  "action": "code.monolith.validate-atlases",
+  "source_ref": "ad5e8ddd89c0ebf45d4fb373af26703b1148b972"
+}
