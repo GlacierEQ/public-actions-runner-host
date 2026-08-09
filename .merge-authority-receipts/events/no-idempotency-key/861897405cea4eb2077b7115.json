@@ -1,0 +1,28 @@
+{
+  "schema": "glaciereq.merge-authority.receipt.v1",
+  "repository": "GlacierEQ/public-actions-runner-host",
+  "targetBranch": "operability/merge-authority-v2",
+  "intentId": "merge-authority-operability-v2",
+  "expectedHead": "4ff1b382d58695e5f3a2f52816ac53155c50a96a",
+  "observedHead": "651df5329f54059e3a8d486b9b8a86743f420d89",
+  "patchSha256": "f45e4703790c00d4246b0db504494ab470f6053d80dfeeed98f1efa21aa5d5ca",
+  "idempotencyKey": null,
+  "requiredChecks": [
+    "provider-preflight"
+  ],
+  "approvals": [
+    {
+      "actor": "glaciereq-operability-proof",
+      "intentId": "merge-authority-operability-v2",
+      "expectedHead": "4ff1b382d58695e5f3a2f52816ac53155c50a96a",
+      "patchSha256": "f45e4703790c00d4246b0db504494ab470f6053d80dfeeed98f1efa21aa5d5ca"
+    }
+  ],
+  "result": "REJECTED",
+  "reasons": [
+    "stale_expected_head"
+  ],
+  "mergeAttempted": false,
+  "mergeSha": null,
+  "readbackHead": null
+}
