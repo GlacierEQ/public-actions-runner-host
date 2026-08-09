@@ -1,0 +1,14 @@
+{
+  "schema": "glaciereq.merge-authority.operability-payload.v1",
+  "purpose": "real-provider bounded mutation and canonical readback proof",
+  "implementation_source_sha": "daea3825be13cf60792c9c15f3825a7ce07296ad",
+  "target_repository": "GlacierEQ/public-actions-runner-host",
+  "base_sha": "4ff1b382d58695e5f3a2f52816ac53155c50a96a",
+  "target_branch": "operability/merge-authority-v1",
+  "authority": "short-lived repository-scoped GitHub App token minted from Vercel OIDC through Keymaster",
+  "nonclaims": [
+    "Disposable proof branch only; main is not mutated.",
+    "No production deployment or production-scale reliability is claimed.",
+    "No GitHub affiliation, endorsement, employment, or adoption is implied."
+  ]
+}
