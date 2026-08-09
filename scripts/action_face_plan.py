@@ -46,6 +46,7 @@ ADAPTER_TASK = {
     "monolith-evolution": "test",
     "monolith-ip-governance": "test",
     "fileboss-operator-code-validate": "test",
+    "mega-pdf-function-genome": "test",
     "action-face-selftest": "validate",
     "master-strand-inventory": "audit",
     "master-strand-extinction": "audit",
@@ -86,6 +87,7 @@ IMMUTABLE_SOURCE_ACTIONS = {
     "code.fileboss.validate-operator-code-bridge",
     "docs.monolith.validate-integrity",
     "analysis.monolith.estate-health",
+    "mega-pdf-function-genome",
 }
 
 
