@@ -1,0 +1,26 @@
+{
+  "schema": "glaciereq.merge-authority.receipt.v1",
+  "repository": "GlacierEQ/public-actions-runner-host",
+  "targetBranch": "operability/merge-authority-v4",
+  "intentId": "merge-authority-operability-v4",
+  "expectedHead": "4ff1b382d58695e5f3a2f52816ac53155c50a96a",
+  "observedHead": "4ff1b382d58695e5f3a2f52816ac53155c50a96a",
+  "patchSha256": "27c40028f1471dbc9d60eab4fbfd628151d3ffb93c19f57796c0d19cd385310a",
+  "idempotencyKey": "34dd2370efa88e255c0647cf5b1bb224370024dbe536c1d099fbf15cd0fe92fb",
+  "requiredChecks": [
+    "provider-preflight"
+  ],
+  "approvals": [
+    {
+      "actor": "glaciereq-operability-proof",
+      "intentId": "merge-authority-operability-v4",
+      "expectedHead": "4ff1b382d58695e5f3a2f52816ac53155c50a96a",
+      "patchSha256": "27c40028f1471dbc9d60eab4fbfd628151d3ffb93c19f57796c0d19cd385310a"
+    }
+  ],
+  "result": "VERIFIED_COMPLETED",
+  "reasons": [],
+  "mergeAttempted": true,
+  "mergeSha": "1ec5b60e46c1e5e706838d6291ac6523fdc18a5a",
+  "readbackHead": "1ec5b60e46c1e5e706838d6291ac6523fdc18a5a"
+}
