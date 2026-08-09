@@ -2,22 +2,6 @@
   "schema_version": "1.0",
   "domain": "code",
   "actions": {
-    "code.validate-governance": {
-      "status": "active",
-      "adapter": "monolith_ip_governance",
-      "adapterPath": "domains/code/adapters/monolith_ip_governance.py",
-      "targetRepository": "GlacierEQ/monolith",
-      "tokenProfile": "private-source-read",
-      "jobSchema": "governance-job-v1",
-      "resultSchema": "governance-result-v1",
-      "approvalPolicy": "owner-dispatched",
-      "executionMode": "source-read-only",
-      "receiptNamespace": "code",
-      "concurrencyKeyTemplate": "code:{targetRepository}",
-      "legacyAliases": [
-        "monolith-ip-governance"
-      ]
-    },
     "code.tool-system.validate": {
       "status": "active",
       "adapter": "tool_system_validate",
@@ -86,24 +70,6 @@
       "concurrencyKeyTemplate": "code:{targetRepository}",
       "legacyAliases": [
         "monolith-validate-legal-live-reconciliation"
-      ]
-    },
-    "code.monolith.validate-company-engineered-registry": {
-      "status": "active",
-      "adapter": "monolith_company_registry_validate",
-      "adapterPath": "domains/code/adapters/monolith_company_registry_validate.py",
-      "targetRepository": "GlacierEQ/monolith",
-      "tokenProfile": "private-source-read",
-      "jobSchema": "monolith-company-registry-job-v1",
-      "jobSchemaPath": "domains/code/schemas/monolith-company-registry-job.schema.json",
-      "resultSchema": "monolith-company-registry-result-v1",
-      "resultSchemaPath": "domains/code/schemas/monolith-company-registry-result.schema.json",
-      "approvalPolicy": "owner-dispatched",
-      "executionMode": "source-read-only",
-      "receiptNamespace": "code",
-      "concurrencyKeyTemplate": "code:{targetRepository}",
-      "legacyAliases": [
-        "monolith-validate-company-engineered-registry"
       ]
     },
     "code.casey-legal-mcp.validate-v2": {
