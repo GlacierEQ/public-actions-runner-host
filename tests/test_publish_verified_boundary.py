@@ -164,7 +164,9 @@ def test_recovery_artifacts_are_reverified_and_materialized_under_job_namespace(
     assert manifest["files"][0]["sha256"] == hashlib.sha256(records[0][1]).hexdigest()
 
 
-def test_projection_repair_is_materialized_with_bounded_catalog_and_status_paths() -> None:
+def test_projection_repair_is_materialized_with_bounded_catalog_and_status_paths() -> (
+    None
+):
     records = action_face_publish_verified.recovery_records(
         "PublishBoundaryJob01", projection_result()
     )
