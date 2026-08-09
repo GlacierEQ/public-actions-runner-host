@@ -10,13 +10,14 @@ on:
   workflow_dispatch:
     inputs:
       source_ref:
-        description: Private MEGA-PDF branch, tag, or commit to verify
+        description: Exact private MEGA-PDF commit SHA to verify
         required: true
-        default: upgrade/mega-pdf-document-intelligence-v2
+        default: ebccf699a43c18c73fb98187a1be0ee74b72389d
         type: string
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: mega-pdf-private-relay-${{ github.ref }}
@@ -26,5 +27,4 @@ jobs:
   relay:
     uses: ./.github/workflows/mega-pdf-private-relay-core.yml
     with:
-      source_ref: ${{ inputs.source_ref || 'upgrade/mega-pdf-document-intelligence-v2' }}
-    secrets: inherit
+      source_ref: ${{ inputs.source_ref || 'ebccf699a43c18c73fb98187a1be0ee74b72389d' }}
