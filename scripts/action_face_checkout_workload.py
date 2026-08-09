@@ -137,6 +137,23 @@ def checkout_repository(
     return resolved_sha
 
 
+def runner_workspace_path(value: str, runner_root: Path | None = None) -> Path:
+    root = (runner_root or Path(os.environ.get("GITHUB_WORKSPACE", Path.cwd()))).resolve()
+    requested = Path(value)
+    workspace = (requested if requested.is_absolute() else root / requested).resolve()
+    expected = (root / "workload").resolve()
+    if workspace != expected:
+        raise CheckoutError("workload path must be the fixed runner workload directory")
+    return workspace
+
+
+def prepare_runner_workspace(workspace: Path) -> None:
+    if workspace.exists():
+        if workspace.is_symlink() or not workspace.is_dir():
+            raise CheckoutError("runner workload path is not a regular directory")
+        shutil.rmtree(workspace)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--plan", default=".apex-plan.json")
@@ -152,11 +169,9 @@ def main() -> int:
         raise SystemExit("WORKLOAD_CHECKOUT_BLOCK: plan file is invalid") from error
 
     token = os.environ.get("APEX_WORKLOAD_TOKEN", "")
-    workspace = Path(args.workspace)
-    if workspace.exists() and not workspace.is_symlink():
-        shutil.rmtree(workspace)
-
     try:
+        workspace = runner_workspace_path(args.workspace)
+        prepare_runner_workspace(workspace)
         resolved_sha = checkout_repository(
             str(plan.get("source_repo", "")),
             str(plan.get("source_ref", "")),
