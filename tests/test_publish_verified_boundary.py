@@ -128,7 +128,9 @@ def test_verified_result_changed_after_guard_is_rejected(
         )
 
 
-def test_recovery_artifacts_are_reverified_and_materialized_under_job_namespace() -> None:
+def test_recovery_artifacts_are_reverified_and_materialized_under_job_namespace() -> (
+    None
+):
     records = action_face_publish_verified.recovery_records(
         "PublishBoundaryJob01", recovery_result()
     )
@@ -139,9 +141,7 @@ def test_recovery_artifacts_are_reverified_and_materialized_under_job_namespace(
     assert records[1][0] == "recovery-artifacts/PublishBoundaryJob01/manifest.json"
     manifest = json.loads(records[1][1])
     assert manifest["resolved_source_sha"] == "a" * 40
-    assert manifest["files"][0]["sha256"] == hashlib.sha256(
-        records[0][1]
-    ).hexdigest()
+    assert manifest["files"][0]["sha256"] == hashlib.sha256(records[0][1]).hexdigest()
 
 
 def test_recovery_artifact_path_traversal_fails_closed() -> None:
@@ -185,7 +185,9 @@ def test_recovery_materialization_is_idempotent_for_exact_bytes(
         stored[path] = base64.b64decode(payload["content"])
         return {"content": payload["content"]}
 
-    monkeypatch.setattr(action_face_publish_verified.base, "control_token", lambda: "token")
+    monkeypatch.setattr(
+        action_face_publish_verified.base, "control_token", lambda: "token"
+    )
     monkeypatch.setattr(action_face_publish_verified.base, "api", fake_api)
     action_face_publish_verified.publish_recovery_records(
         "PublishBoundaryJob01", records
