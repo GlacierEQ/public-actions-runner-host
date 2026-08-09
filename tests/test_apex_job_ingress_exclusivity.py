@@ -69,7 +69,15 @@ def test_canonical_issue_ingress_separates_source_and_receipt_authority() -> Non
     assert "--operation public-action-workload" in workload
     assert '--repository "${{ steps.plan.outputs.source_repo }}"' not in workload
 
-    assert text.count("persist-credentials: false") >= 3
+    checkout = workflow_step_block(
+        text, "Checkout catalog-approved workload without persisting credentials"
+    )
+    assert "APEX_WORKLOAD_TOKEN: ${{ steps.workload_token.outputs.token }}" in checkout
+    assert "scripts/action_face_checkout_workload.py" in checkout
+    assert "--workspace workload" in checkout
+    assert "uses: actions/checkout" not in checkout
+
+    assert text.count("persist-credentials: false") >= 2
     assert "APEX_RUNNER_APP_CLIENT_ID" not in text
     assert "APEX_RUNNER_APP_PRIVATE_KEY" not in text
     assert "scripts/keymaster_oidc_token.py" in text

@@ -212,14 +212,12 @@ jobs:
         if: steps.workload_token.outcome == 'success'
         id: checkout
         continue-on-error: true
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          repository: ${{ steps.plan.outputs.source_repo }}
-          ref: ${{ steps.plan.outputs.source_ref }}
-          token: ${{ steps.workload_token.outputs.token }}
-          path: workload
-          fetch-depth: 1
-          persist-credentials: false
+        env:
+          APEX_WORKLOAD_TOKEN: ${{ steps.workload_token.outputs.token }}
+        run: |
+          python3 scripts/action_face_checkout_workload.py \
+            --plan .apex-plan.json \
+            --workspace workload
 
       - name: Bind exact workload repository and commit
         if: steps.checkout.outcome == 'success'
