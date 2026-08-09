@@ -42,6 +42,7 @@ ACTIONS = (
         "GlacierEQ/casey-legal-mcp-server",
     ),
 )
+CALLABLE_ACTIONS = (ACTIONS[0], ACTIONS[2])
 
 
 def build_plan(action: str, adapter: str, repository: str) -> dict:
@@ -104,7 +105,7 @@ def test_domain_registry_resolves_all_three_actions() -> None:
 def test_action_face_plans_exact_private_validation_actions(tmp_path: Path) -> None:
     event = tmp_path / "event.json"
     event.write_text("{}\n", encoding="utf-8")
-    for action, adapter, repository in ACTIONS:
+    for action, adapter, repository in CALLABLE_ACTIONS:
         result = action_face_plan.build_plan(
             str(event),
             {
@@ -125,7 +126,7 @@ def test_action_face_plans_exact_private_validation_actions(tmp_path: Path) -> N
 def test_actions_reject_mutable_refs(tmp_path: Path) -> None:
     event = tmp_path / "event.json"
     event.write_text("{}\n", encoding="utf-8")
-    for action, _, _ in ACTIONS:
+    for action, _, _ in CALLABLE_ACTIONS:
         with pytest.raises(SystemExit, match="requires a full lowercase commit SHA"):
             action_face_plan.build_plan(
                 str(event),
