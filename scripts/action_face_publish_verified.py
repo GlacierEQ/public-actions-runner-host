@@ -85,7 +85,9 @@ def recovery_records(job_id: str, raw: bytes) -> list[tuple[str, bytes]]:
 
         total_bytes += len(payload)
         if total_bytes > MAX_RECOVERY_BYTES:
-            raise SystemExit("recovery artifact payload exceeds materialization byte bound")
+            raise SystemExit(
+                "recovery artifact payload exceeds materialization byte bound"
+            )
         remote_path = f"recovery-artifacts/{job_id}/{source_path}"
         records.append((remote_path, payload))
         manifest_files.append(
