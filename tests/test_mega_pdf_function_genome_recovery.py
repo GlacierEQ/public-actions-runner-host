@@ -109,7 +109,9 @@ def test_recovery_adapter_rejects_identity_drift() -> None:
         recovery.validate_plan(plan)
 
 
-def test_generated_receipts_are_recomputed_before_payload_return(tmp_path: Path) -> None:
+def test_generated_receipts_are_recomputed_before_payload_return(
+    tmp_path: Path,
+) -> None:
     report = _write_valid_outputs(tmp_path)
     verified = recovery.verify_generated_outputs(tmp_path, "b" * 40)
     assert verified["report"] == report
@@ -135,7 +137,9 @@ def test_tampered_probe_receipt_fails_closed(tmp_path: Path) -> None:
         recovery.verify_generated_outputs(tmp_path, "c" * 40)
 
 
-def test_artifact_total_bound_fails_closed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_artifact_total_bound_fails_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     _write_valid_outputs(tmp_path)
     recovery.verify_generated_outputs(tmp_path, "d" * 40)
     monkeypatch.setattr(recovery, "MAX_OUTPUT_TOTAL_BYTES", 32)
