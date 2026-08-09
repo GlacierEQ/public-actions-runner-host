@@ -21,6 +21,16 @@ MAX_RECOVERY_FILES = 16
 MAX_RECOVERY_BYTES = 4_000_000
 
 
+def artifact_envelope(result: dict) -> tuple[dict | None, frozenset[str]]:
+    recovery = result.get("recovery_artifacts")
+    if recovery is not None:
+        return recovery, frozenset({"artifacts"})
+    projection = result.get("projection_repair")
+    if projection is not None:
+        return projection, frozenset({"catalog", "status"})
+    return None, frozenset()
+
+
 def recovery_records(job_id: str, raw: bytes) -> list[tuple[str, bytes]]:
     try:
         result = json.loads(raw.decode("utf-8"))
@@ -29,7 +39,7 @@ def recovery_records(job_id: str, raw: bytes) -> list[tuple[str, bytes]]:
     if not isinstance(result, dict) or result.get("job_id") not in (None, job_id):
         raise SystemExit("verified result job_id does not match publication request")
 
-    recovery = result.get("recovery_artifacts")
+    recovery, allowed_roots = artifact_envelope(result)
     if recovery is None:
         return []
     if not isinstance(recovery, dict) or recovery.get("status") != "available":
@@ -56,7 +66,7 @@ def recovery_records(job_id: str, raw: bytes) -> list[tuple[str, bytes]]:
         if (
             pure.is_absolute()
             or not pure.parts
-            or pure.parts[0] != "artifacts"
+            or pure.parts[0] not in allowed_roots
             or any(
                 part in {"", ".", ".."} or not SAFE_PART.fullmatch(part)
                 for part in pure.parts
