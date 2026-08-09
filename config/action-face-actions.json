@@ -157,6 +157,16 @@
       "approval_required": false
     },
     {
+      "pillar": "C",
+      "action": "mega-pdf-function-genome",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/MEGA-PDF",
+      "legacy_event": "mega-pdf-function-genome",
+      "adapter": "mega-pdf-function-genome",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
       "pillar": "B",
       "action": "docs.monolith.validate-integrity",
       "source_event": "document-processing",
