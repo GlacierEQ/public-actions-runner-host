@@ -21,6 +21,16 @@
       "status": "active",
       "catalog": "domains/code/actions.json"
     },
+    "code.scribe.validate-fileboss-security": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
+    "code.sigma.validate-fileboss-security": {
+      "domain": "code",
+      "status": "active",
+      "catalog": "domains/code/actions.json"
+    },
     "docs.monolith.validate-integrity": {
       "domain": "docs",
       "status": "active",
