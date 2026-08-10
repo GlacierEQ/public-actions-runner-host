@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glaciereq.dev/schemas/code/sigma-fileboss-security-job-v1.json",
+  "title": "Sigma FILEBOSS Security Validation Job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["job_id", "pillar", "action", "adapter", "task", "source_repo", "source_ref", "target_repo"],
+  "properties": {
+    "job_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"},
+    "pillar": {"const": "C"},
+    "action": {"const": "code.sigma.validate-fileboss-security"},
+    "adapter": {"const": "fileboss_security_validate"},
+    "task": {"const": "test"},
+    "source_repo": {"const": "GlacierEQ/sigma-file-manager"},
+    "source_ref": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "target_repo": {"const": "GlacierEQ/sigma-file-manager"}
+  }
+}
