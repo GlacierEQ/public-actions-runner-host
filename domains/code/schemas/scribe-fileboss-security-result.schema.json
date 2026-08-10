@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glaciereq.dev/schemas/code/scribe-fileboss-security-result-v1.json",
+  "title": "Scribe FILEBOSS Security Validation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "job_id", "pillar", "action", "adapter", "task", "source_repo", "source_ref", "resolved_source_sha", "target_repo", "provenance", "status"],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "job_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"},
+    "pillar": {"const": "C"},
+    "action": {"const": "code.scribe.validate-fileboss-security"},
+    "adapter": {"const": "fileboss_security_validate"},
+    "task": {"const": "test"},
+    "source_repo": {"const": "GlacierEQ/scribe-multimodal-master"},
+    "source_ref": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "resolved_source_sha": {"type": "string", "pattern": "^(?:[0-9a-f]{40})?$"},
+    "target_repo": {"const": "GlacierEQ/scribe-multimodal-master"},
+    "provenance": {"type": "object"},
+    "status": {"enum": ["completed", "failed", "blocked"]},
+    "steps": {"type": "array", "maxItems": 6},
+    "command_contract_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "validated_gates": {"type": "array", "maxItems": 4, "items": {"type": "string", "maxLength": 64}},
+    "workspace_attestation": {"type": "object"},
+    "reason": {"type": "string", "maxLength": 4096}
+  }
+}
