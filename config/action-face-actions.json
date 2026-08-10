@@ -138,6 +138,26 @@
     },
     {
       "pillar": "C",
+      "action": "code.scribe.validate-fileboss-security",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/scribe-multimodal-master",
+      "legacy_event": "scribe-fileboss-security",
+      "adapter": "fileboss_security_validate",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "code.sigma.validate-fileboss-security",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/sigma-file-manager",
+      "legacy_event": "sigma-fileboss-security",
+      "adapter": "fileboss_security_validate",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "C",
       "action": "mega-pdf-function-genome",
       "source_event": "coding-deploy",
       "target_repo": "GlacierEQ/MEGA-PDF",

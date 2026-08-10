@@ -70,6 +70,38 @@
       "concurrencyKeyTemplate": "code:{targetRepository}",
       "legacyAliases": []
     },
+    "code.scribe.validate-fileboss-security": {
+      "status": "active",
+      "adapter": "fileboss_security_validate",
+      "adapterPath": "domains/code/adapters/fileboss_security_validate.py",
+      "targetRepository": "GlacierEQ/scribe-multimodal-master",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "scribe-fileboss-security-job-v1",
+      "jobSchemaPath": "domains/code/schemas/scribe-fileboss-security-job.schema.json",
+      "resultSchema": "scribe-fileboss-security-result-v1",
+      "resultSchemaPath": "domains/code/schemas/scribe-fileboss-security-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": []
+    },
+    "code.sigma.validate-fileboss-security": {
+      "status": "active",
+      "adapter": "fileboss_security_validate",
+      "adapterPath": "domains/code/adapters/fileboss_security_validate.py",
+      "targetRepository": "GlacierEQ/sigma-file-manager",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "sigma-fileboss-security-job-v1",
+      "jobSchemaPath": "domains/code/schemas/sigma-fileboss-security-job.schema.json",
+      "resultSchema": "sigma-fileboss-security-result-v1",
+      "resultSchemaPath": "domains/code/schemas/sigma-fileboss-security-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "code",
+      "concurrencyKeyTemplate": "code:{targetRepository}",
+      "legacyAliases": []
+    },
     "code.monolith.validate-legal-live-reconciliation": {
       "status": "active",
       "adapter": "monolith_legal_live_validate",

@@ -17,6 +17,9 @@ if str(ROOT) not in sys.path:
 
 import apex_catalog_runner as catalog
 from action_face_selftest import run as run_selftest
+from domains.code.adapters.fileboss_security_validate import (
+    run as run_fileboss_security_validate,
+)
 from domains.code.adapters.tool_system_validate import (
     run as run_tool_system_validate,
 )
@@ -470,6 +473,8 @@ def main() -> int:
         return run_monolith_evolution(plan, workspace, result_path)
     if adapter == "monolith-ip-governance":
         return run_monolith_ip_governance(plan, workspace, result_path)
+    if adapter == "fileboss_security_validate":
+        return run_fileboss_security_validate(plan, workspace, result_path)
     if adapter == "master-strand-inventory":
         return master_strand(plan, result_path, "inventory")
     if adapter == "master-strand-extinction":

@@ -38,6 +38,8 @@ def test_registry_validates_all_specialized_domains() -> None:
         "code.monolith.validate-company-engineered-registry",
         "code.casey-legal-mcp.validate-v2",
         "code.fileboss.validate-operator-code-bridge",
+        "code.scribe.validate-fileboss-security",
+        "code.sigma.validate-fileboss-security",
         "docs.monolith.validate-integrity",
         "analysis.monolith.estate-health",
     }
@@ -62,6 +64,16 @@ def test_registry_validates_all_specialized_domains() -> None:
     assert operator_code["adapter"] == "fileboss_operator_code_validate"
     assert operator_code["targetRepository"] == "GlacierEQ/FILEBOSS"
     assert operator_code["receiptRoot"] == "receipts/code"
+
+    scribe_security = actions["code.scribe.validate-fileboss-security"]
+    assert scribe_security["adapter"] == "fileboss_security_validate"
+    assert scribe_security["targetRepository"] == "GlacierEQ/scribe-multimodal-master"
+    assert scribe_security["receiptRoot"] == "receipts/code"
+
+    sigma_security = actions["code.sigma.validate-fileboss-security"]
+    assert sigma_security["adapter"] == "fileboss_security_validate"
+    assert sigma_security["targetRepository"] == "GlacierEQ/sigma-file-manager"
+    assert sigma_security["receiptRoot"] == "receipts/code"
 
     docs = actions["docs.monolith.validate-integrity"]
     assert docs["domain"] == "docs"
@@ -177,6 +189,8 @@ def test_all_active_domains_use_the_same_read_only_ceiling() -> None:
     for action_name in (
         "code.monolith.validate-atlases",
         "code.fileboss.validate-operator-code-bridge",
+        "code.scribe.validate-fileboss-security",
+        "code.sigma.validate-fileboss-security",
         "docs.monolith.validate-integrity",
         "analysis.monolith.estate-health",
     ):
@@ -245,6 +259,8 @@ def test_each_domain_receipt_namespace_is_isolated(tmp_path: Path) -> None:
     expected = {
         "code.monolith.validate-atlases": root / "receipts" / "code" / "DomainJob01.json",
         "code.fileboss.validate-operator-code-bridge": root / "receipts" / "code" / "DomainJob01.json",
+        "code.scribe.validate-fileboss-security": root / "receipts" / "code" / "DomainJob01.json",
+        "code.sigma.validate-fileboss-security": root / "receipts" / "code" / "DomainJob01.json",
         "docs.monolith.validate-integrity": root / "receipts" / "docs" / "DomainJob01.json",
         "analysis.monolith.estate-health": root / "receipts" / "analysis" / "DomainJob01.json",
     }
