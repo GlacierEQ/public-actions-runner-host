@@ -68,7 +68,9 @@ jobs:
     name: "Validate CI contract"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Validate language, project path, and Node scripts
         shell: bash
@@ -111,9 +113,11 @@ jobs:
     needs: [validate-inputs]
     if: inputs.language == 'python' && inputs.run_lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ inputs.python_version }}
 
@@ -148,9 +152,11 @@ jobs:
       needs.validate-inputs.result == 'success' &&
       (needs.python-quality.result == 'success' || needs.python-quality.result == 'skipped')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ inputs.python_version }}
 
@@ -166,9 +172,9 @@ jobs:
         run: pytest --cov=. --cov-report=xml --cov-report=term-missing -q
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
-          file: ${{ inputs.working_directory }}/coverage.xml
+          files: ${{ inputs.working_directory }}/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
         continue-on-error: true
 
@@ -178,9 +184,11 @@ jobs:
     needs: [validate-inputs]
     if: inputs.language == 'typescript' && inputs.run_lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ inputs.node_version }}
           cache: npm
@@ -222,9 +230,11 @@ jobs:
       needs.validate-inputs.result == 'success' &&
       (needs.typescript-quality.result == 'success' || needs.typescript-quality.result == 'skipped')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ inputs.node_version }}
           cache: npm
@@ -247,9 +257,11 @@ jobs:
     needs: [validate-inputs]
     if: inputs.language == 'go' && (inputs.run_lint || inputs.run_tests)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: ${{ inputs.go_version }}
           cache: true
@@ -262,9 +274,9 @@ jobs:
 
       - name: golangci-lint
         if: inputs.run_lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         with:
-          version: latest
+          version: v2.12.2
           working-directory: ${{ inputs.working_directory }}
 
       - name: Test
@@ -286,7 +298,9 @@ jobs:
       SECRET_SCAN_PATTERN: >-
         gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{40,}|sk_live_[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}|password[[:space:]]*=[[:space:]]*([A-Za-z0-9_!@#$%^&*.+:/?-]{8,}|["'][^"']{8,}["'])
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Validate secret scan patterns
         shell: bash
@@ -377,21 +391,23 @@ jobs:
         (inputs.language == 'go' && (needs.go-quality.result == 'success' || needs.go-quality.result == 'skipped'))
       )
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         if: inputs.language == 'python'
         with:
           python-version: ${{ inputs.python_version }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         if: inputs.language == 'typescript'
         with:
           node-version: ${{ inputs.node_version }}
           cache: npm
           cache-dependency-path: ${{ inputs.working_directory }}/package-lock.json
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         if: inputs.language == 'go'
         with:
           go-version: ${{ inputs.go_version }}
