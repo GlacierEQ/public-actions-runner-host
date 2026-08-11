@@ -81,6 +81,7 @@ ACTION = re.compile(
 CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 IMMUTABLE_SOURCE_ACTIONS = {
+    "memory.constellation.verify-operator-code",
     "code.monolith.validate-atlases",
     "code.monolith.validate-legal-live-reconciliation",
     "code.monolith.validate-company-engineered-registry",
