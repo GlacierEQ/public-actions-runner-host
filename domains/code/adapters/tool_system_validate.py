@@ -245,13 +245,22 @@ def _surface(workspace: Path) -> tuple[str, str | None]:
     if legacy_state == "complete" and bounded_state == "absent":
         return "tool-system-v2", None
     if legacy_state == "partial":
-        return "blocked", "partial legacy Tool System surface; missing: " + ", ".join(legacy_missing)
+        return "blocked", "partial legacy Tool System surface; missing: " + ", ".join(
+            legacy_missing
+        )
     if bounded_state == "partial":
-        return "blocked", "partial bounded Smithery surface; missing: " + ", ".join(bounded_missing)
-    return "blocked", "no recognized complete computer-user Tool System surface is present"
+        return "blocked", "partial bounded Smithery surface; missing: " + ", ".join(
+            bounded_missing
+        )
+    return (
+        "blocked",
+        "no recognized complete computer-user Tool System surface is present",
+    )
 
 
-def command_sequence(result_path: Path, job_id: str, surface: str = "tool-system-v2") -> list[list[str]]:
+def command_sequence(
+    result_path: Path, job_id: str, surface: str = "tool-system-v2"
+) -> list[list[str]]:
     if not JOB_ID.fullmatch(job_id):
         raise ValueError("job_id is invalid")
     venv = result_path.resolve().parent / f"venv-{job_id}"
@@ -286,7 +295,16 @@ def command_sequence(result_path: Path, job_id: str, surface: str = "tool-system
         ]
     if surface == "bounded-smithery-v7":
         return prefix + [
-            [str(python), "-m", "compileall", "-q", "runtime", "tooltruck/harvest", "tests", "tooltruck/tests"],
+            [
+                str(python),
+                "-m",
+                "compileall",
+                "-q",
+                "runtime",
+                "tooltruck/harvest",
+                "tests",
+                "tooltruck/tests",
+            ],
             [str(python), "-m", "pytest", "-q", *BOUNDED_TEST_PATHS],
             [str(python), "-m", "ruff", "check", *BOUNDED_LINT_PATHS],
         ]
@@ -324,7 +342,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
 
     surface, surface_error = _surface(workspace)
     if surface == "blocked":
-        return write_blocked(normalized, result_path, surface_error or "Tool System surface is invalid")
+        return write_blocked(
+            normalized, result_path, surface_error or "Tool System surface is invalid"
+        )
 
     resolved_sha = os.environ.get("APEX_RESOLVED_SOURCE_SHA", "").lower()
     if not SHA.fullmatch(resolved_sha):
