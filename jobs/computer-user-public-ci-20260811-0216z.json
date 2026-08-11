@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-public-ci-20260811-0216z",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "a26d010e02494fe601ce20f37c7fa935b81eba1b"
+}
