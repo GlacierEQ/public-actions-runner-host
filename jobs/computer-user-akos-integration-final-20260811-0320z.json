@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-akos-integration-final-20260811-0320z",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "integration/akos-kernel-live-receipt"
+}
