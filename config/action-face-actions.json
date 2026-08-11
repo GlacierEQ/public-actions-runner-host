@@ -212,7 +212,7 @@
       "source_event": "memory-sync",
       "target_repo": "GlacierEQ/constellation-memory-engine",
       "legacy_event": "constellation-memory-operator-code-ci",
-      "adapter": "python-ci",
+      "adapter": "constellation-memory-verify",
       "gate": "standard",
       "approval_required": false
     }
