@@ -1,0 +1,9 @@
+{
+  "job_id": "jefs-docket-acquire-20260811-001",
+  "pillar": "G",
+  "action": "docket-sync",
+  "source_ref": "cd02757e8803b30b4da225e8ebe6eecd87b5609a",
+  "approval_id": "jefs-docket-acquire-approval-20260811-001",
+  "case_id": "1FDV-23-0001009",
+  "sequences": [223, 224, 225, 226]
+}
