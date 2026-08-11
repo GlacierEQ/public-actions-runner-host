@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-computer-user-relationship-20260811-0612z",
+  "pillar": "C",
+  "action": "code.monolith.validate-atlases",
+  "source_ref": "0b91d42832776a810def3ba601a1e4c3ee86773d"
+}
