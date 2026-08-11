@@ -40,6 +40,7 @@ ADAPTER_TASK = {
     **base.ADAPTER_TASK,
     "apex-verify": "validate",
     "python-ci": "test",
+    "constellation-memory-verify": "test",
     "node-ci": "test",
     "akos-echo-policy-ci": "test",
     "tool-system-validate": "test",
