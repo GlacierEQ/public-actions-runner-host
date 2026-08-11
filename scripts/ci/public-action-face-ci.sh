@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+mkdir -p .verification-artifacts
+on_error() {
+  local exit_code="$1"
+  local line="$2"
+  local command="$3"
+  {
+    printf 'exit_code=%s\n' "$exit_code"
+    printf 'line=%s\n' "$line"
+    printf 'command=%s\n' "$command"
+  } > .verification-artifacts/public-action-face-failure.txt
+  printf '::error title=Public action face verifier failed::line=%s exit=%s command=%s\n' \
+    "$line" "$exit_code" "$command"
+  exit "$exit_code"
+}
+trap 'code=$?; command=$BASH_COMMAND; trap - ERR; on_error "$code" "$LINENO" "$command"' ERR
+
 python -m pip install \
   --disable-pip-version-check \
   --only-binary=:all: \
@@ -95,7 +111,7 @@ python scripts/verify_github_app_bridge_contract.py
 # The reusable CI contract requires a bounded proof artifact. Emit it only after
 # every repository-owned verification command above succeeds so artifact upload
 # and verification truth cannot diverge.
-mkdir -p .verification-artifacts
+rm -f .verification-artifacts/public-action-face-failure.txt
 python - <<'PY'
 from __future__ import annotations
 
