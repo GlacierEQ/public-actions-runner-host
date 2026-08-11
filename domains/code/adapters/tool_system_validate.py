@@ -1,4 +1,4 @@
-"""Bounded Code-domain validator for the computer-user Tool System."""
+"""Bounded Code-domain validator for the computer-user Smithery tool system."""
 
 from __future__ import annotations
 
@@ -66,7 +66,8 @@ SAFE_ENV_KEYS = frozenset(
         "TMPDIR",
     }
 )
-REQUIRED_PATHS = (
+
+LEGACY_REQUIRED_PATHS = (
     "config/tool_system.json",
     "runtime/tool_catalog.py",
     "runtime/smithery_gateway.py",
@@ -74,12 +75,44 @@ REQUIRED_PATHS = (
     "scripts/ci/verify_tool_system.py",
     "tests/test_tool_system.py",
 )
-LINT_PATHS = (
+LEGACY_LINT_PATHS = (
     "runtime/tool_catalog.py",
     "runtime/smithery_gateway.py",
     "runtime/tool_system.py",
     "scripts/ci/verify_tool_system.py",
     "tests/test_tool_system.py",
+)
+
+BOUNDED_REQUIRED_PATHS = (
+    "runtime/governed_runtime.py",
+    "runtime/tool_policy.py",
+    "tooltruck/harvest/bounded_discovery.py",
+    "tooltruck/harvest/crawl_ledger.py",
+    "tooltruck/harvest/crawl_projector.py",
+    "tooltruck/harvest/crawl_runner.py",
+    "tooltruck/harvest/observation_chunks.py",
+    "tooltruck/harvest/source_adapters.py",
+    "tooltruck/harvest/source_registry.py",
+    "tooltruck/harvest/seed_crawl.py",
+    "tests/test_tool_policy.py",
+    "tests/test_tooltruck_bounded_discovery.py",
+    "tests/test_tooltruck_crawl_projector.py",
+    "tests/test_tooltruck_schema_contracts.py",
+    "tooltruck/tests/test_bounded_discovery.py",
+    "tooltruck/tests/test_crawl_ledger.py",
+    "tooltruck/tests/test_crawl_projector.py",
+    "tooltruck/tests/test_crawl_runner.py",
+    "tooltruck/tests/test_observation_chunks.py",
+    "tooltruck/tests/test_seed_crawl.py",
+    "tooltruck/tests/test_smithery_tool_harvester.py",
+    "tooltruck/tests/test_source_adapters.py",
+    "tooltruck/tests/test_source_registry.py",
+)
+BOUNDED_TEST_PATHS = tuple(
+    path for path in BOUNDED_REQUIRED_PATHS if path.startswith("tests/") or path.startswith("tooltruck/tests/")
+)
+BOUNDED_LINT_PATHS = tuple(
+    path for path in BOUNDED_REQUIRED_PATHS if path.endswith(".py")
 )
 
 
@@ -189,12 +222,39 @@ def normalize_plan(plan: object) -> dict[str, Any]:
     return _base_plan(plan)
 
 
-def command_sequence(result_path: Path, job_id: str) -> list[list[str]]:
+def _surface_state(workspace: Path, paths: tuple[str, ...]) -> tuple[str, list[str]]:
+    present = [path for path in paths if (workspace / path).is_file()]
+    missing = [path for path in paths if path not in present]
+    if not present:
+        return "absent", missing
+    if missing:
+        return "partial", missing
+    return "complete", []
+
+
+def _surface(workspace: Path) -> tuple[str, str | None]:
+    legacy_state, legacy_missing = _surface_state(workspace, LEGACY_REQUIRED_PATHS)
+    bounded_state, bounded_missing = _surface_state(workspace, BOUNDED_REQUIRED_PATHS)
+
+    if legacy_state == "complete" and bounded_state == "complete":
+        return "bounded-smithery-v7", None
+    if bounded_state == "complete" and legacy_state == "absent":
+        return "bounded-smithery-v7", None
+    if legacy_state == "complete" and bounded_state == "absent":
+        return "tool-system-v2", None
+    if legacy_state == "partial":
+        return "blocked", "partial legacy Tool System surface; missing: " + ", ".join(legacy_missing)
+    if bounded_state == "partial":
+        return "blocked", "partial bounded Smithery surface; missing: " + ", ".join(bounded_missing)
+    return "blocked", "no recognized complete computer-user Tool System surface is present"
+
+
+def command_sequence(result_path: Path, job_id: str, surface: str = "tool-system-v2") -> list[list[str]]:
     if not JOB_ID.fullmatch(job_id):
         raise ValueError("job_id is invalid")
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
-    return [
+    prefix = [
         [sys.executable, "-m", "venv", str(venv)],
         [
             str(python),
@@ -206,19 +266,29 @@ def command_sequence(result_path: Path, job_id: str) -> list[list[str]]:
             "pytest==9.1.1",
             "ruff==0.16.1",
         ],
-        [
-            str(python),
-            "-m",
-            "compileall",
-            "-q",
-            "runtime",
-            "tests",
-            "scripts/ci/verify_tool_system.py",
-        ],
-        [str(python), "scripts/ci/verify_tool_system.py"],
-        [str(python), "-m", "pytest", "-q", "tests/test_tool_system.py"],
-        [str(python), "-m", "ruff", "check", *LINT_PATHS],
     ]
+    if surface == "tool-system-v2":
+        return prefix + [
+            [
+                str(python),
+                "-m",
+                "compileall",
+                "-q",
+                "runtime",
+                "tests",
+                "scripts/ci/verify_tool_system.py",
+            ],
+            [str(python), "scripts/ci/verify_tool_system.py"],
+            [str(python), "-m", "pytest", "-q", "tests/test_tool_system.py"],
+            [str(python), "-m", "ruff", "check", *LEGACY_LINT_PATHS],
+        ]
+    if surface == "bounded-smithery-v7":
+        return prefix + [
+            [str(python), "-m", "compileall", "-q", "runtime", "tooltruck/harvest", "tests", "tooltruck/tests"],
+            [str(python), "-m", "pytest", "-q", *BOUNDED_TEST_PATHS],
+            [str(python), "-m", "ruff", "check", *BOUNDED_LINT_PATHS],
+        ]
+    raise ValueError("unsupported Tool System surface")
 
 
 def write_blocked(
@@ -250,13 +320,9 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     except (TypeError, ValueError) as error:
         return write_blocked(plan, result_path, str(error))
 
-    missing = [path for path in REQUIRED_PATHS if not (workspace / path).is_file()]
-    if missing:
-        return write_blocked(
-            normalized,
-            result_path,
-            "required Tool System files are missing: " + ", ".join(missing),
-        )
+    surface, surface_error = _surface(workspace)
+    if surface == "blocked":
+        return write_blocked(normalized, result_path, surface_error or "Tool System surface is invalid")
 
     resolved_sha = os.environ.get("APEX_RESOLVED_SOURCE_SHA", "").lower()
     if not SHA.fullmatch(resolved_sha):
@@ -272,7 +338,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             expected_source_sha=expected_sha,
         )
 
-    commands = command_sequence(result_path, normalized["job_id"])
+    commands = command_sequence(result_path, normalized["job_id"], surface)
     steps: list[dict] = []
     env = isolated_env()
     failed = False
