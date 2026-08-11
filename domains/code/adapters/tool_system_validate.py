@@ -315,13 +315,9 @@ def _surface(workspace: Path) -> tuple[str, str | None]:
         )
 
     if legacy_state == "unsafe":
-        return "blocked", "unsafe legacy Tool System paths: " + ", ".join(
-            legacy_issues
-        )
+        return "blocked", "unsafe legacy Tool System paths: " + ", ".join(legacy_issues)
     if bounded_state == "unsafe":
-        return "blocked", "unsafe bounded Smithery paths: " + ", ".join(
-            bounded_issues
-        )
+        return "blocked", "unsafe bounded Smithery paths: " + ", ".join(bounded_issues)
     if legacy_state == "complete" and bounded_state == "complete":
         return "bounded-smithery-v7", None
     if bounded_state == "complete" and legacy_state == "absent":
