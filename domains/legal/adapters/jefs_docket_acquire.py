@@ -22,7 +22,7 @@ from pathlib import Path
 import apex_catalog_runner as catalog
 
 EXPECTED_ACTION = "docket-sync"
-EXPECTED_ADAPTER = "jefs-docket-acquire"
+EXPECTED_ADAPTERS = {"validate", "jefs-docket-acquire"}
 EXPECTED_REPOSITORY = "GlacierEQ/DOCKETS"
 CASE_ID = "1FDV-23-0001009"
 SEQUENCES = (223, 224, 225, 226)
@@ -80,7 +80,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
 
-    if plan.get("action") != EXPECTED_ACTION or plan.get("adapter") != EXPECTED_ADAPTER:
+    if plan.get("action") != EXPECTED_ACTION or plan.get("adapter") not in EXPECTED_ADAPTERS:
         return catalog.write_result(plan, result_path, "blocked", reason="JEFS adapter contract mismatch")
     if plan.get("source_repo") != EXPECTED_REPOSITORY:
         return catalog.write_result(plan, result_path, "blocked", reason="JEFS adapter repository mismatch")
