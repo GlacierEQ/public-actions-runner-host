@@ -53,6 +53,10 @@ def write_workload(root: Path) -> None:
     write_paths(root, adapter.REQUIRED_PATHS)
 
 
+def write_bounded_workload(root: Path) -> None:
+    write_paths(root, adapter.BOUNDED_REQUIRED_PATHS)
+
+
 def write_kernel_workload(root: Path) -> None:
     write_paths(root, adapter.KERNEL_REQUIRED_PATHS)
 
@@ -135,11 +139,25 @@ def test_complete_kernel_surface_takes_precedence_over_legacy_surfaces(
     assert reason is None
 
 
+def test_complete_legacy_only_workload_keeps_legacy_surface(tmp_path: Path) -> None:
+    write_workload(tmp_path)
+    surface, reason = adapter._surface(tmp_path)
+    assert surface == "tool-system-v2"
+    assert reason is None
+
+
+def test_complete_bounded_only_workload_keeps_bounded_surface(tmp_path: Path) -> None:
+    write_bounded_workload(tmp_path)
+    surface, reason = adapter._surface(tmp_path)
+    assert surface == "bounded-smithery-v7"
+    assert reason is None
+
+
 def test_partial_kernel_surface_fails_closed_instead_of_falling_back(
     tmp_path: Path,
 ) -> None:
     write_workload(tmp_path)
-    first_kernel_path = tmp_path / adapter.KERNEL_REQUIRED_PATHS[0]
+    first_kernel_path = tmp_path / adapter.KERNEL_INDICATOR_PATHS[0]
     first_kernel_path.parent.mkdir(parents=True, exist_ok=True)
     first_kernel_path.write_text("# partial kernel\n", encoding="utf-8")
     surface, reason = adapter._surface(tmp_path)
@@ -147,6 +165,25 @@ def test_partial_kernel_surface_fails_closed_instead_of_falling_back(
     assert reason is not None
     assert "partial computer kernel surface" in reason
     assert adapter.KERNEL_REQUIRED_PATHS[1] in reason
+
+
+def test_symlinked_kernel_gate_is_rejected_before_execution(tmp_path: Path) -> None:
+    for relative in adapter.KERNEL_REQUIRED_PATHS:
+        if relative != "scripts/ci/kernel_verify.sh":
+            path = tmp_path / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("# fixture\n", encoding="utf-8")
+    outside = tmp_path.parent / f"{tmp_path.name}-outside-kernel-verify.sh"
+    outside.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    gate = tmp_path / "scripts/ci/kernel_verify.sh"
+    gate.parent.mkdir(parents=True, exist_ok=True)
+    gate.symlink_to(outside)
+
+    surface, reason = adapter._surface(tmp_path)
+    assert surface == "blocked"
+    assert reason is not None
+    assert "unsafe computer kernel paths" in reason
+    assert "scripts/ci/kernel_verify.sh" in reason
 
 
 def test_expected_source_mismatch_blocks_before_commands(
@@ -198,7 +235,10 @@ def test_kernel_run_forwards_exact_private_sha_to_repository_gate(
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "completed"
     assert len(result["steps"]) == 3
-    assert observed[-1]["command"] == ["bash", "scripts/ci/kernel_verify.sh"]
+    assert observed[-1]["command"][0] == "bash"
+    assert Path(observed[-1]["command"][1]) == (
+        tmp_path / "scripts/ci/kernel_verify.sh"
+    ).resolve()
     assert observed[-1]["env"]["GITHUB_SHA"] == SOURCE_SHA
     assert observed[-1]["env"]["APEX_RESOLVED_SOURCE_SHA"] == SOURCE_SHA
     assert "GITHUB_TOKEN" not in observed[-1]["env"]
