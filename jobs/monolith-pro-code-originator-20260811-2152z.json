@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-pro-code-originator-20260811-2152z",
+  "pillar": "C",
+  "action": "code.monolith.validate-atlases",
+  "source_ref": "3659a80ee42b49b875710c5aa373d265ef8e68ad"
+}
