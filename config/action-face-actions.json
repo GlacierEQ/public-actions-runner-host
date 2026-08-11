@@ -205,6 +205,16 @@
       "adapter": "casey_legal_mcp_validate",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "E",
+      "action": "memory.constellation.verify-operator-code",
+      "source_event": "memory-sync",
+      "target_repo": "GlacierEQ/constellation-memory-engine",
+      "legacy_event": "constellation-memory-operator-code-ci",
+      "adapter": "python-ci",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
