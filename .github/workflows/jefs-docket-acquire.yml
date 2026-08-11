@@ -1,0 +1,199 @@
+name: Governed JEFS Docket Acquisition
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'legal-jobs/*.json'
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: jefs-docket-acquire-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
+      APEX_EXPECTED_VISIBILITY: public
+      APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
+
+    steps:
+      - name: Checkout public action face
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+
+      - name: Authorize owner-triggered ingress
+        run: python3 scripts/action_face_authorize.py
+
+      - name: Assert canonical public action face
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/action_face_guard.py
+
+      - name: Resolve single bounded JEFS job
+        id: job
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^legal-jobs/[A-Za-z0-9._-]+\.json$' || true)
+          test "${#files[@]}" -eq 1 || { echo "exactly one legal-jobs JSON file is required" >&2; exit 1; }
+          python3 - "${files[0]}" <<'PY'
+          import json, os, re, sys
+          from pathlib import Path
+          path = Path(sys.argv[1])
+          data = json.loads(path.read_text(encoding='utf-8'))
+          allowed = {'job_id', 'pillar', 'action', 'source_ref', 'approval_id', 'case_id', 'sequences'}
+          if set(data) - allowed:
+              raise SystemExit('job contains unapproved fields')
+          if data.get('pillar') != 'G' or data.get('action') != 'docket-sync':
+              raise SystemExit('job must be Pillar G docket-sync')
+          if data.get('case_id') != '1FDV-23-0001009':
+              raise SystemExit('case scope mismatch')
+          if data.get('sequences') != [223, 224, 225, 226]:
+              raise SystemExit('sequence scope mismatch')
+          job_id = str(data.get('job_id', ''))
+          approval_id = str(data.get('approval_id', ''))
+          source_ref = str(data.get('source_ref', '')).lower()
+          safe = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$')
+          if not safe.fullmatch(job_id) or not safe.fullmatch(approval_id):
+              raise SystemExit('invalid job or approval identifier')
+          if not re.fullmatch(r'[0-9a-f]{40}', source_ref):
+              raise SystemExit('source_ref must be an exact lowercase commit SHA')
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
+              out.write(f'job_id={job_id}\n')
+              out.write(f'approval_id={approval_id}\n')
+              out.write(f'source_ref={source_ref}\n')
+          PY
+
+      - name: Build canonical action plan
+        id: plan
+        run: |
+          python3 scripts/action_face_plan.py \
+            --event "$GITHUB_EVENT_PATH" \
+            --pillar G \
+            --action docket-sync \
+            --job-id "${{ steps.job.outputs.job_id }}" \
+            --source-ref "${{ steps.job.outputs.source_ref }}" \
+            --approval-id "${{ steps.job.outputs.approval_id }}"
+
+      - name: Require GitHub OIDC Keymaster bridge
+        run: |
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || { echo "GitHub OIDC request URL unavailable" >&2; exit 1; }
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" || { echo "GitHub OIDC request token unavailable" >&2; exit 1; }
+          python3 -m py_compile scripts/keymaster_oidc_token.py domains/legal/adapters/jefs_docket_acquire.py
+
+      - name: Mint private control token
+        id: control_token
+        run: |
+          python3 scripts/keymaster_oidc_token.py \
+            --repository GlacierEQ/llm-runner-teams \
+            --permission contents=write \
+            --operation jefs-docket-control
+
+      - name: Assert private non-executing control plane
+        env:
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: python3 scripts/action_face_control_plane_guard.py
+
+      - name: Claim immutable job ID
+        env:
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: python3 scripts/apex_pillar_runner.py claim-job --plan .apex-plan.json
+
+      - name: Verify private dual-confirmation record
+        env:
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: |
+          python3 scripts/apex_pillar_runner.py verify-approval \
+            --job-id "${{ steps.job.outputs.job_id }}" \
+            --pillar G \
+            --approval-id "${{ steps.job.outputs.approval_id }}"
+
+      - name: Mint one-repository DOCKETS acquisition token
+        id: evidence_token
+        run: |
+          python3 scripts/keymaster_oidc_token.py \
+            --repository GlacierEQ/DOCKETS \
+            --permission contents=write \
+            --operation jefs-docket-acquisition
+
+      - name: Checkout exact private DOCKETS source without persisting credentials
+        env:
+          APEX_WORKLOAD_TOKEN: ${{ steps.evidence_token.outputs.token }}
+        run: |
+          python3 scripts/action_face_checkout_workload.py \
+            --plan .apex-plan.json \
+            --workspace workload
+
+      - name: Bind exact DOCKETS repository and source SHA
+        id: bind
+        run: |
+          python3 scripts/action_face_bind_checkout.py \
+            --plan .apex-plan.json \
+            --workspace workload
+
+      - name: Acquire JEFS docket rows and official sequence bytes
+        id: acquire
+        env:
+          APEX_EVIDENCE_WRITE_TOKEN: ${{ steps.evidence_token.outputs.token }}
+          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+        run: |
+          mkdir -p .apex-results
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from domains.legal.adapters.jefs_docket_acquire import run
+          plan = json.loads(Path('.apex-plan.json').read_text(encoding='utf-8'))
+          raise SystemExit(run(plan, Path('workload'), Path('.apex-results') / f"{plan['job_id']}.json"))
+          PY
+
+      - name: Checkout fresh post-run control source
+        if: always()
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: GlacierEQ/public-actions-runner-host
+          ref: ${{ github.sha }}
+          token: ${{ github.token }}
+          path: .apex-postrun-control
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify and publish immutable private result
+        if: always()
+        env:
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
+          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+        run: |
+          result=".apex-results/${{ steps.job.outputs.job_id }}.json"
+          test -f "$result"
+          python3 .apex-postrun-control/scripts/action_face_postrun_guard.py \
+            --runner-root . \
+            --control-root .apex-postrun-control \
+            --workload-root workload \
+            --plan .apex-plan.json \
+            --result "$result" \
+            --job-id "${{ steps.job.outputs.job_id }}" \
+            --resolved-source-sha "${{ steps.bind.outputs.resolved_source_sha }}"
+          python3 .apex-postrun-control/scripts/apex_pillar_runner.py publish \
+            --job-id "${{ steps.job.outputs.job_id }}" \
+            --result "$result"
+
+      - name: Revoke DOCKETS acquisition token
+        if: always() && steps.evidence_token.outcome == 'success'
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.evidence_token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
+
+      - name: Revoke private control token
+        if: always() && steps.control_token.outcome == 'success'
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
