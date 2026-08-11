@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-akos-integration-20260811-0317z",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "c59bdfe9c6c98aff11b29160d37b760d2a556f34"
+}
