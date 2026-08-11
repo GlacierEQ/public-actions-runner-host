@@ -1,0 +1,6 @@
+{
+  "job_id": "memory-constellation-operator-code-20260811-004",
+  "pillar": "E",
+  "action": "memory.constellation.verify-operator-code",
+  "source_ref": "c5e65e038b3b1290ca22e58046d19dce8c9003a4"
+}
