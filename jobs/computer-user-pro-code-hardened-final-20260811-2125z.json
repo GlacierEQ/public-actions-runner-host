@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-pro-code-hardened-final-20260811-2125z",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "b6aa44b9d90fee4c9c935d958574e6fca0b17680"
+}
