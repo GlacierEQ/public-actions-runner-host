@@ -58,6 +58,8 @@ def run_sequence(
     result_path: Path,
     commands: list[list[str]],
     timeout: int = 1800,
+    *,
+    extra_env: dict[str, str] | None = None,
 ) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -65,6 +67,8 @@ def run_sequence(
     failed = False
     try:
         env = isolated_env(result_path, str(plan["job_id"]))
+        if extra_env:
+            env.update(extra_env)
     except WorkloadIsolationError as error:
         return catalog.write_result(
             plan,
@@ -449,6 +453,38 @@ def master_strand(plan: dict, result_path: Path, mode: str) -> int:
     )
 
 
+
+def constellation_memory_verify(
+    plan: dict, workspace: Path, result_path: Path
+) -> int:
+    """Run the repository-owned, provenance-enforcing memory verification."""
+    script = workspace.resolve() / "scripts" / "ci" / "verify.sh"
+    if not script.is_file():
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="scripts/ci/verify.sh was not found",
+        )
+    resolved_sha = os.environ.get("APEX_RESOLVED_SOURCE_SHA", "")
+    if not re.fullmatch(r"[0-9a-f]{40}", resolved_sha):
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="resolved source SHA is unavailable or invalid",
+        )
+    return run_sequence(
+        plan,
+        workspace,
+        result_path,
+        [["bash", "scripts/ci/verify.sh"]],
+        extra_env={
+            "GITHUB_REPOSITORY": str(plan["source_repo"]),
+            "GITHUB_SHA": resolved_sha,
+        },
+    )
+
 def main() -> int:
     if len(sys.argv) != 4:
         raise SystemExit(
@@ -465,6 +501,8 @@ def main() -> int:
         return node_ci(plan, workspace, result_path)
     if adapter == "python-ci":
         return python_ci(plan, workspace, result_path)
+    if adapter == "constellation-memory-verify":
+        return constellation_memory_verify(plan, workspace, result_path)
     if adapter == "akos-echo-policy-ci":
         return akos_echo_policy_ci(plan, workspace, result_path)
     if adapter == "tool-system-validate":
