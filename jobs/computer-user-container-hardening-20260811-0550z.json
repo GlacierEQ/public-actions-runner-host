@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-container-hardening-20260811-0550z",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "5a6590a4b81be5eff3bf8f693e50f5fdeb29454c"
+}
