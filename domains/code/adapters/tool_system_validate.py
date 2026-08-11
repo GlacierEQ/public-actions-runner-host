@@ -82,6 +82,8 @@ LEGACY_LINT_PATHS = (
     "scripts/ci/verify_tool_system.py",
     "tests/test_tool_system.py",
 )
+# Backward-compatible public adapter contract used by existing runner regressions.
+LINT_PATHS = LEGACY_LINT_PATHS
 
 BOUNDED_REQUIRED_PATHS = (
     "runtime/governed_runtime.py",
