@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-kernel-ci-20260811-0304z",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "c4cf65eb84732e5f8602852d90871826aee6aeb6"
+}
