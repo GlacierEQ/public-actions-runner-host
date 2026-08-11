@@ -109,14 +109,14 @@ action-face-canary
 
 ## Credential contract
 
-Only two dedicated bridge credentials are accepted:
+The public action face uses GitHub OIDC to request two short-lived, single-repository installation tokens from the Keymaster bridge:
 
-- `APEX_PRIVATE_READ_TOKEN` — contents-read checkout of approved workload repositories.
-- `APEX_CONTROL_TOKEN` — read approvals/policies and create immutable receipts only in `GlacierEQ/llm-runner-teams`.
+- a control token scoped to `GlacierEQ/llm-runner-teams` with `contents:write`, used only to claim job IDs, read approvals and policies, and create immutable receipts;
+- a workload token scoped to the catalog-approved source repository with `contents:read`, used only for the ephemeral source checkout.
 
-There is no `GH_PAT` fallback.
+Static `APEX_PRIVATE_READ_TOKEN`, static `APEX_CONTROL_TOKEN`, and `GH_PAT` fallbacks are forbidden. Tokens are minted only after strict planning and control-plane checks, are never exposed to workload code, and must be revoked before governed release can succeed.
 
-Both checkouts use an immutable checkout action revision and `persist-credentials: false`. Bridge-token names and `GITHUB_TOKEN` are removed from workload process environments.
+Both checkouts use an immutable checkout action revision and `persist-credentials: false`. Installation-token values and `GITHUB_TOKEN` are removed from workload process environments.
 
 ## Private control-plane invariants
 
