@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-akos-refresh-20260811-0657z",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "f13ae7a05b2da5d5d1fb376006da3b59b48b1292"
+}
