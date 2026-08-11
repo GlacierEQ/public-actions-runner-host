@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "domain": "memory",
+  "actions": {
+    "memory.constellation.verify-operator-code": {
+      "status": "active",
+      "adapter": "constellation_memory_verify",
+      "adapterPath": "domains/memory/adapters/constellation_memory_verify.py",
+      "targetRepository": "GlacierEQ/constellation-memory-engine",
+      "tokenProfile": "private-source-read",
+      "jobSchema": "constellation-operator-code-job-v1",
+      "jobSchemaPath": "domains/memory/schemas/constellation-operator-code-job.schema.json",
+      "resultSchema": "constellation-operator-code-result-v1",
+      "resultSchemaPath": "domains/memory/schemas/constellation-operator-code-result.schema.json",
+      "approvalPolicy": "owner-dispatched",
+      "executionMode": "source-read-only",
+      "receiptNamespace": "memory",
+      "concurrencyKeyTemplate": "memory:{targetRepository}",
+      "legacyAliases": []
+    }
+  },
+  "plannedActions": [
+    "memory.reconcile",
+    "memory.project"
+  ]
+}
