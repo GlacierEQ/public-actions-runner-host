@@ -15,13 +15,14 @@ from pathlib import Path
 
 AUDIENCE = "apex-keymaster-public-runner"
 BROKER_URL = (
-    "https://dyhprklicgewmrimecey.supabase.co/functions/v1/"
-    "apex-github-oidc-broker"
+    "https://dyhprklicgewmrimecey.supabase.co/functions/v1/apex-github-oidc-broker"
 )
 MAX_RESPONSE_BYTES = 64 * 1024
+MAX_BROKER_ERROR_BYTES = 4 * 1024
 ALLOWED_PERMISSIONS = {"contents", "actions"}
 ALLOWED_LEVELS = {"read", "write"}
 REPOSITORY_PART = re.compile(r"^[A-Za-z0-9_.-]+$")
+SAFE_BROKER_ERROR = re.compile(r"^[a-z0-9_]{1,128}$")
 
 
 class TokenBrokerError(RuntimeError):
@@ -31,11 +32,37 @@ class TokenBrokerError(RuntimeError):
 class _RejectRedirects(urllib.request.HTTPRedirectHandler):
     """Never forward bearer-authenticated requests across redirects."""
 
-    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
         raise TokenBrokerError("broker_redirect_rejected")
 
 
 _NO_REDIRECT_OPENER = urllib.request.build_opener(_RejectRedirects())
+
+
+def _safe_http_error(
+    request: urllib.request.Request, error: urllib.error.HTTPError
+) -> str:
+    """Return a bounded broker error code without reflecting arbitrary response text."""
+
+    generic = f"broker_http_{error.code}"
+    if request.full_url != BROKER_URL:
+        return generic
+    try:
+        raw = error.read(MAX_BROKER_ERROR_BYTES + 1)
+    except OSError:
+        return generic
+    if len(raw) > MAX_BROKER_ERROR_BYTES:
+        return generic
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return generic
+    if not isinstance(payload, dict):
+        return generic
+    code = payload.get("error")
+    if not isinstance(code, str) or not SAFE_BROKER_ERROR.fullmatch(code):
+        return generic
+    return f"{generic}:{code}"
 
 
 def _request_json(request: urllib.request.Request) -> dict[str, object]:
@@ -45,7 +72,7 @@ def _request_json(request: urllib.request.Request) -> dict[str, object]:
     except TokenBrokerError:
         raise
     except urllib.error.HTTPError as error:
-        raise TokenBrokerError(f"broker_http_{error.code}") from error
+        raise TokenBrokerError(_safe_http_error(request, error)) from error
     except urllib.error.URLError as error:
         raise TokenBrokerError("broker_transport_failed") from error
     if len(raw) > MAX_RESPONSE_BYTES:
@@ -94,7 +121,11 @@ def _permissions(values: list[str]) -> dict[str, str]:
     output: dict[str, str] = {}
     for value in values:
         name, separator, level = value.partition("=")
-        if not separator or name not in ALLOWED_PERMISSIONS or level not in ALLOWED_LEVELS:
+        if (
+            not separator
+            or name not in ALLOWED_PERMISSIONS
+            or level not in ALLOWED_LEVELS
+        ):
             raise TokenBrokerError("invalid_permission")
         output[name] = level
     return output or {"contents": "read"}
