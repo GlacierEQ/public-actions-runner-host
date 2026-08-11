@@ -150,7 +150,7 @@ jobs:
         run: |
           test -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || { echo "GitHub OIDC request URL unavailable" >&2; exit 1; }
           test -n "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" || { echo "GitHub OIDC request token unavailable" >&2; exit 1; }
-          python3 -m py_compile scripts/keymaster_oidc_token.py
+          python3 -m py_compile scripts/keymaster_oidc_token.py scripts/action_face_legal_router.py domains/legal/adapters/jefs_docket_acquire.py
 
       - name: Mint one-repository private control token
         if: steps.plan.outcome == 'success' && steps.app_config.outcome == 'success'
@@ -202,11 +202,18 @@ jobs:
         continue-on-error: true
         env:
           APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.source_repo }}
+          APEX_ACTION: ${{ steps.plan.outputs.action }}
         run: |
+          permission="contents=read"
+          operation="public-action-workload"
+          if [ "$APEX_ACTION" = "docket-sync" ]; then
+            permission="contents=write"
+            operation="jefs-docket-acquisition"
+          fi
           python3 scripts/keymaster_oidc_token.py \
             --repository "$APEX_WORKLOAD_REPOSITORY" \
-            --permission contents=read \
-            --operation public-action-workload
+            --permission "$permission" \
+            --operation "$operation"
 
       - name: Checkout catalog-approved workload without persisting credentials
         if: steps.workload_token.outcome == 'success'
@@ -234,9 +241,10 @@ jobs:
         continue-on-error: true
         env:
           APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+          APEX_EVIDENCE_WRITE_TOKEN: ${{ steps.plan.outputs.action == 'docket-sync' && steps.workload_token.outputs.token || '' }}
           AKOS_POLICY_SHA256: ${{ steps.plan.outputs.action == 'akos-echo-policy-ci' && secrets.AKOS_POLICY_SHA256 || '' }}
         run: |
-          python3 scripts/action_face_catalog_runner.py \
+          python3 scripts/action_face_legal_router.py \
             .apex-plan.json \
             workload \
             ".apex-results/${{ steps.plan.outputs.job_id }}.json"
