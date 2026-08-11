@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "receipt_type": "execution_exception",
+  "thread_anchor": "MEMORY_ARCHITECTURE__CASEBUILDER_4000__APEX_MEMORY_NEXUS__PR_51",
+  "job_id": "memory-constellation-operator-code-20260811-006",
+  "classification": {
+    "knowledge_class": "runtime_state",
+    "sensitivity": "INTERNAL_OPERATIONAL_METADATA",
+    "source_kind": "derived_provider_receipt",
+    "duplicate_status": "UNIQUE_BY_JOB_ID",
+    "original_bytes_preserved": false,
+    "original_bytes_location": "GitHub Actions provider log",
+    "sha256": null,
+    "hash_status": "UNAVAILABLE_FROM_CURRENT_STREAMING_CONNECTOR"
+  },
+  "source_binding": {
+    "workload_repository": "GlacierEQ/constellation-memory-engine",
+    "workload_ref": "c5e65e038b3b1290ca22e58046d19dce8c9003a4",
+    "runner_repository": "GlacierEQ/public-actions-runner-host",
+    "runner_sha": "8b84b13c500f112a8b7b92afc9cce3a7913d0e34",
+    "issue_number": 239,
+    "workflow_run_id": 31521655575,
+    "workflow_job_id": 93879886711
+  },
+  "verified_record": {
+    "ingress_authorized": true,
+    "plan_validated": true,
+    "oidc_bridge_available": true,
+    "control_token_minted": true,
+    "private_control_plane_verified": true,
+    "immutable_job_claimed": true,
+    "workload_token_minted": false,
+    "workload_checkout": "SKIPPED",
+    "workload_sha_bound": false,
+    "adapter_execution": "SKIPPED",
+    "detailed_private_receipt": "ABSENT",
+    "control_token_revoked": true,
+    "terminal_state": "BLOCKED",
+    "blocker_code": "broker_http_400"
+  },
+  "hypotheses_and_discovery_targets": [
+    "The HTTP 400 cause is not established by the sanitized runner log.",
+    "Inspect the broker's audited rejection record for this request before changing policy or retrying."
+  ],
+  "prohibited_promotions": [
+    "Do not treat the workload repository as verified.",
+    "Do not infer a missing GitHub App installation, allowlist entry, or permission defect without broker-side evidence.",
+    "Do not publish protected workload output."
+  ],
+  "next_execution_ready_object": {
+    "action": "Resolve the audited Keymaster rejection for the exact workload request, then dispatch a new immutable job ID bound to the same workload SHA.",
+    "request": {
+      "repository": "GlacierEQ/constellation-memory-engine",
+      "permissions": {
+        "contents": "read"
+      },
+      "operation": "public-action-workload"
+    },
+    "retry_preconditions": [
+      "Broker-side HTTP 400 cause is receipt-backed.",
+      "Any policy repair is canonical and read back.",
+      "A new job ID is used; job006 remains immutable."
+    ]
+  },
+  "acquired_at": "2026-08-11T19:11:27Z",
+  "custodian": "GitHub Actions / GlacierEQ",
+  "provenance": [
+    "https://github.com/GlacierEQ/public-actions-runner-host/issues/239",
+    "https://github.com/GlacierEQ/public-actions-runner-host/actions/runs/31521655575"
+  ]
+}
