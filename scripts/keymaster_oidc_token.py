@@ -33,7 +33,7 @@ class TokenBrokerError(RuntimeError):
 class _RejectRedirects(urllib.request.HTTPRedirectHandler):
     """Never forward bearer-authenticated requests across redirects."""
 
-    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
         raise TokenBrokerError("broker_redirect_rejected")
 
 
