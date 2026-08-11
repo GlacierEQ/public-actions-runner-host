@@ -236,9 +236,10 @@ def test_kernel_run_forwards_exact_private_sha_to_repository_gate(
     assert result["status"] == "completed"
     assert len(result["steps"]) == 3
     assert observed[-1]["command"][0] == "bash"
-    assert Path(observed[-1]["command"][1]) == (
-        tmp_path / "scripts/ci/kernel_verify.sh"
-    ).resolve()
+    assert (
+        Path(observed[-1]["command"][1])
+        == (tmp_path / "scripts/ci/kernel_verify.sh").resolve()
+    )
     assert observed[-1]["env"]["GITHUB_SHA"] == SOURCE_SHA
     assert observed[-1]["env"]["APEX_RESOLVED_SOURCE_SHA"] == SOURCE_SHA
     assert "GITHUB_TOKEN" not in observed[-1]["env"]
