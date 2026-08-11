@@ -109,7 +109,9 @@ BOUNDED_REQUIRED_PATHS = (
     "tooltruck/tests/test_source_registry.py",
 )
 BOUNDED_TEST_PATHS = tuple(
-    path for path in BOUNDED_REQUIRED_PATHS if path.startswith("tests/") or path.startswith("tooltruck/tests/")
+    path
+    for path in BOUNDED_REQUIRED_PATHS
+    if path.startswith(("tests/", "tooltruck/tests/"))
 )
 BOUNDED_LINT_PATHS = tuple(
     path for path in BOUNDED_REQUIRED_PATHS if path.endswith(".py")
