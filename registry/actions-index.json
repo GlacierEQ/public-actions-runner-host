@@ -55,6 +55,11 @@
       "domain": "code",
       "status": "active",
       "catalog": "domains/code/actions.json"
+    },
+    "memory.constellation.verify-operator-code": {
+      "domain": "memory",
+      "status": "active",
+      "catalog": "domains/memory/actions.json"
     }
   },
   "aliases": {
