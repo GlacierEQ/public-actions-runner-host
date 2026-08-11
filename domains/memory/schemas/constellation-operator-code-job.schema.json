@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glaciereq.dev/schemas/memory/constellation-operator-code-job-v1.json",
+  "title": "Constellation OperatorCode Verification Job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "domain",
+    "action",
+    "source_ref"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"
+    },
+    "domain": {
+      "const": "memory"
+    },
+    "action": {
+      "const": "memory.constellation.verify-operator-code"
+    },
+    "source_ref": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "expected_source_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "approval_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$"
+    }
+  }
+}
