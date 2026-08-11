@@ -120,6 +120,22 @@ BOUNDED_LINT_PATHS = tuple(
     path for path in BOUNDED_REQUIRED_PATHS if path.endswith(".py")
 )
 
+# A current computer-user kernel owns its verification transaction. The public
+# action face does not duplicate that policy: it proves the exact private SHA,
+# checks for the required kernel surface, and executes the repository-owned gate.
+KERNEL_REQUIRED_PATHS = (
+    "computer_user/service.py",
+    "runtime/browser_connector.py",
+    "runtime/governed_runtime.py",
+    "runtime/receipts.py",
+    "runtime/task_kernel.py",
+    "scripts/ci/kernel_verify.sh",
+    "scripts/kernel_smoke.py",
+    "tests/test_browser_kernel_adapter.py",
+    "tests/test_kernel_service.py",
+    "machine/kernel-invocation.schema.json",
+)
+
 
 def isolated_env(source: Mapping[str, str] | None = None) -> dict[str, str]:
     host = source or os.environ
@@ -238,9 +254,18 @@ def _surface_state(workspace: Path, paths: tuple[str, ...]) -> tuple[str, list[s
 
 
 def _surface(workspace: Path) -> tuple[str, str | None]:
+    kernel_state, kernel_missing = _surface_state(workspace, KERNEL_REQUIRED_PATHS)
     legacy_state, legacy_missing = _surface_state(workspace, LEGACY_REQUIRED_PATHS)
     bounded_state, bounded_missing = _surface_state(workspace, BOUNDED_REQUIRED_PATHS)
 
+    # Current kernel ancestry wins over the older Tooltruck-only surfaces. Its
+    # repository-owned gate includes the donor capability plane plus kernel tests.
+    if kernel_state == "complete":
+        return "computer-kernel-v1", None
+    if kernel_state == "partial":
+        return "blocked", "partial computer kernel surface; missing: " + ", ".join(
+            kernel_missing
+        )
     if legacy_state == "complete" and bounded_state == "complete":
         return "bounded-smithery-v7", None
     if bounded_state == "complete" and legacy_state == "absent":
@@ -281,6 +306,8 @@ def command_sequence(
             "ruff==0.16.1",
         ],
     ]
+    if surface == "computer-kernel-v1":
+        return prefix + [["bash", "scripts/ci/kernel_verify.sh"]]
     if surface == "tool-system-v2":
         return prefix + [
             [
@@ -366,6 +393,11 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
     commands = command_sequence(result_path, normalized["job_id"], surface)
     steps: list[dict] = []
     env = isolated_env()
+    # The private workload checkout is bound to this exact SHA before adapter
+    # execution. Forward only that non-secret identity so repository-owned smoke
+    # receipts cannot fall back to an unbound/local marker.
+    env["GITHUB_SHA"] = resolved_sha
+    env["APEX_RESOLVED_SOURCE_SHA"] = resolved_sha
     failed = False
     for command in commands:
         executable = Path(command[0])
