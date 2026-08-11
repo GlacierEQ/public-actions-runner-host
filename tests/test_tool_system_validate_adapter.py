@@ -125,7 +125,9 @@ def test_missing_required_files_are_reported_without_execution(tmp_path: Path) -
     assert "config/tool_system.json" in result["reason"]
 
 
-def test_complete_kernel_surface_takes_precedence_over_legacy_surfaces(tmp_path: Path) -> None:
+def test_complete_kernel_surface_takes_precedence_over_legacy_surfaces(
+    tmp_path: Path,
+) -> None:
     write_kernel_workload(tmp_path)
     write_workload(tmp_path)
     surface, reason = adapter._surface(tmp_path)
@@ -133,7 +135,9 @@ def test_complete_kernel_surface_takes_precedence_over_legacy_surfaces(tmp_path:
     assert reason is None
 
 
-def test_partial_kernel_surface_fails_closed_instead_of_falling_back(tmp_path: Path) -> None:
+def test_partial_kernel_surface_fails_closed_instead_of_falling_back(
+    tmp_path: Path,
+) -> None:
     write_workload(tmp_path)
     first_kernel_path = tmp_path / adapter.KERNEL_REQUIRED_PATHS[0]
     first_kernel_path.parent.mkdir(parents=True, exist_ok=True)
