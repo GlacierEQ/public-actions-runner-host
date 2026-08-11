@@ -42,11 +42,23 @@ def canonical_plan() -> dict:
     }
 
 
-def write_workload(root: Path) -> None:
-    for relative in adapter.REQUIRED_PATHS:
+def write_paths(root: Path, paths: tuple[str, ...]) -> None:
+    for relative in paths:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("# fixture\n", encoding="utf-8")
+
+
+def write_workload(root: Path) -> None:
+    write_paths(root, adapter.REQUIRED_PATHS)
+
+
+def write_bounded_workload(root: Path) -> None:
+    write_paths(root, adapter.BOUNDED_REQUIRED_PATHS)
+
+
+def write_kernel_workload(root: Path) -> None:
+    write_paths(root, adapter.KERNEL_REQUIRED_PATHS)
 
 
 def test_command_contract_is_fixed_and_contains_no_shell(tmp_path: Path) -> None:
@@ -62,6 +74,18 @@ def test_command_contract_is_fixed_and_contains_no_shell(tmp_path: Path) -> None
     assert set(adapter.LINT_PATHS).issubset(set(flattened))
     with pytest.raises(ValueError, match="job_id is invalid"):
         adapter.command_sequence(tmp_path / "result.json", "../../unsafe")
+
+
+def test_kernel_command_delegates_only_to_repository_owned_gate(tmp_path: Path) -> None:
+    commands = adapter.command_sequence(
+        tmp_path / "result.json",
+        "computer-kernel-test-001",
+        "computer-kernel-v1",
+    )
+    assert len(commands) == 3
+    assert commands[-1] == ["bash", "scripts/ci/kernel_verify.sh"]
+    assert all(isinstance(command, list) and command for command in commands)
+    assert all("../" not in item for command in commands for item in command)
 
 
 def test_isolated_environment_is_allowlisted(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -105,6 +129,63 @@ def test_missing_required_files_are_reported_without_execution(tmp_path: Path) -
     assert "config/tool_system.json" in result["reason"]
 
 
+def test_complete_kernel_surface_takes_precedence_over_legacy_surfaces(
+    tmp_path: Path,
+) -> None:
+    write_kernel_workload(tmp_path)
+    write_workload(tmp_path)
+    surface, reason = adapter._surface(tmp_path)
+    assert surface == "computer-kernel-v1"
+    assert reason is None
+
+
+def test_complete_legacy_only_workload_keeps_legacy_surface(tmp_path: Path) -> None:
+    write_workload(tmp_path)
+    surface, reason = adapter._surface(tmp_path)
+    assert surface == "tool-system-v2"
+    assert reason is None
+
+
+def test_complete_bounded_only_workload_keeps_bounded_surface(tmp_path: Path) -> None:
+    write_bounded_workload(tmp_path)
+    surface, reason = adapter._surface(tmp_path)
+    assert surface == "bounded-smithery-v7"
+    assert reason is None
+
+
+def test_partial_kernel_surface_fails_closed_instead_of_falling_back(
+    tmp_path: Path,
+) -> None:
+    write_workload(tmp_path)
+    first_kernel_path = tmp_path / adapter.KERNEL_INDICATOR_PATHS[0]
+    first_kernel_path.parent.mkdir(parents=True, exist_ok=True)
+    first_kernel_path.write_text("# partial kernel\n", encoding="utf-8")
+    surface, reason = adapter._surface(tmp_path)
+    assert surface == "blocked"
+    assert reason is not None
+    assert "partial computer kernel surface" in reason
+    assert adapter.KERNEL_REQUIRED_PATHS[1] in reason
+
+
+def test_symlinked_kernel_gate_is_rejected_before_execution(tmp_path: Path) -> None:
+    for relative in adapter.KERNEL_REQUIRED_PATHS:
+        if relative != "scripts/ci/kernel_verify.sh":
+            path = tmp_path / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("# fixture\n", encoding="utf-8")
+    outside = tmp_path.parent / f"{tmp_path.name}-outside-kernel-verify.sh"
+    outside.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    gate = tmp_path / "scripts/ci/kernel_verify.sh"
+    gate.parent.mkdir(parents=True, exist_ok=True)
+    gate.symlink_to(outside)
+
+    surface, reason = adapter._surface(tmp_path)
+    assert surface == "blocked"
+    assert reason is not None
+    assert "unsafe computer kernel paths" in reason
+    assert "scripts/ci/kernel_verify.sh" in reason
+
+
 def test_expected_source_mismatch_blocks_before_commands(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -135,6 +216,33 @@ def test_none_stdout_is_normalized(
     assert result["status"] == "completed"
     assert len(result["steps"]) == 6
     assert all(step["output_tail"] == "" for step in result["steps"])
+
+
+def test_kernel_run_forwards_exact_private_sha_to_repository_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    write_kernel_workload(tmp_path)
+    monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", SOURCE_SHA)
+    observed: list[dict] = []
+
+    def fake_run(command, **kwargs):
+        observed.append({"command": command, "env": dict(kwargs["env"])})
+        return SimpleNamespace(returncode=0, stdout="ok")
+
+    monkeypatch.setattr(adapter.subprocess, "run", fake_run)
+    result_path = tmp_path / "result.json"
+    assert adapter.run(canonical_plan(), tmp_path, result_path) == 0
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    assert result["status"] == "completed"
+    assert len(result["steps"]) == 3
+    assert observed[-1]["command"][0] == "bash"
+    assert (
+        Path(observed[-1]["command"][1])
+        == (tmp_path / "scripts/ci/kernel_verify.sh").resolve()
+    )
+    assert observed[-1]["env"]["GITHUB_SHA"] == SOURCE_SHA
+    assert observed[-1]["env"]["APEX_RESOLVED_SOURCE_SHA"] == SOURCE_SHA
+    assert "GITHUB_TOKEN" not in observed[-1]["env"]
 
 
 def test_action_face_planner_binds_canonical_code_action(tmp_path: Path) -> None:

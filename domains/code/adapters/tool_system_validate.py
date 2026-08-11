@@ -120,6 +120,36 @@ BOUNDED_LINT_PATHS = tuple(
     path for path in BOUNDED_REQUIRED_PATHS if path.endswith(".py")
 )
 
+# A current computer-user kernel owns its verification transaction. The public
+# action face does not duplicate that policy: it proves the exact private SHA,
+# checks for the required kernel surface, and executes the repository-owned gate.
+KERNEL_REQUIRED_PATHS = (
+    "computer_user/service.py",
+    "runtime/browser_connector.py",
+    "runtime/governed_runtime.py",
+    "runtime/receipts.py",
+    "runtime/task_kernel.py",
+    "scripts/ci/kernel_verify.sh",
+    "scripts/kernel_smoke.py",
+    "tests/test_browser_kernel_adapter.py",
+    "tests/test_kernel_service.py",
+    "machine/kernel-invocation.schema.json",
+)
+# These paths are unique evidence of kernel ancestry. Shared dependencies such as
+# runtime/governed_runtime.py must not make an older bounded Smithery checkout
+# look like a partial kernel.
+KERNEL_INDICATOR_PATHS = (
+    "computer_user/service.py",
+    "runtime/browser_connector.py",
+    "runtime/receipts.py",
+    "runtime/task_kernel.py",
+    "scripts/ci/kernel_verify.sh",
+    "scripts/kernel_smoke.py",
+    "tests/test_browser_kernel_adapter.py",
+    "tests/test_kernel_service.py",
+    "machine/kernel-invocation.schema.json",
+)
+
 
 def isolated_env(source: Mapping[str, str] | None = None) -> dict[str, str]:
     host = source or os.environ
@@ -227,8 +257,33 @@ def normalize_plan(plan: object) -> dict[str, Any]:
     return _base_plan(plan)
 
 
+def _lexists(path: Path) -> bool:
+    return os.path.lexists(path)
+
+
+def _safe_regular_file(workspace: Path, relative: str) -> bool:
+    candidate = workspace / relative
+    try:
+        cursor = workspace
+        for part in Path(relative).parts:
+            cursor = cursor / part
+            if cursor.is_symlink():
+                return False
+        if not candidate.is_file():
+            return False
+        resolved = candidate.resolve(strict=True)
+        resolved.relative_to(workspace)
+    except (OSError, RuntimeError, ValueError):
+        return False
+    return True
+
+
 def _surface_state(workspace: Path, paths: tuple[str, ...]) -> tuple[str, list[str]]:
-    present = [path for path in paths if (workspace / path).is_file()]
+    existing = [path for path in paths if _lexists(workspace / path)]
+    unsafe = [path for path in existing if not _safe_regular_file(workspace, path)]
+    if unsafe:
+        return "unsafe", unsafe
+    present = [path for path in existing if _safe_regular_file(workspace, path)]
     missing = [path for path in paths if path not in present]
     if not present:
         return "absent", missing
@@ -237,10 +292,32 @@ def _surface_state(workspace: Path, paths: tuple[str, ...]) -> tuple[str, list[s
     return "complete", []
 
 
-def _surface(workspace: Path) -> tuple[str, str | None]:
-    legacy_state, legacy_missing = _surface_state(workspace, LEGACY_REQUIRED_PATHS)
-    bounded_state, bounded_missing = _surface_state(workspace, BOUNDED_REQUIRED_PATHS)
+def _kernel_indicator_present(workspace: Path) -> bool:
+    return any(_lexists(workspace / path) for path in KERNEL_INDICATOR_PATHS)
 
+
+def _surface(workspace: Path) -> tuple[str, str | None]:
+    kernel_state, kernel_issues = _surface_state(workspace, KERNEL_REQUIRED_PATHS)
+    legacy_state, legacy_issues = _surface_state(workspace, LEGACY_REQUIRED_PATHS)
+    bounded_state, bounded_issues = _surface_state(workspace, BOUNDED_REQUIRED_PATHS)
+
+    # Current kernel ancestry wins over the older Tooltruck-only surfaces, but
+    # shared runtime dependencies are not themselves evidence of kernel ancestry.
+    if _kernel_indicator_present(workspace):
+        if kernel_state == "complete":
+            return "computer-kernel-v1", None
+        if kernel_state == "unsafe":
+            return "blocked", "unsafe computer kernel paths: " + ", ".join(
+                kernel_issues
+            )
+        return "blocked", "partial computer kernel surface; missing: " + ", ".join(
+            kernel_issues
+        )
+
+    if legacy_state == "unsafe":
+        return "blocked", "unsafe legacy Tool System paths: " + ", ".join(legacy_issues)
+    if bounded_state == "unsafe":
+        return "blocked", "unsafe bounded Smithery paths: " + ", ".join(bounded_issues)
     if legacy_state == "complete" and bounded_state == "complete":
         return "bounded-smithery-v7", None
     if bounded_state == "complete" and legacy_state == "absent":
@@ -249,11 +326,11 @@ def _surface(workspace: Path) -> tuple[str, str | None]:
         return "tool-system-v2", None
     if legacy_state == "partial":
         return "blocked", "partial legacy Tool System surface; missing: " + ", ".join(
-            legacy_missing
+            legacy_issues
         )
     if bounded_state == "partial":
         return "blocked", "partial bounded Smithery surface; missing: " + ", ".join(
-            bounded_missing
+            bounded_issues
         )
     return (
         "blocked",
@@ -262,7 +339,11 @@ def _surface(workspace: Path) -> tuple[str, str | None]:
 
 
 def command_sequence(
-    result_path: Path, job_id: str, surface: str = "tool-system-v2"
+    result_path: Path,
+    job_id: str,
+    surface: str = "tool-system-v2",
+    *,
+    workspace: Path | None = None,
 ) -> list[list[str]]:
     if not JOB_ID.fullmatch(job_id):
         raise ValueError("job_id is invalid")
@@ -281,6 +362,13 @@ def command_sequence(
             "ruff==0.16.1",
         ],
     ]
+    if surface == "computer-kernel-v1":
+        gate = "scripts/ci/kernel_verify.sh"
+        if workspace is not None:
+            if not _safe_regular_file(workspace, gate):
+                raise ValueError("kernel verification gate is not a safe checkout file")
+            gate = str((workspace / gate).resolve(strict=True))
+        return prefix + [["bash", gate]]
     if surface == "tool-system-v2":
         return prefix + [
             [
@@ -363,9 +451,23 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             expected_source_sha=expected_sha,
         )
 
-    commands = command_sequence(result_path, normalized["job_id"], surface)
+    try:
+        commands = command_sequence(
+            result_path,
+            normalized["job_id"],
+            surface,
+            workspace=workspace if surface == "computer-kernel-v1" else None,
+        )
+    except (OSError, RuntimeError, ValueError) as error:
+        return write_blocked(normalized, result_path, str(error))
+
     steps: list[dict] = []
     env = isolated_env()
+    # The private workload checkout is bound to this exact SHA before adapter
+    # execution. Forward only that non-secret identity so repository-owned smoke
+    # receipts cannot fall back to an unbound/local marker.
+    env["GITHUB_SHA"] = resolved_sha
+    env["APEX_RESOLVED_SOURCE_SHA"] = resolved_sha
     failed = False
     for command in commands:
         executable = Path(command[0])

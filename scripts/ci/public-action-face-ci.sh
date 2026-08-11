@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+mkdir -p .verification-artifacts
+on_error() {
+  local exit_code="$1"
+  local line="$2"
+  local command="$3"
+  {
+    printf 'exit_code=%s\n' "$exit_code"
+    printf 'line=%s\n' "$line"
+    printf 'command=%s\n' "$command"
+  } > .verification-artifacts/public-action-face-failure.txt
+  printf '::error title=Public action face verifier failed::line=%s exit=%s command=%s\n' \
+    "$line" "$exit_code" "$command"
+  exit "$exit_code"
+}
+trap 'code=$?; command=$BASH_COMMAND; trap - ERR; on_error "$code" "$LINENO" "$command"' ERR
+
 python -m pip install \
   --disable-pip-version-check \
   --only-binary=:all: \
@@ -79,7 +95,17 @@ FORMAT_FILES=(
 # executable canary remains linted and compiled but retains its historical
 # hand-formatted layout.
 ruff check --ignore EXE001 "${OWNED_FILES[@]}"
-ruff format --check "${FORMAT_FILES[@]}"
+if ! ruff format --check "${FORMAT_FILES[@]}"; then
+  ruff format --diff "${FORMAT_FILES[@]}" > .verification-artifacts/ruff-format.diff || true
+  python - <<'PY'
+from pathlib import Path
+
+diff = Path(".verification-artifacts/ruff-format.diff").read_text(encoding="utf-8")[:12000]
+escaped = diff.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+print(f"::error title=Ruff format diff::{escaped}")
+PY
+  exit 1
+fi
 
 # These established files contain pre-existing style debt. Enforce correctness
 # rules while explicitly excluding only the known legacy executable/import rules.
@@ -95,7 +121,9 @@ python scripts/verify_github_app_bridge_contract.py
 # The reusable CI contract requires a bounded proof artifact. Emit it only after
 # every repository-owned verification command above succeeds so artifact upload
 # and verification truth cannot diverge.
-mkdir -p .verification-artifacts
+rm -f \
+  .verification-artifacts/public-action-face-failure.txt \
+  .verification-artifacts/ruff-format.diff
 python - <<'PY'
 from __future__ import annotations
 
