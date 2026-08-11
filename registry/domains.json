@@ -33,6 +33,17 @@
       "resultSchema": "domains/analysis/schemas/result.schema.json",
       "receiptNamespace": "receipts/analysis",
       "concurrencyPrefix": "analysis"
+    },
+    "memory": {
+      "status": "active",
+      "executionEnabled": true,
+      "adapterRoot": "domains/memory/adapters",
+      "actionCatalog": "domains/memory/actions.json",
+      "tokenProfiles": "domains/memory/token-profiles.json",
+      "jobSchema": "domains/memory/schemas/constellation-operator-code-job.schema.json",
+      "resultSchema": "domains/memory/schemas/constellation-operator-code-result.schema.json",
+      "receiptNamespace": "receipts/memory",
+      "concurrencyPrefix": "memory"
     }
   },
   "constraints": {
