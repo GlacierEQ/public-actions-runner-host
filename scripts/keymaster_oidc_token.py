@@ -15,8 +15,7 @@ from pathlib import Path
 
 AUDIENCE = "apex-keymaster-public-runner"
 BROKER_URL = (
-    "https://dyhprklicgewmrimecey.supabase.co/functions/v1/"
-    "apex-github-oidc-broker"
+    "https://dyhprklicgewmrimecey.supabase.co/functions/v1/apex-github-oidc-broker"
 )
 MAX_RESPONSE_BYTES = 64 * 1024
 MAX_BROKER_ERROR_BYTES = 4 * 1024
@@ -40,7 +39,9 @@ class _RejectRedirects(urllib.request.HTTPRedirectHandler):
 _NO_REDIRECT_OPENER = urllib.request.build_opener(_RejectRedirects())
 
 
-def _safe_http_error(request: urllib.request.Request, error: urllib.error.HTTPError) -> str:
+def _safe_http_error(
+    request: urllib.request.Request, error: urllib.error.HTTPError
+) -> str:
     """Return a bounded broker error code without reflecting arbitrary response text."""
 
     generic = f"broker_http_{error.code}"
@@ -120,7 +121,11 @@ def _permissions(values: list[str]) -> dict[str, str]:
     output: dict[str, str] = {}
     for value in values:
         name, separator, level = value.partition("=")
-        if not separator or name not in ALLOWED_PERMISSIONS or level not in ALLOWED_LEVELS:
+        if (
+            not separator
+            or name not in ALLOWED_PERMISSIONS
+            or level not in ALLOWED_LEVELS
+        ):
             raise TokenBrokerError("invalid_permission")
         output[name] = level
     return output or {"contents": "read"}
