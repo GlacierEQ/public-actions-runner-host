@@ -15,6 +15,11 @@
       "status": "active",
       "root": "receipts/analysis",
       "pattern": "^receipts/analysis/[A-Za-z0-9][A-Za-z0-9._-]{7,63}\\.json$"
+    },
+    "memory": {
+      "status": "active",
+      "root": "receipts/memory",
+      "pattern": "^receipts/memory/[A-Za-z0-9][A-Za-z0-9._-]{7,63}\\.json$"
     }
   }
 }

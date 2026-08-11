@@ -17,7 +17,7 @@ from dispatcher import domain_registry as registry
 def copy_registry_fixture(tmp_path: Path) -> Path:
     shutil.copytree(ROOT / "registry", tmp_path / "registry")
     (tmp_path / "domains").mkdir()
-    for domain in ("code", "docs", "analysis"):
+    for domain in ("code", "docs", "analysis", "memory"):
         shutil.copytree(ROOT / "domains" / domain, tmp_path / "domains" / domain)
     return tmp_path
 
@@ -42,6 +42,7 @@ def test_registry_validates_all_specialized_domains() -> None:
         "code.sigma.validate-fileboss-security",
         "docs.monolith.validate-integrity",
         "analysis.monolith.estate-health",
+        "memory.constellation.verify-operator-code",
     }
     action = actions["code.validate-governance"]
     assert action["domain"] == "code"
@@ -84,6 +85,12 @@ def test_registry_validates_all_specialized_domains() -> None:
     assert analysis["domain"] == "analysis"
     assert analysis["adapter"] == "audit"
     assert analysis["receiptRoot"] == "receipts/analysis"
+
+    memory = actions["memory.constellation.verify-operator-code"]
+    assert memory["domain"] == "memory"
+    assert memory["adapter"] == "constellation_memory_verify"
+    assert memory["targetRepository"] == "GlacierEQ/constellation-memory-engine"
+    assert memory["receiptRoot"] == "receipts/memory"
 
 
 def test_tool_system_alias_resolves_to_canonical_code_action() -> None:
@@ -193,6 +200,7 @@ def test_all_active_domains_use_the_same_read_only_ceiling() -> None:
         "code.sigma.validate-fileboss-security",
         "docs.monolith.validate-integrity",
         "analysis.monolith.estate-health",
+        "memory.constellation.verify-operator-code",
     ):
         profile = registry.resolve_action(action_name)["tokenProfileContract"]
         assert profile["permissions"] == {"contents": "read"}
@@ -263,6 +271,7 @@ def test_each_domain_receipt_namespace_is_isolated(tmp_path: Path) -> None:
         "code.sigma.validate-fileboss-security": root / "receipts" / "code" / "DomainJob01.json",
         "docs.monolith.validate-integrity": root / "receipts" / "docs" / "DomainJob01.json",
         "analysis.monolith.estate-health": root / "receipts" / "analysis" / "DomainJob01.json",
+        "memory.constellation.verify-operator-code": root / "receipts" / "memory" / "DomainJob01.json",
     }
     for action, path in expected.items():
         assert registry.receipt_path_for(action, "DomainJob01", root=root) == path
