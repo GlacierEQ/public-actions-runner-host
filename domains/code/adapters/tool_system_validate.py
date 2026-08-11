@@ -256,7 +256,7 @@ def _surface(workspace: Path) -> tuple[str, str | None]:
         )
     return (
         "blocked",
-        "no recognized complete computer-user Tool System surface is present",
+        "required Tool System files are missing: " + ", ".join(LEGACY_REQUIRED_PATHS),
     )
 
 
