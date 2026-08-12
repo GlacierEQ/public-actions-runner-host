@@ -88,28 +88,44 @@ jobs:
             --merge-dir /tmp/crystallization-execution-shards \
             --output-dir crystallization/execution-index \
             --expected-repos 160
+          rm -rf /tmp/crystallization-generated-evidence
+          mkdir -p /tmp/crystallization-generated-evidence/execution-index
+          cp crystallization/public-execution-index.json /tmp/crystallization-generated-evidence/public-execution-index.json
+          cp crystallization/execution-index/*.json /tmp/crystallization-generated-evidence/execution-index/
       - name: Commit durable execution evidence
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          git add crystallization/public-execution-index.json crystallization/execution-index/*.json
-          if git diff --cached --quiet; then
-            echo 'Execution evidence already matches probed heads.'
-            exit 0
+          if [[ ! -f /tmp/crystallization-generated-evidence/public-execution-index.json ]]; then
+            echo 'Generated execution evidence is unavailable; refusing writeback.' >&2
+            exit 1
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'proof: execute native contracts across active public originals'
+
           for attempt in 1 2 3 4; do
             git fetch origin main
-            if git rebase origin/main && git push origin HEAD:main; then
+            git reset --hard origin/main
+            rm -rf crystallization/execution-index
+            mkdir -p crystallization/execution-index
+            cp /tmp/crystallization-generated-evidence/public-execution-index.json crystallization/public-execution-index.json
+            cp /tmp/crystallization-generated-evidence/execution-index/*.json crystallization/execution-index/
+            git add crystallization/public-execution-index.json crystallization/execution-index/*.json
+
+            if git diff --cached --quiet; then
+              echo 'Execution evidence already matches generated probe results.'
               exit 0
             fi
-            git rebase --abort >/dev/null 2>&1 || true
+
+            git commit -m 'proof: execute native contracts across active public originals'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            git reset --hard origin/main
             sleep $((attempt * 2))
           done
-          echo 'Unable to persist execution evidence after four fast-forward retries.' >&2
+          echo 'Unable to persist generated execution evidence after four latest-main overlays.' >&2
           exit 1
       - name: Enforce complete execution-evidence coverage
         if: always()
@@ -118,10 +134,11 @@ jobs:
             echo 'Public execution evidence remains incomplete.' >&2
             exit 1
           fi
+          cp /tmp/crystallization-generated-evidence/public-execution-index.json /tmp/public-execution-index.json
           python3 - <<'PY'
           import json
           from pathlib import Path
-          index = json.loads(Path('crystallization/public-execution-index.json').read_text())
+          index = json.loads(Path('/tmp/public-execution-index.json').read_text())
           assert index['repository_count'] == 160
           assert index['expected_repository_count'] == 160
           assert index['coverage_complete'] is True
