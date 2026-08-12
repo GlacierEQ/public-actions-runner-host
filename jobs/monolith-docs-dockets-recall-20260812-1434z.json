@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-docs-dockets-recall-20260812-1434z",
+  "pillar": "B",
+  "action": "docs.monolith.validate-integrity",
+  "source_ref": "eac47c2afa16fe4061cf8397243234f512a213d0"
+}
