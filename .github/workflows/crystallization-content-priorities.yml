@@ -1,0 +1,58 @@
+name: Crystallization Content Priorities
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'crystallization/public-content-index.json'
+      - 'crystallization/content-index/**'
+      - 'scripts/crystallization_content_priorities.py'
+      - '.github/workflows/crystallization-content-priorities.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crystallization-content-priorities
+  cancel-in-progress: false
+
+jobs:
+  rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+      - name: Rank unfinished executable evidence
+        run: python3 scripts/crystallization_content_priorities.py
+      - name: Verify provenance and no completion theater
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          content = json.loads(Path('crystallization/public-content-index.json').read_text())
+          queue = json.loads(Path('crystallization/content-priority-queue.json').read_text())
+          assert content['content_scan_complete'] is True
+          assert queue['source_content_index_digest'] == content['index_digest']
+          assert queue['repository_count'] == content['repository_count']
+          assert queue['completion_claim_allowed'] is False
+          print(json.dumps([
+              {'repository': item['repository'], 'score': item['score']}
+              for item in queue['repositories'][:20]
+          ], indent=2))
+          PY
+      - name: Commit executable-evidence priority queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add crystallization/content-priority-queue.json
+          if git diff --cached --quiet; then
+            echo 'Content priority queue unchanged.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'inventory: rank unfinished executable evidence across public originals'
+          git push origin HEAD:main
