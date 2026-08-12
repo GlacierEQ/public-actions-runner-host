@@ -1,0 +1,10 @@
+{
+  "completion_claim_allowed": false,
+  "count": 0,
+  "parent_queue_digest": "b90fec85dc851a8cc6fad72eff8fe7947baa4186fe307012cb41e58ea64b98b6",
+  "queue": "SOURCE_MISSING",
+  "repositories": [],
+  "schema": "glaciereq.crystallization.public-queue.v1",
+  "scope": "PUBLIC_OWNER_REPOSITORIES",
+  "source_registry_digest": "547724a1457f18f7897de8c3f4ff4147d8a0606e9e0745a5ccc81fe6775e7475"
+}
