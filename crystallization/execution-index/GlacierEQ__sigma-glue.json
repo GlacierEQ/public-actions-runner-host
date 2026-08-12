@@ -1,35 +1,24 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "4edf7bdf5003575aee1c17a3e7b682847418343ebf681eb75ef8ccb98f7762ee",
+  "evidence_digest": "85bfe2b0f52a3c14a8b7f3dbf11c163c7341bb51d05eaf3fe3183e58cb9efda3",
   "head_sha": "4a1ca8e5c88a62e8a94a43213b2c509af6afcea3",
   "repository": "GlacierEQ/sigma-glue",
   "repository_id": 1319647702,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
-    {
-      "command": [
-        "__NO_LOCKFILE__"
-      ],
-      "elapsed_s": 0,
-      "exit_code": null,
-      "name": "node_dependencies",
-      "output_sha256": "640788cd205716bdf9231185d058e938a206d8aba6472ab609982e9b89861a4a",
-      "output_tail": "Reproducible Node dependency installation refused because no lockfile was found.",
-      "status": "NOT_RUN_NO_LOCKFILE"
-    },
     {
       "command": [
         "npm",
         "run",
         "test"
       ],
-      "elapsed_s": 0,
-      "exit_code": null,
+      "elapsed_s": 5.779,
+      "exit_code": 0,
       "name": "node_test",
-      "output_sha256": "782353355a454370e17d2bc344d1662f837ce497d218b8ba864c8bd1becb3926",
-      "output_tail": "Skipped because the repository lacks a reproducible Node dependency lockfile.",
-      "status": "SKIPPED_DEPENDENCY_UNAVAILABLE"
+      "output_sha256": "bd3639509984b4509e469a36f8ec526ba8cc3086ebe678c16966f25708b7a82b",
+      "output_tail": " before provider-confirmed state\n  ---\n  duration_ms: 27.618915\n  type: 'test'\n  ...\n# Subtest: dishonest reconciliation match claim fails closed and preserves outer recovery state\nok 123 - dishonest reconciliation match claim fails closed and preserves outer recovery state\n  ---\n  duration_ms: 30.587619\n  type: 'test'\n  ...\n# (node:4916) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n# (Use `node --trace-warnings ...` to show where the warning was created)\n# Subtest: accepts evidence bound to the dispatched adapter and envelope\nok 124 - accepts evidence bound to the dispatched adapter and envelope\n  ---\n  duration_ms: 18.088714\n  type: 'test'\n  ...\n# Subtest: rejects substituted adapter or envelope attempt evidence\nok 125 - rejects substituted adapter or envelope attempt evidence\n  ---\n  duration_ms: 9.595794\n  type: 'test'\n  ...\n# Subtest: rejects evidence timestamps before prior durable state or after observation\nok 126 - rejects evidence timestamps before prior durable state or after observation\n  ---\n  duration_ms: 9.180592\n  type: 'test'\n  ...\n# Subtest: rejects provider confirmation cross-wired from another dispatch attempt\nok 127 - rejects provider confirmation cross-wired from another dispatch attempt\n  ---\n  duration_ms: 11.050846\n  type: 'test'\n  ...\n# Subtest: binds reconciliation expectation to the provider-confirmed after-state\nok 128 - binds reconciliation expectation to the provider-confirmed after-state\n  ---\n  duration_ms: 14.163701\n  type: 'test'\n  ...\n# Subtest: binds reconciliation completion to the observation method selected at start\nok 129 - binds reconciliation completion to the observation method selected at start\n  ---\n  duration_ms: 11.168384\n  type: 'test'\n  ...\n# Subtest: runs a local move through approval, Commander, and reconciliation\nok 130 - runs a local move through approval, Commander, and reconciliation\n  ---\n  duration_ms: 19.193742\n  type: 'test'\n  ...\n# Subtest: reuses the exact idempotency subject on a repeated execution\nok 131 - reuses the exact idempotency subject on a repeated execution\n  ---\n  duration_ms: 6.050509\n  type: 'test'\n  ...\n# Subtest: rejects an approval bound to a changed plan\nok 132 - rejects an approval bound to a changed plan\n  ---\n  duration_ms: 3.275346\n  type: 'test'\n  ...\n# Subtest: rejects paths outside the test root before any approval or mutation\nok 133 - rejects paths outside the test root before any approval or mutation\n  ---\n  duration_ms: 2.570981\n  type: 'test'\n  ...\n# Subtest: compensates a reconciled move with a separately approved recovery plan\nok 134 - compensates a reconciled move with a separately approved recovery plan\n  ---\n  duration_ms: 10.451006\n  type: 'test'\n  ...\n# Subtest: freezes normalized requests and rejects duplicate or overlapping items\nok 135 - freezes normalized requests and rejects duplicate or overlapping items\n  ---\n  duration_ms: 2.273525\n  type: 'test'\n  ...\n# Subtest: component capability snapshots cannot be broadened after registration\nok 136 - component capability snapshots cannot be broadened after registration\n  ---\n  duration_ms: 2.414589\n  type: 'test'\n  ...\n# Subtest: rejects a Commander receipt bound to another plan\nok 137 - rejects a Commander receipt bound to another plan\n  ---\n  duration_ms: 3.094799\n  type: 'test'\n  ...\n# Subtest: rejects reconciliation evidence bound to another plan\nok 138 - rejects reconciliation evidence bound to another plan\n  ---\n  duration_ms: 3.042041\n  type: 'test'\n  ...\n# Subtest: rejects idempotency-key reuse with a different payload\nok 139 - rejects idempotency-key reuse with a different payload\n  ---\n  duration_ms: 9.918331\n  type: 'test'\n  ...\n# Subtest: rejects a symlinked path escaping the test root without mutating\nok 140 - rejects a symlinked path escaping the test root without mutating\n  ---\n  duration_ms: 4.413883\n  type: 'test'\n  ...\n1..140\n# tests 140\n# suites 0\n# pass 140\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 5634.268366",
+      "status": "PASS"
     }
   ]
 }

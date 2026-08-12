@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "213d5be9aac60994d085ad495e0b04871bd3b7774b19924b8f9d8ba714074be0",
+  "evidence_digest": "d660c8d039133df6d2308812a64732efbf339be7d7e158c92d8b0294abf31a33",
   "head_sha": "6efb0d0569454d7a57177f27ea1baa63af18292b",
   "repository": "GlacierEQ/databricks-feature-lineage-passport",
   "repository_id": 1328440535,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.063,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.318,
+      "elapsed_s": 0.121,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "9941a843303627e68757a0df3b840d735792bd391d44aa58712275f051ade9e2",
-      "output_tail": ".......................                                                  [100%]\n23 passed in 0.06s",
+      "name": "python_unittest",
+      "output_sha256": "6b5db5577bdf5d25bcc9cb8ec19bd7fe3d1ae62236ed6a3b5098fe2642bfee3e",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_name_repository_native_lineage_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_lineage_mechanisms) ... ok\ntest_evolution_and_claim_boundary_are_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_claim_boundary_are_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_claim_ceiling_and_external_attestation_boundary_do_not_inflate (test_evolution_contract.EvolutionContractTests.test_claim_ceiling_and_external_attestation_boundary_do_not_inflate) ... ok\ntest_consumed_cursor_is_exact_proof_bound (test_evolution_contract.EvolutionContractTests.test_consumed_cursor_is_exact_proof_bound) ... ok\ntest_next_cursor_is_consistent (test_evolution_contract.EvolutionContractTests.test_next_cursor_is_consistent) ... ok\ntest_dataset_snapshot_change_changes_graph_and_passport_identity (test_passport.PassTests.test_dataset_snapshot_change_changes_graph_and_passport_identity) ... ok\ntest_legacy_single_hop_admit_remains_compatible (test_passport.PassTests.test_legacy_single_hop_admit_remains_compatible) ... ok\ntest_missing_parent_is_reported_as_lineage_break (test_passport.PassTests.test_missing_parent_is_reported_as_lineage_break) ... ok\ntest_multistep_dag_is_reproducible_and_strictly_admitted (test_passport.PassTests.test_multistep_dag_is_reproducible_and_strictly_admitted) ... ok\ntest_no_reachable_snapshot_refuses_graph (test_passport.PassTests.test_no_reachable_snapshot_refuses_graph) ... ok\ntest_parent_fingerprint_mismatch_detects_mutated_ancestry (test_passport.PassTests.test_parent_fingerprint_mismatch_detects_mutated_ancestry) ... ok\ntest_refuse_missing (test_passport.PassTests.test_refuse_missing) ... ok\ntest_strict_gate_refuses_legacy_passport_without_graph (test_passport.PassTests.test_strict_gate_refuses_legacy_passport_without_graph) ... ok\ntest_transform_order_and_parent_order_are_identity_bearing (test_passport.PassTests.test_transform_order_and_parent_order_are_identity_bearing) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_fk (test_sql_fixture.T.test_fk) ... ok\n\n----------------------------------------------------------------------\nRan 23 tests in 0.010s\n\nOK",
       "status": "PASS"
     }
   ]

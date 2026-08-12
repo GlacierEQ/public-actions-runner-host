@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "869ef6621bb5fb7c809fc535f1005f163b5e0e4931fbd5bebe354b4244cb51a3",
+  "evidence_digest": "9263489c4d3ccbaf6829b2383d311ab87aaefc219954c4e7fa371333806535cd",
   "head_sha": "0c930c04ffa473f0a0d93659f6b29e3620b95448",
   "repository": "GlacierEQ/anthropic-constitutional-tool-transcript",
   "repository_id": 1328440251,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.068,
+      "elapsed_s": 0.111,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,15 +26,20 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.013,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.486,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "bfa1540af99067cb922a00af32388606d16427de85d19c85c2ef8d0ae529cf2d",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capability_manifest_names_repository_native_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capability_manifest_names_repository_native_mechanisms) ... ok\ntest_evolution_is_material_and_claim_boundary_is_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_is_material_and_claim_boundary_is_preserved) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_lineage_and_specialist_ownership_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_lineage_and_specialist_ownership_are_preserved) ... ok\ntest_claim_ceiling_and_nonclaims_do_not_inflate (test_evolution_contract.EvolutionContractTests.test_claim_ceiling_and_nonclaims_do_not_inflate) ... ok\ntest_consumed_cursor_is_exact_proof_bound (test_evolution_contract.EvolutionContractTests.test_consumed_cursor_is_exact_proof_bound) ... ok\ntest_next_cursor_is_consistent (test_evolution_contract.EvolutionContractTests.test_next_cursor_is_consistent) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_allowed_call_requires_exact_schema_version (test_transcript.TxTests.test_allowed_call_requires_exact_schema_version) ... ok\ntest_argument_content_changes_fingerprint (test_transcript.TxTests.test_argument_content_changes_fingerprint) ... ok\ntest_call_id_is_one_shot_and_exact_replay_is_idempotent (test_transcript.TxTests.test_call_id_is_one_shot_and_exact_replay_is_idempotent) ... ok\ntest_duplicate_exact_call_is_visible_in_replay_counts (test_transcript.TxTests.test_duplicate_exact_call_is_visible_in_replay_counts) ... ok\ntest_hash_chain_binds_order (test_transcript.TxTests.test_hash_chain_binds_order) ... ok\ntest_malformed_json_evidence_fails_closed (test_transcript.TxTests.test_malformed_json_evidence_fails_closed) ... ok\ntest_object_key_order_does_not_change_identity (test_transcript.TxTests.test_object_key_order_does_not_change_identity) ... ok\ntest_python_node_cross_runtime_vector (test_transcript.TxTests.test_python_node_cross_runtime_vector) ... ok\ntest_red_line_dominates_schema_state (test_transcript.TxTests.test_red_line_dominates_schema_state) ... ok\ntest_replay_identical (test_transcript.TxTests.test_replay_identical) ... ok\ntest_replay_receipt_is_recomputable_and_tamper_evident (test_transcript.TxTests.test_replay_receipt_is_recomputable_and_tamper_evident) ... ok\ntest_schema_change_changes_policy_identity (test_transcript.TxTests.test_schema_change_changes_policy_identity) ... ok\ntest_unbound_allowed_tool_refuses (test_transcript.TxTests.test_unbound_allowed_tool_refuses) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 0.010s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

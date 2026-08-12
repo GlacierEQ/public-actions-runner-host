@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "9966fff84d966b004c302939447bdd954d11189c842591126afb71585104bdf6",
+  "evidence_digest": "808b0ec57f1ee487995a0e011d386079963f95745073a500c03cfdad847d6ca0",
   "head_sha": "b42225fcc145311dc71825f0f5038aeb0112dbd9",
   "repository": "GlacierEQ/scale-eval-poison-sentinel",
   "repository_id": 1328441543,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.053,
+      "elapsed_s": 0.058,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.299,
+      "elapsed_s": 0.111,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "e7b9a487df3a5d46e162274bf92322994b7e4e3acdcbb33fbc2845ea51222f9b",
-      "output_tail": "...................                                                  [100%]\n19 passed, 4 subtests passed in 0.04s",
+      "name": "python_unittest",
+      "output_sha256": "3233c2236f92aec9c004c234606ad9e3185cf4e9c278f5b90d2c422ce28b5049",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_repository_owns_only_exact_contamination_detection (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_only_exact_contamination_detection) ... ok\ntest_sibling_relationships_do_not_claim_integration (test_canonical_position_contract.CanonicalPositionContractTests.test_sibling_relationships_do_not_claim_integration) ... ok\ntest_target_reflects_earned_canonical_position (test_canonical_position_contract.CanonicalPositionContractTests.test_target_reflects_earned_canonical_position) ... ok\ntest_truth_boundary_does_not_inflate_hash_equality (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_does_not_inflate_hash_equality) ... ok\ntest_clean (test_poison.PoisonTests.test_clean) ... ok\ntest_duplicate_ids_refuse (test_poison.PoisonTests.test_duplicate_ids_refuse) ... ok\ntest_empty_identity_or_feature_refuses (test_poison.PoisonTests.test_empty_identity_or_feature_refuses) ... ok\ntest_feature_hash_overlap_reports_ratio (test_poison.PoisonTests.test_feature_hash_overlap_reports_ratio) ... ok\ntest_id_overlap (test_poison.PoisonTests.test_id_overlap) ... ok\ntest_input_identity_is_bound_into_receipt (test_poison.PoisonTests.test_input_identity_is_bound_into_receipt) ... ok\ntest_invalid_policy_refuses (test_poison.PoisonTests.test_invalid_policy_refuses) ... ok\ntest_policy_threshold_is_bound_into_receipt (test_poison.PoisonTests.test_policy_threshold_is_bound_into_receipt) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 0.004s\n\nOK",
       "status": "PASS"
     },
     {
@@ -42,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 9.305,
+      "elapsed_s": 10.247,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "f6ed18c593d19aeb819645efb75a8ee092ca05baadca9032622521fc2c13da09",

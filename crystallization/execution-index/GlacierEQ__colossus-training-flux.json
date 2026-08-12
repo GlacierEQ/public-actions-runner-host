@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "011de360542eed3bba4d6b287d75c4e09445b43268390184b9bfdab0d415ff56",
-  "head_sha": "17f3bf11d4d10ed07ea07b8f346bc388a4e8bac1",
+  "evidence_digest": "216e8e59d6cd07e7a8d1457710711e340d5f954fddaa07820a6e9a690d03af04",
+  "head_sha": "165b321e86aa44afc23f9ce3bd1cf305d158b6bc",
   "repository": "GlacierEQ/colossus-training-flux",
   "repository_id": 1298893675,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -16,25 +16,30 @@
         "."
       ],
       "elapsed_s": 0.056,
-      "exit_code": 1,
+      "exit_code": 0,
       "name": "python_compile",
-      "output_sha256": "6dae7233c5a56dd27d060c3ab655bd36367e89703d43f70c19e902ee3f2cf259",
-      "output_tail": "*** Error compiling './src/training_flux.py'...\n  File \"./src/training_flux.py\", line 21\n    >>>>>>> 13c9a77 (chore: Hyper Excellence Activation & structural matrix alignment)\n             ^\nSyntaxError: invalid decimal literal\n\n*** Error compiling './tests/test_training_flux.py'...\n  File \"./tests/test_training_flux.py\", line 18\n    >>>>>>> 13c9a77 (chore: Hyper Excellence Activation & structural matrix alignment)\n             ^\nSyntaxError: invalid decimal literal",
-      "status": "FAIL"
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
     },
     {
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.013,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.099,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "ba138f282344d334177050bb04a8722adcd38bbcd63ee5dcf819e3d247877d6a",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_historical_schedule_api_is_bounded_alias (test_training_flux.TestTrainingCapacityModel.test_historical_schedule_api_is_bounded_alias) ... ok\ntest_invalid_inputs_fail_closed (test_training_flux.TestTrainingCapacityModel.test_invalid_inputs_fail_closed) ... ok\ntest_power_budget_holds_excess_jobs (test_training_flux.TestTrainingCapacityModel.test_power_budget_holds_excess_jobs) ... ok\ntest_priority_order_is_deterministic (test_training_flux.TestTrainingCapacityModel.test_priority_order_is_deterministic) ... ok\ntest_thermal_hold_does_not_consume_modeled_budget (test_training_flux.TestTrainingCapacityModel.test_thermal_hold_does_not_consume_modeled_budget) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.001s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

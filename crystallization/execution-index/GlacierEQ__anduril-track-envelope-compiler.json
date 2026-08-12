@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "4adda11fdf1a54cb757e290824a563a672c72205f6ea85832e374e0322ac3ac9",
+  "evidence_digest": "cf5135376ff6c921062227415651e75d3bbf1b4c02e5f972033c9de4921028d5",
   "head_sha": "46f0061f27070e5bcfbfcfe77d5b06b0e014c31f",
   "repository": "GlacierEQ/anduril-track-envelope-compiler",
   "repository_id": 1328440165,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.087,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,15 +26,20 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.013,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.364,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "4f7898b9bae5318333c50e0d95d3243feaec19cdc3e4db2672fab642ff055cbe",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_evolution_is_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_is_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_bad_inputs_fail_closed (test_envelope.EnvTests.test_bad_inputs_fail_closed) ... ok\ntest_covariance_expands_bounds_and_uncertainty (test_envelope.EnvTests.test_covariance_expands_bounds_and_uncertainty) ... ok\ntest_empty_none (test_envelope.EnvTests.test_empty_none) ... ok\ntest_envelope_bounds (test_envelope.EnvTests.test_envelope_bounds) ... ok\ntest_order_does_not_change_identity (test_envelope.EnvTests.test_order_does_not_change_identity) ... ok\ntest_repeated_sensor_does_not_fake_independent_confidence (test_envelope.EnvTests.test_repeated_sensor_does_not_fake_independent_confidence) ... ok\ntest_temporal_decay_preserves_stale_unknown_mass (test_envelope.EnvTests.test_temporal_decay_preserves_stale_unknown_mass) ... ok\ntest_consumed_cursor_is_receipt_bound (test_evolution_contract.EvolutionContractTests.test_consumed_cursor_is_receipt_bound) ... ok\ntest_external_claim_ceiling_did_not_inflate (test_evolution_contract.EvolutionContractTests.test_external_claim_ceiling_did_not_inflate) ... ok\ntest_next_cursor_is_consistent_across_machine_truth (test_evolution_contract.EvolutionContractTests.test_next_cursor_is_consistent_across_machine_truth) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 0.005s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

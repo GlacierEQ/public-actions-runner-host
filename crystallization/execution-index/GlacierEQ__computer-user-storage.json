@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "ae2f3d41e872fbca0cf2ffc9b9e0ea5e925277c3a9e1d591b9c32e993241c4ab",
+  "evidence_digest": "60cdbc3a503a33a086104a2389d95831e54aa3fb1c2614ba65445c853bf67218",
   "head_sha": "ad307c30ab53df53876c7ecaff6682964c5ae5b1",
   "repository": "GlacierEQ/computer-user-storage",
   "repository_id": 1321125650,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "BROKEN_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.026,
+      "elapsed_s": 0.044,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.008,
+      "elapsed_s": 0.182,
       "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "name": "python_unittest",
+      "output_sha256": "1dcbf7f7935510520a33e6afddfd54ee52fcb83d404cecc2a0058430d3566db6",
+      "output_tail": "test_framework_configuration_validation (test_health_check_framework.TestHealthCheckFramework.test_framework_configuration_validation) ... ok\ntest_historical_check_is_explicitly_unavailable (test_health_check_framework.TestHealthCheckFramework.test_historical_check_is_explicitly_unavailable) ... ok\ntest_invalid_observations_fail_closed (test_health_check_framework.TestHealthCheckFramework.test_invalid_observations_fail_closed) ... ok\ntest_snapshot_aggregates_caller_supplied_health (test_health_check_framework.TestHealthCheckFramework.test_snapshot_aggregates_caller_supplied_health) ... ok\ntest_snapshot_requires_timezone_aware_timestamp (test_health_check_framework.TestHealthCheckFramework.test_snapshot_requires_timezone_aware_timestamp) ... ok\ntest_public_surface (unittest.loader._FailedTest.test_public_surface) ... ERROR\n\n======================================================================\nERROR: test_public_surface (unittest.loader._FailedTest.test_public_surface)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_public_surface\nTraceback (most recent call last):\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/unittest/loader.py\", line 396, in _find_test_path\n    module = self._get_module_from_name(name)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/unittest/loader.py\", line 339, in _get_module_from_name\n    __import__(name)\n  File \"/tmp/crystal-exec-i94x3208/repo/tests/test_public_surface.py\", line 6, in <module>\n    import yaml\nModuleNotFoundError: No module named 'yaml'\n\n\n----------------------------------------------------------------------\nRan 6 tests in 0.001s\n\nFAILED (errors=1)",
       "status": "FAIL"
     }
   ]

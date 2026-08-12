@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "90b2e1a1618cfd009b18387907873a31e86a5381aaf803d3313fe114e15ac46f",
+  "evidence_digest": "d9bc958fb4d85877e61cdf52ab3fffbcc54ec74013bb0d3896a4d2d07a3e7c3d",
   "head_sha": "2cc87f135f175c5c56d025720a2679692cdb1965",
   "repository": "GlacierEQ/tasklet-micro-agent-engine",
   "repository_id": 1311736120,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.064,
+      "elapsed_s": 0.071,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,13 +29,13 @@
         "pip",
         "install",
         "-e",
-        ".[test]"
+        "."
       ],
-      "elapsed_s": 3.136,
+      "elapsed_s": 3.083,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "66bd367bc6f2404405d2e3eea9919c554c62afefe9ea159bc35e34bdd93ac2cc",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-2poe3l67/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-tasklet-runtime\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): started\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tasklet-runtime: filename=glaciereq_tasklet_runtime-1.0.0-0.editable-py3-none-any.whl size=9498 sha256=f9ccdd7891ff512f56c74f3d50a896267f9b71a5f812f65d59a954eed80702b4\n  Stored in directory: /tmp/pip-ephem-wheel-cache-eowj5hxi/wheels/ca/cb/9a/500b3c053f014161ba384ec977518fde5e685c81abce97a920\nSuccessfully built glaciereq-tasklet-runtime\nInstalling collected packages: glaciereq-tasklet-runtime\nSuccessfully installed glaciereq-tasklet-runtime-1.0.0\n\nWARNING: glaciereq-tasklet-runtime 1.0.0 does not provide the extra 'test'",
+      "output_sha256": "21cf8fc7040eb9bb9549511072870a99cc1631c3c6d3aaa7242d25e1ad2d1c11",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-2e9xldir/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-tasklet-runtime\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): started\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tasklet-runtime: filename=glaciereq_tasklet_runtime-1.0.0-0.editable-py3-none-any.whl size=9500 sha256=2903aa8ffb09c2e97194e37ebee21fa071f8409998a20a0416f8f4ec281e535b\n  Stored in directory: /tmp/pip-ephem-wheel-cache-ssu5l_el/wheels/38/9b/71/c2e2177d718a8fcb250664c2c6ed84b98b94589d7eb4d9fc04\nSuccessfully built glaciereq-tasklet-runtime\nInstalling collected packages: glaciereq-tasklet-runtime\nSuccessfully installed glaciereq-tasklet-runtime-1.0.0",
       "status": "PASS"
     },
     {
@@ -45,7 +45,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 1.045,
+      "elapsed_s": 1.069,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "39a5f3874f121eb7c8be62685d1d754f6e9bde05941dad069077b3dc96ff3f98",

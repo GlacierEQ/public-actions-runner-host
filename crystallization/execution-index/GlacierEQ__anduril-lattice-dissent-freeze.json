@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "269f6fff1bf9ccebd4dade20b4b2561adc28b7d40a19079a8eba269daca92695",
+  "evidence_digest": "f4e4defa89aff1aac6ac8552a00c30b52704445a7d2a247e7906f08a692c5714",
   "head_sha": "dbd4c9dc95156af5189b417f4113a9e14d936b74",
   "repository": "GlacierEQ/anduril-lattice-dissent-freeze",
   "repository_id": 1328440032,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.058,
+      "elapsed_s": 0.384,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,15 +26,20 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.013,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.741,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "aa1aec522071975ed4a45568f846ee0a01d98ac4f9c3f3213c27260631390eb7",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_evolution_is_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_is_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_critical_dissent_selects_deterministic_highest_severity_freeze (test_dissent_evolution.DissentEvolutionTests.test_critical_dissent_selects_deterministic_highest_severity_freeze) ... ok\ntest_duplicate_sensor_identity_is_rejected (test_dissent_evolution.DissentEvolutionTests.test_duplicate_sensor_identity_is_rejected) ... ok\ntest_medium_cluster_escalates_without_freezing (test_dissent_evolution.DissentEvolutionTests.test_medium_cluster_escalates_without_freezing) ... ok\ntest_multiple_dissent_hypotheses_remain_separate_clusters (test_dissent_evolution.DissentEvolutionTests.test_multiple_dissent_hypotheses_remain_separate_clusters) ... ok\ntest_recovery_refuses_new_freeze_or_insufficient_sensors (test_dissent_evolution.DissentEvolutionTests.test_recovery_refuses_new_freeze_or_insufficient_sensors) ... ok\ntest_recovery_requires_stability_and_only_recovers_to_review (test_dissent_evolution.DissentEvolutionTests.test_recovery_requires_stability_and_only_recovers_to_review) ... ok\ntest_tied_vote_is_stable_across_input_order (test_dissent_evolution.DissentEvolutionTests.test_tied_vote_is_stable_across_input_order) ... ok\ntest_agreement_observes (test_dissent_freeze.FreezeTests.test_agreement_observes) ... ok\ntest_high_dissent_freezes (test_dissent_freeze.FreezeTests.test_high_dissent_freezes) ... ok\ntest_insufficient_sensors (test_dissent_freeze.FreezeTests.test_insufficient_sensors) ... ok\ntest_completed_evolution_preserves_repository_identity (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_completed_evolution_preserves_repository_identity) ... ok\ntest_consumed_cursor_is_bound_to_exact_green_candidate (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_consumed_cursor_is_bound_to_exact_green_candidate) ... ok\ntest_next_cursor_advances_in_all_machine_surfaces (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_next_cursor_advances_in_all_machine_surfaces) ... ok\ntest_signature_authentication_remains_a_nonclaim (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_signature_authentication_remains_a_nonclaim) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 23 tests in 0.008s\n\nOK",
+      "status": "PASS"
     },
     {
       "command": [
@@ -42,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 8.848,
+      "elapsed_s": 10.784,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "0230e4ede3928ec3b12428c638dfd2dddaee0448424b73eb355008c93ee08789",

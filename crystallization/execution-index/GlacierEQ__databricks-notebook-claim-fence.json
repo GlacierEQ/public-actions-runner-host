@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "d1810dbe1cee3ce2d292f526467870d68d2fafc901875d1dd26abe29a3342fa6",
+  "evidence_digest": "3d2354f2d86ab833ccff4919906ca02d6e3ad77b5ab39ba372dfc8b27d9fb726",
   "head_sha": "abd179d5e4648907a42ee279cd85c25bbac9f97f",
   "repository": "GlacierEQ/databricks-notebook-claim-fence",
   "repository_id": 1328440587,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.061,
+      "elapsed_s": 0.059,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.347,
+      "elapsed_s": 0.115,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "3be4d20e50a299d27e906ca278579f9014e0201d590511d01933cad5b861fbec",
-      "output_tail": "...........................                                              [100%]\n27 passed in 0.07s",
+      "name": "python_unittest",
+      "output_sha256": "2338209213b940f2424a0078bf2bfb2c01953e6ef7f671c52102373caf766ce9",
+      "output_tail": "_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_name_repository_native_claim_fence_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_claim_fence_mechanisms) ... ok\ntest_evolution_and_claim_boundary_are_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_claim_boundary_are_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_claim_ceiling_and_identity_boundaries_do_not_inflate (test_evolution_contract.EvolutionContractTests.test_claim_ceiling_and_identity_boundaries_do_not_inflate) ... ok\ntest_consumed_cursor_is_exact_proof_bound (test_evolution_contract.EvolutionContractTests.test_consumed_cursor_is_exact_proof_bound) ... ok\ntest_next_cursor_is_consistent (test_evolution_contract.EvolutionContractTests.test_next_cursor_is_consistent) ... ok\ntest_blocks_unpromoted_production_claim (test_notebook_fence.FenceTests.test_blocks_unpromoted_production_claim) ... ok\ntest_bounded_policy_cannot_support_production_claim (test_notebook_fence.FenceTests.test_bounded_policy_cannot_support_production_claim) ... ok\ntest_cell_identity_is_one_shot_but_exact_rerecord_is_idempotent (test_notebook_fence.FenceTests.test_cell_identity_is_one_shot_but_exact_rerecord_is_idempotent) ... ok\ntest_duplicate_evaluation_receipt_identity_blocks (test_notebook_fence.FenceTests.test_duplicate_evaluation_receipt_identity_blocks) ... ok\ntest_duplicate_owner_identity_does_not_satisfy_quorum (test_notebook_fence.FenceTests.test_duplicate_owner_identity_does_not_satisfy_quorum) ... ok\ntest_exact_promotion_replay_is_idempotent_but_different_proof_cannot_rebind (test_notebook_fence.FenceTests.test_exact_promotion_replay_is_idempotent_but_different_proof_cannot_rebind) ... ok\ntest_invalid_quorum_fails_policy_construction (test_notebook_fence.FenceTests.test_invalid_quorum_fails_policy_construction) ... ok\ntest_legacy_unbound_record_cannot_promote (test_notebook_fence.FenceTests.test_legacy_unbound_record_cannot_promote) ... ok\ntest_missing_policy_specific_evaluation_check_blocks (test_notebook_fence.FenceTests.test_missing_policy_specific_evaluation_check_blocks) ... ok\ntest_owner_artifact_and_policy_mismatch_block (test_notebook_fence.FenceTests.test_owner_artifact_and_policy_mismatch_block) ... ok\ntest_policy_checks_and_unique_owner_quorum_promote_exact_artifact (test_notebook_fence.FenceTests.test_policy_checks_and_unique_owner_quorum_promote_exact_artifact) ... ok\ntest_policy_specific_claim_assertion_fails_closed (test_notebook_fence.FenceTests.test_policy_specific_claim_assertion_fails_closed) ... ok\ntest_wrong_artifact_or_policy_evaluation_receipt_blocks (test_notebook_fence.FenceTests.test_wrong_artifact_or_policy_evaluation_receipt_blocks) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_promotion_evidence_is_normalized_and_truth_bounded (test_sql_fixture.SQLFixtureTests.test_promotion_evidence_is_normalized_and_truth_bounded) ... ok\n\n----------------------------------------------------------------------\nRan 27 tests in 0.010s\n\nOK",
       "status": "PASS"
     }
   ]

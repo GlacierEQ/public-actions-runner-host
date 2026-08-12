@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "038922324ee500345050fcdf5fda67f732ae5dde67e4b3d1991b3ab925643677",
+  "evidence_digest": "180d54e8a24895e943e1b2aa12600df26e4f751fcfc585e1554d9d083779613c",
   "head_sha": "78693ffd4427d410cb7764b115207dd0571e90d2",
   "repository": "GlacierEQ/robotics-vla-torque-sentinel",
   "repository_id": 1311731434,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.275,
+      "elapsed_s": 0.104,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "d25b86e0069960772f6f194eebd8f83d0138ea97d0fc09d2c06f58c955ffeb14",
-      "output_tail": ".......                                                                  [100%]\n7 passed in 0.02s",
+      "name": "python_unittest",
+      "output_sha256": "868720a207dbfa3c2fe5b6636fd7be3288c3f2cba3166b2e4f8ebe45e033468e",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_torque_evaluation (test_robotics.TestRoboticsVLATorqueSentinel.test_torque_evaluation) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.001s\n\nOK",
       "status": "PASS"
     }
   ]

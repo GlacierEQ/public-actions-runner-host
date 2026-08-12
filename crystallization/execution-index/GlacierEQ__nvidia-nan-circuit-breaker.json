@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "3a527ff28814c2a49a3d09d51b4b44a9021abf42082142e8765e2c7596b4d7e7",
+  "evidence_digest": "29fc650b2b09c65d0403e5dc34c2c521ef2b86819a0847abcfc1cc8ccde89a69",
   "head_sha": "96d118820af8216f78a33271fc35e7bff53085cd",
   "repository": "GlacierEQ/nvidia-nan-circuit-breaker",
   "repository_id": 1328441142,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.058,
+      "elapsed_s": 0.055,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.309,
+      "elapsed_s": 0.101,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "5930b692551430b866832e4fba8810b763ab43a42faf65ddead4d007f707b2fe",
-      "output_tail": ".................                                                        [100%]\n17 passed in 0.04s",
+      "name": "python_unittest",
+      "output_sha256": "331aade58fd7d8765cfb59fe7be7abf48a2af882d2d28a74e3d5884743074b74",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_match_implemented_latched_breaker (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_match_implemented_latched_breaker) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_gradient_edge_is_complementary_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_gradient_edge_is_complementary_not_integrated) ... ok\ntest_identity_lineage_and_specialist_ownership_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_lineage_and_specialist_ownership_are_preserved) ... ok\ntest_machine_contract_is_valid_and_current (test_canonical_position_contract.CanonicalPositionContractTests.test_machine_contract_is_valid_and_current) ... ok\ntest_public_boundary_is_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_public_boundary_is_preserved) ... ok\ntest_evolution_cursor_is_material (test_excellence_state_contract.ExcellenceStateContractTests.test_evolution_cursor_is_material) ... ok\ntest_position_preserves_identity_and_lineage (test_excellence_state_contract.ExcellenceStateContractTests.test_position_preserves_identity_and_lineage) ... ok\ntest_state_is_canonical_and_evolving (test_excellence_state_contract.ExcellenceStateContractTests.test_state_is_canonical_and_evolving) ... ok\ntest_reset (test_nan_breaker.NBTests.test_reset) ... ok\ntest_trip (test_nan_breaker.NBTests.test_trip) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 0.003s\n\nOK",
       "status": "PASS"
     }
   ]

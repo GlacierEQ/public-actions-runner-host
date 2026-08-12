@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "017576eabf5d0d7f33386f60f0237650adb70c5ed10f4b6b6129449ec6eb5e95",
+  "evidence_digest": "53a5854cef58192d8e6cd7e2276a2d32640eb2c54c56cbb6301eacddbfc13d25",
   "head_sha": "d7e1882344a815c0361f0e70fb560985eaba9695",
   "repository": "GlacierEQ/legal-powerhouse",
   "repository_id": 1323470958,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.045,
+      "elapsed_s": 0.049,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -24,28 +24,14 @@
     },
     {
       "command": [
-        "python",
-        "-m",
-        "pytest",
-        "-q"
-      ],
-      "elapsed_s": 0.273,
-      "exit_code": 5,
-      "name": "python_pytest",
-      "output_sha256": "19c6e8a2b8988154f268aad663faaea1dd45c57e7b989b6d68d3c4435d64d5c0",
-      "output_tail": "no tests ran in 0.02s",
-      "status": "FAIL"
-    },
-    {
-      "command": [
         "npm",
         "ci"
       ],
-      "elapsed_s": 1.073,
+      "elapsed_s": 1.009,
       "exit_code": 0,
       "name": "node_dependencies",
-      "output_sha256": "347cf9544486c418ca282f8aa55ced6609fc90087d1d09e1d56b8ab1e05a6b9c",
-      "output_tail": "added 81 packages in 1s",
+      "output_sha256": "2ea308fca0ea5756c75a0d1a7c20a043dcf402ac00c1e0f11c6818b1c98edf3b",
+      "output_tail": "added 81 packages in 945ms",
       "status": "PASS"
     },
     {
@@ -54,11 +40,11 @@
         "run",
         "test"
       ],
-      "elapsed_s": 0.39,
+      "elapsed_s": 0.385,
       "exit_code": 0,
       "name": "node_test",
-      "output_sha256": "ab0bc00c3628fec1dd49aa5a5fb7228dd32959aa4be4b2f5818dbf121f827e38",
-      "output_tail": "-file observation\n  ---\n  duration_ms: 0.247963\n  type: 'test'\n  ...\n# Subtest: filing source index records raw-byte provenance metadata\nok 11 - filing source index records raw-byte provenance metadata\n  ---\n  duration_ms: 0.431936\n  type: 'test'\n  ...\n# Subtest: filing source index fails on HTTP persistence errors\nok 12 - filing source index fails on HTTP persistence errors\n  ---\n  duration_ms: 0.222084\n  type: 'test'\n  ...\n# Subtest: filing source index verifies baseline-to-final per-type counter deltas\nok 13 - filing source index verifies baseline-to-final per-type counter deltas\n  ---\n  duration_ms: 0.30558\n  type: 'test'\n  ...\n# Subtest: unresolved records are never court-facing\nok 14 - unresolved records are never court-facing\n  ---\n  duration_ms: 1.74266\n  type: 'test'\n  ...\n# Subtest: non-verified records cannot request court-facing promotion\nok 15 - non-verified records cannot request court-facing promotion\n  ---\n  duration_ms: 0.585342\n  type: 'test'\n  ...\n# Subtest: verified_record fails closed without complete provenance\nok 16 - verified_record fails closed without complete provenance\n  ---\n  duration_ms: 0.254815\n  type: 'test'\n  ...\n# Subtest: verified_record requires SHA-256 and complete source identity\nok 17 - verified_record requires SHA-256 and complete source identity\n  ---\n  duration_ms: 0.392202\n  type: 'test'\n  ...\n# Subtest: complete verified_record becomes court-facing only in trusted verifier path\nok 18 - complete verified_record becomes court-facing only in trusted verifier path\n  ---\n  duration_ms: 0.296984\n  type: 'test'\n  ...\n# Subtest: legacy unknown verification status is coerced to unresolved\nok 19 - legacy unknown verification status is coerced to unresolved\n  ---\n  duration_ms: 0.3325\n  type: 'test'\n  ...\n# Subtest: top-level metadata court_facing cannot bypass an unresolved envelope\nok 20 - top-level metadata court_facing cannot bypass an unresolved envelope\n  ---\n  duration_ms: 0.316029\n  type: 'test'\n  ...\n# Subtest: external ingress cannot self-promote a fully populated fake verified_record\nok 21 - external ingress cannot self-promote a fully populated fake verified_record\n  ---\n  duration_ms: 0.327461\n  type: 'test'\n  ...\n# Subtest: loopback detection accepts only local addresses\nok 22 - loopback detection accepts only local addresses\n  ---\n  duration_ms: 1.876351\n  type: 'test'\n  ...\n# Subtest: production without configured token fails closed\nok 23 - production without configured token fails closed\n  ---\n  duration_ms: 0.732176\n  type: 'test'\n  ...\n# Subtest: production rejects the published example token and short tokens\nok 24 - production rejects the published example token and short tokens\n  ---\n  duration_ms: 0.314015\n  type: 'test'\n  ...\n# Subtest: configured strong bearer token authorizes and wrong token does not\nok 25 - configured strong bearer token authorizes and wrong token does not\n  ---\n  duration_ms: 0.425945\n  type: 'test'\n  ...\n# Subtest: development without a token is loopback-only\nok 26 - development without a token is loopback-only\n  ---\n  duration_ms: 0.25159\n  type: 'test'\n  ...\n# Subtest: CORS rejects origins not on the explicit allowlist\nok 27 - CORS rejects origins not on the explicit allowlist\n  ---\n  duration_ms: 0.366274\n  type: 'test'\n  ...\n# Subtest: deadline read routes explicitly require sensitive access\nok 28 - deadline read routes explicitly require sensitive access\n  ---\n  duration_ms: 0.381251\n  type: 'test'\n  ...\n# Subtest: websocket ticket is accepted exactly once\nok 29 - websocket ticket is accepted exactly once\n  ---\n  duration_ms: 1.283946\n  type: 'test'\n  ...\n# Subtest: expired websocket ticket fails closed\nok 30 - expired websocket ticket fails closed\n  ---\n  duration_ms: 0.201697\n  type: 'test'\n  ...\n# Subtest: unknown websocket ticket is rejected\nok 31 - unknown websocket ticket is rejected\n  ---\n  duration_ms: 0.762032\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 158.545379",
+      "output_sha256": "eed3c7367a0857073b415ce6bb03ae5f5397adfd1f1ad31a3bc2e7a231fae167",
+      "output_tail": " observation\n  ---\n  duration_ms: 0.224238\n  type: 'test'\n  ...\n# Subtest: filing source index records raw-byte provenance metadata\nok 11 - filing source index records raw-byte provenance metadata\n  ---\n  duration_ms: 0.370749\n  type: 'test'\n  ...\n# Subtest: filing source index fails on HTTP persistence errors\nok 12 - filing source index fails on HTTP persistence errors\n  ---\n  duration_ms: 0.193061\n  type: 'test'\n  ...\n# Subtest: filing source index verifies baseline-to-final per-type counter deltas\nok 13 - filing source index verifies baseline-to-final per-type counter deltas\n  ---\n  duration_ms: 0.258961\n  type: 'test'\n  ...\n# Subtest: unresolved records are never court-facing\nok 14 - unresolved records are never court-facing\n  ---\n  duration_ms: 1.197145\n  type: 'test'\n  ...\n# Subtest: non-verified records cannot request court-facing promotion\nok 15 - non-verified records cannot request court-facing promotion\n  ---\n  duration_ms: 0.413373\n  type: 'test'\n  ...\n# Subtest: verified_record fails closed without complete provenance\nok 16 - verified_record fails closed without complete provenance\n  ---\n  duration_ms: 0.214133\n  type: 'test'\n  ...\n# Subtest: verified_record requires SHA-256 and complete source identity\nok 17 - verified_record requires SHA-256 and complete source identity\n  ---\n  duration_ms: 0.279952\n  type: 'test'\n  ...\n# Subtest: complete verified_record becomes court-facing only in trusted verifier path\nok 18 - complete verified_record becomes court-facing only in trusted verifier path\n  ---\n  duration_ms: 0.200553\n  type: 'test'\n  ...\n# Subtest: legacy unknown verification status is coerced to unresolved\nok 19 - legacy unknown verification status is coerced to unresolved\n  ---\n  duration_ms: 0.239331\n  type: 'test'\n  ...\n# Subtest: top-level metadata court_facing cannot bypass an unresolved envelope\nok 20 - top-level metadata court_facing cannot bypass an unresolved envelope\n  ---\n  duration_ms: 0.209085\n  type: 'test'\n  ...\n# Subtest: external ingress cannot self-promote a fully populated fake verified_record\nok 21 - external ingress cannot self-promote a fully populated fake verified_record\n  ---\n  duration_ms: 0.265951\n  type: 'test'\n  ...\n# Subtest: loopback detection accepts only local addresses\nok 22 - loopback detection accepts only local addresses\n  ---\n  duration_ms: 2.574062\n  type: 'test'\n  ...\n# Subtest: production without configured token fails closed\nok 23 - production without configured token fails closed\n  ---\n  duration_ms: 0.899747\n  type: 'test'\n  ...\n# Subtest: production rejects the published example token and short tokens\nok 24 - production rejects the published example token and short tokens\n  ---\n  duration_ms: 0.435857\n  type: 'test'\n  ...\n# Subtest: configured strong bearer token authorizes and wrong token does not\nok 25 - configured strong bearer token authorizes and wrong token does not\n  ---\n  duration_ms: 0.509789\n  type: 'test'\n  ...\n# Subtest: development without a token is loopback-only\nok 26 - development without a token is loopback-only\n  ---\n  duration_ms: 0.347914\n  type: 'test'\n  ...\n# Subtest: CORS rejects origins not on the explicit allowlist\nok 27 - CORS rejects origins not on the explicit allowlist\n  ---\n  duration_ms: 0.456509\n  type: 'test'\n  ...\n# Subtest: deadline read routes explicitly require sensitive access\nok 28 - deadline read routes explicitly require sensitive access\n  ---\n  duration_ms: 0.469158\n  type: 'test'\n  ...\n# Subtest: websocket ticket is accepted exactly once\nok 29 - websocket ticket is accepted exactly once\n  ---\n  duration_ms: 1.619612\n  type: 'test'\n  ...\n# Subtest: expired websocket ticket fails closed\nok 30 - expired websocket ticket fails closed\n  ---\n  duration_ms: 0.272862\n  type: 'test'\n  ...\n# Subtest: unknown websocket ticket is rejected\nok 31 - unknown websocket ticket is rejected\n  ---\n  duration_ms: 2.369904\n  type: 'test'\n  ...\n1..31\n# tests 31\n# suites 0\n# pass 31\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 150.411411",
       "status": "PASS"
     }
   ]

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "6d188cd9305f2e9d492b511268b1fc1b8915ca7b020f2211d99ccca57c59f1ce",
+  "evidence_digest": "85f3dfe0ad1ebb74a87a91e36754efbf68f7c299188566911a10e37b96416204",
   "head_sha": "d521217fe853152860412bc7b29717379616b266",
   "repository": "GlacierEQ/groq-jitter-envelope-contract",
   "repository_id": 1328440702,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.051,
+      "elapsed_s": 0.056,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.344,
+      "elapsed_s": 0.146,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "a04d018b67e4b83c2637683650822ac6251ad59705b98106afa53a688c633bb8",
-      "output_tail": ".....................                                                    [100%]\n21 passed in 0.09s",
+      "name": "python_unittest",
+      "output_sha256": "ec1898cd85936c0e25c7c21ae7d167d22de731329d30abfc3b2d009e634d4a08",
+      "output_tail": "test_absolute_hard_envelope_remains_non_adaptive (test_adaptive_jitter.AdaptiveJitterTests.test_absolute_hard_envelope_remains_non_adaptive) ... ok\ntest_change_point_hard_aborts_without_learning_bad_regime (test_adaptive_jitter.AdaptiveJitterTests.test_change_point_hard_aborts_without_learning_bad_regime) ... ok\ntest_learned_profile_breach_hard_aborts_when_change_threshold_is_loose (test_adaptive_jitter.AdaptiveJitterTests.test_learned_profile_breach_hard_aborts_when_change_threshold_is_loose) ... ok\ntest_snapshot_refuses_unknown_class (test_adaptive_jitter.AdaptiveJitterTests.test_snapshot_refuses_unknown_class) ... ok\ntest_unknown_empty_and_nonfinite_inputs_fail_closed (test_adaptive_jitter.AdaptiveJitterTests.test_unknown_empty_and_nonfinite_inputs_fail_closed) ... ok\ntest_workload_classes_learn_independently (test_adaptive_jitter.AdaptiveJitterTests.test_workload_classes_learn_independently) ... ok\ntest_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_preserve_legacy_names_and_add_adaptive_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_preserve_legacy_names_and_add_adaptive_mechanisms) ... ok\ntest_evolution_is_consumed_and_next_boundary_is_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_is_consumed_and_next_boundary_is_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_claim_ceiling_keeps_unproved_authority_out (test_evolution_contract.EvolutionContractTests.test_claim_ceiling_keeps_unproved_authority_out) ... ok\ntest_receipt_is_bound_to_exact_candidate_proof (test_evolution_contract.EvolutionContractTests.test_receipt_is_bound_to_exact_candidate_proof) ... ok\ntest_state_and_target_advance_together (test_evolution_contract.EvolutionContractTests.test_state_and_target_advance_together) ... ok\ntest_burst (test_jitter_envelope.JitterTests.test_burst) ... ok\ntest_pass_flat (test_jitter_envelope.JitterTests.test_pass_flat) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 21 tests in 0.010s\n\nOK",
       "status": "PASS"
     }
   ]

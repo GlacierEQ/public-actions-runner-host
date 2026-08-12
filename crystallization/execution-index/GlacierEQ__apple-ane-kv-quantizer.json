@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a1f67d12a84fa2685c1c7b3771da94622a01c94313a0ce686b9a94f1fc4d756c",
-  "head_sha": "3a2fecd5701f293c7e8974014e9f77e24669b02b",
+  "evidence_digest": "da3120c3566a05cc6ed052b285cdca74fdf41ab491a03937b35f208368e06129",
+  "head_sha": "2b257a5813a4586e20457ce48cccac9cce71a0cc",
   "repository": "GlacierEQ/apple-ane-kv-quantizer",
   "repository_id": 1311725532,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,26 +15,31 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.059,
-      "exit_code": 1,
+      "elapsed_s": 0.099,
+      "exit_code": 0,
       "name": "python_compile",
-      "output_sha256": "4141d83eca122a707fb6a2da4772caa5fabbc7762309ea9710f96bdda0fcb07b",
-      "output_tail": "*** Error compiling './src/apple_ane_kv_quantizer.py'...\n  File \"./src/apple_ane_kv_quantizer.py\", line 69\n    }\n    ^\nSyntaxError: unmatched '}'",
-      "status": "FAIL"
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
     },
     {
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.013,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.223,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "9067c29c3999928a7535ab6933e5c5780b3128507f1bdbce35e3787d14fdf019",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_int8_storage_model (test_ane.TestAppleANEKVQuantizer.test_int8_storage_model) ... ok\ntest_invalid_model_inputs_fail_closed (test_ane.TestAppleANEKVQuantizer.test_invalid_model_inputs_fail_closed) ... ok\ntest_kv_storage_model (test_ane.TestAppleANEKVQuantizer.test_kv_storage_model) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_quantizer_scale (test_quantizer.TestANEQuantizer.test_quantizer_scale) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.001s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

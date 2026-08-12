@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b2f3b327afdd35edca279ec408264aaac568b9efca04b4a0533c3861ebcc9fbd",
+  "evidence_digest": "9171bdbcec4342d609a0e3477f5d8a8eb52470f349f63408e23e5abcbfef96db",
   "head_sha": "b7a85b60b0e8359c93ea59a5c7bdeb8904d911fd",
   "repository": "GlacierEQ/nasa-telemetry-anomaly-receipt",
   "repository_id": 1328440971,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,15 +26,20 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.016,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.108,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "60f89bb9006577ae2566fe2fda525a2639573e47bbbe8194627ce50732c2d836",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_name_repository_native_telemetry_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_telemetry_mechanisms) ... ok\ntest_command_edge_is_complementary_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_command_edge_is_complementary_not_integrated) ... ok\ntest_evolution_and_public_boundary_are_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_public_boundary_are_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_ack_suppress (test_telemetry.TlmTests.test_ack_suppress) ... ok\ntest_hard (test_telemetry.TlmTests.test_hard) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.004s\n\nOK",
+      "status": "PASS"
     },
     {
       "command": [
@@ -42,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 7.974,
+      "elapsed_s": 10.876,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "9b68367f7ff29524976ce7a73ac084f7086bf8258156c0860dbcc43b1526b0fe",

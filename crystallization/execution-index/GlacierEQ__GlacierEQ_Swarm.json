@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "247a1a9418856790bb8e81b73b492060b5e50fcabe0c6913e0fab90a5ad0f9ea",
-  "head_sha": "f6e3f96acf376d8581c6bd4376f974a8c0b7c9fe",
+  "evidence_digest": "a1159648ab9a2a6c30d8591eb9d6993bf9697df883999c826d36c706d368a1ac",
+  "head_sha": "21c1fc7009c7f7c618396ab8c333990bd0ffc5db",
   "repository": "GlacierEQ/GlacierEQ_Swarm",
   "repository_id": 1303414196,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,26 +15,31 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.081,
-      "exit_code": 1,
+      "elapsed_s": 0.135,
+      "exit_code": 0,
       "name": "python_compile",
-      "output_sha256": "45ca68d71ed5141d84e15efeff7234218d8c60c4913c2c3864eb5cb987a2664d",
-      "output_tail": "*** Error compiling './automations/tests/test_crystallization_repo_worker_transport.py'...\n  File \"./automations/tests/test_crystallization_repo_worker_transport.py\", line 71\n    with patch.object(sys, \"stdin\", FakeStdin(b'{\"repository\":\"GlacierEQ/example\"}')),\n                                                                                      ^\nSyntaxError: invalid syntax",
-      "status": "FAIL"
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
     },
     {
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.008,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.4,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "1be1f1f405d896c6d4b6dd26cb826d7e4161ac42fb7907282ca792d6ea007430",
+      "output_tail": "sent; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_incomplete_result_remains_unresolved_and_next_generation_advances (test_crystallization_dispatch.CrystallizationDispatchTests.test_incomplete_result_remains_unresolved_and_next_generation_advances) ... ok\ntest_ledger_never_hides_unresolved_archives_or_forks (test_crystallization_dispatch.CrystallizationDispatchTests.test_ledger_never_hides_unresolved_archives_or_forks) ... ok\ntest_ledger_refuses_conflicting_result_under_same_task_identity (test_crystallization_dispatch.CrystallizationDispatchTests.test_ledger_refuses_conflicting_result_under_same_task_identity) ... ok\ntest_protocol_failure_exits_nonzero (test_crystallization_dispatch.CrystallizationDispatchTests.test_protocol_failure_exits_nonzero) ... ok\ntest_should_submit_never_treats_archive_or_fork_as_resolved (test_crystallization_dispatch.CrystallizationDispatchTests.test_should_submit_never_treats_archive_or_fork_as_resolved) ... ok\ntest_task_id_is_generation_addressed (test_crystallization_dispatch.CrystallizationDispatchTests.test_task_id_is_generation_addressed) ... ok\ntest_terminal_result_advances_only_that_repository (test_crystallization_dispatch.CrystallizationDispatchTests.test_terminal_result_advances_only_that_repository) ... ok\ntest_valid_incomplete_work_unit_exits_zero_as_truth_not_transport_failure (test_crystallization_dispatch.CrystallizationDispatchTests.test_valid_incomplete_work_unit_exits_zero_as_truth_not_transport_failure) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... skipped 'receipts not yet bound'\ntest_cold_start_demo_executes_real_swarm_lifecycle (test_swarm.TestGlacierEQSwarm.test_cold_start_demo_executes_real_swarm_lifecycle) ... ok\ntest_draining_worker_gets_no_new_work (test_swarm.TestGlacierEQSwarm.test_draining_worker_gets_no_new_work) ... ok\ntest_duplicate_worker_and_task_ids_are_refused (test_swarm.TestGlacierEQSwarm.test_duplicate_worker_and_task_ids_are_refused) ... ok\ntest_failed_task_requeues_to_alternate_worker (test_swarm.TestGlacierEQSwarm.test_failed_task_requeues_to_alternate_worker) ... ok\ntest_heartbeat_must_be_monotonic_and_can_recover_worker_health (test_swarm.TestGlacierEQSwarm.test_heartbeat_must_be_monotonic_and_can_recover_worker_health) ... ok\ntest_load_balances_equal_workers_deterministically (test_swarm.TestGlacierEQSwarm.test_load_balances_equal_workers_deterministically) ... ok\ntest_no_capable_worker_leaves_task_queued (test_swarm.TestGlacierEQSwarm.test_no_capable_worker_leaves_task_queued) ... ok\ntest_priority_dispatches_highest_value_first (test_swarm.TestGlacierEQSwarm.test_priority_dispatches_highest_value_first) ... ok\ntest_retry_budget_eventually_dead_letters_task (test_swarm.TestGlacierEQSwarm.test_retry_budget_eventually_dead_letters_task) ... ok\ntest_routes_by_capability_and_capacity (test_swarm.TestGlacierEQSwarm.test_routes_by_capability_and_capacity) ... ok\ntest_snapshot_round_trip_preserves_assignments_and_integrity (test_swarm.TestGlacierEQSwarm.test_snapshot_round_trip_preserves_assignments_and_integrity) ... ok\ntest_snapshot_tamper_is_refused (test_swarm.TestGlacierEQSwarm.test_snapshot_tamper_is_refused) ... ok\ntest_telemetry_chain_proves_lifecycle (test_swarm.TestGlacierEQSwarm.test_telemetry_chain_proves_lifecycle) ... ok\ntest_unhealthy_worker_requeues_active_work (test_swarm.TestGlacierEQSwarm.test_unhealthy_worker_requeues_active_work) ... ok\n\n----------------------------------------------------------------------\nRan 28 tests in 0.042s\n\nOK (skipped=1)",
+      "status": "PASS"
     }
   ]
 }

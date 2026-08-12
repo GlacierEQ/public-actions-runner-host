@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "69aaf212949139d424cb82ce7677b1423460ad43963c0d68838ec6de3de5da53",
+  "evidence_digest": "463d66ea1ca73cb25d2feb74d27a69aa320216ba25166e8d41e10afc9510253c",
   "head_sha": "4c1bc3593c40a5d0c09ef556bdf57a85891f3d09",
   "repository": "GlacierEQ/waymo-phantom-freespace-certificate",
   "repository_id": 1328442114,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.055,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "f3cdc3a39f97ebd441de02d821b581e5bee9048f28301f37c6b40350665b5217",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.308,
+      "elapsed_s": 0.109,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "94bdbaa7c44fc3a1d91682b73aff2a965f8a0b4708f748054c6eb951e4d22e80",
-      "output_tail": ".......................                                                  [100%]\n=============================== warnings summary ===============================\ntests/test_freespace.py:66\n  /tmp/crystal-exec-nm4rk1e_/repo/tests/test_freespace.py:66: SyntaxWarning: invalid escape sequence '\\['\n    with self.assertRaisesRegex(ValueError, \"\\[0,1\\]\"):\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n23 passed, 1 warning in 0.05s",
+      "name": "python_unittest",
+      "output_sha256": "9a2abcb16059f5a80c774a50652da7b138ac8ef8a8bdd527ec85552615046cfb",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_machine_state_is_evolving_after_exact_proof (test_canonical_position_contract.CanonicalPositionContractTests.test_machine_state_is_evolving_after_exact_proof) ... ok\ntest_proof_binds_exact_tested_source_and_run (test_canonical_position_contract.CanonicalPositionContractTests.test_proof_binds_exact_tested_source_and_run) ... ok\ntest_repository_owns_bounded_grid_certificate_not_driving_authority (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_bounded_grid_certificate_not_driving_authority) ... ok\ntest_truth_boundary_excludes_real_world_authority (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_excludes_real_world_authority) ... ok\ntest_uncertainty_lane_graph_is_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_uncertainty_lane_graph_is_not_integrated) ... ok\ntest_certificate_binds_exact_evidence_not_only_classification (test_freespace.FreeSpaceTests.test_certificate_binds_exact_evidence_not_only_classification) ... ok\ntest_certificate_binds_policy_even_when_outcome_same (test_freespace.FreeSpaceTests.test_certificate_binds_policy_even_when_outcome_same) ... ok\ntest_clear_corridor (test_freespace.FreeSpaceTests.test_clear_corridor) ... ok\ntest_empty_and_ragged_grids_refuse (test_freespace.FreeSpaceTests.test_empty_and_ragged_grids_refuse) ... ok\ntest_invalid_evidence_mass_refuses (test_freespace.FreeSpaceTests.test_invalid_evidence_mass_refuses) ... ok\ntest_invalid_policy_refuses (test_freespace.FreeSpaceTests.test_invalid_policy_refuses) ... ok\ntest_non_finite_evidence_refuses (test_freespace.FreeSpaceTests.test_non_finite_evidence_refuses) ... ok\ntest_occupied_cell_refuses_certificate (test_freespace.FreeSpaceTests.test_occupied_cell_refuses_certificate) ... ok\ntest_one_occupied_cell_cannot_hide_below_unknown_budget (test_freespace.FreeSpaceTests.test_one_occupied_cell_cannot_hide_below_unknown_budget) ... ok\ntest_unknown_not_free (test_freespace.FreeSpaceTests.test_unknown_not_free) ... ok\ntest_wrong_evidence_type_refuses (test_freespace.FreeSpaceTests.test_wrong_evidence_type_refuses) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 23 tests in 0.006s\n\nOK",
       "status": "PASS"
     }
   ]

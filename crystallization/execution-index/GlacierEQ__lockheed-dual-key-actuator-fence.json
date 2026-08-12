@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "42738c17834d37168ee2e021fa09eae2623160c8c755f330b9a2f6582adfc0f9",
+  "evidence_digest": "27b2f08478de88eae5e63a665dc59d9514f67490f70c66eefac52edac0c630f4",
   "head_sha": "992964add70855fa18c885f84f777350885e2883",
   "repository": "GlacierEQ/lockheed-dual-key-actuator-fence",
   "repository_id": 1328440764,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.066,
+      "elapsed_s": 0.071,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,15 +26,20 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.016,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.135,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "7978b92990eba0e9585ffd5b79d0aeed81470842a2c3a33b266597a99685ef75",
+      "output_tail": " (test_dual_key_fence.DualKeyLeveledTests.test_audit_chain_verifies) ... ok\ntest_audit_tamper_detected (test_dual_key_fence.DualKeyLeveledTests.test_audit_tamper_detected) ... ok\ntest_bad_mac_refuses (test_dual_key_fence.DualKeyLeveledTests.test_bad_mac_refuses) ... ok\ntest_concurrent_single_execution (test_dual_key_fence.DualKeyLeveledTests.test_concurrent_single_execution) ... ok\ntest_decision_fingerprint_changes_with_policy (test_dual_key_fence.DualKeyLeveledTests.test_decision_fingerprint_changes_with_policy) ... ok\ntest_digest_order_independence (test_dual_key_fence.DualKeyLeveledTests.test_digest_order_independence) ... ok\ntest_expired_grant_refuses (test_dual_key_fence.DualKeyLeveledTests.test_expired_grant_refuses) ... ok\ntest_happy_path_executes_once (test_dual_key_fence.DualKeyLeveledTests.test_happy_path_executes_once) ... ok\ntest_input_tamper_refuses (test_dual_key_fence.DualKeyLeveledTests.test_input_tamper_refuses) ... ok\ntest_missing_grant_refuses (test_dual_key_fence.DualKeyLeveledTests.test_missing_grant_refuses) ... ok\ntest_not_yet_valid (test_dual_key_fence.DualKeyLeveledTests.test_not_yet_valid) ... ok\ntest_policy_refuse_blocks_grant (test_dual_key_fence.DualKeyLeveledTests.test_policy_refuse_blocks_grant) ... ok\ntest_receipt_fingerprint_stable (test_dual_key_fence.DualKeyLeveledTests.test_receipt_fingerprint_stable) ... ok\ntest_side_effect_exception_refuses_and_releases_grant (test_dual_key_fence.DualKeyLeveledTests.test_side_effect_exception_refuses_and_releases_grant) ... ok\ntest_hardware_and_external_confirmation_claims_remain_bounded (test_evolution_contract.EvolutionContractTests.test_hardware_and_external_confirmation_claims_remain_bounded) ... ok\ntest_receipt_is_bound_to_exact_candidate (test_evolution_contract.EvolutionContractTests.test_receipt_is_bound_to_exact_candidate) ... ok\ntest_state_target_and_position_advance_together (test_evolution_contract.EvolutionContractTests.test_state_target_and_position_advance_together) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_distinct_required_roles_issue_attenuated_grant_and_execute_once (test_quorum_fence.QuorumFenceTests.test_distinct_required_roles_issue_attenuated_grant_and_execute_once) ... ok\ntest_duplicate_principal_cannot_inflate_quorum (test_quorum_fence.QuorumFenceTests.test_duplicate_principal_cannot_inflate_quorum) ... ok\ntest_expired_provider_confirmation_is_not_equivalent_to_valid_signature (test_quorum_fence.QuorumFenceTests.test_expired_provider_confirmation_is_not_equivalent_to_valid_signature) ... ok\ntest_grant_is_bound_to_decision_input_and_expiry (test_quorum_fence.QuorumFenceTests.test_grant_is_bound_to_decision_input_and_expiry) ... ok\ntest_hardware_provider_contract_can_satisfy_hardware_policy (test_quorum_fence.QuorumFenceTests.test_hardware_provider_contract_can_satisfy_hardware_policy) ... ok\ntest_hardware_required_policy_rejects_software_reference_provider (test_quorum_fence.QuorumFenceTests.test_hardware_required_policy_rejects_software_reference_provider) ... ok\ntest_revoked_provider_confirmation_cannot_be_replayed_into_grant (test_quorum_fence.QuorumFenceTests.test_revoked_provider_confirmation_cannot_be_replayed_into_grant) ... ok\ntest_role_substitution_cannot_satisfy_required_quorum (test_quorum_fence.QuorumFenceTests.test_role_substitution_cannot_satisfy_required_quorum) ... ok\ntest_scope_may_only_attenuate_never_expand (test_quorum_fence.QuorumFenceTests.test_scope_may_only_attenuate_never_expand) ... ok\ntest_tampered_signature_fails_before_quorum (test_quorum_fence.QuorumFenceTests.test_tampered_signature_fails_before_quorum) ... ok\n\n----------------------------------------------------------------------\nRan 38 tests in 0.014s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

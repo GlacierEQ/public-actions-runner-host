@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "8553b87690a4bb154057c626488fcba02a388012330635b239f7d7cf250a33e0",
+  "evidence_digest": "cdf4b6de541cfedb06bdf53bd58f1b78f7e3a34d95ae149b2470fc8860d554ca",
   "head_sha": "0c485f0d5c03b78f9bec360f30217713048643ec",
   "repository": "GlacierEQ/openai-reasoning-budget-futures",
   "repository_id": 1328441212,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.058,
+      "elapsed_s": 0.056,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.312,
+      "elapsed_s": 0.105,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287",
-      "output_tail": "..............                                                           [100%]\n14 passed in 0.04s",
+      "name": "python_unittest",
+      "output_sha256": "95370f027b31bb91cfb109f1edd1a083c37a618c83bf173cade93b3bdf862afc",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_entropy_freeze (test_budget_futures.BudgetTests.test_entropy_freeze) ... ok\ntest_meter (test_budget_futures.BudgetTests.test_meter) ... ok\ntest_over_budget (test_budget_futures.BudgetTests.test_over_budget) ... ok\ntest_capabilities_name_repository_native_budget_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_budget_mechanisms) ... ok\ntest_evolution_and_public_boundary_are_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_public_boundary_are_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_openai_edges_do_not_claim_integration (test_canonical_position_contract.CanonicalPositionContractTests.test_openai_edges_do_not_claim_integration) ... ok\ntest_specialist_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_specialist_identity_and_lineage_are_preserved) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.003s\n\nOK",
       "status": "PASS"
     }
   ]

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "40193061058d04f8659460820abac7aec79119991a657b41a3ae5fbdd0e93488",
+  "evidence_digest": "58c59918aa8c22a923dd3f3b12852103ca33ffdb1f9b9d405c5a17f0d22a3e7a",
   "head_sha": "3b4337348863308276f88d765036e2e75c89a62d",
   "repository": "GlacierEQ/meta-llama-collective-sentinel",
   "repository_id": 1311725893,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.055,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.295,
+      "elapsed_s": 0.101,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "8bed72fa6ff16ded567da73512bf0d69172bc59a9a8955a95cf846fce9b6b2c8",
-      "output_tail": "........                                                                 [100%]\n8 passed in 0.03s",
+      "name": "python_unittest",
+      "output_sha256": "ec0d8dd997bd7e7e85cbdae638c6597b08adda0b6abff4bffb34e2f453d603f1",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_bandwidth_avg (test_collective_monitor.TestMetaLlamaCollectiveMonitor.test_bandwidth_avg) ... ok\ntest_all_gather_optimization (test_meta.TestMetaLlamaCollectiveSentinel.test_all_gather_optimization) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK",
       "status": "PASS"
     }
   ]

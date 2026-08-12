@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "73b2183ced8f38f5a549b121c06daedf907768d52f94ee679575b04e9a4919f1",
+  "evidence_digest": "c9f4136ed5d50231bbe066759bbd6bb5c094146670315b1627ed614b980bb0d0",
   "head_sha": "addd98894f32e4709ecd56ef9219c1236e4c10c3",
   "repository": "GlacierEQ/scale-label-collusion-bound",
   "repository_id": 1328441599,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.054,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.305,
+      "elapsed_s": 0.109,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "89b11df7786789b93e56a1953ac1d788d35268672174a3227e9206b4ae9d70b1",
-      "output_tail": "..................                                                [100%]\n18 passed, 7 subtests passed in 0.04s",
+      "name": "python_unittest",
+      "output_sha256": "c3144d3987e621a621fe19e4035bfd2638423e6572ac8e84b3fe2faafcbf6dcc",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_repository_owns_screening_not_misconduct_adjudication (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_screening_not_misconduct_adjudication) ... ok\ntest_sibling_relationships_do_not_claim_integration (test_canonical_position_contract.CanonicalPositionContractTests.test_sibling_relationships_do_not_claim_integration) ... ok\ntest_target_reflects_earned_canonical_position (test_canonical_position_contract.CanonicalPositionContractTests.test_target_reflects_earned_canonical_position) ... ok\ntest_truth_boundary_keeps_anomaly_separate_from_misconduct (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_keeps_anomaly_separate_from_misconduct) ... ok\ntest_chance_uses_independent_annotator_marginals (test_collusion_bound.CollusionTests.test_chance_uses_independent_annotator_marginals) ... ok\ntest_detects_identical_ring (test_collusion_bound.CollusionTests.test_detects_identical_ring) ... ok\ntest_duplicate_annotator_item_refuses (test_collusion_bound.CollusionTests.test_duplicate_annotator_item_refuses) ... ok\ntest_empty_dimensions_refuse (test_collusion_bound.CollusionTests.test_empty_dimensions_refuse) ... ok\ntest_input_is_bound_into_report (test_collusion_bound.CollusionTests.test_input_is_bound_into_report) ... ok\ntest_invalid_policy_refuses (test_collusion_bound.CollusionTests.test_invalid_policy_refuses) ... ok\ntest_policy_is_bound_into_report (test_collusion_bound.CollusionTests.test_policy_is_bound_into_report) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 0.006s\n\nOK",
       "status": "PASS"
     }
   ]

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "6a02eadf0930e1d9aa3625f502486f91ed430222e9877d8c0b41988e1a4f9d58",
+  "evidence_digest": "9f745802685927470e7fe64249e46bb90676fe606a94e7e70ca227cba8f1bfdb",
   "head_sha": "670ce817bd1df5f0f491413386d079ced25ee6c7",
   "repository": "GlacierEQ/Pro-comet-agent",
   "repository_id": 1260815818,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "BROKEN_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.067,
+      "elapsed_s": 0.068,
       "exit_code": 1,
       "name": "python_compile",
       "output_sha256": "f41aee4503887c6878cfe68dcdf1aedefe3e90df08fa4c1d97bb795f47763ed5",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.3,
+      "elapsed_s": 0.102,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "f1131fb9f16224ae5da5577727e1901358a7867b7c1c76eeb427f9d0b7f36389",
-      "output_tail": ".......                                                                  [100%]\n7 passed in 0.04s",
+      "name": "python_unittest",
+      "output_sha256": "f283c7466fa443cff13314077c3931588545c86405fb3515a279ea4f67b0907d",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.001s\n\nOK",
       "status": "PASS"
     },
     {
@@ -41,7 +46,7 @@
         "npm",
         "ci"
       ],
-      "elapsed_s": 6.639,
+      "elapsed_s": 7.37,
       "exit_code": 0,
       "name": "node_dependencies",
       "output_sha256": "3090452002cba64c918d7f23919ab11485a9106bfbe6ccb50779a1008b483557",
@@ -54,11 +59,11 @@
         "run",
         "test"
       ],
-      "elapsed_s": 0.785,
+      "elapsed_s": 0.763,
       "exit_code": 0,
       "name": "node_test",
-      "output_sha256": "a4796a57022527b2c7c77cd547a0d3d0994c1d681980724c9b32deb1ce5a82f1",
-      "output_tail": "> comet-agent@2.0.0 test\n> jest\n\n\nPASS src/__tests__/smoke.test.ts\n  System Smoke Test\n    \u2713 Dependencies are loaded (2 ms)\n    \u2713 Environment is accessible\n\nTest Suites: 1 passed, 1 total\nTests:       2 passed, 2 total\nSnapshots:   0 total\nTime:        0.287 s\nRan all test suites.",
+      "output_sha256": "69ce9294b04c0309a3ef5d438db8bbd7b9fea91b8b08f9211cb523ecbf3b3ea4",
+      "output_tail": "> comet-agent@2.0.0 test\n> jest\n\n\nPASS src/__tests__/smoke.test.ts\n  System Smoke Test\n    \u2713 Dependencies are loaded (2 ms)\n    \u2713 Environment is accessible\n\nTest Suites: 1 passed, 1 total\nTests:       2 passed, 2 total\nSnapshots:   0 total\nTime:        0.291 s\nRan all test suites.",
       "status": "PASS"
     },
     {
@@ -67,7 +72,7 @@
         "run",
         "build"
       ],
-      "elapsed_s": 2.08,
+      "elapsed_s": 2.3,
       "exit_code": 2,
       "name": "node_build",
       "output_sha256": "6d62ee6868bd48bbf49c7cdc7dd759bfe62eef8e996ba8f6e4238a25e7a7c49b",

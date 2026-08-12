@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "3a9ab60a943867085b4fcdf80e54d3ace52fbb8c139da53d600c311757043242",
+  "evidence_digest": "f570c93d9617d8d712ee764498304bdb8e6dd3514c5d324bdb83895164485346",
   "head_sha": "8deca59d94be7b0a485137b2aab95d0392887f6b",
   "repository": "GlacierEQ/xai-actuation-receipt-bus",
   "repository_id": 1328442240,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.062,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.336,
+      "elapsed_s": 0.109,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "31c2d1f1636d192b2ee0d26abea016ff7cd9e6465952a5b2a5fd56e5286e47d3",
-      "output_tail": "..........................                                               [100%]\n26 passed in 0.06s",
+      "name": "python_unittest",
+      "output_sha256": "d6afa624ca43c1ce79b0605912ed84960940284683ec6eca796eab556837419b",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_claim_promotion_sibling_is_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_claim_promotion_sibling_is_not_integrated) ... ok\ntest_machine_state_is_evolving_after_exact_proof (test_canonical_position_contract.CanonicalPositionContractTests.test_machine_state_is_evolving_after_exact_proof) ... ok\ntest_proof_binds_exact_tested_source_and_run (test_canonical_position_contract.CanonicalPositionContractTests.test_proof_binds_exact_tested_source_and_run) ... ok\ntest_repository_owns_lifecycle_receipts_not_actuation_authority (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_lifecycle_receipts_not_actuation_authority) ... ok\ntest_truth_boundary_excludes_external_authority_and_replay_claims (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_excludes_external_authority_and_replay_claims) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_caller_mutation_does_not_rewrite_stored_evidence (test_receipt_bus.BusTests.test_caller_mutation_does_not_rewrite_stored_evidence) ... ok\ntest_completion_contract_must_be_nonempty_unique (test_receipt_bus.BusTests.test_completion_contract_must_be_nonempty_unique) ... ok\ntest_effector_exception_is_unverified_not_refused (test_receipt_bus.BusTests.test_effector_exception_is_unverified_not_refused) ... ok\ntest_empty_effector_result_is_unverified (test_receipt_bus.BusTests.test_empty_effector_result_is_unverified) ... ok\ntest_empty_precheck_cannot_authorize_actuation (test_receipt_bus.BusTests.test_empty_precheck_cannot_authorize_actuation) ... ok\ntest_event_chain_is_tamper_evident_across_different_payloads (test_receipt_bus.BusTests.test_event_chain_is_tamper_evident_across_different_payloads) ... ok\ntest_happy_chain (test_receipt_bus.BusTests.test_happy_chain) ... ok\ntest_illegal_transition_does_not_destroy_actuation_evidence (test_receipt_bus.BusTests.test_illegal_transition_does_not_destroy_actuation_evidence) ... ok\ntest_intent_id_cannot_be_rebound (test_receipt_bus.BusTests.test_intent_id_cannot_be_rebound) ... ok\ntest_missing_postcondition_is_unverified_not_refused (test_receipt_bus.BusTests.test_missing_postcondition_is_unverified_not_refused) ... ok\ntest_precheck_values_must_be_boolean (test_receipt_bus.BusTests.test_precheck_values_must_be_boolean) ... ok\ntest_precondition_fail_is_terminal (test_receipt_bus.BusTests.test_precondition_fail_is_terminal) ... ok\ntest_reintent_after_completion_does_not_restart_effector (test_receipt_bus.BusTests.test_reintent_after_completion_does_not_restart_effector) ... ok\ntest_unknown_intent_fails_closed (test_receipt_bus.BusTests.test_unknown_intent_fails_closed) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 0.008s\n\nOK",
       "status": "PASS"
     },
     {
@@ -42,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 11.179,
+      "elapsed_s": 11.375,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "5aac08596e1d214345f86f7f2444c4667a580f5b31b206e059ef875f305f9e9c",

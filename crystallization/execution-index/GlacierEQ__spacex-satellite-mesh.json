@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b2d415ee2f4bd17d7c0f0303b158881f685476730162b2b2af206c826629168f",
-  "head_sha": "0da2ea49471e765978b4e8cb27fbb5aa0d9ad517",
+  "evidence_digest": "796099ab6062279219376d20ad6db0373e36b8ae50131dafa2f3b802e1536f1f",
+  "head_sha": "489cff52ed1da8c5e7da0769807bad8b58ef394f",
   "repository": "GlacierEQ/spacex-satellite-mesh",
   "repository_id": 1282819584,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "TESTED_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.066,
+      "elapsed_s": 0.074,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,15 +26,44 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 3.144,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "005172c1f4fdcc7d7f60c788d2cb664b26c1be1454183b1c2636ae6fddf44c8d",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-l2i2fk1j/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-satellite-mesh\n  Building editable for glaciereq-satellite-mesh (pyproject.toml): started\n  Building editable for glaciereq-satellite-mesh (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-satellite-mesh: filename=glaciereq_satellite_mesh-1.0.0-0.editable-py3-none-any.whl size=5787 sha256=d3d0b63dc46447221c1e75bf72e713c4e045ef8949dfe93b5dbe35ae14b7ad5c\n  Stored in directory: /tmp/pip-ephem-wheel-cache-fesrvweb/wheels/28/cf/ea/7a5e47c72c56322d78f5fdc4553809dcdc7e16c7f6529773ab\nSuccessfully built glaciereq-satellite-mesh\nInstalling collected packages: glaciereq-satellite-mesh\nSuccessfully installed glaciereq-satellite-mesh-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.325,
+      "elapsed_s": 0.426,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "00f7ccd5a2d2b9bcc0bbf9c20b2a9ad908c3cabf8b098c2f4956e7213c61e49b",
-      "output_tail": ".....................                                                    [100%]\n21 passed in 0.06s",
+      "output_sha256": "0bfa7ba8a2aab94887db3b1ef94e4ee0a2c19fbed14478da4e9ed605aa2d5922",
+      "output_tail": "...............................                                          [100%]\n31 passed in 0.15s",
       "status": "PASS"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--all-targets"
+      ],
+      "elapsed_s": 0.006,
+      "exit_code": 1,
+      "name": "cargo_test",
+      "output_sha256": "05c678dccbf887d2e1584d69066fbceb6db80dd2cdc83f3ffab008b68e8f7e27",
+      "output_tail": "error: rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured.\nhelp: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.",
+      "status": "FAIL"
     }
   ]
 }

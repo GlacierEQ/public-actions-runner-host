@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "fb407a59de81fe59a6ebcfff536ab80eb6c43c5b2e4a64f8c5668fae8993b2d0",
-  "head_sha": "4e17cefd85be6a4a6441a91b3a1609ece0f7277b",
+  "evidence_digest": "831c9f27f22b27c68dd16aedeff153fdfe4f9458ff0ab8b725a91a8ffc3cb8d7",
+  "head_sha": "fe8b7f563b8f23c4ce6d104980d88134cbd72b60",
   "repository": "GlacierEQ/aws-trainium-neuron-sentinel",
   "repository_id": 1311726095,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -16,25 +16,30 @@
         "."
       ],
       "elapsed_s": 0.047,
-      "exit_code": 1,
+      "exit_code": 0,
       "name": "python_compile",
-      "output_sha256": "4aaf0e72de3af0df644cd813d60e1e4fa85987ed7fafc2194494cd98f41e2aaf",
-      "output_tail": "*** Error compiling './tests/test_adversarial.py'...\n  File \"./tests/test_adversarial.py\", line 187\n    >>>>>>> 74b205e (chore: Hyper Excellence Activation & structural matrix alignment)\n             ^\nSyntaxError: invalid decimal literal",
-      "status": "FAIL"
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
     },
     {
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.467,
-      "exit_code": 2,
-      "name": "python_pytest",
-      "output_sha256": "5c0296ca35f73d99f770bda17d8064b792ce1adcf1c4f53b725a41f1968f6c81",
-      "output_tail": "==================================== ERRORS ====================================\n__________________ ERROR collecting tests/test_adversarial.py __________________\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/_pytest/python.py:508: in importtestmodule\n    mod = import_path(\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/_pytest/pathlib.py:596: in import_path\n    importlib.import_module(module_name)\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:179: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:348: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/tmp/crystal-exec-afdcqcyp/repo/tests/test_adversarial.py\", line 187\nE       >>>>>>> 74b205e (chore: Hyper Excellence Activation & structural matrix alignment)\nE                ^\nE   SyntaxError: invalid decimal literal\n=========================== short test summary info ============================\nERROR tests/test_adversarial.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.20s",
-      "status": "FAIL"
+      "elapsed_s": 0.101,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "5f3c177ed3feb415c0559ddbfbaf031d95aff0a4b32a0b23a443db4113319b4c",
+      "output_tail": "test_fingerprint_stable (test_adversarial.Adv.test_fingerprint_stable) ... ok\ntest_invalid_core_counts_rejected (test_adversarial.Adv.test_invalid_core_counts_rejected) ... ok\ntest_invalid_latency_rejected (test_adversarial.Adv.test_invalid_latency_rejected) ... ok\ntest_invalid_workload_counts_rejected (test_adversarial.Adv.test_invalid_workload_counts_rejected) ... ok\ntest_historical_api_is_bounded_alias (test_aws.TestAWSTrainiumNeuronSentinel.test_historical_api_is_bounded_alias) ... ok\ntest_neuron_pipeline_scenario (test_aws.TestAWSTrainiumNeuronSentinel.test_neuron_pipeline_scenario) ... ok\ntest_gflops_computation (test_neuron.TestTrainiumNeuron.test_gflops_computation) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.001s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

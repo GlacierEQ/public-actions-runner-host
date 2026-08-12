@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "7d6628e236c1f309cee31b55e4f76e137adaa00e0871dfc2a63e6ae5e830c027",
+  "evidence_digest": "f279d632b75e4d3d09a4909f7b0c3ed3a4c24fe8d9798adce196bd3085005db7",
   "head_sha": "7bfdb2aa33f2ba95bb9b5b981e8930aa89e6c5f1",
   "repository": "GlacierEQ/waymo-uncertainty-lane-graph",
   "repository_id": 1328442171,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.049,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.312,
+      "elapsed_s": 0.106,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "b7379a9180b98874fa45da5f0c4c56006811b9002c0bf49283c509cdbf7821fe",
-      "output_tail": "..........................                                               [100%]\n26 passed in 0.05s",
+      "name": "python_unittest",
+      "output_sha256": "bf4d9fa3251dd89c7a540bdc697843e12153cb092634c9b91516aacaf722ad6c",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_freespace_sibling_is_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_freespace_sibling_is_not_integrated) ... ok\ntest_proof_binds_exact_tested_source_and_run (test_canonical_position_contract.CanonicalPositionContractTests.test_proof_binds_exact_tested_source_and_run) ... ok\ntest_repository_owns_uncertainty_topology_not_freespace (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_uncertainty_topology_not_freespace) ... ok\ntest_state_is_evolving_but_external_claim_ceiling_stays_promoted (test_canonical_position_contract.CanonicalPositionContractTests.test_state_is_evolving_but_external_claim_ceiling_stays_promoted) ... ok\ntest_truth_boundary_excludes_external_authority (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_excludes_external_authority) ... ok\ntest_canonical_position_preserves_independent_identity (test_excellence_state_contract.ExcellenceStateContractTests.test_canonical_position_preserves_independent_identity) ... ok\ntest_external_claim_ceiling_does_not_exceed_promotion_authority (test_excellence_state_contract.ExcellenceStateContractTests.test_external_claim_ceiling_does_not_exceed_promotion_authority) ... ok\ntest_principal_state_has_all_prerequisite_gates (test_excellence_state_contract.ExcellenceStateContractTests.test_principal_state_has_all_prerequisite_gates) ... ok\ntest_target_contract_matches_repository_and_state (test_excellence_state_contract.ExcellenceStateContractTests.test_target_contract_matches_repository_and_state) ... ok\ntest_blocked_never_routes (test_lane_graph.LaneTests.test_blocked_never_routes) ... ok\ntest_conflicting_edge_state_refuses (test_lane_graph.LaneTests.test_conflicting_edge_state_refuses) ... ok\ntest_decision_receipt_binds_graph_and_policy (test_lane_graph.LaneTests.test_decision_receipt_binds_graph_and_policy) ... ok\ntest_equal_hop_shortest_path_is_insertion_order_independent (test_lane_graph.LaneTests.test_equal_hop_shortest_path_is_insertion_order_independent) ... ok\ntest_exact_duplicate_edge_is_idempotent (test_lane_graph.LaneTests.test_exact_duplicate_edge_is_idempotent) ... ok\ntest_invalid_nodes_state_and_policy_refuse (test_lane_graph.LaneTests.test_invalid_nodes_state_and_policy_refuse) ... ok\ntest_least_uncertain_prefers_longer_free_route (test_lane_graph.LaneTests.test_least_uncertain_prefers_longer_free_route) ... ok\ntest_least_uncertain_uses_unknown_when_no_free_route_exists (test_lane_graph.LaneTests.test_least_uncertain_uses_unknown_when_no_free_route_exists) ... ok\ntest_refuses_unknown_by_default (test_lane_graph.LaneTests.test_refuses_unknown_by_default) ... ok\ntest_unknown_endpoint_refuses_without_phantom_self_route (test_lane_graph.LaneTests.test_unknown_endpoint_refuses_without_phantom_self_route) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 0.005s\n\nOK",
       "status": "PASS"
     },
     {
@@ -42,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.35,
+      "elapsed_s": 9.07,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "15cb23fb681a7a856fa5ef3f009a78cf1bedad68762354fa2e0dd08fb127c3b5",

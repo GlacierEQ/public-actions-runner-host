@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "4fa131f63a8bbeaff3a6c78a44349977ff16d1b3dce83cb8a9170b974723cd82",
+  "evidence_digest": "41e94cd2364aaf1437b608641d72c397890ff7f14a42dcee998ba206e2c9174b",
   "head_sha": "0e20c905dc442db45f7a6d59ba18cdbb054aef27",
   "repository": "GlacierEQ/command-center",
   "repository_id": 1331905763,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -12,11 +12,11 @@
         "npm",
         "ci"
       ],
-      "elapsed_s": 1.879,
+      "elapsed_s": 0.47,
       "exit_code": 0,
       "name": "node_dependencies",
-      "output_sha256": "6d3488c15ff5640eb0034e21e4cac090f87f55992968ab90572476eed3b7c89a",
-      "output_tail": "up to date in 2s",
+      "output_sha256": "43a8e2e5708bfa768a2ddec68b4c327e182a92914a0b075a845f4c81f535f3b3",
+      "output_tail": "up to date in 400ms",
       "status": "PASS"
     },
     {
@@ -25,11 +25,11 @@
         "run",
         "test"
       ],
-      "elapsed_s": 0.177,
+      "elapsed_s": 0.164,
       "exit_code": 0,
       "name": "node_test",
-      "output_sha256": "068d674abdfd4b305535f2ed289f3a1a74c31f00daf9710ee41a7dcd77e372de",
-      "output_tail": "> glaciereq-command-center@1.1.0 test\n> node --test tests/static-contract.test.mjs\n\nTAP version 13\n# Subtest: browser loads the data contract before application execution\nok 1 - browser loads the data contract before application execution\n  ---\n  duration_ms: 0.660525\n  type: 'test'\n  ...\n# Subtest: every table requested by the dashboard resolves to an ops-plane view\nok 2 - every table requested by the dashboard resolves to an ops-plane view\n  ---\n  duration_ms: 1.08091\n  type: 'test'\n  ...\n# Subtest: adapter translates legacy logical names and refuses arbitrary tables\nok 3 - adapter translates legacy logical names and refuses arbitrary tables\n  ---\n  duration_ms: 1.446729\n  type: 'test'\n  ...\n# Subtest: public view contract contains no legal, court, case, claim, or evidence surface\nok 4 - public view contract contains no legal, court, case, claim, or evidence surface\n  ---\n  duration_ms: 0.728525\n  type: 'test'\n  ...\n# Subtest: migration creates and grants every mapped public view\nok 5 - migration creates and grants every mapped public view\n  ---\n  duration_ms: 1.001026\n  type: 'test'\n  ...\n# Subtest: migration does not grant anon access to named legal/court/evidence objects\nok 6 - migration does not grant anon access to named legal/court/evidence objects\n  ---\n  duration_ms: 0.191506\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 51.955599",
+      "output_sha256": "6b794e456211282a131149029ab2354f1f4c81f144b7390fb70ee4d216c5ad9a",
+      "output_tail": "> glaciereq-command-center@1.1.0 test\n> node --test tests/static-contract.test.mjs\n\nTAP version 13\n# Subtest: browser loads the data contract before application execution\nok 1 - browser loads the data contract before application execution\n  ---\n  duration_ms: 0.711683\n  type: 'test'\n  ...\n# Subtest: every table requested by the dashboard resolves to an ops-plane view\nok 2 - every table requested by the dashboard resolves to an ops-plane view\n  ---\n  duration_ms: 1.051801\n  type: 'test'\n  ...\n# Subtest: adapter translates legacy logical names and refuses arbitrary tables\nok 3 - adapter translates legacy logical names and refuses arbitrary tables\n  ---\n  duration_ms: 1.236406\n  type: 'test'\n  ...\n# Subtest: public view contract contains no legal, court, case, claim, or evidence surface\nok 4 - public view contract contains no legal, court, case, claim, or evidence surface\n  ---\n  duration_ms: 0.654337\n  type: 'test'\n  ...\n# Subtest: migration creates and grants every mapped public view\nok 5 - migration creates and grants every mapped public view\n  ---\n  duration_ms: 0.880165\n  type: 'test'\n  ...\n# Subtest: migration does not grant anon access to named legal/court/evidence objects\nok 6 - migration does not grant anon access to named legal/court/evidence objects\n  ---\n  duration_ms: 0.190905\n  type: 'test'\n  ...\n1..6\n# tests 6\n# suites 0\n# pass 6\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 50.436827",
       "status": "PASS"
     }
   ]

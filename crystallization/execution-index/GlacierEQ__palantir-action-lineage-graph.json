@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "f204f351a748f320f5ee8f1f74d1c1617255d73f21db5711e417d60e9465e2c7",
+  "evidence_digest": "c27eadf7649182d0b26a968091527d50ad990021aac201ba0db47166fbf354d3",
   "head_sha": "5c18d0032da281a2f737f7c5107bbbca669b1469",
   "repository": "GlacierEQ/palantir-action-lineage-graph",
   "repository_id": 1328441342,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.053,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,15 +26,20 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.016,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "elapsed_s": 0.111,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "e156e223c9af2be5c3f05e4ba2a34b57bd50f7494b13bdd71c9b13585a34c4f5",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_repository_owns_only_causal_provenance (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_only_causal_provenance) ... ok\ntest_sibling_relationships_do_not_claim_integration (test_canonical_position_contract.CanonicalPositionContractTests.test_sibling_relationships_do_not_claim_integration) ... ok\ntest_target_reflects_earned_canonical_position (test_canonical_position_contract.CanonicalPositionContractTests.test_target_reflects_earned_canonical_position) ... ok\ntest_truth_boundary_excludes_authority_and_execution (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_excludes_authority_and_execution) ... ok\ntest_commit_snapshots_mutable_payload (test_lineage.LineageLeveledTests.test_commit_snapshots_mutable_payload) ... ok\ntest_duplicate_id (test_lineage.LineageLeveledTests.test_duplicate_id) ... ok\ntest_duplicate_parent_refuses (test_lineage.LineageLeveledTests.test_duplicate_parent_refuses) ... ok\ntest_lineage_fingerprint_binds_payload_content (test_lineage.LineageLeveledTests.test_lineage_fingerprint_binds_payload_content) ... ok\ntest_max_depth (test_lineage.LineageLeveledTests.test_max_depth) ... ok\ntest_missing_parent (test_lineage.LineageLeveledTests.test_missing_parent) ... ok\ntest_nodes_snapshot_cannot_mutate_graph_history (test_lineage.LineageLeveledTests.test_nodes_snapshot_cannot_mutate_graph_history) ... ok\ntest_nonroot_must_have_parent (test_lineage.LineageLeveledTests.test_nonroot_must_have_parent) ... ok\ntest_reaches_and_topo (test_lineage.LineageLeveledTests.test_reaches_and_topo) ... ok\ntest_root_and_child (test_lineage.LineageLeveledTests.test_root_and_child) ... ok\ntest_root_must_not_have_parent (test_lineage.LineageLeveledTests.test_root_must_not_have_parent) ... ok\ntest_side_effect_requires_attestation (test_lineage.LineageLeveledTests.test_side_effect_requires_attestation) ... ok\ntest_unknown_lineage_fingerprint_refuses (test_lineage.LineageLeveledTests.test_unknown_lineage_fingerprint_refuses) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_exported_proof_is_self_contained_and_verifiable (test_writeback_proof.WritebackProofTests.test_exported_proof_is_self_contained_and_verifiable) ... ok\ntest_missing_ancestor_refuses (test_writeback_proof.WritebackProofTests.test_missing_ancestor_refuses) ... ok\ntest_non_side_effect_cannot_be_exported_as_writeback_authority (test_writeback_proof.WritebackProofTests.test_non_side_effect_cannot_be_exported_as_writeback_authority) ... ok\ntest_payload_tamper_breaks_node_and_proof_integrity (test_writeback_proof.WritebackProofTests.test_payload_tamper_breaks_node_and_proof_integrity) ... ok\ntest_proof_digest_rewrite_cannot_hide_node_fingerprint_tamper (test_writeback_proof.WritebackProofTests.test_proof_digest_rewrite_cannot_hide_node_fingerprint_tamper) ... ok\ntest_unauthorized_writeback_claim_cannot_be_exported (test_writeback_proof.WritebackProofTests.test_unauthorized_writeback_claim_cannot_be_exported) ... ok\n\n----------------------------------------------------------------------\nRan 30 tests in 0.006s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

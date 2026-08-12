@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a24287c21a41a486185a7817030943615cadf783cd73c97d543ab9c4fe79a9c2",
+  "evidence_digest": "1b6fa1e687696243edfd906cb7a6796f4da9cf15985d183c0b1578ebef8c0916",
   "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
   "repository": "GlacierEQ/spacex-launch-sequencer",
   "repository_id": 1282819505,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.063,
+      "elapsed_s": 0.065,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.392,
+      "elapsed_s": 0.107,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "8e5642fe9278193d7baeb72d2a8d7bc71d8a4413512883438b557039f03067d7",
-      "output_tail": ".................                                                        [100%]\n17 passed in 0.13s",
+      "name": "python_unittest",
+      "output_sha256": "b7bb00f0d055c6f92b30d0f2a5199e0ea9ee62c57081c6d90524cd43c57bc5b8",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_advance_path_from_idle (test_sequencer.SequencerTests.test_advance_path_from_idle) ... ok\ntest_hold_blocks_advance (test_sequencer.SequencerTests.test_hold_blocks_advance) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK",
       "status": "PASS"
     },
     {
@@ -42,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 7.633,
+      "elapsed_s": 6.825,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "601a137305694aa85f21e3a51576b72c72ab57a9c3792a9b60f7167a42e43078",

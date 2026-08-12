@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "5541343d2dedfcf1a6b9c42ca7a96536ad8889570b761baa3a0c9a6fb9a0ceac",
+  "evidence_digest": "b7de625ae5d0b163b3c1ce0ee36e5ceae836f3c6ba2644ca82a5136965f878f7",
   "head_sha": "209c741c50a062e03f961601b4ffd4208e436cf9",
   "repository": "GlacierEQ/opera-neon-spatial-workspace",
   "repository_id": 1311738876,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.056,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.288,
+      "elapsed_s": 0.102,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "e2957564f042a4cc9de1e6d509b24a96d068f4331cfce877f83d1f1219f26deb",
-      "output_tail": ".......                                                                  [100%]\n7 passed in 0.03s",
+      "name": "python_unittest",
+      "output_sha256": "8046c2749fdb5544bde6c7a2b988ca4582e552bc7ff12f7dcbf8752f394c94a2",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_spatial_tab_addition (test_neon.TestOperaNeonSpatialWorkspace.test_spatial_tab_addition) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.001s\n\nOK",
       "status": "PASS"
     }
   ]

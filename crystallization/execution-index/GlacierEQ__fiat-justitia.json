@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "659b52c299b1ca2b5d8f7b97732a4a273971f5a18cf0fd81bbae85fb598618b4",
+  "evidence_digest": "89691f8aea7f1d435feb3e76312e9f28d67e201c1934fa01935cf3f0cacb6e9d",
   "head_sha": "74c279cdf2bd8992a98a3e8631f672846bc1225b",
   "repository": "GlacierEQ/fiat-justitia",
   "repository_id": 1323468703,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -29,13 +29,13 @@
         "pip",
         "install",
         "-e",
-        ".[test]"
+        "."
       ],
-      "elapsed_s": 3.382,
+      "elapsed_s": 3.64,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "04f9035b554afff249d44583ed3f41957311150683102b4cc0b8641092f0d3a7",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-dik7dn6k/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting protobuf<7,>=5 (from glaciereq-tower-of-babel==1.1.0)\n  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)\nDownloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)\nBuilding wheels for collected packages: glaciereq-tower-of-babel\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): started\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tower-of-babel: filename=glaciereq_tower_of_babel-1.1.0-0.editable-py3-none-any.whl size=2667 sha256=95a365952076572329490e4b415114ea0ba2a02c563446cde52d9d5c7d4a6eb1\n  Stored in directory: /tmp/pip-ephem-wheel-cache-y9dag0ux/wheels/7f/8b/28/479cd183e65210b5e03d99ba5009c6b332824b09a7a83e51d0\nSuccessfully built glaciereq-tower-of-babel\nInstalling collected packages: protobuf, glaciereq-tower-of-babel\n\nSuccessfully installed glaciereq-tower-of-babel-1.1.0 protobuf-6.33.6\n\nWARNING: glaciereq-tower-of-babel 1.1.0 does not provide the extra 'test'",
+      "output_sha256": "22c0bbe1af1fc7e6edb89fe0f3f72472f5a7af5e00bdc7bce0af5fd2f7957b81",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-c9va16ul/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting protobuf<7,>=5 (from glaciereq-tower-of-babel==1.1.0)\n  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)\nDownloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)\nBuilding wheels for collected packages: glaciereq-tower-of-babel\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): started\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tower-of-babel: filename=glaciereq_tower_of_babel-1.1.0-0.editable-py3-none-any.whl size=2667 sha256=1d89b6511a1bb806cbda44636454f63e919fdd3f0ddfd87c7a023c4df8c0ac88\n  Stored in directory: /tmp/pip-ephem-wheel-cache-6elq33d5/wheels/8e/8e/08/4180369f0be5f72c0e17bc4676b733acbae98304007743cf45\nSuccessfully built glaciereq-tower-of-babel\nInstalling collected packages: protobuf, glaciereq-tower-of-babel\n\nSuccessfully installed glaciereq-tower-of-babel-1.1.0 protobuf-6.33.6",
       "status": "PASS"
     },
     {
@@ -45,11 +45,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 1.943,
+      "elapsed_s": 3.239,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "cf1f2def2d30907c031b06ba0f34dc21fa8f2f305547332ae9d7a0178e080f95",
-      "output_tail": ".........................................................                [100%]\n57 passed in 1.68s",
+      "output_sha256": "fafccb585196392cb0ac11b77f36724286bc61924802c6d9c2a4fbbff5c33b9a",
+      "output_tail": ".........................................................                [100%]\n57 passed in 2.97s",
       "status": "PASS"
     },
     {
@@ -58,7 +58,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.968,
+      "elapsed_s": 11.058,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "155b74a2e1b91126dbc52a03f2eecbe7f373ad56fb8c047c2c4544b065fe3312",

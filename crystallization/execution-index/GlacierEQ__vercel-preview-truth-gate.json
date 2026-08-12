@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a7e8407010ad12456aa498eb08c6acbda9a7ba23ba37b794f5798b9858f4bf51",
+  "evidence_digest": "f3054e7ed4e43588640f788473e0e57c663fa83e9600e986194bcaa283f4bc47",
   "head_sha": "a719affbc8d4e2e917a8491bbd3bbb5fd2054f41",
   "repository": "GlacierEQ/vercel-preview-truth-gate",
   "repository_id": 1328442050,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.038,
+      "elapsed_s": 0.06,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.892,
+      "elapsed_s": 0.144,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "6015b9ed7e0d387b53447c711d2cea566844bb8f54fbfab032478f7264de505c",
-      "output_tail": "...........................................                              [100%]\n43 passed in 0.08s",
+      "name": "python_unittest",
+      "output_sha256": "32f8028821b280a904852eab8b6bc3b490298c1ba92d02d2d4fbf2ab6b82507d",
+      "output_tail": "ent_fails_semantic_check) ... ok\ntest_preview_metadata_cannot_mint_production_verified_claim (test_deployment_readback.DeploymentReadbackTests.test_preview_metadata_cannot_mint_production_verified_claim) ... ok\ntest_runtime_source_header_closes_metadata_gap (test_deployment_readback.DeploymentReadbackTests.test_runtime_source_header_closes_metadata_gap) ... ok\ntest_source_mismatch_refuses_even_when_http_probes_pass (test_deployment_readback.DeploymentReadbackTests.test_source_mismatch_refuses_even_when_http_probes_pass) ... ok\ntest_evolution_cursor_names_the_next_real_mechanism (test_excellence_state_contract.ExcellenceStateContractTests.test_evolution_cursor_names_the_next_real_mechanism) ... ok\ntest_position_preserves_identity_and_lineage (test_excellence_state_contract.ExcellenceStateContractTests.test_position_preserves_identity_and_lineage) ... ok\ntest_state_advances_only_after_exact_canonical_proof (test_excellence_state_contract.ExcellenceStateContractTests.test_state_advances_only_after_exact_canonical_proof) ... ok\ntest_evidence_mapping_is_frozen_at_construction (test_preview_gate.PreviewTests.test_evidence_mapping_is_frozen_at_construction) ... ok\ntest_invalid_target_and_strength_fail_closed (test_preview_gate.PreviewTests.test_invalid_target_and_strength_fail_closed) ... ok\ntest_lower_strength_production_claim_is_ceiling_allowed_not_proven (test_preview_gate.PreviewTests.test_lower_strength_production_claim_is_ceiling_allowed_not_proven) ... ok\ntest_preview_blocks_prod_claim (test_preview_gate.PreviewTests.test_preview_blocks_prod_claim) ... ok\ntest_production_verified_accepts_bound_readback (test_preview_gate.PreviewTests.test_production_verified_accepts_bound_readback) ... ok\ntest_production_verified_rejects_failed_semantics (test_preview_gate.PreviewTests.test_production_verified_rejects_failed_semantics) ... ok\ntest_production_verified_rejects_sha_mismatch (test_preview_gate.PreviewTests.test_production_verified_rejects_sha_mismatch) ... ok\ntest_production_verified_requires_evidence (test_preview_gate.PreviewTests.test_production_verified_requires_evidence) ... ok\ntest_production_verified_requires_named_semantic_invariant (test_preview_gate.PreviewTests.test_production_verified_requires_named_semantic_invariant) ... ok\ntest_receipt_is_deterministic_and_evidence_bound (test_preview_gate.PreviewTests.test_receipt_is_deterministic_and_evidence_bound) ... ok\ntest_semantic_check_names_must_be_machine_safe (test_preview_gate.PreviewTests.test_semantic_check_names_must_be_machine_safe) ... ok\ntest_semantic_check_values_must_be_boolean (test_preview_gate.PreviewTests.test_semantic_check_values_must_be_boolean) ... ok\ntest_source_refs_must_be_machine_safe (test_preview_gate.PreviewTests.test_source_refs_must_be_machine_safe) ... ok\ntest_staging_blocks_prod_claim (test_preview_gate.PreviewTests.test_staging_blocks_prod_claim) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_parse_checks (test_verify_deployment_claim.VerifyDeploymentClaimTests.test_parse_checks) ... ok\ntest_parse_checks_rejects_bad_boolean (test_verify_deployment_claim.VerifyDeploymentClaimTests.test_parse_checks_rejects_bad_boolean) ... ok\ntest_parse_checks_rejects_duplicate_name (test_verify_deployment_claim.VerifyDeploymentClaimTests.test_parse_checks_rejects_duplicate_name) ... ok\ntest_parse_checks_rejects_empty_name (test_verify_deployment_claim.VerifyDeploymentClaimTests.test_parse_checks_rejects_empty_name) ... ok\ntest_parse_checks_rejects_missing_separator (test_verify_deployment_claim.VerifyDeploymentClaimTests.test_parse_checks_rejects_missing_separator) ... ok\n\n----------------------------------------------------------------------\nRan 43 tests in 0.008s\n\nOK",
       "status": "PASS"
     }
   ]

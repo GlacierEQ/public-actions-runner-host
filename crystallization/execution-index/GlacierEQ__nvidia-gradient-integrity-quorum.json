@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "7639a9a61e462f7b1126a5b75a764721da1c9997d8b27f3dbd8be4edb5e6964c",
+  "evidence_digest": "0fe691658bf418dbc399a384814da238a0cc1b47b0f3628a172354a4a5750b58",
   "head_sha": "a5b03fd5a7f766d2f2116d62d9af56eed0f234b3",
   "repository": "GlacierEQ/nvidia-gradient-integrity-quorum",
   "repository_id": 1328441063,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.053,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.323,
+      "elapsed_s": 0.104,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "5070a6b9acedfdef101e604fa84b561e866a8322ac576fc316cba665d3aabcec",
-      "output_tail": ".............                                                            [100%]\n13 passed in 0.04s",
+      "name": "python_unittest",
+      "output_sha256": "806485f2c354acff9a99ba64ea309bea25da6a0328471a03ab91a77fe64bb540",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_name_repository_native_quorum_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_quorum_mechanisms) ... ok\ntest_evolution_and_public_boundary_are_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_public_boundary_are_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_lineage_and_specialist_ownership_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_lineage_and_specialist_ownership_are_preserved) ... ok\ntest_nvidia_edges_do_not_claim_integration (test_canonical_position_contract.CanonicalPositionContractTests.test_nvidia_edges_do_not_claim_integration) ... ok\ntest_commit_clean (test_gradient_quorum.GQTests.test_commit_clean) ... ok\ntest_isolate_poison (test_gradient_quorum.GQTests.test_isolate_poison) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.004s\n\nOK",
       "status": "PASS"
     }
   ]

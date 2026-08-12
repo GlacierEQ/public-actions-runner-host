@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "ee60eea02cee182dfce2017f77b46e6d40524eb605e0c28bc3b5b15c0e66d0f6",
+  "evidence_digest": "a7d57c95478814a789449dba7f8980e21483b17fc700cbf6696bcc375d3d597d",
   "head_sha": "7f8ca0a9d4e346b7350b30e2a9263a10b3baae26",
   "repository": "GlacierEQ/spacex-pad-weather-gate",
   "repository_id": 1298893525,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "TESTED_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.058,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -24,17 +24,14 @@
     },
     {
       "command": [
-        "python",
-        "-m",
-        "pytest",
-        "-q"
+        "__NOT_RUN_UNDECLARED_TEST_DEPENDENCY__"
       ],
-      "elapsed_s": 0.308,
-      "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "277f598dae6914efc2d2a72f1b0628e89c466705c8bce7d14ca91fec0678a3f4",
-      "output_tail": "....................                                                     [100%]\n20 passed in 0.05s",
-      "status": "PASS"
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "python_test_dependency",
+      "output_sha256": "504dd8bcd10a738e9bca0deab651ba9f0d4ed677b5073e56012416876a034e55",
+      "output_tail": "Tests require pytest but the repository does not declare pytest in package metadata, requirements, pytest config, or its native CI install contract.",
+      "status": "NOT_RUN_UNDECLARED_TEST_DEPENDENCY"
     },
     {
       "command": [
@@ -42,7 +39,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 7.423,
+      "elapsed_s": 6.842,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "d5aa2cd1b855eb11f1dd453cbc49ba50581c065b0840c98e425b6ac5e1dbb0dd",

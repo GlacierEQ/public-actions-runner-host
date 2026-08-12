@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "3b49d0cb851a682785e8f62cf32f4167132ada8599775b9ab9aafb54a3ba3423",
+  "evidence_digest": "80d35f01e1cd1552df4df2a3e3e9d890c8352145d376a7436fd5c3b27adc7bd8",
   "head_sha": "150a8ff31dd05fa1b35f50a1d693b9815d619f73",
   "repository": "GlacierEQ/vercel-deploy-claim-compiler",
   "repository_id": 1328441920,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.327,
+      "elapsed_s": 0.11,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "a7c471961ec3abe3c661fba9fe8f791b751b543cd12336cabb2a4c87cd26a16c",
-      "output_tail": "........................                                                 [100%]\n24 passed in 0.05s",
+      "name": "python_unittest",
+      "output_sha256": "4517ed62de12338b8bfcad8e0b1f81eaa159fa5e10d1f9c625a79a8b76cd6d82",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_machine_state_is_evolving_after_exact_proof (test_canonical_position_contract.CanonicalPositionContractTests.test_machine_state_is_evolving_after_exact_proof) ... ok\ntest_proof_binds_exact_tested_source_and_run (test_canonical_position_contract.CanonicalPositionContractTests.test_proof_binds_exact_tested_source_and_run) ... ok\ntest_repository_owns_evidence_graph_claim_compilation (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_evidence_graph_claim_compilation) ... ok\ntest_sibling_relationships_are_not_inflated_to_integration (test_canonical_position_contract.CanonicalPositionContractTests.test_sibling_relationships_are_not_inflated_to_integration) ... ok\ntest_truth_boundary_excludes_external_runtime_claims (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_excludes_external_runtime_claims) ... ok\ntest_allows_production_only_on_complete_chain (test_claim_compiler.CompilerTests.test_allows_production_only_on_complete_chain) ... ok\ntest_allows_tested (test_claim_compiler.CompilerTests.test_allows_tested) ... ok\ntest_blocks_deployed_without_linked_deploy (test_claim_compiler.CompilerTests.test_blocks_deployed_without_linked_deploy) ... ok\ntest_blocks_production_without_linked_uptime (test_claim_compiler.CompilerTests.test_blocks_production_without_linked_uptime) ... ok\ntest_deploy_and_uptime_require_subject_linkage (test_claim_compiler.CompilerTests.test_deploy_and_uptime_require_subject_linkage) ... ok\ntest_duplicate_receipt_identity_refused (test_claim_compiler.CompilerTests.test_duplicate_receipt_identity_refused) ... ok\ntest_empty_claim_text_refused (test_claim_compiler.CompilerTests.test_empty_claim_text_refused) ... ok\ntest_failed_receipts_do_not_support_chain (test_claim_compiler.CompilerTests.test_failed_receipts_do_not_support_chain) ... ok\ntest_graph_identity_changes_when_linkage_changes (test_claim_compiler.CompilerTests.test_graph_identity_changes_when_linkage_changes) ... ok\ntest_receipt_order_does_not_change_graph_or_report_identity (test_claim_compiler.CompilerTests.test_receipt_order_does_not_change_graph_or_report_identity) ... ok\ntest_test_receipt_cannot_claim_subject_linkage (test_claim_compiler.CompilerTests.test_test_receipt_cannot_claim_subject_linkage) ... ok\ntest_unknown_receipt_type_refused (test_claim_compiler.CompilerTests.test_unknown_receipt_type_refused) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 24 tests in 0.006s\n\nOK",
       "status": "PASS"
     }
   ]

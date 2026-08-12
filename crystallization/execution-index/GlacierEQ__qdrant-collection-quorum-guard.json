@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b4ea5c08379b988d62976e4a9123bb51034653de157da53c93d04b5870c0b491",
+  "evidence_digest": "b2c19cf6d2bb182c746e175777b7f4d753c3956ecb828041c7cc4b8801bbe7e5",
   "head_sha": "9f9130c0377cd9eaea83fe4ce6ebc0ea0e194076",
   "repository": "GlacierEQ/qdrant-collection-quorum-guard",
   "repository_id": 1329688454,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.053,
+      "elapsed_s": 0.047,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,9 +31,9 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.442,
+      "elapsed_s": 0.393,
       "exit_code": 0,
-      "name": "python_dependencies",
+      "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
       "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
       "status": "PASS"
@@ -45,11 +45,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.342,
+      "elapsed_s": 0.306,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "a929507797f2ae0fefe5ce7d9f3bec06eb05c2e998f246180c4c3dd0eee1c73a",
-      "output_tail": ".............                                                            [100%]\n13 passed in 0.05s",
+      "output_sha256": "5070a6b9acedfdef101e604fa84b561e866a8322ac576fc316cba665d3aabcec",
+      "output_tail": ".............                                                            [100%]\n13 passed in 0.04s",
       "status": "PASS"
     }
   ]

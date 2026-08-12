@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "4526954c289b5805d9629f55bf67f5cdb23d4c71114a74571d2500dc80c9d91d",
+  "evidence_digest": "cdb7dcb7cb1d6de492ff16e2dbafaa6d9ee65faf28da37d420c4cd16d1d7769a",
   "head_sha": "8571a92c313fa0733b4c7f4736f190aced1adbc4",
   "repository": "GlacierEQ/modal-ephemeral-sandbox-receipt",
   "repository_id": 1329688328,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -31,9 +31,9 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.36,
+      "elapsed_s": 0.364,
       "exit_code": 0,
-      "name": "python_dependencies",
+      "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
       "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
       "status": "PASS"
@@ -45,7 +45,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.288,
+      "elapsed_s": 0.293,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "980e44fa2d7beb6d61f0e76333d72425e9e05583c12571e206f378eff65e64d0",

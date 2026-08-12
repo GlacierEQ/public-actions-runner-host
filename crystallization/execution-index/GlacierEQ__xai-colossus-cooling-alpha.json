@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "ce0e6e9aa68356204045e9a25b30d29a780a36fbd0b0892b4e23f5d52b80d48b",
+  "evidence_digest": "46f207841c76e116718bbf31dc61e98b6c3733b36036547c37d9f2c5470e5aa7",
   "head_sha": "caccc2ec7e23ccbaeed74bae22c940b79d790b2a",
   "repository": "GlacierEQ/xai-colossus-cooling-alpha",
   "repository_id": 1276320261,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.059,
+      "elapsed_s": 0.06,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.584,
+      "elapsed_s": 0.107,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "7499119b6b58665a1fa4e5649ceddb3f04da0900e2d5a7b2a0ba962b62eb32ac",
-      "output_tail": "............                                                             [100%]\n12 passed in 0.04s",
+      "name": "python_unittest",
+      "output_sha256": "f283c7466fa443cff13314077c3931588545c86405fb3515a279ea4f67b0907d",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.001s\n\nOK",
       "status": "PASS"
     }
   ]

@@ -2,1229 +2,1353 @@
   "completion_claim_allowed": false,
   "coverage_complete": true,
   "expected_repository_count": 160,
-  "index_digest": "8265d8d924b865d4265885661c93aebf505cf46ccb2542dadb3228b5d9deb89a",
+  "index_digest": "d5dc9eef9cb6d3984c060542df5ea5454abcabd952726655ecb15b71f9a57fb1",
   "repositories": [
     {
-      "evidence_digest": "8a31d703b5944695242d16171a9bc10809b5f4fd42889c990a13f1c6f9825f13",
+      "evidence_digest": "b2019b42224f7d51c0e316556eb1c4a6a2076553bacae8929942277648a528ce",
       "failed_steps": [],
       "head_sha": "f4c56d2266d48d19bb9128bc41fb4080968533cb",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/adobe-creative-provenance-gate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "9300d8ed579c8c198ecd325e9c107ab56a3717fff7dac1b78a5b9a7308e4ce0a",
+      "evidence_digest": "9f6a0b7f0ba1dd5cccfade3c8f9ddb32c0497c22b3fa76e4dd39263bfa73808a",
       "failed_steps": [
-        "python_pytest",
         "node_test"
       ],
       "head_sha": "7fc91626f8c98c015d9de0812aabc340ac99709b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/AEON-777",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "02036fadcc923b68260975663b6139b6fa55c530e81c2cbbe5fe5cbb700243ec",
+      "evidence_digest": "a035f55165cd6da48e3717bc27ca3509bf18ace7b94ce38161b07c3183143f1d",
       "failed_steps": [],
       "head_sha": "c0c5d8b3d3e1adb47480a9619e10ed18ed1e3f76",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/ai-auto-driller-unified",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "4da3730268b2cebb908602cc67f01fb50800a330cf4e8b15576bf20252b820ee",
+      "evidence_digest": "c0b0441a0087d45d5c1d6ee125afa6a12ea88e0ef8a0e26d82806dc99471ca28",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "eac3cab001306225b99da41c37370528331966dd",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/AKOS",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "2978dfa8ee3db4aaa7fa5da5c572f09e3c7479bceea9f879eae2494ebd34a682",
+      "evidence_digest": "2c5229552ac3a3744f7f11c7fcef16b6adf184310716f7a93e6521308c297ea4",
       "failed_steps": [],
       "head_sha": "e19dea2fe713d0be9bab1a43f7ec2585dd21546e",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/amd-hetero-placement-contract",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "269f6fff1bf9ccebd4dade20b4b2561adc28b7d40a19079a8eba269daca92695",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "f4e4defa89aff1aac6ac8552a00c30b52704445a7d2a247e7906f08a692c5714",
+      "failed_steps": [],
       "head_sha": "dbd4c9dc95156af5189b417f4113a9e14d936b74",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/anduril-lattice-dissent-freeze",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "e0d7a72817e3f241b9bb3d29f26c3d4ad6bbdb0238599a6ba4757c3053c593e7",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "a110f964e448a3f202efffa040f359fd69857f063777491281235aefcf5befcf",
+      "failed_steps": [],
       "head_sha": "0a7c9b82172db55b4a7a2aeb1497760d8f493267",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/anduril-sensor-health-quorum",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "4adda11fdf1a54cb757e290824a563a672c72205f6ea85832e374e0322ac3ac9",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "cf5135376ff6c921062227415651e75d3bbf1b4c02e5f972033c9de4921028d5",
+      "failed_steps": [],
       "head_sha": "46f0061f27070e5bcfbfcfe77d5b06b0e014c31f",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/anduril-track-envelope-compiler",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "3cc78e619960bf38f3284e935de4a6a6f432d7de6a38febb6c6e398d9d59802d",
+      "evidence_digest": "7b3e5665d1eaa87183255aa6fe4c928fd45106099972e25473750fcfc722fee2",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "7d15bfaec0040e7a55d4b435abcf0fe9e7b19cb1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/anthropic-agent-coordinator",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "869ef6621bb5fb7c809fc535f1005f163b5e0e4931fbd5bebe354b4244cb51a3",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "9263489c4d3ccbaf6829b2383d311ab87aaefc219954c4e7fa371333806535cd",
+      "failed_steps": [],
       "head_sha": "0c930c04ffa473f0a0d93659f6b29e3620b95448",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/anthropic-constitutional-tool-transcript",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "be53d17e280ea7752b5e165d1849d2612148df5a7542ea223351ac3275fe2aad",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "6f6795983c6724c5d396a1a12ad3203df1b84f4bc58257dc366b0b3096901cad",
+      "failed_steps": [],
       "head_sha": "c2d1169ccba08aefc590925f7c5315d4de1fe1eb",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/anthropic-refusal-replay-harness",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a0e6729e57ff885309faba44f0c265834edf4afe254e08c792c9885a61fb30f3",
+      "evidence_digest": "69e2ca239ccf41c3d5417fe313c08bee448c93400699a07a56b37bda5d6ba315",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "6af397feea78829f494d61e98388bd4f9d90bcbe",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/anthropic-safety-monitor",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "e8d109f9a6b8ef702f8196c8240d3aaa1061942b95c0196984a939233a9b9bab",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "22e648bbbe2ebd287f424d41a9423bce5582ccef069cd4f0951994e5a1aa0c91",
+      "failed_steps": [],
       "head_sha": "d3a4757b8cea0b4247a717a463ce3674a6f17793",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/apex-cli",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "2cfd22ffbd5b9669e085e93e6bc996217030477ef328cd8a2d3b5c16871b8da5",
+      "evidence_digest": "bedcf4f13538f25746c663d40b95a551ec1cda6bdf83415f6325ac62547d172d",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "2357088e9e80ce4d1bf21527be2cd43b7dd9ac96",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/apex-control-plane",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a1f67d12a84fa2685c1c7b3771da94622a01c94313a0ce686b9a94f1fc4d756c",
-      "failed_steps": [
-        "python_compile",
-        "python_pytest"
-      ],
-      "head_sha": "3a2fecd5701f293c7e8974014e9f77e24669b02b",
+      "evidence_digest": "da3120c3566a05cc6ed052b285cdca74fdf41ab491a03937b35f208368e06129",
+      "failed_steps": [],
+      "head_sha": "2b257a5813a4586e20457ce48cccac9cce71a0cc",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/apple-ane-kv-quantizer",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "7010267c18e5a0ef5764216f6aa796dd2ddcaa83523576b26e2ac6bfbc2c321e",
+      "evidence_digest": "5c1e82cf487d8c39bc32e6c5b78dec6f00536c317f7013bdfd9454924c468127",
       "failed_steps": [],
-      "head_sha": "5c1b112e7624c60d3c1be25a5364c5f78050f87b",
+      "head_sha": "c9fbae33ffc7f125fd7ceeaf764e1a3bcaa904c4",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/atlassian-workgraph-intent-twin",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "fb407a59de81fe59a6ebcfff536ab80eb6c43c5b2e4a64f8c5668fae8993b2d0",
-      "failed_steps": [
-        "python_compile",
-        "python_pytest"
-      ],
-      "head_sha": "4e17cefd85be6a4a6441a91b3a1609ece0f7277b",
+      "evidence_digest": "831c9f27f22b27c68dd16aedeff153fdfe4f9458ff0ab8b725a91a8ffc3cb8d7",
+      "failed_steps": [],
+      "head_sha": "fe8b7f563b8f23c4ce6d104980d88134cbd72b60",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/aws-trainium-neuron-sentinel",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "c7ba62bfaaf17510c1b4c6bdd49fb38fb41801f2b2f8a608020c2b5a9dd3e912",
+      "evidence_digest": "30553a14e24e11c843b46c49388b23143b8421757e8413e0cae77e5e2253789f",
       "failed_steps": [],
       "head_sha": "493137351d32eeff8c3e63d94a4757fc089d51b1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/baseten-serving-slo-circuit",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "0e2b20f94a59c372191999581240e87a37cafe70136a0e737987fa4a4dbfd990",
+      "evidence_digest": "69c5a4c813012b8557219e89012d6c97d5691760d45d0f5623984f6529d84165",
       "failed_steps": [],
       "head_sha": "a84c3c375eb7dfef4e9bd808cb387f0ab0cec2c7",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/blue-origin-cryo-telemetry-half-life",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "272b2a4a560e68c404fbd78e48bf177e8a80c9414738fce65b3c98f9f49599f3",
+      "evidence_digest": "30f4b8bdb4bc37e582158e38147cb836f754e87b6f7270295d8e306f9472adaa",
       "failed_steps": [],
       "head_sha": "fbe24a5fdb945283c9db84e8ad8c2252f8fe5299",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/cerebras-wafer-batch-admission-gate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a11a25c0b45a8b502057f71fe32f4e944e790043031f35f6de9f5635812ff4d8",
+      "evidence_digest": "79edd5b9713616f014c80a2ff7e2acc14f01eae69770568acb9c47184cbff566",
       "failed_steps": [],
       "head_sha": "846b0f3492c3a03463a9b1b98ef8189c2badf95c",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/cloudflare-bot-intent-receipt",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "54e9a3fc2879444ac238c8ada78bac5c79446001cd2f06fbea30738a36e5c5af",
+      "evidence_digest": "0a9271108ab8a971b4321125e8054e020018f0b9555592d4ab8b43849182ea50",
       "failed_steps": [],
       "head_sha": "8eb8f4728998b2fe74498161b7e7e9e13bd6a8d3",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/cloudflare-edge-cap-mint",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "96c46ab2b44b6c5bf6518913a2cf277b90d081a7e970b9eb9d9d9d516e1a73ce",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "29b45db3a303019885e6279465d86ff065335f84c67748e6766d8c0539e86584",
+      "failed_steps": [],
       "head_sha": "35e263760911f6f025e8c0d53019e881b5efecab",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/cloudflare-workers-agent-cap",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a2cdcef49957731645b9ec638e057bc93a02314d3e2c34c3a3321eb9dc121c92",
+      "evidence_digest": "2fb5d6142929453833d071eda4dc36aa25c38613e1f780c105d184213a08c48c",
       "failed_steps": [],
       "head_sha": "e715788a036be087ec8adf02ae2aa5062141459b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/cognition-execution-checkpoint-lattice",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "334873477792e2e573841a6bde35c7a27a1a3dad16489ab07ea61523a2e86fb1",
+      "evidence_digest": "c4e836af0e64e04f4b80cf7ca3cf93c48fbdea529475eff4ee3fd2e9a80c31c1",
       "failed_steps": [],
       "head_sha": "0ab2b1cea38f6d57051497e1852da181a68ef641",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/cohere-retrieval-claim-fence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "5fbdd5f69f6d4cf2a560a913db8a60b162761d2f787ae8dd3055fef9f3c38b7e",
+      "evidence_digest": "c66d6640bf9f4adbfdfa6731cbb44be15855a1b3e6bc08b8b2200b918b3ca6c6",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "4581d1b894ae4588c1e60f784db66fe35b51a857",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/colossus-gateway",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "011de360542eed3bba4d6b287d75c4e09445b43268390184b9bfdab0d415ff56",
-      "failed_steps": [
-        "python_compile",
-        "python_pytest"
-      ],
-      "head_sha": "17f3bf11d4d10ed07ea07b8f346bc388a4e8bac1",
+      "evidence_digest": "216e8e59d6cd07e7a8d1457710711e340d5f954fddaa07820a6e9a690d03af04",
+      "failed_steps": [],
+      "head_sha": "165b321e86aa44afc23f9ce3bd1cf305d158b6bc",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/colossus-training-flux",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "733edfc4ed189ccb09983e1d53c867948d8d222c4a811f6d06cc7d233271b91c",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "1366ca092bbbfca95f7d251e672d02fa9bce5928009a8df05554a9a83182e1ae",
+      "failed_steps": [],
       "head_sha": "d2b828cc7b4fc12bc04da04408fe9288b34ecba0",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/comet-browser-agent-bridge",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "4fa131f63a8bbeaff3a6c78a44349977ff16d1b3dce83cb8a9170b974723cd82",
+      "evidence_digest": "41e94cd2364aaf1437b608641d72c397890ff7f14a42dcee998ba206e2c9174b",
       "failed_steps": [],
       "head_sha": "0e20c905dc442db45f7a6d59ba18cdbb054aef27",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/command-center",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "ae2f3d41e872fbca0cf2ffc9b9e0ea5e925277c3a9e1d591b9c32e993241c4ab",
+      "evidence_digest": "60cdbc3a503a33a086104a2389d95831e54aa3fb1c2614ba65445c853bf67218",
       "failed_steps": [
-        "python_pytest"
+        "python_unittest"
       ],
       "head_sha": "ad307c30ab53df53876c7ecaff6682964c5ae5b1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/computer-user-storage",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "8c0b8cb047fe540d477b82b319375747e17b5ea477a21997dd187e05d1d8ca97",
+      "evidence_digest": "0e88b022bab154a28346d07dadc67b5fa95ac42145348597cbbbbeb490144031",
       "failed_steps": [],
       "head_sha": "00a16452e2ec9274ffe4878aa8b4567fe3b9aa89",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/coreweave-rack-power-autopilot",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "9380c821e11cf9fe57b35f6dc2ccb06c8a1e51d5df82c95d5d61317e0de107aa",
+      "evidence_digest": "d965d012c8556344f58f0907d53010b1ae17c23290ecb9d814a4d70db0121ee2",
       "failed_steps": [],
       "head_sha": "f14f7a2cde849cad42078251cd5c374e97954fc1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/crusoe-rack-to-token-autopilot",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "776c7342cc8a2dcae427cc10b1330e98f53f5a1ec110aa3881bf74fb423aba90",
+      "evidence_digest": "3395cc361ed88a8d52079031d2c5abb9df076308bbea3739f9da2bc1514e4069",
       "failed_steps": [],
       "head_sha": "1820ee6fb1108a89c207423fa8b10c3a2779bb6f",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/cursor-patch-intent-twin",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "213d5be9aac60994d085ad495e0b04871bd3b7774b19924b8f9d8ba714074be0",
+      "evidence_digest": "d660c8d039133df6d2308812a64732efbf339be7d7e158c92d8b0294abf31a33",
       "failed_steps": [],
       "head_sha": "6efb0d0569454d7a57177f27ea1baa63af18292b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/databricks-feature-lineage-passport",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "d1810dbe1cee3ce2d292f526467870d68d2fafc901875d1dd26abe29a3342fa6",
+      "evidence_digest": "3d2354f2d86ab833ccff4919906ca02d6e3ad77b5ab39ba372dfc8b27d9fb726",
       "failed_steps": [],
       "head_sha": "abd179d5e4648907a42ee279cd85c25bbac9f97f",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/databricks-notebook-claim-fence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "5789bbe2b54e5d1914e48f2038768d4d32f873ea77292580a6aaaa0e694d8ee7",
+      "evidence_digest": "67d363f16f8d459ffeeed27c3e79d6a3a602abc4df6268b4325bc19632715cca",
       "failed_steps": [],
       "head_sha": "bc803d0517af73f4432f6b267f6f7132e5b7f465",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/deepmind-tpu-mesh-optimizer",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "fa80fcb8ce6fc57c51f8cb8795b53deebaac33217ba91c67aba9da18ed15eb2d",
-      "failed_steps": [
-        "python_compile",
-        "python_pytest"
-      ],
-      "head_sha": "38e4dd6d839ab95f703d6378cb3ddc3c99860b2a",
+      "evidence_digest": "5db214f0de9a6a252c3b94fe1086d2adcc68cd8f6704a1528e47a4a8b09813f4",
+      "failed_steps": [],
+      "head_sha": "6ebc5aed3ddcc0445b5d6914095d6627e9042ee5",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/deepseek-mla-moe-sentinel",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "91e1a43c70f7fc6c54a4d3935cb57e09f6f8d7fd12b9b3c06072e248bab8174c",
+      "evidence_digest": "4f0ce69de1236bec085bb57b87eb84cf1983adb126e65d045656d49eb9c1be4b",
       "failed_steps": [],
       "head_sha": "6acdb3be1739f1659f3cec9f4b7d39d5799cd476",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/ECHO",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "daf7c5a9b81eb2e0fd7979924e5dd0f1b8cb9b53215d48c57de0e75d8b13e6c1",
+      "evidence_digest": "917e50e5c7f385eed6220c96b4dcc2c47860c5691ffeff4d5f2d38b639925be0",
       "failed_steps": [],
       "head_sha": "971e3578b87e1702700040c347aa3d59c6e9523b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/elastic-trajectory-index-layout",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "659b52c299b1ca2b5d8f7b97732a4a273971f5a18cf0fd81bbae85fb598618b4",
+      "evidence_digest": "89691f8aea7f1d435feb3e76312e9f28d67e201c1934fa01935cf3f0cacb6e9d",
       "failed_steps": [],
       "head_sha": "74c279cdf2bd8992a98a3e8631f672846bc1225b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/fiat-justitia",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "8a440969284884907cd593e35520c92e7d3687fb7dbd9ac61e33580c6724c290",
+      "evidence_digest": "cf01399ef3a18880c921bf3887b0038bfe165a62f9cece862d73a92926bce251",
       "failed_steps": [],
       "head_sha": "2a9e463a9f14b29ab86bb023ab2ebf1067e76978",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/fireworks-ai-optimization-safety-envelope",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "6b40921055342a8d018e8ae441d7d84f0f27e8ab201376b81149303e1a91daca",
+      "evidence_digest": "30be41027f0501221b1f60ba274f017097c5ebb77944bb426e405db499f43e37",
       "failed_steps": [],
       "head_sha": "6c7c5b503905d6b0eb0500d527bee07da7bb5744",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/github-pr-authority-matrix",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "c783fe7929c5608b7657ef0dd173564705d436fec662a4165f3b0adb3ff971af",
+      "evidence_digest": "add98b30ba71aef79264b1a0f49736b566f7f1f6b621e9f58cbbdfbcabba92e5",
       "failed_steps": [],
       "head_sha": "7ebe929e0e6cb5148451e9a7628f7b3d342a312e",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/gitlab-pipeline-intent-contract",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "6aa21755ae79abf1fc8c58042af6be3910a7154f4e9ea3e2bb9af9804b5e0ecb",
+      "evidence_digest": "5e48468fd50745aedc4313f62ec9693ae5cfeab11a754f065a58ddc2044bdfdb",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "c147c2259190ff639a6428b60d6b2bde740c4af1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/glaciereq-excellence-core",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a8240ed08e59720049cb57afae7d06befc201a6790ffcec838c9f9db7ec9dfd4",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "30d8293d840d194f633d845eaabbcf830c89944044ef8099ee5c3a39cbd390ca",
+      "failed_steps": [],
       "head_sha": "665914a57b1019e366c0ee2253d904b41f881462",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/glaciereq-mcp-stack",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "247a1a9418856790bb8e81b73b492060b5e50fcabe0c6913e0fab90a5ad0f9ea",
-      "failed_steps": [
-        "python_compile",
-        "python_pytest"
-      ],
-      "head_sha": "f6e3f96acf376d8581c6bd4376f974a8c0b7c9fe",
+      "evidence_digest": "a1159648ab9a2a6c30d8591eb9d6993bf9697df883999c826d36c706d368a1ac",
+      "failed_steps": [],
+      "head_sha": "21c1fc7009c7f7c618396ab8c333990bd0ffc5db",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/GlacierEQ_Swarm",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "fb5aadccdf54c5b2adf8cf8d6faa1f69f02574cb836508f6acdb7d456303f31f",
+      "evidence_digest": "8fe7e3ce20eed489dafbbf4bc7c31c077d009f00bdbd307fcf4cb3637c1aa911",
       "failed_steps": [],
       "head_sha": "3fc863301d87b7faaece5ab98f5677a4f903ad2e",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/glean-enterprise-search-claim-fence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "3a71e467ea0fcb5b01a5833f5d9d46f8aa65855ad3070e083a63d8174ce86571",
+      "evidence_digest": "b58a97f5b74c0534796df52e8586204cabdbaf97297e3a27771a09661a4e595c",
       "failed_steps": [],
       "head_sha": "7982853ccf28f3354dff83b1fbc1517ca4b431c6",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/grokodile",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "23884e9d367d24cdb8bded3d2670c7961dd2c7fbb8164cb4e9d8123284b6a1d0",
+      "evidence_digest": "8fe891706580c4a064607f6b811a3f5061e7520d7766694bd5212f2ba8014d52",
       "failed_steps": [],
       "head_sha": "9245f6d62f750dc7e73553a3f95da5a8f26bfbba",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/groq-batch-admission-gate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "6d188cd9305f2e9d492b511268b1fc1b8915ca7b020f2211d99ccca57c59f1ce",
+      "evidence_digest": "85f3dfe0ad1ebb74a87a91e36754efbf68f7c299188566911a10e37b96416204",
       "failed_steps": [],
       "head_sha": "d521217fe853152860412bc7b29717379616b266",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/groq-jitter-envelope-contract",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "f1baca749028c1ef48dcb725cdbd2cfe74b796d6e704630bfbd82abb8083cd82",
+      "evidence_digest": "efb3b07acc86f236069bc2b403e68b99968e08ed2ebfedfa97059e40181de4f6",
       "failed_steps": [],
       "head_sha": "5fae0885ab537c23dc66bda8ac0ef4429c7ad75b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/hugging-face-model-card-provenance-seal",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "ff96142bd046a1eeae35e5516b7671155a20e872e4c77a593598add3b65b7eb5",
+      "evidence_digest": "78ac416856b7ed817a47fbedc425c4962b2f530b98a2ee00f76af46f58e1ea43",
       "failed_steps": [],
       "head_sha": "964f4088c74459248d471a0ab3ebf1d700af2325",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/ibm-governed-tool-catalog",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "77619041e5f3f82c44b626bc315adadb19246fe23ecf2183c0ea64f12cec404d",
+      "evidence_digest": "2491523f00230689804ec75eca8f7b72f8f9a4becac4cae8456529297f9e0aff",
       "failed_steps": [],
       "head_sha": "e80173e957bb4cc914c92e57a3bf5715aeaaca2f",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/intel-npu-placement-passport",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "026e24f41bdb7c608f1bff1c95296e77be4cf3e0b8494c92a7f80e00804f6854",
+      "evidence_digest": "99552e6e93f366b26452a40a1c9d84c14332dec365e5b017ce9421a9d3bdb9be",
       "failed_steps": [],
-      "head_sha": "09574d62bae2497b35f09208e921f5f9a0ef6a7c",
+      "head_sha": "b12d0f0a742078310e7df9fb0c082c5ea13e6a0d",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/job-app-helix",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "16a0dd81ff28135a2751f48c3ae92dfa409f6ffc6314512ffb087edfd4d444d0",
+      "evidence_digest": "22413d2593f3ef34d54d3c346f74ed0eb6fc10d6af2a52db016d5bb1d5e557ae",
       "failed_steps": [],
-      "head_sha": "e395a3abb6e315cd35fb13016fb43409c08f0c79",
+      "head_sha": "5e8e88463df6624764507a183f6609880bf80dbc",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/job-application",
-      "status": "INCOMPLETE_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "c0ba83646bd056f2e5424111750afea12b6dd650b7ee76bab52073ba3174ca7a",
-      "failed_steps": [
-        "python_compile",
-        "python_pytest"
-      ],
-      "head_sha": "7f9783d743d22d24ff940d4433d97763b6ec2bce",
+      "evidence_digest": "8ba7c9a385736bc3cd593be27fee6d21096d7db6603a1955d87e60c6f9f11fc1",
+      "failed_steps": [],
+      "head_sha": "dc7a9de8cff6583f0dfbd7bbd7f105da5a8bded1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/kimi-mooncake-kv-stream",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "464ac2ff4556938fd3354b70ac5f81bdaacb9374d39986156d764156d31e2740",
+      "evidence_digest": "4d9c2c0063c58111d0c399fd47ecf2ed536fdbbb9693b130b23ddce6073cb583",
       "failed_steps": [],
       "head_sha": "521d53b81300ed0edf3fa300b3113a54ad3c4bf4",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/lambda-useful-gpu-minute-contract",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "017576eabf5d0d7f33386f60f0237650adb70c5ed10f4b6b6129449ec6eb5e95",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "53a5854cef58192d8e6cd7e2276a2d32640eb2c54c56cbb6301eacddbfc13d25",
+      "failed_steps": [],
       "head_sha": "d7e1882344a815c0361f0e70fb560985eaba9695",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/legal-powerhouse",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "859008d0d19121b8fb9d202ed8e46858e121696e0d023f2f53c3273ed48efd7d",
+      "evidence_digest": "79f21072531f6c61c3854556d7fde632f1e63bd79f6d88fa6af585719797b20f",
       "failed_steps": [],
       "head_sha": "56e9f8ccbe3e62a112bc37ba0a9c181b3c025110",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/linear-issue-intent-twin",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "42738c17834d37168ee2e021fa09eae2623160c8c755f330b9a2f6582adfc0f9",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "27b2f08478de88eae5e63a665dc59d9514f67490f70c66eefac52edac0c630f4",
+      "failed_steps": [],
       "head_sha": "992964add70855fa18c885f84f777350885e2883",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/lockheed-dual-key-actuator-fence",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "4b88d2f3cfcaa10d7f4fd1689961d18f0ae3a525cde538e3963d68872d09d2ef",
+      "evidence_digest": "89605e141c3169abc1fe28ace6fbbae4f8bfd54d564e8ff21a9d58b85ae18b93",
       "failed_steps": [
-        "python_pytest"
+        "python_unittest"
       ],
       "head_sha": "ca85f8d711fe547a29dd77279ae250a6e21cac84",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/lockheed-evidence-binding-gateway",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "1b409ac4bb3d0728d82f5bc504e3e2751e3cf2622056a169d803d3a9331cd7a0",
+      "evidence_digest": "5d44b3721e03331de8fe36175267416b96d131891a686c4b48233bf4c561dcd0",
       "failed_steps": [],
       "head_sha": "140e8ab86a0201aa9fdb2150d3d80e60b0a397f2",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/lockheed-martin-mission-assurance-gateway",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "32d881b3024eb1311dccc2bcc43e6502ce327ca6a3729a35224c0145865c79a0",
+      "evidence_digest": "20bf2f1c9e2f06a8486a51f414c0c4389a65a106e19cdea46f5918166ae1cdee",
       "failed_steps": [],
       "head_sha": "b01b4c4ac65ea14c28fde9264a4ba2971475dc76",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/lockheed-mission-thread-isolator",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "59b8a4b00fcbab48b235e7d6ddb4413429d498b12bc203d1ae374d759fd6587e",
+      "evidence_digest": "15e30ffb6e399f562d1d80c2b5037d1f9e865fb4a70f833476bb4fd4fc90e55a",
       "failed_steps": [],
       "head_sha": "6e21abcee8448ce6c2c2bb3af71739a0487f5f74",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/lovable-design-app-synth",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "e3de72cead7bfafdb82005fe3319adb148e934d805646d8c1c9d8696b44c2cee",
+      "evidence_digest": "5f05a1b9804cc835a2a69e128bb3fee214761fb70b6ae977dc461b9726226db8",
       "failed_steps": [],
       "head_sha": "8d7de1d9f837af48702c62d9e70d9b6e5b1c123e",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/manus-autonomous-web-agent",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "457e04d07e60aa4956b8996912658781d49d5a55a326920640e50dd744e53b31",
+      "evidence_digest": "fe1271d13d6911d3c582a56214c6491c7b8a778461ecfa106b7f7b0753cc0938",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "dcab9475d668f2fba66b58d1ff45609b46132530",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/mastermind",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "1f366ea65d18c548e66a7a09d5ae3ba09a083f6e5758b97090b10f8b22e3df8b",
+      "evidence_digest": "6699e540fc7f9afa3c85de0d47af810e167174362bffe843cdb6fd9116159eb7",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "b70121db3ef1fad23ef6001234707bcabce21856",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/megamind",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "40193061058d04f8659460820abac7aec79119991a657b41a3ae5fbdd0e93488",
+      "evidence_digest": "58c59918aa8c22a923dd3f3b12852103ca33ffdb1f9b9d405c5a17f0d22a3e7a",
       "failed_steps": [],
       "head_sha": "3b4337348863308276f88d765036e2e75c89a62d",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/meta-llama-collective-sentinel",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "35ab2f1d8d981b6ef1811dfbfc9ad489266b82e23377cbea1c61e5249168cf09",
+      "evidence_digest": "ff55f726a9bfa606f607b7525b3f8255a7173ef0827005e64136e94f676eaa0f",
       "failed_steps": [],
       "head_sha": "c0b0e805512c4f86276d4d167a8582eba63d729b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/microsoft-azure-ops",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "40bace4166084bb6c95720b012d8764ee5e44952b1f517690abbcdcbb3c61966",
+      "evidence_digest": "9165a2346d015846616573fe89f252388c5740804208eefacf27c61202cc7a71",
       "failed_steps": [],
       "head_sha": "e32ce938992599aa411528f561eaf58c3cf0500d",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/microsoft-identity-zero-trust",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "38930a7b69c913086f212299a9af741316bed513d061575d225dc6485f938c87",
+      "evidence_digest": "ebc6cd13791b43c8bd1a2a4ca29dbd8222660d1c7971784c1348fafcbd83b577",
       "failed_steps": [],
       "head_sha": "83498ddbd6177907b6a753957e81014701874e9d",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/mistral-open-weight-eval-fence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "4526954c289b5805d9629f55bf67f5cdb23d4c71114a74571d2500dc80c9d91d",
+      "evidence_digest": "cdb7dcb7cb1d6de492ff16e2dbafaa6d9ee65faf28da37d420c4cd16d1d7769a",
       "failed_steps": [],
       "head_sha": "8571a92c313fa0733b4c7f4736f190aced1adbc4",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/modal-ephemeral-sandbox-receipt",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "7ea2b03dd5c293ab32d907b87c0f64b323256702b549bbd86a688bec0f251dc4",
+      "evidence_digest": "e4ff36f896e9c8495c859553aba326d61346b7329eb82a807fff5f0b4b7e7449",
       "failed_steps": [],
       "head_sha": "ecbe0b3d06b6e26521abccded6d8c5c8c3c34e94",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/mongodb-operational-semantic-twin-index",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "f1a551f744131000d4bb7c7ad1b9dd0d6d2116eb407f946b7c84295ca44aeebc",
+      "evidence_digest": "b9904ec4cddf03873ff2f1371f2dbf7b719ec36aaaa3d384b21763c437176bd4",
       "failed_steps": [],
       "head_sha": "7021cc670f67bf85b289f01ee38eeb355d5ca0e0",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/motherduck-local-cloud-query-passport",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "3cd870d38db617594ebc63d3e1672563c49cfd708ae6abc701ce5c0c79540569",
+      "evidence_digest": "7ed59e68a6d4e3475a932a1f0ececcc2ca7046ae6d4f027bcb0ae0ba949a11b7",
       "failed_steps": [],
       "head_sha": "5b6c8a158e0477def60c61210faffc1210d3698a",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/nasa-command-authority-half-life",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "b2f3b327afdd35edca279ec408264aaac568b9efca04b4a0533c3861ebcc9fbd",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "9171bdbcec4342d609a0e3477f5d8a8eb52470f349f63408e23e5abcbfef96db",
+      "failed_steps": [],
       "head_sha": "b7a85b60b0e8359c93ea59a5c7bdeb8904d911fd",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/nasa-telemetry-anomaly-receipt",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "136fb34e6f030508aa198a3b76f7092bb5e3632002ea4bf0c8279a1f6416160c",
+      "evidence_digest": "99a4a9c754188b6280d41e58f332a58de202f330ebdf3c87cec11f29400e6696",
       "failed_steps": [],
       "head_sha": "e8bc4054babda2be16ea68143e2f273ab39a1127",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/nebius-cluster-energy-admission",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "af5bfc2c923e13e84088380a2fbcb3ce292e8b897564ba50a01e1500bcaffdae",
+      "evidence_digest": "ff42cf207a0a13771dcb3b9d49b0a3cbe4abe85e1c7e13988e0406cb9e1dcbb0",
       "failed_steps": [],
       "head_sha": "c7008ca071445dbdeb5880d50de7f6b416df9c7b",
+      "incomplete_steps": [
+        "node_dependencies",
+        "node_test",
+        "node_build"
+      ],
       "repository": "GlacierEQ/notion-mcp-empowerment-engine",
       "status": "INCOMPLETE_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "8683e3ff289b3180a216e5fdeb8283811f5a51a77a3b03694025c9b56d3943a9",
+      "evidence_digest": "919bcfc7c8bd03d7cae1b7bc7d471024f85308582b112cb5914a5360349a172b",
       "failed_steps": [],
       "head_sha": "5ea89b5df1eaea35b88ee3d967c46cd9e21260c7",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/notion-workflow-intelligence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "f3da980edb9e6df50ef309dc8c7485daec4678c7c12206af66857985cef72cb1",
+      "evidence_digest": "184ac3c48397110d9f1ea5919fff1cd5fea180965243c8b9f02076b80cc04ff7",
       "failed_steps": [],
       "head_sha": "da58d8ed33d66c2ebea91f7dc53090cf677a1f76",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/notion-workspace-optimizer",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "614899c5c04bf8323591aa292363220b874e64065044f81d19361fe6ceb5e703",
+      "evidence_digest": "f606fbe6b5d1da78af249c4324d00bac977dbd6f7ba3d3229a3ac440a66ae607",
       "failed_steps": [],
       "head_sha": "53adb1c1a82f9906a036b2dafca3ca24eb5c325c",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/nvidia-deep-reasoning",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "3ae9f804e064dbc45b6e50556f586a2ca78270b95b8b8d3d9d31653b51345ffc",
-      "failed_steps": [
-        "python_pytest"
-      ],
-      "head_sha": "0d9df45f6b41d9c253b9aa762a366d0f5094936d",
+      "evidence_digest": "ee061cabd99cd406bc0cf9be9e952981e3c102fba5486e2aebf86f82ddf43c88",
+      "failed_steps": [],
+      "head_sha": "0e1a6b5b5315549298e0414238f3c2923a521000",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/nvidia-gpu-health",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "7639a9a61e462f7b1126a5b75a764721da1c9997d8b27f3dbd8be4edb5e6964c",
+      "evidence_digest": "0fe691658bf418dbc399a384814da238a0cc1b47b0f3628a172354a4a5750b58",
       "failed_steps": [],
       "head_sha": "a5b03fd5a7f766d2f2116d62d9af56eed0f234b3",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/nvidia-gradient-integrity-quorum",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "3a527ff28814c2a49a3d09d51b4b44a9021abf42082142e8765e2c7596b4d7e7",
+      "evidence_digest": "29fc650b2b09c65d0403e5dc34c2c521ef2b86819a0847abcfc1cc8ccde89a69",
       "failed_steps": [],
       "head_sha": "96d118820af8216f78a33271fc35e7bff53085cd",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/nvidia-nan-circuit-breaker",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "8553b87690a4bb154057c626488fcba02a388012330635b239f7d7cf250a33e0",
+      "evidence_digest": "cdf4b6de541cfedb06bdf53bd58f1b78f7e3a34d95ae149b2470fc8860d554ca",
       "failed_steps": [],
       "head_sha": "0c485f0d5c03b78f9bec360f30217713048643ec",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/openai-reasoning-budget-futures",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "2973bb5a4b91b737804b86d619040623529ce250f99c0d51fe6a386c2dacf4cf",
+      "evidence_digest": "9a7b4ea931df8ea478c16820a09fad99232bb96db38be1f2b01c1cf6f323bcea",
       "failed_steps": [],
       "head_sha": "9cd23baaaf00c02cfaca156899257a9264797fa2",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/openai-reasoning-kv-sentinel",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "0973eac9c5be681603c9a3b423782fe2967c60577da262650697c3de8b3dd5ed",
+      "evidence_digest": "c555ac420dae420ceb8a47b1a8109edca85a573836e1a46b682c8775fb96a476",
       "failed_steps": [],
       "head_sha": "e8b95ee5821d2438665930466dc6a9600ac703c2",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/openai-tool-authority-matrix",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "76422bf58a8a4d3616cf727f859f05c3eebf47177884ca92c2cb6f7da538cd41",
+      "evidence_digest": "32a1731da57badc6965ea88ea10c626cbda46f193162d05766dbcfa1cf41520a",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "e29d1eccbeda725cef2ee7816caea2f6816c899e",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/openclaw",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "5c1ce219a08303b2d99e5b3f2421af625f3a36f22c03a7e48bcf7080929a7760",
+      "evidence_digest": "79b6ffdc5a4e1d11adac58db020ebdc34889ceb59d117a47eeae76542305ab6f",
       "failed_steps": [],
       "head_sha": "d33c77644e6ebb883580ef7f6691acae2c60ece9",
+      "incomplete_steps": [
+        "python_test_dependency"
+      ],
       "repository": "GlacierEQ/opencode",
-      "status": "BUILDABLE_EXECUTION_EVIDENCE"
+      "status": "INCOMPLETE_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "5541343d2dedfcf1a6b9c42ca7a96536ad8889570b761baa3a0c9a6fb9a0ceac",
+      "evidence_digest": "b7de625ae5d0b163b3c1ce0ee36e5ceae836f3c6ba2644ca82a5136965f878f7",
       "failed_steps": [],
       "head_sha": "209c741c50a062e03f961601b4ffd4208e436cf9",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/opera-neon-spatial-workspace",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "0153420643b1c049ac2eb25560b98c6fb658a154acdc5bfeb13dc9e875dcae48",
+      "evidence_digest": "5f97eaa2780cb2d62b0b88f13b557eaf383b837430a0565e270dc2e7006fb6c2",
       "failed_steps": [],
       "head_sha": "e80f8ab32fe0fe282cbf3d60a9fa7aaac19fbf4c",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/oracle-sovereign-data-boundary-gate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "f204f351a748f320f5ee8f1f74d1c1617255d73f21db5711e417d60e9465e2c7",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "c27eadf7649182d0b26a968091527d50ad990021aac201ba0db47166fbf354d3",
+      "failed_steps": [],
       "head_sha": "5c18d0032da281a2f737f7c5107bbbca669b1469",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/palantir-action-lineage-graph",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "1cff4c6338a2ab81c9b9bcccdec32ef9d19bb5ab9948d5db7cfee0529de58f10",
+      "evidence_digest": "dd2fc9b3fc2ad4e4c7a6d74912832da307ea457e5f42f559e84eae8aed45b33d",
       "failed_steps": [],
       "head_sha": "98d106ac56b36e798be37576ebfd0a381ffd0c8b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/palantir-object-authority-matrix",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "7fb75ddb804f2684b16f7c0f71ba9a59cc0c6671378d9d3723e5567717aa984a",
+      "evidence_digest": "33b05f4188b608ce95605dedf41fbcb47003173a73c39489a1094e76e80157e2",
       "failed_steps": [],
       "head_sha": "c92e65f561882b26411aafbbbdf3853585887616",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/palantir-ontology-writeback-ledger",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "96ed12964a039fcbb807006c7582a55877d6e8e8b39ca250b771223f95faca0f",
+      "evidence_digest": "73f5810e895bfe80ae607afa3c341ae274792678e762c40d302c5c90dd40cd09",
       "failed_steps": [],
       "head_sha": "b31aa5dc906da79f67da66826e162909b0a50a6b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/pinecone-retrieval-outcome-optimizer",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "b2494fcc2768d804c47a292a1502ca764d89769b9fb1c3f0a45e9791605036c3",
+      "evidence_digest": "577950ad5ffdb135ab82f36750ec5ee2ccaa6314885deb0ca2333a851ad81fc0",
       "failed_steps": [],
       "head_sha": "65143bc5713f56e501b037ea628df8bc70fd5fee",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/pro-code",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "6a02eadf0930e1d9aa3625f502486f91ed430222e9877d8c0b41988e1a4f9d58",
+      "evidence_digest": "9f745802685927470e7fe64249e46bb90676fe606a94e7e70ca227cba8f1bfdb",
       "failed_steps": [
         "python_compile",
         "node_build"
       ],
       "head_sha": "670ce817bd1df5f0f491413386d079ced25ee6c7",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/Pro-comet-agent",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "20d228383f54fd052abaf21acae456a19bdc7d06d390a05bb1dc73bc1e67fe7c",
+      "evidence_digest": "7fcd62b678ec56ee4daed8386e74d57f4942d605a6bc5c79e76032b466f4c060",
       "failed_steps": [],
-      "head_sha": "1784e5502efec27e47248f7553ab7280c9434cea",
+      "head_sha": "4a1d38fc59acb1394db7d190993ffa28c74b041a",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/public-actions-runner-host",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "b4ea5c08379b988d62976e4a9123bb51034653de157da53c93d04b5870c0b491",
+      "evidence_digest": "b2c19cf6d2bb182c746e175777b7f4d753c3956ecb828041c7cc4b8801bbe7e5",
       "failed_steps": [],
       "head_sha": "9f9130c0377cd9eaea83fe4ce6ebc0ea0e194076",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/qdrant-collection-quorum-guard",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "19a8b5525d84d543e007defb390a5f5bb36b025f75c8ab075ac6ab9813dd94aa",
+      "evidence_digest": "d2b019c64ac22cce560d5fccceb917bb18ffdcef10949c6f302d32540a017a44",
       "failed_steps": [],
       "head_sha": "18c1f7a0b0e559d03c7e610ccb0435201e9c86ec",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/qualcomm-on-device-budget-futures",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "39a177e0d753dba4c9c27c4990e3e0c3680197793dce0bacb77e6358faa57424",
+      "evidence_digest": "13c760d2abe6c1aa17ca8383bdf7c54502bf56fec357c2710902bac86da2c464",
       "failed_steps": [],
       "head_sha": "62452e19884488d2341e01531d2ee1cc31759270",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/qwen-vl-flash-router",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "6ec68dbc9f6849ad458b8e114473412dce067a86a6a7a7eac185c93f56799a8a",
+      "evidence_digest": "d52f382835ec5859af0bfd913c411bc6aa80d05b6dd2ef9fd502d2ef9bb34479",
       "failed_steps": [],
       "head_sha": "cc469366034762ca4cdd93cbb2162e760f26d61a",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/redis-stream-claim-cursor-fence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "8a5fe82656bccc51e09b6c5586f0df6209166aa910122d43fc5e057549053d4f",
+      "evidence_digest": "9e9eb58c338f6b6de284706db2798742f05a6e4d112aa6df74bc57742da0630e",
       "failed_steps": [],
-      "head_sha": "586b36fcaa3e2136a3f3fe24d6c92f44ad6cafe1",
+      "head_sha": "cb8a90cccf8000828859543a761ca4d96a18b558",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/replicate-model-version-pin-gate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "9108b35cd14c822265e0b06734e420ac4e80bd8e8a66fffc0b7767e214b67bff",
+      "evidence_digest": "95585e05fcadbdea258f0b30b5c26ce123af2117daa6d66ec9971734b14fdb93",
       "failed_steps": [],
-      "head_sha": "c697930c607110ab3c3797ba7a82e42b16ba6543",
+      "head_sha": "eda7aa489d40c39202782e63cf63d8ce81686a81",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/replit-workspace-cap-matrix",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "038922324ee500345050fcdf5fda67f732ae5dde67e4b3d1991b3ab925643677",
+      "evidence_digest": "180d54e8a24895e943e1b2aa12600df26e4f751fcfc585e1554d9d083779613c",
       "failed_steps": [],
       "head_sha": "78693ffd4427d410cb7764b115207dd0571e90d2",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/robotics-vla-torque-sentinel",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "68de669c368d7ffb0623b70ce7babdf80395f66357ba6f33c59df3ada4d234e2",
+      "evidence_digest": "43a325cc2e229eba2b4b49e75f4b7738c1d0bf73c4d05b472135b0e683369c0c",
       "failed_steps": [],
-      "head_sha": "2895e6ec55e516e47f1d385453910420db313757",
+      "head_sha": "267425cc0c335e74f61340f1d0cd9fa88687f4fa",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/rocket-lab-launch-hold-receipt",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "ef8a2065e71d5c97fdaee6e6bf1e0d549ce900c03fc80e15c4443113d7ac1e09",
+      "evidence_digest": "70080830f8fde16842a5513e1cd4abd7ac5ff3d0f0a7ca1b88dbf9c98acd89c9",
       "failed_steps": [],
       "head_sha": "ed0f92363aa1506886c945384ebc36dddd007138",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/runpod-pod-preempt-receipt",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "ba596254159643fe4f1bda75feb6bdc071a26b0967b60b538366beedbb9412c5",
+      "evidence_digest": "0f8a5256c1b5e8a386eb3dcf19509ab30848c726f171e7555aed391ebf29011f",
       "failed_steps": [],
       "head_sha": "17148822dad3b961df30e90b6eadffe1fedb1d47",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/salesforce-crm-action-authority",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "62b474695ba6aa60d255d5b604a66134e0d042e5b1cfdad0f4a0725597ccb381",
+      "evidence_digest": "9af4f542e6ee0eb0b29fd3590f184a696aaf78e626c1b0f2fa42a9a723b589fb",
       "failed_steps": [],
       "head_sha": "fb03344fa0bbf37a9e400a6a368d5800418c9ac1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/scale-agreement-budget-allocator",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "14130637a1e582e06f240cb998c55df7b8b80710363d06da06f8a004d7e21a61",
+      "evidence_digest": "7f52cada9a17e6666fac3141bb9707459867ff6b18592004c665ce2dd682b186",
       "failed_steps": [],
       "head_sha": "bf6d01baaf20ff34dfb9f7fbf830dfe4925f1ffe",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/scale-ai-label-consensus-fence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "9966fff84d966b004c302939447bdd954d11189c842591126afb71585104bdf6",
+      "evidence_digest": "808b0ec57f1ee487995a0e011d386079963f95745073a500c03cfdad847d6ca0",
       "failed_steps": [],
       "head_sha": "b42225fcc145311dc71825f0f5038aeb0112dbd9",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/scale-eval-poison-sentinel",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "73b2183ced8f38f5a549b121c06daedf907768d52f94ee679575b04e9a4919f1",
+      "evidence_digest": "c9f4136ed5d50231bbe066759bbd6bb5c094146670315b1627ed614b980bb0d0",
       "failed_steps": [],
       "head_sha": "addd98894f32e4709ecd56ef9219c1236e4c10c3",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/scale-label-collusion-bound",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "4edf7bdf5003575aee1c17a3e7b682847418343ebf681eb75ef8ccb98f7762ee",
+      "evidence_digest": "85bfe2b0f52a3c14a8b7f3dbf11c163c7341bb51d05eaf3fe3183e58cb9efda3",
       "failed_steps": [],
       "head_sha": "4a1ca8e5c88a62e8a94a43213b2c509af6afcea3",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/sigma-glue",
-      "status": "INCOMPLETE_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "d82f1becbc5592f182d59f0734566606ed0fc0cb5ef9cd48f9425d80d97a466e",
+      "evidence_digest": "4015c881f45ae27a61adf19b6cfe1d05e1dec980a416ef87d1b65e26ec03f455",
       "failed_steps": [],
       "head_sha": "e02ba22ef0a6a36f6ef6b166b61f60a4698d5757",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/snowflake-cortex-claim-bound",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "fbc5f5466ddfc6beb02e787a1e66c515262bb0ff3e198b1bc9e195731879285f",
+      "evidence_digest": "af6a9cff799f200f9ab97dc207bd14845de5c17cc70b175240f6bcac1e7fa008",
       "failed_steps": [],
       "head_sha": "f1c254816c3b7bf3aae6700609e04496108849cf",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/snowflake-query-intent-ledger",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "effa751f27636bfd33ff5258012d67d591c5d214d1122ef69011af5dfbff8dca",
+      "evidence_digest": "401234d164473d57d0a819cde0b26e269caea64ca3fa24cd64dd4f1bcbeaad04",
       "failed_steps": [],
       "head_sha": "e6f1dd9e1fd34de622dcc5a6b6ce1a46ddca0fce",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/snowflake-warehouse-spend-circuit",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "4453b1245355253c8b610ff92d08df0076898aabb898e00938601e224abb8b2a",
+      "evidence_digest": "c5c7b1aebec32226cef61af28e4da18265908b5b69976702eb769df2f7dc32e8",
       "failed_steps": [],
       "head_sha": "f978d6a126863fbcd176d50e97e6fb8be12eeab1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/sourcegraph-code-nav-intent-gate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "c06e43a7f06e8e33ee49393a990ac57a3f266c0e92ceb9a3a6fe678782eb4a45",
+      "evidence_digest": "d799c732e41ab33f02122d38188a35109b11033d3ad186fc6b936b3a8fa8fd48",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "156629c65bdeff5397c1370b3e098eec26aa9377",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-autonomy",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "d0c0ba101ef299451726088fbe22feaa19dfe6647e87b7cb45e7658a6c291293",
+      "evidence_digest": "247767450d7117322c309de964c651ab47f869305511761c5c8ff137f3d650e9",
       "failed_steps": [
         "cargo_test"
       ],
       "head_sha": "17537ed7ee2c7b01edf60953f403ebcb3a6c2fd8",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-conjunction-sentinel",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "d3288c133470e0c7abd7b97232cc78eb8a52fdbe0adb8764e5545b0a23b10723",
+      "evidence_digest": "b7e9b0d1eac60e4ff05f45d82fae9546219b670a9bb89a4d96b11c430d450c58",
       "failed_steps": [],
       "head_sha": "7b036b72c4a004fb0c21a18e08c7311aac8201e1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-cryogenics",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "b98a9ad3ebd528fdf839af1b469072fb4a0d281d617d3beffc64a28018aff8fc",
+      "evidence_digest": "7747d205900c0eaea9450ba8ea9411b9aecfc34fa6ecc0c550de6b9dc8cedf89",
       "failed_steps": [],
       "head_sha": "f8992a0ac0ab4608d10e7bb2e20444c9cbad54fd",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-ground-network",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "cfdfdd224b20cf4ac8b6f03b27d0c54f68f9e40ae3b043bcf4b7186c4c0ba3fc",
-      "failed_steps": [
-        "python_pytest"
-      ],
-      "head_sha": "85c9d4348513ad3467b575bc7c43329cca9938fe",
+      "evidence_digest": "c19d45960a5f81f1bbb301af38e38e27da21dd666960feb5e065f6258bef49e7",
+      "failed_steps": [],
+      "head_sha": "aa6b64237f16618679a2cc6cc16226ce0f5f71bf",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-hold-reason-compiler",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a24287c21a41a486185a7817030943615cadf783cd73c97d543ab9c4fe79a9c2",
+      "evidence_digest": "1b6fa1e687696243edfd906cb7a6796f4da9cf15985d183c0b1578ebef8c0916",
       "failed_steps": [],
       "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-launch-sequencer",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "6e5d6fcaf881b65be486c22c0b9cb3db04c0c892a8b566b6e2ec6bdbeece42dd",
+      "evidence_digest": "4b8e87cb26f1c9b07041822b947e80116b81a3befd233662ba204b6b08bfecf4",
       "failed_steps": [],
       "head_sha": "18f46561b6ff1eb00fb3b5c228f88996c9b13590",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-mission-control",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "81adfc397aa0ef37c007a95a4c5252b9b87208b3362e980d305e6dae786a4ad4",
+      "evidence_digest": "8a7d32a814b65e3a205d58756e77eeffbe02730ae9134206837334e6d2c3e264",
       "failed_steps": [],
       "head_sha": "de9fdc8b0d84cc4192536aaffa9c6f118263a434",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-mission-thread-quorum",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "bd88c36dae05f6eca778f9ce113b99561e504ebd3cf4c871671f3dca620929b7",
+      "evidence_digest": "a47f16a11e04e7f353ca15554faa2c7c1d8c70b8bdd59dbc7138c6990040c8f1",
       "failed_steps": [],
       "head_sha": "b99a1f7ea0534d3a268f9bea432399c9862bd1e4",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-orbital-mechanics",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "ee60eea02cee182dfce2017f77b46e6d40524eb605e0c28bc3b5b15c0e66d0f6",
+      "evidence_digest": "a7d57c95478814a789449dba7f8980e21483b17fc700cbf6696bcc375d3d597d",
       "failed_steps": [],
       "head_sha": "7f8ca0a9d4e346b7350b30e2a9263a10b3baae26",
+      "incomplete_steps": [
+        "python_test_dependency"
+      ],
       "repository": "GlacierEQ/spacex-pad-weather-gate",
-      "status": "TESTED_EXECUTION_EVIDENCE"
+      "status": "INCOMPLETE_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "4363bebf30cc48e8cdf205619715b6ae2da69e5dcab92683062ddcad03564355",
+      "evidence_digest": "5b14286594a48ce7bb5bae8dc7b34a8fc40457d43a93ad623ccc8f371b2e3cae",
       "failed_steps": [],
       "head_sha": "1903e562e801a6153b0e78b9d236418c849f1867",
+      "incomplete_steps": [
+        "python_test_dependency"
+      ],
       "repository": "GlacierEQ/spacex-propulsion-monitor",
-      "status": "TESTED_EXECUTION_EVIDENCE"
+      "status": "INCOMPLETE_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "b2d415ee2f4bd17d7c0f0303b158881f685476730162b2b2af206c826629168f",
-      "failed_steps": [],
-      "head_sha": "0da2ea49471e765978b4e8cb27fbb5aa0d9ad517",
+      "evidence_digest": "796099ab6062279219376d20ad6db0373e36b8ae50131dafa2f3b802e1536f1f",
+      "failed_steps": [
+        "cargo_test"
+      ],
+      "head_sha": "489cff52ed1da8c5e7da0769807bad8b58ef394f",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-satellite-mesh",
-      "status": "TESTED_EXECUTION_EVIDENCE"
+      "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "2a5ce81a26247f32e96545929d04815c9fd6a03dd4b66a67b0260de72a265a41",
+      "evidence_digest": "507d8df81fd7373c1685465e7da22ce7c5c2f28e4ea2ed48870854c227a8aee2",
       "failed_steps": [],
       "head_sha": "12220f27fafb9fd1e642e9e7302f3965efe2da59",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-telemetry",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "45094a50ec2b30b67b434af053279b6df865f34d891fddc4c3ed66c39b1b9701",
+      "evidence_digest": "e136ecdccab809b2cd61cd236ec636728f070007527098c89619ee05c19b6283",
       "failed_steps": [],
       "head_sha": "f35cef2d9c115218766ac3ef8d023f8316ac02f0",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spacex-thermal-protection",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "d386624f9f4d17c8e8d9f94c1154eeef742b9df80acedbe71e8f3207d2a49bd9",
+      "evidence_digest": "053e6e6b0b3a40548012f52d061d771115cd7a83fb3bf1fea5a958271dd8ff7a",
       "failed_steps": [],
       "head_sha": "cdf9d671976628cdb8994f7e2b93df2ad435f203",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/spiral-engine",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "66537dbe9d1cd0c56ce6524acc947e937a830f21796845c57f15818bdd46ccaa",
+      "evidence_digest": "96ae1f48ea802706d850e528ebdd65e98d972bc70e83c6a94e508a7a37683c27",
       "failed_steps": [],
       "head_sha": "d0faea92adde563d1c5343a9af4efc9164f88550",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/supabase-policy-carrying-ai-data-plane",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "90b2e1a1618cfd009b18387907873a31e86a5381aaf803d3313fe114e15ac46f",
+      "evidence_digest": "d9bc958fb4d85877e61cdf52ab3fffbcc54ec74013bb0d3896a4d2d07a3e7c3d",
       "failed_steps": [],
       "head_sha": "2cc87f135f175c5c56d025720a2679692cdb1965",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/tasklet-micro-agent-engine",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "f43cc526a691f63463d62984a755d2215e57e4053183e6803049f5d8753b711b",
+      "evidence_digest": "e7d13b1f3b41c47bd59924644197f39f6c7075f91669055b6a7552d7fc18664d",
       "failed_steps": [],
       "head_sha": "0cd416dbb3e10b2a6feee40c9c52a0690f333d2a",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/tesla-fsd-occupancy-stream",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "196ff93a52636578f33676ca809e3545b722193201dd6f564e2b2e0fe1239a84",
+      "evidence_digest": "bddb4689d5fd99cbfbe88e0bc30bf9c22ffc9ba2d08cf54a5835e8a20a9be4c9",
       "failed_steps": [],
       "head_sha": "fab6abe811ea20d60d4a7fa9c2063093aac24475",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/the-tower-of-babel",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "ebafa1995aed6f9c3545cbf0b7c655415ee652f44e9171949d45606ac2bc81bf",
+      "evidence_digest": "e621c88a033333e9b86f7edc8e3f37bc530f5b6af6ced6994fd6c9fa5a8745b8",
       "failed_steps": [],
       "head_sha": "38cb4fec92ba85aa5dda90bd05cab26c07eb1f82",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/together-ai-open-model-fidelity-passport",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "2238273e3f18184dc34898fdc4daa5c3e818dd269d47efc566b6386e161424d6",
-      "failed_steps": [
-        "python_pytest"
-      ],
+      "evidence_digest": "aac3bebabb031c100aa768e89293b8244986b4303aa2501fc38d02502ad3286e",
+      "failed_steps": [],
       "head_sha": "0367f968d5840a6672e39eb355606d9621291d1d",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/token_saver",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "3b49d0cb851a682785e8f62cf32f4167132ada8599775b9ab9aafb54a3ba3423",
+      "evidence_digest": "80d35f01e1cd1552df4df2a3e3e9d890c8352145d376a7436fd5c3b27adc7bd8",
       "failed_steps": [],
       "head_sha": "150a8ff31dd05fa1b35f50a1d693b9815d619f73",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/vercel-deploy-claim-compiler",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "af9c0b98a5fed1c09de222386c207e059aef2c4d96d5aa5d284490a404f1618b",
+      "evidence_digest": "f02bf9d9a80ccf2fe629c61bc0bf04e8757858a3aba8d8604a68e3f52d7e08a1",
       "failed_steps": [],
       "head_sha": "296c173c5887a939c6cb99c1e7f670f1b5911c1d",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/vercel-deploy-preview-authority",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "e2b7bc1715bcea450a85664875158e6c2da06f8c99600bf9209877307e9e7cb8",
+      "evidence_digest": "45b7bbccad387020d99156bb3886a9465357f5a4c9f179e36c2e696c56551107",
       "failed_steps": [],
       "head_sha": "1ed5946bb9430d20b4eee653b6ad12be28146275",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/vercel-edge-agent-cap-token",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a7e8407010ad12456aa498eb08c6acbda9a7ba23ba37b794f5798b9858f4bf51",
+      "evidence_digest": "f3054e7ed4e43588640f788473e0e57c663fa83e9600e986194bcaa283f4bc47",
       "failed_steps": [],
       "head_sha": "a719affbc8d4e2e917a8491bbd3bbb5fd2054f41",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/vercel-preview-truth-gate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "69aaf212949139d424cb82ce7677b1423460ad43963c0d68838ec6de3de5da53",
+      "evidence_digest": "463d66ea1ca73cb25d2feb74d27a69aa320216ba25166e8d41e10afc9510253c",
       "failed_steps": [],
       "head_sha": "4c1bc3593c40a5d0c09ef556bdf57a85891f3d09",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/waymo-phantom-freespace-certificate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "7d6628e236c1f309cee31b55e4f76e137adaa00e0871dfc2a63e6ae5e830c027",
+      "evidence_digest": "f279d632b75e4d3d09a4909f7b0c3ed3a4c24fe8d9798adce196bd3085005db7",
       "failed_steps": [],
       "head_sha": "7bfdb2aa33f2ba95bb9b5b981e8930aa89e6c5f1",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/waymo-uncertainty-lane-graph",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "f1ac5b717a9bb8eeb4721927ab484dce4ef1ef29e9954d46671c9955c7df9cac",
+      "evidence_digest": "5bb4d6d74dc9f3520af56470d3c25032021d32ba1abd1924e8bbd352c23b861f",
       "failed_steps": [],
       "head_sha": "c3d07dbb9a6cd1e68d16aeaa20a779a718a6e677",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/weaviate-hybrid-search-claim-fence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "9e38f8c8bad463e06da6a66e333025c118fdc9b7878c796d73112c6cd809eaf0",
+      "evidence_digest": "a35fec45e019ba12860a6245df718e81e914f0696cc13d11674fc67b53dd386d",
       "failed_steps": [],
       "head_sha": "b7189b4b7b40b753eb4b1d7c21bb3e94e07d078a",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/windsurf-cascade-intent-twin",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "3a9ab60a943867085b4fcdf80e54d3ace52fbb8c139da53d600c311757043242",
+      "evidence_digest": "f570c93d9617d8d712ee764498304bdb8e6dd3514c5d324bdb83895164485346",
       "failed_steps": [],
       "head_sha": "8deca59d94be7b0a485137b2aab95d0392887f6b",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-actuation-receipt-bus",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "b8a6793f40c1e4aa105006b8367a6c12110369d06831b7973da26c32b68b38d9",
+      "evidence_digest": "483ca36d1c88bb4e80629f2db54970d8282eda5f2594d7dddfa325212b5e9716",
       "failed_steps": [],
       "head_sha": "b26e165504b42ed3e673a757160ca1234c494386",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-claim-promotion-fence",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "462e24b7ddee629c7132dac57adf22908ccad1d5927f284041928d3d16a5e43e",
+      "evidence_digest": "6fad79db8023dcec92cba950c233995838b407da6415856ce680644ad19521bb",
       "failed_steps": [
         "python_compile"
       ],
       "head_sha": "c97e5f94c37a97b595f053c9f9fb86d565e4fc06",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-colossal-cooling",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "6c3710e03021f1a386d3e0990b56a51c4d8678c59f314df8619b17f4ddc11d00",
+      "evidence_digest": "7bce023f3a1eb93d0d9d77de957398501810baf8a4c516865e95f22da4be4b25",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "c7cbc2a12d71896aca2b8213df7e852922d16133",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-colossus-2",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "e0d6df76d60a15cb1d8a49760e9650a3286a68c2845910cb1cb39acc73ee56f5",
+      "evidence_digest": "49b8dca3449d481e1f474f81c7717b5b5beb80afa5866953f1948fe9e7b45535",
       "failed_steps": [
         "python_pytest"
       ],
       "head_sha": "e32303d2bbbe75491cbd753e3bf8119b3eb482e2",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-colossus-cooling",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "ce0e6e9aa68356204045e9a25b30d29a780a36fbd0b0892b4e23f5d52b80d48b",
+      "evidence_digest": "46f207841c76e116718bbf31dc61e98b6c3733b36036547c37d9f2c5470e5aa7",
       "failed_steps": [],
       "head_sha": "caccc2ec7e23ccbaeed74bae22c940b79d790b2a",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-colossus-cooling-alpha",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "d90443f81fb7f48e269fdf2f8069460cdfea21f29203c5d08d552d6416978c67",
+      "evidence_digest": "7d964744df37e6f5a79f46c38d73f2d36c4ce9d7717088c554ef3544157eb476",
       "failed_steps": [],
       "head_sha": "9cc88f8f0c8f47a2960b8722022d5007711b921c",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-colossus-cooling-omega",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "97527707ed86401cc145e002dda7c70063d8403a44be1df96395f0197834873d",
+      "evidence_digest": "c123e74406e8f5f9768ecb969bca98f3c650cb4606d1d15d0b47875fef14b781",
       "failed_steps": [
         "python_pytest",
         "cargo_test"
       ],
       "head_sha": "c00d46a8bdc5a50966c384b640362066a1c9372e",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-colossus-energy",
       "status": "BROKEN_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "fc3acf88016b41a5ef24667900b5a00eea01f057a53b0fd260a38679e9486280",
+      "evidence_digest": "9ed006d4096201d235c6f5838e8437c5fef0ce1d1ca4658892279744876c0fac",
       "failed_steps": [],
       "head_sha": "87933393b4f5a5089404ebe5c1a4e24c865fd139",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-colossus-energy-alpha",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a5522404e3804f7459ce715b30b138e5478e67f8d420d0fbcddc27177cfdd7b3",
+      "evidence_digest": "c42cb7d430601e03fe3382d90d8bfaa2fc093abf9272931067f0a91c9c0c54e6",
       "failed_steps": [],
       "head_sha": "d5deafab7a43bb46c583a27681b9862b6d361149",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/xai-colossus-energy-omega",
       "status": "TESTED_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "d9fbe6ce72004f89fec9bd4867d5513c64a94740f1eb0014e140a12775695ac4",
+      "evidence_digest": "b0f03c7288d1b546ec10e0c27caef25786cdf2ef75bd7131b05145955662fdfa",
       "failed_steps": [],
       "head_sha": "15c1767271a56bb3d1270ce2027639081c4a38f9",
-      "repository": "GlacierEQ/xai-colossus-nanosphere",
-      "status": "TESTED_EXECUTION_EVIDENCE"
-    },
-    {
-      "evidence_digest": "b6a7795768b7ecdb0855e14a3f27d3fd877a635adcc63cb28310a6ec39b20899",
-      "failed_steps": [
-        "python_pytest"
+      "incomplete_steps": [
+        "python_test_dependency"
       ],
-      "head_sha": "2f6daf5735fdc973e8238a67efad8c45bf7b06b9",
-      "repository": "GlacierEQ/xai-colossus-security",
-      "status": "BROKEN_EXECUTION_EVIDENCE"
+      "repository": "GlacierEQ/xai-colossus-nanosphere",
+      "status": "INCOMPLETE_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "a38fb9e413e4bab44ef99b643454ecbd7878bbb9330928c0cead3fe3d5c7cf2e",
+      "evidence_digest": "da24a951577a2e1832201298e2ddf57facbe82800b57b89cab64ed9f04025eeb",
+      "failed_steps": [],
+      "head_sha": "2f6daf5735fdc973e8238a67efad8c45bf7b06b9",
+      "incomplete_steps": [
+        "python_test_dependency"
+      ],
+      "repository": "GlacierEQ/xai-colossus-security",
+      "status": "INCOMPLETE_EXECUTION_EVIDENCE"
+    },
+    {
+      "evidence_digest": "0b7b4198929ca4fabd0b9f3aeecd8952306a09c0171da673d658c8dc17785c83",
       "failed_steps": [],
       "head_sha": "676d6b7d1912d116f0f9204dd7aca14d03a00f90",
+      "incomplete_steps": [
+        "python_test_dependency"
+      ],
       "repository": "GlacierEQ/xai-colossus-servers",
-      "status": "TESTED_EXECUTION_EVIDENCE"
+      "status": "INCOMPLETE_EXECUTION_EVIDENCE"
     },
     {
-      "evidence_digest": "9ad4182f5fa8270ecddf30c9dc4eb0cb9e3335b8c4028f248fc8e416c35dce37",
+      "evidence_digest": "e7906e480f2d3a3949f0cd7a6a9aca25e953152cc8b3d7e8f12ae57ae4726860",
       "failed_steps": [],
       "head_sha": "38c1b6ac25344bdeaf47989fceec5b000ce02fc0",
+      "incomplete_steps": [],
       "repository": "GlacierEQ/zoox-fleet-skill-promotion-gate",
       "status": "TESTED_EXECUTION_EVIDENCE"
     }
   ],
   "repository_count": 160,
-  "schema": "glaciereq.crystallization.public-execution-index.v1",
+  "schema": "glaciereq.crystallization.public-execution-index.v2",
   "scope": "ACTIVE_NONFORK_NONARCHIVED_PUBLIC_ORIGINALS",
   "status_counts": {
-    "BROKEN_EXECUTION_EVIDENCE": 42,
-    "BUILDABLE_EXECUTION_EVIDENCE": 1,
-    "INCOMPLETE_EXECUTION_EVIDENCE": 3,
-    "TESTED_EXECUTION_EVIDENCE": 114
+    "BROKEN_EXECUTION_EVIDENCE": 20,
+    "INCOMPLETE_EXECUTION_EVIDENCE": 7,
+    "TESTED_EXECUTION_EVIDENCE": 133
   }
 }

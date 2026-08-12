@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "3ae9f804e064dbc45b6e50556f586a2ca78270b95b8b8d3d9d31653b51345ffc",
-  "head_sha": "0d9df45f6b41d9c253b9aa762a366d0f5094936d",
+  "evidence_digest": "ee061cabd99cd406bc0cf9be9e952981e3c102fba5486e2aebf86f82ddf43c88",
+  "head_sha": "0e1a6b5b5315549298e0414238f3c2923a521000",
   "repository": "GlacierEQ/nvidia-gpu-health",
   "repository_id": 1283500854,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,15 +26,20 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.612,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "47dd77cf54e141d07c472eb6b6c2b63a4e447e3a3f990ea6af0bf0deab9205a2",
-      "output_tail": "...F.....                                                                [100%]\n=================================== FAILURES ===================================\n______________________________ test_optimal_cool _______________________________\n\n    def test_optimal_cool():\n        h = health_index(GpuSample(temp_c=40, power_w=400, sm_util=0.5, mem_util=0.4))\n        assert h[\"status\"] in (\"OPTIMAL\", \"NOMINAL\")\n>       assert h[\"health_index\"] > 0.3\nE       assert 0.2633 > 0.3\n\ntests/test_gpu_health.py:9: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_gpu_health.py::test_optimal_cool - assert 0.2633 > 0.3\n1 failed, 8 passed in 0.05s",
-      "status": "FAIL"
+      "elapsed_s": 0.101,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "7daf9a628051d9083584d1b7ca1921254157432b7d3762d1b39682453756a1ca",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_cool_sample_is_not_penalized_for_being_below_ceiling (test_gpu_health.GPUHealthTests.test_cool_sample_is_not_penalized_for_being_below_ceiling) ... ok\ntest_crossing_preferred_ceiling_reduces_confidence (test_gpu_health.GPUHealthTests.test_crossing_preferred_ceiling_reduces_confidence) ... ok\ntest_throttle_threshold_surfaces_risk (test_gpu_health.GPUHealthTests.test_throttle_threshold_surfaces_risk) ... ok\ntest_health_evaluation (test_nvlink_health.TestNVLinkHealth.test_health_evaluation) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.001s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

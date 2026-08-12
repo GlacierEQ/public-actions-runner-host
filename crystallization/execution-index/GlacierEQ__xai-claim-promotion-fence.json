@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b8a6793f40c1e4aa105006b8367a6c12110369d06831b7973da26c32b68b38d9",
+  "evidence_digest": "483ca36d1c88bb4e80629f2db54970d8282eda5f2594d7dddfa325212b5e9716",
   "head_sha": "b26e165504b42ed3e673a757160ca1234c494386",
   "repository": "GlacierEQ/xai-claim-promotion-fence",
   "repository_id": 1328442315,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.064,
+      "elapsed_s": 0.06,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.323,
+      "elapsed_s": 0.114,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "11014beed65670784ec18ef04b9089af50755d36d69a08b49e92c2aea68096c7",
-      "output_tail": "......................                                                   [100%]\n22 passed in 0.05s",
+      "name": "python_unittest",
+      "output_sha256": "dc9f206ee2197d6cc7dd4200e6025623727f6981cf1e94e6845cc2cfd93c9c38",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_claim_id_cannot_rebind_repository_or_source (test_claim_fence.ClaimFenceTests.test_claim_id_cannot_rebind_repository_or_source) ... ok\ntest_evidence_receipt_requires_scoped_machine_identity (test_claim_fence.ClaimFenceTests.test_evidence_receipt_requires_scoped_machine_identity) ... ok\ntest_future_and_receipt_revocation_fail_closed (test_claim_fence.ClaimFenceTests.test_future_and_receipt_revocation_fail_closed) ... ok\ntest_grant_binds_claim_policy_evidence_and_expiry (test_claim_fence.ClaimFenceTests.test_grant_binds_claim_policy_evidence_and_expiry) ... ok\ntest_invalid_quorum_time_and_ttl_fail_closed (test_claim_fence.ClaimFenceTests.test_invalid_quorum_time_and_ttl_fail_closed) ... ok\ntest_legacy_helpers_are_label_only_and_fail_closed_by_stage (test_claim_fence.ClaimFenceTests.test_legacy_helpers_are_label_only_and_fail_closed_by_stage) ... ok\ntest_prerequisite_must_remain_active_and_stage_sufficient (test_claim_fence.ClaimFenceTests.test_prerequisite_must_remain_active_and_stage_sufficient) ... ok\ntest_quorum_counts_unique_signers_per_kind (test_claim_fence.ClaimFenceTests.test_quorum_counts_unique_signers_per_kind) ... ok\ntest_receipt_revocation_invalidates_existing_grant (test_claim_fence.ClaimFenceTests.test_receipt_revocation_invalidates_existing_grant) ... ok\ntest_scoped_receipts_reach_integrated (test_claim_fence.ClaimFenceTests.test_scoped_receipts_reach_integrated) ... ok\ntest_unrelated_claim_receipts_do_not_promote (test_claim_fence.ClaimFenceTests.test_unrelated_claim_receipts_do_not_promote) ... ok\ntest_evolution_cursor_is_material_and_does_not_imply_completion (test_excellence_state_contract.ExcellenceStateContractTests.test_evolution_cursor_is_material_and_does_not_imply_completion) ... ok\ntest_exact_cross_language_proof_is_bound (test_excellence_state_contract.ExcellenceStateContractTests.test_exact_cross_language_proof_is_bound) ... ok\ntest_history_is_ordered_and_non_skipping (test_excellence_state_contract.ExcellenceStateContractTests.test_history_is_ordered_and_non_skipping) ... ok\ntest_position_preserves_identity_lineage_and_sibling_boundary (test_excellence_state_contract.ExcellenceStateContractTests.test_position_preserves_identity_lineage_and_sibling_boundary) ... ok\ntest_state_is_canonical_and_evolving_without_claim_inflation (test_excellence_state_contract.ExcellenceStateContractTests.test_state_is_canonical_and_evolving_without_claim_inflation) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 0.009s\n\nOK",
       "status": "PASS"
     }
   ]

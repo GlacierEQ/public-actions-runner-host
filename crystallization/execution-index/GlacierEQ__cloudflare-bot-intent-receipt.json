@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a11a25c0b45a8b502057f71fe32f4e944e790043031f35f6de9f5635812ff4d8",
+  "evidence_digest": "79edd5b9713616f014c80a2ff7e2acc14f01eae69770568acb9c47184cbff566",
   "head_sha": "846b0f3492c3a03463a9b1b98ef8189c2badf95c",
   "repository": "GlacierEQ/cloudflare-bot-intent-receipt",
   "repository_id": 1328440400,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.058,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.317,
+      "elapsed_s": 0.11,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "a4bba5348a225cf9878e87b018b717c25d45a76b6eb34ef58ca48e1837315426",
-      "output_tail": ".........................                                                [100%]\n25 passed in 0.06s",
+      "name": "python_unittest",
+      "output_sha256": "00a6f10048578af130060e8e6229c5e716041f34ae462ea6b89437bf026a32a1",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_delegation_only_attenuates_and_reserves_hierarchical_budget (test_bot_intent.BotTests.test_delegation_only_attenuates_and_reserves_hierarchical_budget) ... ok\ntest_delegation_rejects_scope_rate_and_time_escalation (test_bot_intent.BotTests.test_delegation_rejects_scope_rate_and_time_escalation) ... ok\ntest_intent_identity_is_one_shot (test_bot_intent.BotTests.test_intent_identity_is_one_shot) ... ok\ntest_legacy_allow_remains_compatible (test_bot_intent.BotTests.test_legacy_allow_remains_compatible) ... ok\ntest_missing (test_bot_intent.BotTests.test_missing) ... ok\ntest_not_before_and_nonfinite_observations_fail_closed (test_bot_intent.BotTests.test_not_before_and_nonfinite_observations_fail_closed) ... ok\ntest_parent_allocation_limits_own_traffic (test_bot_intent.BotTests.test_parent_allocation_limits_own_traffic) ... ok\ntest_successful_request_nonce_is_replay_resistant (test_bot_intent.BotTests.test_successful_request_nonce_is_replay_resistant) ... ok\ntest_total_budget_blocks_without_overconsumption (test_bot_intent.BotTests.test_total_budget_blocks_without_overconsumption) ... ok\ntest_evolution_and_nonclaims_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_nonclaims_are_preserved) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_claim_ceiling_and_authority_boundary_do_not_inflate (test_evolution_contract.EvolutionContractTests.test_claim_ceiling_and_authority_boundary_do_not_inflate) ... ok\ntest_consumed_cursor_is_exact_proof_bound (test_evolution_contract.EvolutionContractTests.test_consumed_cursor_is_exact_proof_bound) ... ok\ntest_machine_target_is_conflict_free (test_evolution_contract.EvolutionContractTests.test_machine_target_is_conflict_free) ... ok\ntest_next_cursor_is_consistent (test_evolution_contract.EvolutionContractTests.test_next_cursor_is_consistent) ... ok\ntest_evolution_cursor_is_material (test_excellence_state_contract.ExcellenceStateContractTests.test_evolution_cursor_is_material) ... ok\ntest_position_preserves_identity_and_lineage (test_excellence_state_contract.ExcellenceStateContractTests.test_position_preserves_identity_and_lineage) ... ok\ntest_state_is_canonical_and_evolving (test_excellence_state_contract.ExcellenceStateContractTests.test_state_is_canonical_and_evolving) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 25 tests in 0.005s\n\nOK",
       "status": "PASS"
     },
     {
@@ -42,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 11.198,
+      "elapsed_s": 10.93,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "60d8bc0a27fbf7110389112ca8d96384f5725403c1b4afa306cc2be32bbd3ec6",

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "bd88c36dae05f6eca778f9ce113b99561e504ebd3cf4c871671f3dca620929b7",
+  "evidence_digest": "a47f16a11e04e7f353ca15554faa2c7c1d8c70b8bdd59dbc7138c6990040c8f1",
   "head_sha": "b99a1f7ea0534d3a268f9bea432399c9862bd1e4",
   "repository": "GlacierEQ/spacex-orbital-mechanics",
   "repository_id": 1282819480,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.042,
+      "elapsed_s": 0.069,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.906,
+      "elapsed_s": 0.109,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "aff48e777c357b41250a62802ab145ff8635d70d67818ba5cc562bfaf362bd9e",
-      "output_tail": ".......................................                                  [100%]\n39 passed in 0.09s",
+      "name": "python_unittest",
+      "output_sha256": "0e3302533700654903ce89a01a7fb168443632ae0d71e060ac3f227d468b9990",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_transfer_departure_speed (test_lambert_solver.TestTransferSpeedReference.test_transfer_departure_speed) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.001s\n\nOK",
       "status": "PASS"
     }
   ]

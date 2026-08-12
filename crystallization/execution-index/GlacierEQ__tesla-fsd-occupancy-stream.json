@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "f43cc526a691f63463d62984a755d2215e57e4053183e6803049f5d8753b711b",
+  "evidence_digest": "e7d13b1f3b41c47bd59924644197f39f6c7075f91669055b6a7552d7fc18664d",
   "head_sha": "0cd416dbb3e10b2a6feee40c9c52a0690f333d2a",
   "repository": "GlacierEQ/tesla-fsd-occupancy-stream",
   "repository_id": 1311725708,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.281,
+      "elapsed_s": 0.103,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "d25b86e0069960772f6f194eebd8f83d0138ea97d0fc09d2c06f58c955ffeb14",
-      "output_tail": ".......                                                                  [100%]\n7 passed in 0.02s",
+      "name": "python_unittest",
+      "output_sha256": "5555c0ea1446a7be2658b68399e8f5483b49078ffb40a87dfdc3cd87a9c50bcd",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_occupancy_processing (test_fsd.TestTeslaFSDOccupancyStream.test_occupancy_processing) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.001s\n\nOK",
       "status": "PASS"
     }
   ]

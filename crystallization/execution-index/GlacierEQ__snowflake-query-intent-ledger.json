@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "fbc5f5466ddfc6beb02e787a1e66c515262bb0ff3e198b1bc9e195731879285f",
+  "evidence_digest": "af6a9cff799f200f9ab97dc207bd14845de5c17cc70b175240f6bcac1e7fa008",
   "head_sha": "f1c254816c3b7bf3aae6700609e04496108849cf",
   "repository": "GlacierEQ/snowflake-query-intent-ledger",
   "repository_id": 1328441724,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.061,
+      "elapsed_s": 0.056,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.349,
+      "elapsed_s": 0.106,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "088d24d04b14375e7bfbd9c35f7b67307942a3cf91dc4bd8ddf341cd7153337b",
-      "output_tail": ".......................                                      [100%]\n23 passed, 12 subtests passed in 0.05s",
+      "name": "python_unittest",
+      "output_sha256": "9d99ea432549f9e50fe6f758be105c772f0e799b37f0cb4e640a2185b8f7b5f3",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_claim_fence_sibling_is_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_claim_fence_sibling_is_not_integrated) ... ok\ntest_repository_owns_only_purpose_bound_query_reuse (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_only_purpose_bound_query_reuse) ... ok\ntest_target_reflects_earned_canonical_position (test_canonical_position_contract.CanonicalPositionContractTests.test_target_reflects_earned_canonical_position) ... ok\ntest_truth_boundary_excludes_execution_and_external_policy_claims (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_excludes_execution_and_external_policy_claims) ... ok\ntest_allow_audit (test_intent_ledger.IntentTests.test_allow_audit) ... ok\ntest_column_escalation_refuses (test_intent_ledger.IntentTests.test_column_escalation_refuses) ... ok\ntest_column_order_is_canonical_in_use_receipt (test_intent_ledger.IntentTests.test_column_order_is_canonical_in_use_receipt) ... ok\ntest_event_chain_binds_history (test_intent_ledger.IntentTests.test_event_chain_binds_history) ... ok\ntest_exact_reregistration_is_idempotent (test_intent_ledger.IntentTests.test_exact_reregistration_is_idempotent) ... ok\ntest_invalid_intent_dimensions_refuse (test_intent_ledger.IntentTests.test_invalid_intent_dimensions_refuse) ... ok\ntest_invalid_use_dimensions_refuse (test_intent_ledger.IntentTests.test_invalid_use_dimensions_refuse) ... ok\ntest_policy_identity_is_bound_into_ledger (test_intent_ledger.IntentTests.test_policy_identity_is_bound_into_ledger) ... ok\ntest_purpose_mismatch (test_intent_ledger.IntentTests.test_purpose_mismatch) ... ok\ntest_query_id_cannot_be_rebound (test_intent_ledger.IntentTests.test_query_id_cannot_be_rebound) ... ok\ntest_unknown_query_refuses (test_intent_ledger.IntentTests.test_unknown_query_refuses) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_tables_and_policy_comments (test_sql_fixture.SqlFixtureTests.test_tables_and_policy_comments) ... ok\n\n----------------------------------------------------------------------\nRan 23 tests in 0.005s\n\nOK",
       "status": "PASS"
     }
   ]

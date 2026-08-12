@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "c0ba83646bd056f2e5424111750afea12b6dd650b7ee76bab52073ba3174ca7a",
-  "head_sha": "7f9783d743d22d24ff940d4433d97763b6ec2bce",
+  "evidence_digest": "8ba7c9a385736bc3cd593be27fee6d21096d7db6603a1955d87e60c6f9f11fc1",
+  "head_sha": "dc7a9de8cff6583f0dfbd7bbd7f105da5a8bded1",
   "repository": "GlacierEQ/kimi-mooncake-kv-stream",
   "repository_id": 1311731029,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,26 +15,31 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.055,
-      "exit_code": 1,
+      "elapsed_s": 0.056,
+      "exit_code": 0,
       "name": "python_compile",
-      "output_sha256": "b793b8820069f88cb16ed0b154a6afa4c05d94977c0d6d0e96b611c03c0f1b37",
-      "output_tail": "*** Error compiling './src/kimi_mooncake_kv_stream.py'...\n  File \"./src/kimi_mooncake_kv_stream.py\", line 88\n    }\n    ^\nSyntaxError: unmatched '}'",
-      "status": "FAIL"
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
     },
     {
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.433,
-      "exit_code": 2,
-      "name": "python_pytest",
-      "output_sha256": "e33ae125c31304571aa91534b9eff9a8da8226a80f43135b4111f4cfdbc9564c",
-      "output_tail": "==================================== ERRORS ====================================\n_____________________ ERROR collecting tests/test_kimi.py ______________________\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/_pytest/python.py:508: in importtestmodule\n    mod = import_path(\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/_pytest/pathlib.py:596: in import_path\n    importlib.import_module(module_name)\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    exec(co, module.__dict__)\ntests/test_kimi.py:8: in <module>\n    from kimi_mooncake_kv_stream import EVIDENCE_STATE, KimiMooncakeKVStream\nE     File \"/tmp/crystal-exec-8k7lg6sd/repo/src/kimi_mooncake_kv_stream.py\", line 88\nE       }\nE       ^\nE   SyntaxError: unmatched '}'\n=========================== short test summary info ============================\nERROR tests/test_kimi.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.18s",
-      "status": "FAIL"
+      "elapsed_s": 0.1,
+      "exit_code": 0,
+      "name": "python_unittest",
+      "output_sha256": "34d15fe270c6f3446ccd28abeabb0a2426ef998f7ba25c3ce304994ea99cded5",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_invalid_assumptions_fail_closed (test_kimi.TestDisaggregatedKVScenario.test_invalid_assumptions_fail_closed) ... ok\ntest_prefill_cache_reuse_model (test_kimi.TestDisaggregatedKVScenario.test_prefill_cache_reuse_model) ... ok\ntest_zero_prefix_is_valid_scenario (test_kimi.TestDisaggregatedKVScenario.test_zero_prefix_is_valid_scenario) ... ok\ntest_expert_imbalance_scenario (test_kimi_k3.TestKimiArchitectureScenario.test_expert_imbalance_scenario) ... ok\ntest_fixed_state_storage_scenario (test_kimi_k3.TestKimiArchitectureScenario.test_fixed_state_storage_scenario) ... ok\ntest_invalid_scenario_inputs_fail_closed (test_kimi_k3.TestKimiArchitectureScenario.test_invalid_scenario_inputs_fail_closed) ... ok\ntest_variance_ratio_scenario (test_kimi_k3.TestKimiArchitectureScenario.test_variance_ratio_scenario) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.001s\n\nOK",
+      "status": "PASS"
     }
   ]
 }

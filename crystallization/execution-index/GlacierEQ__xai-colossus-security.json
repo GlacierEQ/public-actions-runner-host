@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b6a7795768b7ecdb0855e14a3f27d3fd877a635adcc63cb28310a6ec39b20899",
+  "evidence_digest": "da24a951577a2e1832201298e2ddf57facbe82800b57b89cab64ed9f04025eeb",
   "head_sha": "2f6daf5735fdc973e8238a67efad8c45bf7b06b9",
   "repository": "GlacierEQ/xai-colossus-security",
   "repository_id": 1248862320,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.056,
+      "elapsed_s": 0.094,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -24,17 +24,14 @@
     },
     {
       "command": [
-        "python",
-        "-m",
-        "pytest",
-        "-q"
+        "__NOT_RUN_UNDECLARED_TEST_DEPENDENCY__"
       ],
-      "elapsed_s": 0.929,
-      "exit_code": 2,
-      "name": "python_pytest",
-      "output_sha256": "8c4bad831d64f89898c597400da72906b5635ba8a2c748476ed26f53055f5034",
-      "output_tail": "==================================== ERRORS ====================================\n______________ ERROR collecting access-control/tests/test_rbac.py ______________\nImportError while importing test module '/tmp/crystal-exec-0pskwqyn/repo/access-control/tests/test_rbac.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\naccess-control/tests/test_rbac.py:7: in <module>\n    from access_control.rbac_engine import (\nE   ModuleNotFoundError: No module named 'access_control'\n__________ ERROR collecting incident-response/tests/test_playbook.py ___________\nImportError while importing test module '/tmp/crystal-exec-0pskwqyn/repo/incident-response/tests/test_playbook.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nincident-response/tests/test_playbook.py:7: in <module>\n    from incident_response.playbook_runner import PlaybookRunner, IncidentType, StepStatus\nE   ModuleNotFoundError: No module named 'incident_response'\n=========================== short test summary info ============================\nERROR access-control/tests/test_rbac.py\nERROR incident-response/tests/test_playbook.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 errors in 0.12s",
-      "status": "FAIL"
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "python_test_dependency",
+      "output_sha256": "504dd8bcd10a738e9bca0deab651ba9f0d4ed677b5073e56012416876a034e55",
+      "output_tail": "Tests require pytest but the repository does not declare pytest in package metadata, requirements, pytest config, or its native CI install contract.",
+      "status": "NOT_RUN_UNDECLARED_TEST_DEPENDENCY"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "62b474695ba6aa60d255d5b604a66134e0d042e5b1cfdad0f4a0725597ccb381",
+  "evidence_digest": "9af4f542e6ee0eb0b29fd3590f184a696aaf78e626c1b0f2fa42a9a723b589fb",
   "head_sha": "fb03344fa0bbf37a9e400a6a368d5800418c9ac1",
   "repository": "GlacierEQ/scale-agreement-budget-allocator",
   "repository_id": 1328441495,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.046,
+      "elapsed_s": 0.045,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.254,
+      "elapsed_s": 0.086,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "8e8c2ef479243b253d5efacfcd46b6c43f165b91304f98f3d0cca0b97498e025",
-      "output_tail": "...................                                                  [100%]\n19 passed, 4 subtests passed in 0.03s",
+      "name": "python_unittest",
+      "output_sha256": "c9fbfaa842c7581c18c0764bbf63ccae6eb541a9908e7a753f73050217a087e3",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_duplicate_ids_refuse (test_budget.BudgetTests.test_duplicate_ids_refuse) ... ok\ntest_easy_items_do_not_consume_extra_rounds (test_budget.BudgetTests.test_easy_items_do_not_consume_extra_rounds) ... ok\ntest_invalid_allocator_limits_refuse (test_budget.BudgetTests.test_invalid_allocator_limits_refuse) ... ok\ntest_invalid_normalized_inputs_refuse (test_budget.BudgetTests.test_invalid_normalized_inputs_refuse) ... ok\ntest_per_item_ceiling_and_global_budget_hold (test_budget.BudgetTests.test_per_item_ceiling_and_global_budget_hold) ... ok\ntest_prefers_uncertain (test_budget.BudgetTests.test_prefers_uncertain) ... ok\ntest_ties_are_deterministic_by_item_id (test_budget.BudgetTests.test_ties_are_deterministic_by_item_id) ... ok\ntest_underfunded_baseline_prioritizes_need (test_budget.BudgetTests.test_underfunded_baseline_prioritizes_need) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_repository_owns_only_annotation_budget_allocation (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_only_annotation_budget_allocation) ... ok\ntest_sibling_relationships_do_not_claim_integration (test_canonical_position_contract.CanonicalPositionContractTests.test_sibling_relationships_do_not_claim_integration) ... ok\ntest_target_reflects_earned_canonical_position (test_canonical_position_contract.CanonicalPositionContractTests.test_target_reflects_earned_canonical_position) ... ok\ntest_truth_boundary_excludes_quality_and_execution_claims (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_excludes_quality_and_execution_claims) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 0.003s\n\nOK",
       "status": "PASS"
     },
     {
@@ -42,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.307,
+      "elapsed_s": 9.002,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "70f569f1618176f68319dc9b4be75b5789f76cb10c2bf8d5cb50315a6e53950e",

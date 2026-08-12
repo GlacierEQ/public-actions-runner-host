@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "d82f1becbc5592f182d59f0734566606ed0fc0cb5ef9cd48f9425d80d97a466e",
+  "evidence_digest": "4015c881f45ae27a61adf19b6cfe1d05e1dec980a416ef87d1b65e26ec03f455",
   "head_sha": "e02ba22ef0a6a36f6ef6b166b61f60a4698d5757",
   "repository": "GlacierEQ/snowflake-cortex-claim-bound",
   "repository_id": 1328441657,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.059,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.609,
+      "elapsed_s": 0.11,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "11014beed65670784ec18ef04b9089af50755d36d69a08b49e92c2aea68096c7",
-      "output_tail": "......................                                                   [100%]\n22 passed in 0.05s",
+      "name": "python_unittest",
+      "output_sha256": "2e8c7546ed307760cdb1adf2bea32cb865bb1b475b1bffb2033be3eface019bd",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_are_repository_native (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_are_repository_native) ... ok\ntest_query_intent_sibling_is_reference_only (test_canonical_position_contract.CanonicalPositionContractTests.test_query_intent_sibling_is_reference_only) ... ok\ntest_repository_owns_only_registered_query_claim_fence (test_canonical_position_contract.CanonicalPositionContractTests.test_repository_owns_only_registered_query_claim_fence) ... ok\ntest_target_reflects_earned_canonical_position (test_canonical_position_contract.CanonicalPositionContractTests.test_target_reflects_earned_canonical_position) ... ok\ntest_truth_boundary_does_not_inflate_citation_into_semantics (test_canonical_position_contract.CanonicalPositionContractTests.test_truth_boundary_does_not_inflate_citation_into_semantics) ... ok\ntest_citation_order_does_not_change_success_receipt (test_cortex_bound.CortexTests.test_citation_order_does_not_change_success_receipt) ... ok\ntest_claim_text_is_bound_into_receipt (test_cortex_bound.CortexTests.test_claim_text_is_bound_into_receipt) ... ok\ntest_duplicate_citation_refuses (test_cortex_bound.CortexTests.test_duplicate_citation_refuses) ... ok\ntest_empty_claim_refuses (test_cortex_bound.CortexTests.test_empty_claim_refuses) ... ok\ntest_empty_query_id_refuses (test_cortex_bound.CortexTests.test_empty_query_id_refuses) ... ok\ntest_invalid_registry_refuses_at_construction (test_cortex_bound.CortexTests.test_invalid_registry_refuses_at_construction) ... ok\ntest_known_query_citation_allows (test_cortex_bound.CortexTests.test_known_query_citation_allows) ... ok\ntest_registry_identity_is_bound_into_receipt (test_cortex_bound.CortexTests.test_registry_identity_is_bound_into_receipt) ... ok\ntest_uncited_refuses (test_cortex_bound.CortexTests.test_uncited_refuses) ... ok\ntest_unknown_query_refuses (test_cortex_bound.CortexTests.test_unknown_query_refuses) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_citations (test_sql_fixture.T.test_citations) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 0.004s\n\nOK",
       "status": "PASS"
     }
   ]

@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "4363bebf30cc48e8cdf205619715b6ae2da69e5dcab92683062ddcad03564355",
+  "evidence_digest": "5b14286594a48ce7bb5bae8dc7b34a8fc40457d43a93ad623ccc8f371b2e3cae",
   "head_sha": "1903e562e801a6153b0e78b9d236418c849f1867",
   "repository": "GlacierEQ/spacex-propulsion-monitor",
   "repository_id": 1282819554,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "TESTED_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.075,
+      "elapsed_s": 0.073,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -24,17 +24,14 @@
     },
     {
       "command": [
-        "python",
-        "-m",
-        "pytest",
-        "-q"
+        "__NOT_RUN_UNDECLARED_TEST_DEPENDENCY__"
       ],
-      "elapsed_s": 0.431,
-      "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "5961b714acab18c2f41ff36fafc5c84af23f87d703305ec211563ed870c8519f",
-      "output_tail": "....................................................                     [100%]\n52 passed in 0.17s",
-      "status": "PASS"
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "python_test_dependency",
+      "output_sha256": "504dd8bcd10a738e9bca0deab651ba9f0d4ed677b5073e56012416876a034e55",
+      "output_tail": "Tests require pytest but the repository does not declare pytest in package metadata, requirements, pytest config, or its native CI install contract.",
+      "status": "NOT_RUN_UNDECLARED_TEST_DEPENDENCY"
     }
   ]
 }

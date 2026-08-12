@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "2973bb5a4b91b737804b86d619040623529ce250f99c0d51fe6a386c2dacf4cf",
+  "evidence_digest": "9a7b4ea931df8ea478c16820a09fad99232bb96db38be1f2b01c1cf6f323bcea",
   "head_sha": "9cd23baaaf00c02cfaca156899257a9264797fa2",
   "repository": "GlacierEQ/openai-reasoning-kv-sentinel",
   "repository_id": 1311716022,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.059,
+      "elapsed_s": 0.064,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,25 +31,30 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 7.047,
+      "elapsed_s": 6.676,
       "exit_code": 0,
-      "name": "python_dependencies",
-      "output_sha256": "7a7a6c34854f09306acc879e66e6db1d7603820cae94e99ccf71da892a9161c5",
-      "output_tail": "Collecting numpy>=1.24 (from -r requirements.txt (line 1))\n  Downloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)\nCollecting onnx>=1.14 (from -r requirements.txt (line 2))\n  Downloading onnx-1.22.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.5 kB)\nCollecting onnxruntime>=1.16 (from -r requirements.txt (line 3))\n  Downloading onnxruntime-1.28.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)\nRequirement already satisfied: protobuf>=4.25.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnx>=1.14->-r requirements.txt (line 2)) (6.33.6)\nRequirement already satisfied: typing_extensions>=4.15.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnx>=1.14->-r requirements.txt (line 2)) (4.16.0)\nCollecting ml_dtypes>=0.5.4 (from onnx>=1.14->-r requirements.txt (line 2))\n  Downloading ml_dtypes-0.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.9 kB)\nCollecting flatbuffers (from onnxruntime>=1.16->-r requirements.txt (line 3))\n  Downloading flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)\nRequirement already satisfied: packaging in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnxruntime>=1.16->-r requirements.txt (line 3)) (26.3)\nDownloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 16.7/16.7 MB 171.0 MB/s  0:00:00\nDownloading onnx-1.22.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (19.1 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 19.1/19.1 MB 175.9 MB/s  0:00:00\nDownloading onnxruntime-1.28.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (19.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 19.2/19.2 MB 161.7 MB/s  0:00:00\nDownloading ml_dtypes-0.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (5.0 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 5.0/5.0 MB 183.4 MB/s  0:00:00\nDownloading flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)\nInstalling collected packages: flatbuffers, numpy, onnxruntime, ml_dtypes, onnx\n\nSuccessfully installed flatbuffers-25.12.19 ml_dtypes-0.5.4 numpy-2.5.2 onnx-1.22.0 onnxruntime-1.28.0",
+      "name": "python_dependencies:requirements.txt",
+      "output_sha256": "bd803f2b4c27278a6942198bac52c1abfa488751c66fe7ee6f8c22ca30821cc6",
+      "output_tail": "Collecting numpy>=1.24 (from -r requirements.txt (line 1))\n  Downloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)\nCollecting onnx>=1.14 (from -r requirements.txt (line 2))\n  Downloading onnx-1.22.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.5 kB)\nCollecting onnxruntime>=1.16 (from -r requirements.txt (line 3))\n  Downloading onnxruntime-1.28.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)\nRequirement already satisfied: protobuf>=4.25.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnx>=1.14->-r requirements.txt (line 2)) (6.33.6)\nRequirement already satisfied: typing_extensions>=4.15.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnx>=1.14->-r requirements.txt (line 2)) (4.16.0)\nCollecting ml_dtypes>=0.5.4 (from onnx>=1.14->-r requirements.txt (line 2))\n  Downloading ml_dtypes-0.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.9 kB)\nCollecting flatbuffers (from onnxruntime>=1.16->-r requirements.txt (line 3))\n  Downloading flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)\nRequirement already satisfied: packaging in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnxruntime>=1.16->-r requirements.txt (line 3)) (26.3)\nDownloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 16.7/16.7 MB 165.3 MB/s  0:00:00\nDownloading onnx-1.22.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (19.1 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 19.1/19.1 MB 291.0 MB/s  0:00:00\nDownloading onnxruntime-1.28.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (19.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 19.2/19.2 MB 359.9 MB/s  0:00:00\nDownloading ml_dtypes-0.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (5.0 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 5.0/5.0 MB 338.8 MB/s  0:00:00\nDownloading flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)\nInstalling collected packages: flatbuffers, numpy, onnxruntime, ml_dtypes, onnx\n\nSuccessfully installed flatbuffers-25.12.19 ml_dtypes-0.5.4 numpy-2.5.2 onnx-1.22.0 onnxruntime-1.28.0",
       "status": "PASS"
     },
     {
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.739,
+      "elapsed_s": 0.215,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "5b49b3b8ce9bba1eb53b932b39984fb0f663a476b244fe538c3731225f06755f",
-      "output_tail": "..................                                                       [100%]\n18 passed in 0.15s",
+      "name": "python_unittest",
+      "output_sha256": "1528c086963f4c041cb724a3781f6964be07b61414c9c767f2a900a3ef2a9847",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_pruning (test_kv_entropy.TestKVEntropyPruner.test_pruning) ... ok\ntest_features_shape (test_onnx_kv.TestOnnxKv.test_features_shape) ... ok\ntest_prune_with_onnx_flag (test_onnx_kv.TestOnnxKv.test_prune_with_onnx_flag) ... \u001b[0;93m2026-08-12 21:28:10.376661975 [W:onnxruntime:Default, device_discovery.cc:134 GetPciBusId] Skipping pci_bus_id for PCI path at \"/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171\" because filename \"5620e0c7-8062-4dce-aeb7-520c7ef76171\" did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+\u001b[m\nok\ntest_scorer_scores_and_backend (test_onnx_kv.TestOnnxKv.test_scorer_scores_and_backend) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_invalid_ctor (test_sentinel.TestOpenAIReasoningKVSentinel.test_invalid_ctor) ... ok\ntest_pressure_soft_cap (test_sentinel.TestOpenAIReasoningKVSentinel.test_pressure_soft_cap) ... ok\ntest_schema_dispatcher_missing_and_types (test_sentinel.TestOpenAIReasoningKVSentinel.test_schema_dispatcher_missing_and_types) ... ok\ntest_schema_dispatcher_ok (test_sentinel.TestOpenAIReasoningKVSentinel.test_schema_dispatcher_ok) ... ok\ntest_trajectory_pruning_drops_low_entropy (test_sentinel.TestOpenAIReasoningKVSentinel.test_trajectory_pruning_drops_low_entropy) ... ok\ntest_deterministic_is_zero (test_sentinel.TestShannonEntropy.test_deterministic_is_zero) ... ok\ntest_empty (test_sentinel.TestShannonEntropy.test_empty) ... ok\ntest_fair_coin_is_one_bit (test_sentinel.TestShannonEntropy.test_fair_coin_is_one_bit) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 0.038s\n\nOK",
       "status": "PASS"
     }
   ]

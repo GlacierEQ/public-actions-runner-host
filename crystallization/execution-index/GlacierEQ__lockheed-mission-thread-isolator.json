@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "32d881b3024eb1311dccc2bcc43e6502ce327ca6a3729a35224c0145865c79a0",
+  "evidence_digest": "20bf2f1c9e2f06a8486a51f414c0c4389a65a106e19cdea46f5918166ae1cdee",
   "head_sha": "b01b4c4ac65ea14c28fde9264a4ba2971475dc76",
   "repository": "GlacierEQ/lockheed-mission-thread-isolator",
   "repository_id": 1328440879,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.319,
+      "elapsed_s": 0.112,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "2d56d33f2483cfdc67de07e347465e6834fb5bf6c27dde89d3d0197df1bd2fdb",
-      "output_tail": "...................                                                      [100%]\n19 passed in 0.05s",
+      "name": "python_unittest",
+      "output_sha256": "bc88cc861f66ed7cf81ee18ee90470b70ba353f87092e5b3aebd32cbc8dfb2bb",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_name_repository_native_isolation_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_isolation_mechanisms) ... ok\ntest_evolution_and_public_boundary_are_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_public_boundary_are_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_specialist_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_specialist_identity_and_lineage_are_preserved) ... ok\ntest_triad_edges_are_complementary_not_integration_claims (test_canonical_position_contract.CanonicalPositionContractTests.test_triad_edges_are_complementary_not_integration_claims) ... ok\ntest_bad_authority (test_core.IsoLeveledTests.test_bad_authority) ... ok\ntest_close_revokes_exports (test_core.IsoLeveledTests.test_close_revokes_exports) ... ok\ntest_concurrent_writes_same_thread (test_core.IsoLeveledTests.test_concurrent_writes_same_thread) ... ok\ntest_export_expiry (test_core.IsoLeveledTests.test_export_expiry) ... ok\ntest_no_direct_leak (test_core.IsoLeveledTests.test_no_direct_leak) ... ok\ntest_revoke (test_core.IsoLeveledTests.test_revoke) ... ok\ntest_self_import_useless (test_core.IsoLeveledTests.test_self_import_useless) ... ok\ntest_single_use_export (test_core.IsoLeveledTests.test_single_use_export) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 0.007s\n\nOK",
       "status": "PASS"
     }
   ]

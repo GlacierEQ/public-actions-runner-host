@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "3a71e467ea0fcb5b01a5833f5d9d46f8aa65855ad3070e083a63d8174ce86571",
+  "evidence_digest": "b58a97f5b74c0534796df52e8586204cabdbaf97297e3a27771a09661a4e595c",
   "head_sha": "7982853ccf28f3354dff83b1fbc1517ca4b431c6",
   "repository": "GlacierEQ/grokodile",
   "repository_id": 1303650146,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.058,
+      "elapsed_s": 0.053,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,14 +26,19 @@
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.293,
+      "elapsed_s": 0.098,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "9c4122a3505c1b3e80a1277c96ab327424a5f1a264e6304971ef58ab539d51e7",
-      "output_tail": "...........                                                              [100%]\n11 passed in 0.03s",
+      "name": "python_unittest",
+      "output_sha256": "c0c686007b7a39c3a282efa81022b156da199ab81fba88070e72d57746570489",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_handoff_package_compile (test_grokodile.TestGrokodileHandoffPack.test_handoff_package_compile) ... ok\ntest_session_compaction (test_grokodile.TestGrokodileSessionHygiene.test_session_compaction) ... ok\ntest_tool_gate_authorization (test_grokodile.TestGrokodileToolAllowlist.test_tool_gate_authorization) ... ok\ntest_truth_gate_forbidden_claim (test_grokodile.TestGrokodileTruthGate.test_truth_gate_forbidden_claim) ... ok\ntest_truth_gate_valid_text (test_grokodile.TestGrokodileTruthGate.test_truth_gate_valid_text) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.001s\n\nOK",
       "status": "PASS"
     }
   ]

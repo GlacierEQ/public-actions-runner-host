@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "d9fbe6ce72004f89fec9bd4867d5513c64a94740f1eb0014e140a12775695ac4",
+  "evidence_digest": "b0f03c7288d1b546ec10e0c27caef25786cdf2ef75bd7131b05145955662fdfa",
   "head_sha": "15c1767271a56bb3d1270ce2027639081c4a38f9",
   "repository": "GlacierEQ/xai-colossus-nanosphere",
   "repository_id": 1248919654,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
-  "status": "TESTED_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.077,
+      "elapsed_s": 0.079,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -24,17 +24,14 @@
     },
     {
       "command": [
-        "python",
-        "-m",
-        "pytest",
-        "-q"
+        "__NOT_RUN_UNDECLARED_TEST_DEPENDENCY__"
       ],
-      "elapsed_s": 0.427,
-      "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "a0cbedcbe0a80915c775754dd7ea62fcd9f1efe58957615b0f132cdae11c7402",
-      "output_tail": "........................................................................ [ 58%]\n...................................................                      [100%]\n123 passed in 0.20s",
-      "status": "PASS"
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "python_test_dependency",
+      "output_sha256": "504dd8bcd10a738e9bca0deab651ba9f0d4ed677b5073e56012416876a034e55",
+      "output_tail": "Tests require pytest but the repository does not declare pytest in package metadata, requirements, pytest config, or its native CI install contract.",
+      "status": "NOT_RUN_UNDECLARED_TEST_DEPENDENCY"
     }
   ]
 }

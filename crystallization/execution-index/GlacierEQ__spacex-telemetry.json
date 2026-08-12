@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "2a5ce81a26247f32e96545929d04815c9fd6a03dd4b66a67b0260de72a265a41",
+  "evidence_digest": "507d8df81fd7373c1685465e7da22ce7c5c2f28e4ea2ed48870854c227a8aee2",
   "head_sha": "12220f27fafb9fd1e642e9e7302f3965efe2da59",
   "repository": "GlacierEQ/spacex-telemetry",
   "repository_id": 1282819449,
-  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "schema": "glaciereq.crystallization.execution-probe.v2",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.066,
+      "elapsed_s": 0.072,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,25 +31,30 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 3.615,
+      "elapsed_s": 3.688,
       "exit_code": 0,
-      "name": "python_dependencies",
-      "output_sha256": "6d155b34d34ac3656f3d39bef86f75e49263c92a908c080c7797984d63b44f4e",
-      "output_tail": "Collecting protobuf>=5.26 (from -r requirements.txt (line 1))\n  Downloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)\nCollecting numpy>=1.24 (from -r requirements.txt (line 2))\n  Downloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)\nDownloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl (327 kB)\nDownloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 16.7/16.7 MB 93.6 MB/s  0:00:00\nInstalling collected packages: protobuf, numpy\n\nSuccessfully installed numpy-2.5.2 protobuf-7.35.1",
+      "name": "python_dependencies:requirements.txt",
+      "output_sha256": "bea48ffea5390f2f7ac25dd687df82f49ca7285e082c84fbe564414c7f10c598",
+      "output_tail": "Collecting protobuf>=5.26 (from -r requirements.txt (line 1))\n  Downloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)\nCollecting numpy>=1.24 (from -r requirements.txt (line 2))\n  Downloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)\nDownloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl (327 kB)\nDownloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 16.7/16.7 MB 92.7 MB/s  0:00:00\nInstalling collected packages: protobuf, numpy\n\nSuccessfully installed numpy-2.5.2 protobuf-7.35.1",
       "status": "PASS"
     },
     {
       "command": [
         "python",
         "-m",
-        "pytest",
-        "-q"
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test*.py",
+        "-v"
       ],
-      "elapsed_s": 0.774,
+      "elapsed_s": 0.15,
       "exit_code": 0,
-      "name": "python_pytest",
-      "output_sha256": "6d90498e73dd6aa4b1ee1aac96f41049b363ceec57d6a5c6b4c8e76db28f73d5",
-      "output_tail": "...................................                                      [100%]\n35 passed in 0.15s",
+      "name": "python_unittest",
+      "output_sha256": "9af98c2e01d3579760f73572dd805a0418c1d705bfe0f72815a1b721507aca60",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_batch_smaller_than_json (test_protobuf_real.TestProtobufReal.test_batch_smaller_than_json) ... ok\ntest_bus_export_and_condense (test_protobuf_real.TestProtobufReal.test_bus_export_and_condense) ... ok\ntest_helix_envelope_roundtrip (test_protobuf_real.TestProtobufReal.test_helix_envelope_roundtrip) ... ok\ntest_roundtrip_frame (test_protobuf_real.TestProtobufReal.test_roundtrip_frame) ... ok\ntest_decoder (test_telemetry_decoder.TestTelemetryDecoder.test_decoder) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.006s\n\nOK",
       "status": "PASS"
     },
     {
@@ -58,7 +63,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.987,
+      "elapsed_s": 10.901,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "a556278dfda06a017678b852c8b3601406f06703b8ca2b062130c7d228d65d53",
