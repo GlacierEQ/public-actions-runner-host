@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "20d228383f54fd052abaf21acae456a19bdc7d06d390a05bb1dc73bc1e67fe7c",
+  "head_sha": "1784e5502efec27e47248f7553ab7280c9434cea",
+  "repository": "GlacierEQ/public-actions-runner-host",
+  "repository_id": 1265621488,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.196,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 5.492,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "d5c6ba3a41d587c61885a2b5a5ef6b5c146e12deb36473d2ec609b2ff2ff47f4",
+      "output_tail": "........................................................................ [ 33%]\n........................................................................ [ 67%]\n.....................................................................    [100%]\n213 passed in 4.91s",
+      "status": "PASS"
+    }
+  ]
+}

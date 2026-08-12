@@ -1,0 +1,69 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "196ff93a52636578f33676ca809e3545b722193201dd6f564e2b2e0fe1239a84",
+  "head_sha": "fab6abe811ea20d60d4a7fa9c2063093aac24475",
+  "repository": "GlacierEQ/the-tower-of-babel",
+  "repository_id": 1316402874,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.102,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 2.97,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "0475e3d87e08c61da205e6eca8738d3a2ed9bf8e213e1ec3413fef8d797d36af",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-ah9nhs9m/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: protobuf<7,>=5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from glaciereq-tower-of-babel==1.1.0) (6.33.6)\nBuilding wheels for collected packages: glaciereq-tower-of-babel\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): started\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tower-of-babel: filename=glaciereq_tower_of_babel-1.1.0-0.editable-py3-none-any.whl size=2670 sha256=86d383c29d5424c799b4c32178a7e72d2abaaa4d0db783bbb20a30dd89e6fa5b\n  Stored in directory: /tmp/pip-ephem-wheel-cache-66hpg21t/wheels/be/16/15/b52faf071bf7a9c5e02021fe4c6f1c53bb674c380451686d8a\nSuccessfully built glaciereq-tower-of-babel\nInstalling collected packages: glaciereq-tower-of-babel\n  Attempting uninstall: glaciereq-tower-of-babel\n    Found existing installation: glaciereq-tower-of-babel 1.1.0\n    Uninstalling glaciereq-tower-of-babel-1.1.0:\n      Successfully uninstalled glaciereq-tower-of-babel-1.1.0\nSuccessfully installed glaciereq-tower-of-babel-1.1.0\n\nWARNING: glaciereq-tower-of-babel 1.1.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 1.608,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "9820039d85275ae1516b66c93a1f54bb4970d52314e626fc38a38dd3b5a78660",
+      "output_tail": "................................................................. [ 97%]\n..                                                                       [100%]\n67 passed, 7 subtests passed in 1.05s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 7.359,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "155b74a2e1b91126dbc52a03f2eecbe7f373ad56fb8c047c2c4544b065fe3312",
+      "output_tail": "?   \tgithub.com/GlacierEQ/the-tower-of-babel/flagship/go\t[no test files]\nok  \tgithub.com/GlacierEQ/the-tower-of-babel/languages/go\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

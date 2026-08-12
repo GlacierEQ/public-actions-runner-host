@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "8683e3ff289b3180a216e5fdeb8283811f5a51a77a3b03694025c9b56d3943a9",
+  "head_sha": "5ea89b5df1eaea35b88ee3d967c46cd9e21260c7",
+  "repository": "GlacierEQ/notion-workflow-intelligence",
+  "repository_id": 1283569496,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.055,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.284,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "e2957564f042a4cc9de1e6d509b24a96d068f4331cfce877f83d1f1219f26deb",
+      "output_tail": ".......                                                                  [100%]\n7 passed in 0.03s",
+      "status": "PASS"
+    }
+  ]
+}

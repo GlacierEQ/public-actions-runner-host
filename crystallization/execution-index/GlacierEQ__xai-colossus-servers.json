@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "a38fb9e413e4bab44ef99b643454ecbd7878bbb9330928c0cead3fe3d5c7cf2e",
+  "head_sha": "676d6b7d1912d116f0f9204dd7aca14d03a00f90",
+  "repository": "GlacierEQ/xai-colossus-servers",
+  "repository_id": 1248846708,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.075,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.667,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "159111f8a2cd11ef68bd0c48cf141befbdc0c123cf8ba0cd4b206eb9ce1f481d",
+      "output_tail": "........................................                                 [100%]\n=============================== warnings summary ===============================\ntests/test_diag_and_feeds.py::DiagAndFeedsTests::test_telemetry_feed_format\ntests/test_server_inventory.py::test_heartbeat_on_init\ntests/test_server_inventory.py::test_heartbeat_offline_on_shutdown\ntests/test_server_inventory.py::test_register_rack_upserts_supabase\ntests/test_server_inventory.py::test_tdp_export_nonzero\n  /tmp/crystal-exec-vz9i5ppb/repo/server_inventory.py:169: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    self.last_updated: str = datetime.datetime.utcnow().isoformat()\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n40 passed, 5 warnings in 0.40s",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "6d188cd9305f2e9d492b511268b1fc1b8915ca7b020f2211d99ccca57c59f1ce",
+  "head_sha": "d521217fe853152860412bc7b29717379616b266",
+  "repository": "GlacierEQ/groq-jitter-envelope-contract",
+  "repository_id": 1328440702,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.051,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.344,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "a04d018b67e4b83c2637683650822ac6251ad59705b98106afa53a688c633bb8",
+      "output_tail": ".....................                                                    [100%]\n21 passed in 0.09s",
+      "status": "PASS"
+    }
+  ]
+}

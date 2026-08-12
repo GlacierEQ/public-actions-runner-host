@@ -1,0 +1,69 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "2a5ce81a26247f32e96545929d04815c9fd6a03dd4b66a67b0260de72a265a41",
+  "head_sha": "12220f27fafb9fd1e642e9e7302f3965efe2da59",
+  "repository": "GlacierEQ/spacex-telemetry",
+  "repository_id": 1282819449,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.066,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-r",
+        "requirements.txt"
+      ],
+      "elapsed_s": 3.615,
+      "exit_code": 0,
+      "name": "python_dependencies",
+      "output_sha256": "6d155b34d34ac3656f3d39bef86f75e49263c92a908c080c7797984d63b44f4e",
+      "output_tail": "Collecting protobuf>=5.26 (from -r requirements.txt (line 1))\n  Downloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)\nCollecting numpy>=1.24 (from -r requirements.txt (line 2))\n  Downloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)\nDownloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl (327 kB)\nDownloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 16.7/16.7 MB 93.6 MB/s  0:00:00\nInstalling collected packages: protobuf, numpy\n\nSuccessfully installed numpy-2.5.2 protobuf-7.35.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.774,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "6d90498e73dd6aa4b1ee1aac96f41049b363ceec57d6a5c6b4c8e76db28f73d5",
+      "output_tail": "...................................                                      [100%]\n35 passed in 0.15s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 10.987,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "a556278dfda06a017678b852c8b3601406f06703b8ca2b062130c7d228d65d53",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/spacex-telemetry/src\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

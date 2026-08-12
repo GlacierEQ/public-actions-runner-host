@@ -1,0 +1,53 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "23884e9d367d24cdb8bded3d2670c7961dd2c7fbb8164cb4e9d8123284b6a1d0",
+  "head_sha": "9245f6d62f750dc7e73553a3f95da5a8f26bfbba",
+  "repository": "GlacierEQ/groq-batch-admission-gate",
+  "repository_id": 1328440633,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.052,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.316,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "66ac1e06f3c6a0c51cf8f7b0f884ba22703a0d088ee72148afa2c7d2e7a753ca",
+      "output_tail": ".....................                                                    [100%]\n21 passed in 0.05s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 8.311,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "3d073ea55bf54fcd0172b96bfac50401e753d215c1fafb0abfa0765caa9c4489",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/groq-batch-admission-gate/go/admit\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

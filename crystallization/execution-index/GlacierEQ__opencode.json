@@ -1,0 +1,26 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "5c1ce219a08303b2d99e5b3f2421af625f3a36f22c03a7e48bcf7080929a7760",
+  "head_sha": "d33c77644e6ebb883580ef7f6691acae2c60ece9",
+  "repository": "GlacierEQ/opencode",
+  "repository_id": 1321358481,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BUILDABLE_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.073,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    }
+  ]
+}

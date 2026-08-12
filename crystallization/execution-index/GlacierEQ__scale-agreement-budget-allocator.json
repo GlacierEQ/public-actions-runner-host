@@ -1,0 +1,53 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "62b474695ba6aa60d255d5b604a66134e0d042e5b1cfdad0f4a0725597ccb381",
+  "head_sha": "fb03344fa0bbf37a9e400a6a368d5800418c9ac1",
+  "repository": "GlacierEQ/scale-agreement-budget-allocator",
+  "repository_id": 1328441495,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.046,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.254,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "8e8c2ef479243b253d5efacfcd46b6c43f165b91304f98f3d0cca0b97498e025",
+      "output_tail": "...................                                                  [100%]\n19 passed, 4 subtests passed in 0.03s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 10.307,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "70f569f1618176f68319dc9b4be75b5789f76cb10c2bf8d5cb50315a6e53950e",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/scale-agreement-budget-allocator/go/budget\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

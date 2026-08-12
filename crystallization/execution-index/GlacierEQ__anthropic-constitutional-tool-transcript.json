@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "869ef6621bb5fb7c809fc535f1005f163b5e0e4931fbd5bebe354b4244cb51a3",
+  "head_sha": "0c930c04ffa473f0a0d93659f6b29e3620b95448",
+  "repository": "GlacierEQ/anthropic-constitutional-tool-transcript",
+  "repository_id": 1328440251,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.068,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.013,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    }
+  ]
+}

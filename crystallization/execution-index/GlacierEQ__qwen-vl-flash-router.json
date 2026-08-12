@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "39a177e0d753dba4c9c27c4990e3e0c3680197793dce0bacb77e6358faa57424",
+  "head_sha": "62452e19884488d2341e01531d2ee1cc31759270",
+  "repository": "GlacierEQ/qwen-vl-flash-router",
+  "repository_id": 1311731236,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.051,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.28,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "e2957564f042a4cc9de1e6d509b24a96d068f4331cfce877f83d1f1219f26deb",
+      "output_tail": ".......                                                                  [100%]\n7 passed in 0.03s",
+      "status": "PASS"
+    }
+  ]
+}

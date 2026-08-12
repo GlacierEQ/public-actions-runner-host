@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "90b2e1a1618cfd009b18387907873a31e86a5381aaf803d3313fe114e15ac46f",
+  "head_sha": "2cc87f135f175c5c56d025720a2679692cdb1965",
+  "repository": "GlacierEQ/tasklet-micro-agent-engine",
+  "repository_id": 1311736120,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.064,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 3.136,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "66bd367bc6f2404405d2e3eea9919c554c62afefe9ea159bc35e34bdd93ac2cc",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-2poe3l67/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-tasklet-runtime\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): started\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tasklet-runtime: filename=glaciereq_tasklet_runtime-1.0.0-0.editable-py3-none-any.whl size=9498 sha256=f9ccdd7891ff512f56c74f3d50a896267f9b71a5f812f65d59a954eed80702b4\n  Stored in directory: /tmp/pip-ephem-wheel-cache-eowj5hxi/wheels/ca/cb/9a/500b3c053f014161ba384ec977518fde5e685c81abce97a920\nSuccessfully built glaciereq-tasklet-runtime\nInstalling collected packages: glaciereq-tasklet-runtime\nSuccessfully installed glaciereq-tasklet-runtime-1.0.0\n\nWARNING: glaciereq-tasklet-runtime 1.0.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 1.045,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "39a5f3874f121eb7c8be62685d1d754f6e9bde05941dad069077b3dc96ff3f98",
+      "output_tail": "..................................                                       [100%]",
+      "status": "PASS"
+    }
+  ]
+}

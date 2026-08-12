@@ -1,0 +1,78 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "b2494fcc2768d804c47a292a1502ca764d89769b9fb1c3f0a45e9791605036c3",
+  "head_sha": "65143bc5713f56e501b037ea628df8bc70fd5fee",
+  "repository": "GlacierEQ/pro-code",
+  "repository_id": 1256771846,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.053,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.292,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "d1b4751330edc91fb6633a31e756dba3457df2465554758120699a402c1cb740",
+      "output_tail": "............                                                        [100%]\n12 passed, 5 subtests passed in 0.03s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "elapsed_s": 3.272,
+      "exit_code": 0,
+      "name": "node_dependencies",
+      "output_sha256": "32c0578ae4b5cc94c4e5003e4cab3f7202dd8e996dd45ea9f7ed23879f8c20a1",
+      "output_tail": "added 178 packages in 3s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test"
+      ],
+      "elapsed_s": 1.385,
+      "exit_code": 0,
+      "name": "node_test",
+      "output_sha256": "37ffb38cf344dec001f48bffebd848a2b07021d5853c615123bf5a449d5979f9",
+      "output_tail": "> pro-code@0.2.0 test\n> node --test server/nexus.test.mjs server/automation.test.mjs server/automatic-runtime.test.mjs && node node_modules/vitest/vitest.mjs run --exclude server/nexus.test.mjs --exclude server/automation.test.mjs --exclude server/automatic-runtime.test.mjs\n\nTAP version 13\n# Subtest: default runtime starts Nexus and completes automatic workspace intelligence\nok 1 - default runtime starts Nexus and completes automatic workspace intelligence\n  ---\n  duration_ms: 95.829425\n  type: 'test'\n  ...\n# Subtest: automatic run creates deterministic manifest and report artifacts\nok 2 - automatic run creates deterministic manifest and report artifacts\n  ---\n  duration_ms: 35.038076\n  type: 'test'\n  ...\n# Subtest: subsequent run records added modified and removed files\nok 3 - subsequent run records added modified and removed files\n  ---\n  duration_ms: 18.187115\n  type: 'test'\n  ...\n# Subtest: capability execution runs the useful automation pipeline\nok 4 - capability execution runs the useful automation pipeline\n  ---\n  duration_ms: 18.442709\n  type: 'test'\n  ...\n# Subtest: disabled scheduler stays disabled but manual run remains available\nok 5 - disabled scheduler stays disabled but manual run remains available\n  ---\n  duration_ms: 15.032612\n  type: 'test'\n  ...\n# Subtest: health exposes the complete local worker runtime\nok 6 - health exposes the complete local worker runtime\n  ---\n  duration_ms: 28.911071\n  type: 'test'\n  ...\n# Subtest: dispatch validates and executes a case-scoped capability\nok 7 - dispatch validates and executes a case-scoped capability\n  ---\n  duration_ms: 10.211176\n  type: 'test'\n  ...\n# Subtest: identical idempotent replay returns the original receipt\nok 8 - identical idempotent replay returns the original receipt\n  ---\n  duration_ms: 12.828\n  type: 'test'\n  ...\n# Subtest: idempotency key reuse with a different envelope fails closed\nok 9 - idempotency key reuse with a different envelope fails closed\n  ---\n  duration_ms: 7.574402\n  type: 'test'\n  ...\n# Subtest: missing case context and unknown capability are rejected\nok 10 - missing case context and unknown capability are rejected\n  ---\n  duration_ms: 7.82246\n  type: 'test'\n  ...\n# Subtest: memory context endpoint stores and retrieves browser context\nok 11 - memory context endpoint stores and retrieves browser context\n  ---\n  duration_ms: 8.695136\n  type: 'test'\n  ...\n# Subtest: filesystem sync is explicit when no destination is configured\nok 12 - filesystem sync is explicit when no destination is configured\n  ---\n  duration_ms: 11.451988\n  type: 'test'\n  ...\n1..12\n# tests 12\n# suites 0\n# pass 12\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 237.022553\n\n\u001b[1m\u001b[46m RUN \u001b[49m\u001b[22m \u001b[36mv3.2.6 \u001b[39m\u001b[90m/tmp/crystal-exec-ej3plxp5/repo\u001b[39m\n\n \u001b[32m\u2713\u001b[39m src/workers.test.ts \u001b[2m(\u001b[22m\u001b[2m10 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 21\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m\u2713\u001b[39m test/app.test.ts \u001b[2m(\u001b[22m\u001b[2m6 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 167\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m2 passed\u001b[39m\u001b[22m\u001b[90m (2)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m16 passed\u001b[39m\u001b[22m\u001b[90m (16)\u001b[39m\n\u001b[2m   Start at \u001b[22m 21:14:42\n\u001b[2m   Duration \u001b[22m 468ms\u001b[2m (transform 248ms, setup 0ms, collect 180ms, tests 188ms, environment 0ms, prepare 153ms)\u001b[22m",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "elapsed_s": 1.997,
+      "exit_code": 0,
+      "name": "node_build",
+      "output_sha256": "f208503da8e8e3e1c6d0fe7c32ba95224ff05fb55ae615c2c9954dc120c6c230",
+      "output_tail": "> pro-code@0.2.0 build\n> tsc && vite build\n\n\u001b[36mvite v8.0.16 \u001b[32mbuilding client environment for production...\u001b[36m\u001b[39m\n\u001b[2K\ntransforming...\u2713 22 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                             0.62 kB \u2502 gzip:  0.34 kB\ndist/assets/index-BQR0jgZW.css              3.96 kB \u2502 gzip:  1.53 kB\ndist/assets/App-BtowWlAm.css               15.42 kB \u2502 gzip:  3.68 kB\ndist/assets/rolldown-runtime-B8sk0Y4v.js    0.08 kB \u2502 gzip:  0.08 kB\ndist/assets/index-BsbFI9_A.js               2.53 kB \u2502 gzip:  1.32 kB\ndist/assets/App-D9AjXFA1.js                20.67 kB \u2502 gzip:  7.25 kB\ndist/assets/vendor-BHrO6_MB.js            190.92 kB \u2502 gzip: 60.59 kB\n\n\u001b[32m\u2713 built in 181ms\u001b[39m",
+      "status": "PASS"
+    }
+  ]
+}

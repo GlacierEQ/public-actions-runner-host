@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "b8a6793f40c1e4aa105006b8367a6c12110369d06831b7973da26c32b68b38d9",
+  "head_sha": "b26e165504b42ed3e673a757160ca1234c494386",
+  "repository": "GlacierEQ/xai-claim-promotion-fence",
+  "repository_id": 1328442315,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.064,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.323,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "11014beed65670784ec18ef04b9089af50755d36d69a08b49e92c2aea68096c7",
+      "output_tail": "......................                                                   [100%]\n22 passed in 0.05s",
+      "status": "PASS"
+    }
+  ]
+}

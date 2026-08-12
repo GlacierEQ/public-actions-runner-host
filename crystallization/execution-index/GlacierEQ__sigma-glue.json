@@ -1,0 +1,35 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "4edf7bdf5003575aee1c17a3e7b682847418343ebf681eb75ef8ccb98f7762ee",
+  "head_sha": "4a1ca8e5c88a62e8a94a43213b2c509af6afcea3",
+  "repository": "GlacierEQ/sigma-glue",
+  "repository_id": 1319647702,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "__NO_LOCKFILE__"
+      ],
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "node_dependencies",
+      "output_sha256": "640788cd205716bdf9231185d058e938a206d8aba6472ab609982e9b89861a4a",
+      "output_tail": "Reproducible Node dependency installation refused because no lockfile was found.",
+      "status": "NOT_RUN_NO_LOCKFILE"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test"
+      ],
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "node_test",
+      "output_sha256": "782353355a454370e17d2bc344d1662f837ce497d218b8ba864c8bd1becb3926",
+      "output_tail": "Skipped because the repository lacks a reproducible Node dependency lockfile.",
+      "status": "SKIPPED_DEPENDENCY_UNAVAILABLE"
+    }
+  ]
+}

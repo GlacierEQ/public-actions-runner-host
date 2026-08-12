@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "ae2f3d41e872fbca0cf2ffc9b9e0ea5e925277c3a9e1d591b9c32e993241c4ab",
+  "head_sha": "ad307c30ab53df53876c7ecaff6682964c5ae5b1",
+  "repository": "GlacierEQ/computer-user-storage",
+  "repository_id": 1321125650,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.026,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.008,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    }
+  ]
+}

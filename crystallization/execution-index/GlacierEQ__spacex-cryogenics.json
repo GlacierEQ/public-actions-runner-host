@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "d3288c133470e0c7abd7b97232cc78eb8a52fdbe0adb8764e5545b0a23b10723",
+  "head_sha": "7b036b72c4a004fb0c21a18e08c7311aac8201e1",
+  "repository": "GlacierEQ/spacex-cryogenics",
+  "repository_id": 1282819656,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.065,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 2.821,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "1db4d02c13dc72a1356d9bc87ac321cf1c7eb8931c7e2b5d873ccbb01125815a",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-hbs2vsh0/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-cryogenic-twin\n  Building editable for glaciereq-cryogenic-twin (pyproject.toml): started\n  Building editable for glaciereq-cryogenic-twin (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-cryogenic-twin: filename=glaciereq_cryogenic_twin-1.0.0-0.editable-py3-none-any.whl size=5761 sha256=4e93b96f923d696e32314c4aa3de8e63a5dd52a3d28cd6daf1c8d4c165c8eac9\n  Stored in directory: /tmp/pip-ephem-wheel-cache-9v9zb514/wheels/26/1f/55/98f0cd16ec595e7c1b9f96d7ce536bb0c2793f9d14191edd89\nSuccessfully built glaciereq-cryogenic-twin\nInstalling collected packages: glaciereq-cryogenic-twin\nSuccessfully installed glaciereq-cryogenic-twin-1.0.0\n\nWARNING: glaciereq-cryogenic-twin 1.0.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.695,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "588536d2f20dbda2bb46dbc929a110d2ad069022795c6137a58b3a0c275a1990",
+      "output_tail": "....................................                                     [100%]\n36 passed in 0.15s",
+      "status": "PASS"
+    }
+  ]
+}

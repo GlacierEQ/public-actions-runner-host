@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "3cc78e619960bf38f3284e935de4a6a6f432d7de6a38febb6c6e398d9d59802d",
+  "head_sha": "7d15bfaec0040e7a55d4b435abcf0fe9e7b19cb1",
+  "repository": "GlacierEQ/anthropic-agent-coordinator",
+  "repository_id": 1283501399,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.069,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 2.677,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "fe1491a4e3c64dfa3ff9159e692555b185b5f9bfc1f553f897a0e6b17192c76e",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-as9los_1/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: anthropic-agent-coordinator\n  Building editable for anthropic-agent-coordinator (pyproject.toml): started\n  Building editable for anthropic-agent-coordinator (pyproject.toml): finished with status 'done'\n  Created wheel for anthropic-agent-coordinator: filename=anthropic_agent_coordinator-1.0.0-py3-none-any.whl size=19748 sha256=2b7064c60afa6dbfeb2a6aa0ad1e6a7d29c974c4c36b71398580ec8cca069599\n  Stored in directory: /tmp/pip-ephem-wheel-cache-4v11qeay/wheels/b9/4d/ac/8e29e3935732bfb936efd4ce76de438079532bef14dabba274\nSuccessfully built anthropic-agent-coordinator\nInstalling collected packages: anthropic-agent-coordinator\nSuccessfully installed anthropic-agent-coordinator-1.0.0\n\nWARNING: anthropic-agent-coordinator 1.0.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.017,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    }
+  ]
+}

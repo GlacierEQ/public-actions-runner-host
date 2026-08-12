@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "e2b7bc1715bcea450a85664875158e6c2da06f8c99600bf9209877307e9e7cb8",
+  "head_sha": "1ed5946bb9430d20b4eee653b6ad12be28146275",
+  "repository": "GlacierEQ/vercel-edge-agent-cap-token",
+  "repository_id": 1328441985,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.045,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.236,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "030931977fae6d7e7f9de6d9a78104b6f123a067f761b65218340ab3afb29893",
+      "output_tail": ".................                                                        [100%]\n17 passed in 0.03s",
+      "status": "PASS"
+    }
+  ]
+}

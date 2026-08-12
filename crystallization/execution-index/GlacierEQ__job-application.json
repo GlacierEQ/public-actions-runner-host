@@ -1,0 +1,64 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "16a0dd81ff28135a2751f48c3ae92dfa409f6ffc6314512ffb087edfd4d444d0",
+  "head_sha": "e395a3abb6e315cd35fb13016fb43409c08f0c79",
+  "repository": "GlacierEQ/job-application",
+  "repository_id": 1281051156,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.091,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.632,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "5481d1d5ec08b7191357bc181628041ff6c905e36d4df33705d2d6ded037b202",
+      "output_tail": ".....................................................             [100%]\n53 passed, 7 subtests passed in 0.37s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "__NO_LOCKFILE__"
+      ],
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "node_dependencies",
+      "output_sha256": "640788cd205716bdf9231185d058e938a206d8aba6472ab609982e9b89861a4a",
+      "output_tail": "Reproducible Node dependency installation refused because no lockfile was found.",
+      "status": "NOT_RUN_NO_LOCKFILE"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test"
+      ],
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "node_test",
+      "output_sha256": "782353355a454370e17d2bc344d1662f837ce497d218b8ba864c8bd1becb3926",
+      "output_tail": "Skipped because the repository lacks a reproducible Node dependency lockfile.",
+      "status": "SKIPPED_DEPENDENCY_UNAVAILABLE"
+    }
+  ]
+}

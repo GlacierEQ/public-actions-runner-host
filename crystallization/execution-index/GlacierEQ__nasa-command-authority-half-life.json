@@ -1,0 +1,53 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "3cd870d38db617594ebc63d3e1672563c49cfd708ae6abc701ce5c0c79540569",
+  "head_sha": "5b6c8a158e0477def60c61210faffc1210d3698a",
+  "repository": "GlacierEQ/nasa-command-authority-half-life",
+  "repository_id": 1328440929,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.055,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.326,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287",
+      "output_tail": "..............                                                           [100%]\n14 passed in 0.04s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 7.823,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "86bad86cb05458dc14160dd59fd7e184dbe4b310852088e51b34a6242448a552",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/nasa-command-authority-half-life/go/cmdauth\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

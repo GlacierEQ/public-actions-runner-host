@@ -1,0 +1,53 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "e0d7a72817e3f241b9bb3d29f26c3d4ad6bbdb0238599a6ba4757c3053c593e7",
+  "head_sha": "0a7c9b82172db55b4a7a2aeb1497760d8f493267",
+  "repository": "GlacierEQ/anduril-sensor-health-quorum",
+  "repository_id": 1328440076,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.092,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.013,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 11.048,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "07d00dccfd89cd47370956010733743efe2de627d441824aa1528f883169f38d",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/anduril-sensor-health-quorum/go/health\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

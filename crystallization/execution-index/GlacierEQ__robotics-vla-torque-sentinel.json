@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "038922324ee500345050fcdf5fda67f732ae5dde67e4b3d1991b3ab925643677",
+  "head_sha": "78693ffd4427d410cb7764b115207dd0571e90d2",
+  "repository": "GlacierEQ/robotics-vla-torque-sentinel",
+  "repository_id": 1311731434,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.052,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.275,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "d25b86e0069960772f6f194eebd8f83d0138ea97d0fc09d2c06f58c955ffeb14",
+      "output_tail": ".......                                                                  [100%]\n7 passed in 0.02s",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "02036fadcc923b68260975663b6139b6fa55c530e81c2cbbe5fe5cbb700243ec",
+  "head_sha": "c0c5d8b3d3e1adb47480a9619e10ed18ed1e3f76",
+  "repository": "GlacierEQ/ai-auto-driller-unified",
+  "repository_id": 1304175071,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "elapsed_s": 2.697,
+      "exit_code": 0,
+      "name": "node_dependencies",
+      "output_sha256": "5c8c1ac1cec8824b00a056c2d9a1d32da1e8fd7be80bf7b0bddc851a3357773d",
+      "output_tail": "added 99 packages in 3s\n\nnpm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported\nnpm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead\nnpm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead\nnpm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test"
+      ],
+      "elapsed_s": 0.383,
+      "exit_code": 0,
+      "name": "node_test",
+      "output_sha256": "5a2d69ec760e763a32681a0ca7da97d60aa4c2c1174d6e94fc132f7cda8c8cb2",
+      "output_tail": "> ai-auto-driller-unified@5.0.0 test\n> npm run test:legacy && npm run test:master\n\n\n> ai-auto-driller-unified@5.0.0 test:legacy\n> node scripts/validation_harness.js\n\n\n\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557\n\u2551  AI-Auto-Driller Unified \u2014 Validation v3     \u2551\n\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d\n\n  \u2705 Topic extraction \u2014 normal sentence\n  \u2705 Topic extraction \u2014 short text fallback\n  \u2705 Topic extraction \u2014 empty string\n  \u2705 Topic extraction \u2014 cache hit\n  \u2705 Question generation \u2014 returns non-empty string\n  \u2705 Question generation \u2014 every weighted category has reachable positions\n  \u2705 Auto-accept \u2014 clicks Allow/Accept/Confirm\n  \u2705 Auto-accept \u2014 ignores hidden buttons\n  \u2705 Auto-accept \u2014 does not click Cancel/Submit/Other\n  \u2705 3s intelligent delay \u2014 verified >= 3000ms\n  \u2705 Drill interval gate \u2014 blocks early triggers\n  \u2705 Drill interval gate \u2014 allows trigger after interval\n  \u2705 CONFIG \u2014 has all required keys\n  \u2705 CONFIG.maxDrillDepth \u2014 default 5\n  \u2705 User activity detection \u2014 10s threshold\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  15 passed  |  0 failed  |  15 total\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\nRESULT: ALL TESTS PASSED \u2705\n\n> ai-auto-driller-unified@5.0.0 test:master\n> node scripts/master_validation_harness.js\n\nPASS target userscript is readable\nPASS JavaScript syntax compiles\nPASS userscript metadata is complete\nPASS supported platform matches are present in metadata\nPASS dangerous automation defaults are disabled\nPASS invalid Playwright-only selectors are absent\nPASS input drivers cover framework and contenteditable controls\nPASS actions are verified exactly once before counting success\nPASS response handling uses stability and deduplication\nPASS automatic response selection requires strong assistant candidates\nPASS short valid model replies are accepted\nPASS empty response cannot satisfy submission verification\nPASS UI is isolated and fixed after reset styles\nPASS SPA route changes are guarded against stale baselines\nPASS audit export, retention, and emergency stop exist\nPASS Notion is manual only\nPASS Grok routing is host-aware\nPASS failed submissions use bounded exponential backoff\nPASS DOM root discovery is cached and busy selectors are batched\nPASS auto-accept requires global enable and provider-specific adapter\nPASS emergency stop cancels in-flight operations\nPASS route changes preserve prior session history\nPASS reset clears cancellation and retry state\nPASS dead response-text state is absent\nPASS script size remains bounded\n\n25 passed, 0 failed",
+      "status": "PASS"
+    }
+  ]
+}

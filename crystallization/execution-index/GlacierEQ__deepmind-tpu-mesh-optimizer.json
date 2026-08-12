@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "5789bbe2b54e5d1914e48f2038768d4d32f873ea77292580a6aaaa0e694d8ee7",
+  "head_sha": "bc803d0517af73f4432f6b267f6f7132e5b7f465",
+  "repository": "GlacierEQ/deepmind-tpu-mesh-optimizer",
+  "repository_id": 1311716200,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.061,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.306,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "0efc033d6304f7c7c2495715a7468d5e704f08aab74ded472941e70a9c22d49b",
+      "output_tail": "................                                                         [100%]\n16 passed in 0.04s",
+      "status": "PASS"
+    }
+  ]
+}

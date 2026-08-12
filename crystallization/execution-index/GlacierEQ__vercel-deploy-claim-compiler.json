@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "3b49d0cb851a682785e8f62cf32f4167132ada8599775b9ab9aafb54a3ba3423",
+  "head_sha": "150a8ff31dd05fa1b35f50a1d693b9815d619f73",
+  "repository": "GlacierEQ/vercel-deploy-claim-compiler",
+  "repository_id": 1328441920,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.058,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.327,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "a7c471961ec3abe3c661fba9fe8f791b751b543cd12336cabb2a4c87cd26a16c",
+      "output_tail": "........................                                                 [100%]\n24 passed in 0.05s",
+      "status": "PASS"
+    }
+  ]
+}

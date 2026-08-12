@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "026e24f41bdb7c608f1bff1c95296e77be4cf3e0b8494c92a7f80e00804f6854",
+  "head_sha": "09574d62bae2497b35f09208e921f5f9a0ef6a7c",
+  "repository": "GlacierEQ/job-app-helix",
+  "repository_id": 1311828871,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.36,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 3.442,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "980ac74d151020ed391dde3d5f42009ffcd87e85f0f4e9faa63b140bfd73d498",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-s77fkycy/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting jsonschema<5,>=4.23 (from job-app-helix==0.3.0)\n  Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)\nCollecting protobuf<7,>=6.31 (from job-app-helix==0.3.0)\n  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)\nCollecting attrs>=22.2.0 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)\nCollecting jsonschema-specifications>=2023.03.6 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)\nCollecting referencing>=0.28.4 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)\nCollecting rpds-py>=0.25.0 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)\nRequirement already satisfied: typing-extensions>=4.4.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from referencing>=0.28.4->jsonschema<5,>=4.23->job-app-helix==0.3.0) (4.16.0)\nDownloading jsonschema-4.26.0-py3-none-any.whl (90 kB)\nDownloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)\nDownloading attrs-26.1.0-py3-none-any.whl (67 kB)\nDownloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)\nDownloading referencing-0.37.0-py3-none-any.whl (26 kB)\nDownloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (366 kB)\nBuilding wheels for collected packages: job-app-helix\n  Building editable for job-app-helix (pyproject.toml): started\n  Building editable for job-app-helix (pyproject.toml): finished with status 'done'\n  Created wheel for job-app-helix: filename=job_app_helix-0.3.0-py3-none-any.whl size=210595 sha256=1e50b3114961b4bc09a1ec72e4ca3d6658763683552888909e1c7c235e7a5076\n  Stored in directory: /tmp/pip-ephem-wheel-cache-6lrc6nug/wheels/bd/b0/e6/1f8af5bc7a8b8e8821ccddc91d531a44d530e26aeb11329441\nSuccessfully built job-app-helix\nInstalling collected packages: rpds-py, protobuf, attrs, referencing, jsonschema-specifications, jsonschema, job-app-helix\n\nSuccessfully installed attrs-26.1.0 job-app-helix-0.3.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 protobuf-6.33.6 referencing-0.37.0 rpds-py-2026.6.3\n\nWARNING: job-app-helix 0.3.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 10.044,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "114d5ac63719f36d66842bb7f878a8af9d2da080157c75db6d55257fbbccce66",
+      "output_tail": "........................................................................ [ 13%]\n........................................................................ [ 26%]\n........................................................................ [ 40%]\n........................................................................ [ 53%]\n........................................................................ [ 67%]\n........................................................................ [ 80%]\n........................................................................ [ 93%]\n.................................                                        [100%]",
+      "status": "PASS"
+    }
+  ]
+}

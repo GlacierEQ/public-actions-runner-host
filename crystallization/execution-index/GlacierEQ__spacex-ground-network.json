@@ -1,0 +1,69 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "b98a9ad3ebd528fdf839af1b469072fb4a0d281d617d3beffc64a28018aff8fc",
+  "head_sha": "f8992a0ac0ab4608d10e7bb2e20444c9cbad54fd",
+  "repository": "GlacierEQ/spacex-ground-network",
+  "repository_id": 1282819532,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.064,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 2.924,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "aa488632c21f3463daf6410b575b68e06358322ce9703ccf4651e283e494d3a9",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-azlvq1ez/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-ground-network\n  Building editable for glaciereq-ground-network (pyproject.toml): started\n  Building editable for glaciereq-ground-network (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-ground-network: filename=glaciereq_ground_network-1.0.0-0.editable-py3-none-any.whl size=5784 sha256=96eef59cf6d439c324793e03d7fae4f8733d21e6b4f1ad357fe2344c6319a180\n  Stored in directory: /tmp/pip-ephem-wheel-cache-reeeg0_7/wheels/02/2d/c6/90c291eb714fe59474beccbe18181b7d4bcf7ff624de064556\nSuccessfully built glaciereq-ground-network\nInstalling collected packages: glaciereq-ground-network\nSuccessfully installed glaciereq-ground-network-1.0.0\n\nWARNING: glaciereq-ground-network 1.0.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.397,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "fb0fafbfb2c7e8a7f1942841f570ac9a96a6040c2caed90201ef1f31cae12c77",
+      "output_tail": "...............................                                          [100%]\n31 passed in 0.14s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 8.474,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "14e76a541e907df9e244d81b7c8be867c872b2d7dda44a74aaf1b914cfbb2e13",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/spacex-ground-network/cmd/groundnet\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

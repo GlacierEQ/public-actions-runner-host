@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "0973eac9c5be681603c9a3b423782fe2967c60577da262650697c3de8b3dd5ed",
+  "head_sha": "e8b95ee5821d2438665930466dc6a9600ac703c2",
+  "repository": "GlacierEQ/openai-tool-authority-matrix",
+  "repository_id": 1328441275,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.052,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.298,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "11014beed65670784ec18ef04b9089af50755d36d69a08b49e92c2aea68096c7",
+      "output_tail": "......................                                                   [100%]\n22 passed in 0.05s",
+      "status": "PASS"
+    }
+  ]
+}

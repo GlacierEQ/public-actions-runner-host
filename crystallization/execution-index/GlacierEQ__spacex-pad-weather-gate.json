@@ -1,0 +1,53 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "ee60eea02cee182dfce2017f77b46e6d40524eb605e0c28bc3b5b15c0e66d0f6",
+  "head_sha": "7f8ca0a9d4e346b7350b30e2a9263a10b3baae26",
+  "repository": "GlacierEQ/spacex-pad-weather-gate",
+  "repository_id": 1298893525,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.054,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.308,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "277f598dae6914efc2d2a72f1b0628e89c466705c8bce7d14ca91fec0678a3f4",
+      "output_tail": "....................                                                     [100%]\n20 passed in 0.05s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 7.423,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "d5aa2cd1b855eb11f1dd453cbc49ba50581c065b0840c98e425b6ac5e1dbb0dd",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/spacex-pad-weather-gate/src\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

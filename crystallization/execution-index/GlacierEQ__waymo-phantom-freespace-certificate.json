@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "69aaf212949139d424cb82ce7677b1423460ad43963c0d68838ec6de3de5da53",
+  "head_sha": "4c1bc3593c40a5d0c09ef556bdf57a85891f3d09",
+  "repository": "GlacierEQ/waymo-phantom-freespace-certificate",
+  "repository_id": 1328442114,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.055,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "f3cdc3a39f97ebd441de02d821b581e5bee9048f28301f37c6b40350665b5217",
+      "output_tail": "./tests/test_freespace.py:66: SyntaxWarning: invalid escape sequence '\\['\n  with self.assertRaisesRegex(ValueError, \"\\[0,1\\]\"):",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.308,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "94bdbaa7c44fc3a1d91682b73aff2a965f8a0b4708f748054c6eb951e4d22e80",
+      "output_tail": ".......................                                                  [100%]\n=============================== warnings summary ===============================\ntests/test_freespace.py:66\n  /tmp/crystal-exec-nm4rk1e_/repo/tests/test_freespace.py:66: SyntaxWarning: invalid escape sequence '\\['\n    with self.assertRaisesRegex(ValueError, \"\\[0,1\\]\"):\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n23 passed, 1 warning in 0.05s",
+      "status": "PASS"
+    }
+  ]
+}

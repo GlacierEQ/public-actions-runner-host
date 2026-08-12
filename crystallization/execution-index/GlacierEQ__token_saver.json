@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "2238273e3f18184dc34898fdc4daa5c3e818dd269d47efc566b6386e161424d6",
+  "head_sha": "0367f968d5840a6672e39eb355606d9621291d1d",
+  "repository": "GlacierEQ/token_saver",
+  "repository_id": 1277329786,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.062,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.395,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "663648906d4160072ee6140761d95a86b5889680c95b1ace979544211f37551a",
+      "output_tail": "...F..................                                                   [100%]\n=================================== FAILURES ===================================\n________________________ test_deterministic_benchmarks _________________________\n\n    def test_deterministic_benchmarks():\n        result = run()\n        cache = result[\"cache_hit_miss\"]\n        assert cache[\"miss_is_none\"] is True\n>       assert isinstance(cache[\"hit_value\"], dict) and len(cache[\"hit_value\"]) >= 1\nE       assert (True and 0 >= 1)\nE        +  where True = isinstance({}, dict)\nE        +  and   0 = len({})\n\ntests/test_benchmarks.py:15: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_benchmarks.py::test_deterministic_benchmarks - assert (True and 0 >= 1)\n +  where True = isinstance({}, dict)\n +  and   0 = len({})\n1 failed, 21 passed in 0.13s",
+      "status": "FAIL"
+    }
+  ]
+}

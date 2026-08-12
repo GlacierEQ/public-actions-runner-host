@@ -1,0 +1,78 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "5fbdd5f69f6d4cf2a560a913db8a60b162761d2f787ae8dd3055fef9f3c38b7e",
+  "head_sha": "4581d1b894ae4588c1e60f784db66fe35b51a857",
+  "repository": "GlacierEQ/colossus-gateway",
+  "repository_id": 1232784516,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.088,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.013,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    },
+    {
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "elapsed_s": 5.12,
+      "exit_code": 0,
+      "name": "node_dependencies",
+      "output_sha256": "c21ef1d5d126c916e31e0d69b929cc9bd40c30d7f2871ba9803a12f6456c211f",
+      "output_tail": "> colossus-gateway@2.1.2 postinstall\n> node scripts/vercel-install-gate.mjs\n\n\nadded 330 packages in 5s\n\nnpm warn EBADENGINE Unsupported engine {\nnpm warn EBADENGINE   package: 'colossus-gateway@2.1.2',\nnpm warn EBADENGINE   required: { node: '24.x' },\nnpm warn EBADENGINE   current: { node: 'v22.23.2', npm: '10.9.8' }\nnpm warn EBADENGINE }",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test"
+      ],
+      "elapsed_s": 1.431,
+      "exit_code": 0,
+      "name": "node_test",
+      "output_sha256": "945e089c8abd3ba383d576d46a515c31279b44b3fe3353cf04c3f57b9d67ff2b",
+      "output_tail": "evice domain with mycelium integration\n\u001b[22m\u001b[39m[Gateway] Executing Infinity Strike: Deploying Daemon device-daemon to device...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2minfinity.superluminal_compile\u001b[2m > \u001b[22m\u001b[2mcompiles case matrix with evidence count\n\u001b[22m\u001b[39m[Gateway] Compiling Superluminal Case Matrix...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mstealth.strike\u001b[2m > \u001b[22m\u001b[2mexecutes THE_CATACLYSM strike with federal escalation\n\u001b[22m\u001b[39m[Gateway] Initiating Strike Protocol: THE_CATACLYSM...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mwhisperx.transcribe\u001b[2m > \u001b[22m\u001b[2mtranscribes audio files with forensic hashes\n\u001b[22m\u001b[39m[Gateway] Initiating CHUNK POWER WhisperX Transcription [Files: 2]...\n\ud83c\udf00 Processing 1 chunks in parallel Swarm Mode...\n\u26a1 Dispatching WhisperX Swarm Chunk [1]: evidence_001.mp3, evidence_002.wav\n\n \u001b[32m\u2713\u001b[39m tests/keymasterOidcBrokerSource.test.ts \u001b[2m(\u001b[22m\u001b[2m5 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 6\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m\u2713\u001b[39m tests/boxBridge.test.ts \u001b[2m(\u001b[22m\u001b[2m6 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 24\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m\u2713\u001b[39m src/index.test.ts \u001b[2m(\u001b[22m\u001b[2m1 test\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 4\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m\u2713\u001b[39m tests/securityHardening.test.ts \u001b[2m(\u001b[22m\u001b[2m3 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 8\u001b[2mms\u001b[22m\u001b[39m\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mmycelium.status\u001b[2m > \u001b[22m\u001b[2mreturns network health status\n\u001b[22m\u001b[39m[Gateway] Scanning Mycelium Network roots...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mmycelium.broadcast\u001b[2m > \u001b[22m\u001b[2mbroadcasts directive to all nodes\n\u001b[22m\u001b[39m[Gateway] Broadcasting Mycelium Directive: SYSTEM_ALERT...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mgoogle_photos.swarm_harvest\u001b[2m > \u001b[22m\u001b[2mharvests photos across multiple accounts\n\u001b[22m\u001b[39m[Gateway] Initiating Google Photos SATURATED HARVEST...\n\ud83d\udd25 Swarming 3 accounts for: \"evidence photos\"\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mdropbox.swarm_harvest\u001b[2m > \u001b[22m\u001b[2mextracts files from target directories\n\u001b[22m\u001b[39m[Gateway] Initiating Dropbox SATURATED HARVEST...\n\ud83c\udfaf Targeting: 01_LEGAL, CASE_ARCHIVES | Chunks: 2\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mclickup.build_pipeline\u001b[2m > \u001b[22m\u001b[2mprovisions premium pipeline with correct structure\n\u001b[22m\u001b[39m[Gateway] Building PERFECT CLICKUP PIPELINES in Premium Workspace: test-workspace...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mlogic.long_horizon\u001b[2m > \u001b[22m\u001b[2mexecutes 5-phase synthesis with PhD fidelity\n\u001b[22m\u001b[39m[Gateway] Initiating LONG HORIZON SATURATED STRIKE: Complete case analysis...\n\ud83c\udf00 Executing Phase: FORENSIC_SYNTHESIS...\n\ud83c\udf00 Executing Phase: ACTOR_NEUTRALIZATION_AUDIT...\n\ud83c\udf00 Executing Phase: STATUTORY_PREDICATE_MAPPING...\n\ud83c\udf00 Executing Phase: FEDERAL_EGRESS_OPTIMIZATION...\n\ud83c\udf00 Executing Phase: ASPEN_GROVE_PERMANENT_SEAL...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mgemma4.deploy_node\u001b[2m > \u001b[22m\u001b[2mdeploys Gemma 4 edge node with MoE architecture\n\u001b[22m\u001b[39m[Gateway] Deploying Gemma 4 Edge Node [test-node]...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mollama.deploy_platform\u001b[2m > \u001b[22m\u001b[2mdeploys multi-node Ollama platform\n\u001b[22m\u001b[39m[Gateway] Deploying OLLAMA SUPREME PLATFORM [Nodes: 4]...\n\n \u001b[32m\u2713\u001b[39m src/remote.test.ts \u001b[2m(\u001b[22m\u001b[2m25 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[33m 524\u001b[2mms\u001b[22m\u001b[39m\n       \u001b[33m\u001b[2m\u2713\u001b[22m\u001b[39m transcribes audio files with forensic hashes \u001b[33m 502\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m6 passed\u001b[39m\u001b[22m\u001b[90m (6)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m43 passed\u001b[39m\u001b[22m\u001b[90m (43)\u001b[39m\n\u001b[2m   Start at \u001b[22m 21:14:41\n\u001b[2m   Duration \u001b[22m 1.01s\u001b[2m (transform 403ms, setup 0ms, import 939ms, tests 607ms, environment 1ms)\u001b[22m",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "elapsed_s": 9.854,
+      "exit_code": 0,
+      "name": "node_build",
+      "output_sha256": "9ff8f31f485adb5f17858274198986e839c141601979220e906fe6750940b2b2",
+      "output_tail": "> \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2minfinity.daemon_strike\u001b[2m > \u001b[22m\u001b[2mdeploys daemon to device domain with mycelium integration\n\u001b[22m\u001b[39m[Gateway] Executing Infinity Strike: Deploying Daemon device-daemon to device...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2minfinity.superluminal_compile\u001b[2m > \u001b[22m\u001b[2mcompiles case matrix with evidence count\n\u001b[22m\u001b[39m[Gateway] Compiling Superluminal Case Matrix...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mstealth.strike\u001b[2m > \u001b[22m\u001b[2mexecutes THE_CATACLYSM strike with federal escalation\n\u001b[22m\u001b[39m[Gateway] Initiating Strike Protocol: THE_CATACLYSM...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mwhisperx.transcribe\u001b[2m > \u001b[22m\u001b[2mtranscribes audio files with forensic hashes\n\u001b[22m\u001b[39m[Gateway] Initiating CHUNK POWER WhisperX Transcription [Files: 2]...\n\ud83c\udf00 Processing 1 chunks in parallel Swarm Mode...\n\u26a1 Dispatching WhisperX Swarm Chunk [1]: evidence_001.mp3, evidence_002.wav\n\n \u001b[32m\u2713\u001b[39m tests/keymasterOidcBrokerSource.test.ts \u001b[2m(\u001b[22m\u001b[2m5 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 6\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m\u2713\u001b[39m tests/securityHardening.test.ts \u001b[2m(\u001b[22m\u001b[2m3 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 8\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m\u2713\u001b[39m src/index.test.ts \u001b[2m(\u001b[22m\u001b[2m1 test\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 3\u001b[2mms\u001b[22m\u001b[39m\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mmycelium.status\u001b[2m > \u001b[22m\u001b[2mreturns network health status\n\u001b[22m\u001b[39m[Gateway] Scanning Mycelium Network roots...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mmycelium.broadcast\u001b[2m > \u001b[22m\u001b[2mbroadcasts directive to all nodes\n\u001b[22m\u001b[39m[Gateway] Broadcasting Mycelium Directive: SYSTEM_ALERT...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mgoogle_photos.swarm_harvest\u001b[2m > \u001b[22m\u001b[2mharvests photos across multiple accounts\n\u001b[22m\u001b[39m[Gateway] Initiating Google Photos SATURATED HARVEST...\n\ud83d\udd25 Swarming 3 accounts for: \"evidence photos\"\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mdropbox.swarm_harvest\u001b[2m > \u001b[22m\u001b[2mextracts files from target directories\n\u001b[22m\u001b[39m[Gateway] Initiating Dropbox SATURATED HARVEST...\n\ud83c\udfaf Targeting: 01_LEGAL, CASE_ARCHIVES | Chunks: 2\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mclickup.build_pipeline\u001b[2m > \u001b[22m\u001b[2mprovisions premium pipeline with correct structure\n\u001b[22m\u001b[39m[Gateway] Building PERFECT CLICKUP PIPELINES in Premium Workspace: test-workspace...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mlogic.long_horizon\u001b[2m > \u001b[22m\u001b[2mexecutes 5-phase synthesis with PhD fidelity\n\u001b[22m\u001b[39m[Gateway] Initiating LONG HORIZON SATURATED STRIKE: Complete case analysis...\n\ud83c\udf00 Executing Phase: FORENSIC_SYNTHESIS...\n\ud83c\udf00 Executing Phase: ACTOR_NEUTRALIZATION_AUDIT...\n\ud83c\udf00 Executing Phase: STATUTORY_PREDICATE_MAPPING...\n\ud83c\udf00 Executing Phase: FEDERAL_EGRESS_OPTIMIZATION...\n\ud83c\udf00 Executing Phase: ASPEN_GROVE_PERMANENT_SEAL...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mgemma4.deploy_node\u001b[2m > \u001b[22m\u001b[2mdeploys Gemma 4 edge node with MoE architecture\n\u001b[22m\u001b[39m[Gateway] Deploying Gemma 4 Edge Node [test-node]...\n\n\u001b[90mstdout\u001b[2m | src/remote.test.ts\u001b[2m > \u001b[22m\u001b[2mRemoteExecutor\u001b[2m > \u001b[22m\u001b[2mollama.deploy_platform\u001b[2m > \u001b[22m\u001b[2mdeploys multi-node Ollama platform\n\u001b[22m\u001b[39m[Gateway] Deploying OLLAMA SUPREME PLATFORM [Nodes: 4]...\n\n \u001b[32m\u2713\u001b[39m src/remote.test.ts \u001b[2m(\u001b[22m\u001b[2m25 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[33m 528\u001b[2mms\u001b[22m\u001b[39m\n       \u001b[33m\u001b[2m\u2713\u001b[22m\u001b[39m transcribes audio files with forensic hashes \u001b[33m 501\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m6 passed\u001b[39m\u001b[22m\u001b[90m (6)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m43 passed\u001b[39m\u001b[22m\u001b[90m (43)\u001b[39m\n\u001b[2m   Start at \u001b[22m 21:14:46\n\u001b[2m   Duration \u001b[22m 1.04s\u001b[2m (transform 348ms, setup 0ms, import 935ms, tests 622ms, environment 1ms)\u001b[22m",
+      "status": "PASS"
+    }
+  ]
+}

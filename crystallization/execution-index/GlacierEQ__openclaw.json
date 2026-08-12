@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "76422bf58a8a4d3616cf727f859f05c3eebf47177884ca92c2cb6f7da538cd41",
+  "head_sha": "e29d1eccbeda725cef2ee7816caea2f6816c899e",
+  "repository": "GlacierEQ/openclaw",
+  "repository_id": 1312457380,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.089,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-r",
+        "requirements.txt"
+      ],
+      "elapsed_s": 2.762,
+      "exit_code": 0,
+      "name": "python_dependencies",
+      "output_sha256": "a119f1dfd599343d9731b6ff3b9bb99a4ed1280b1d1bc3853165ba0cdcd7116a",
+      "output_tail": ">-r requirements.txt (line 1))\n  Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)\nCollecting httpcore==1.* (from httpx>=0.27.0->-r requirements.txt (line 1))\n  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)\nCollecting idna (from httpx>=0.27.0->-r requirements.txt (line 1))\n  Downloading idna-3.18-py3-none-any.whl.metadata (6.1 kB)\nCollecting h11>=0.16 (from httpcore==1.*->httpx>=0.27.0->-r requirements.txt (line 1))\n  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)\nCollecting starlette>=0.46.0 (from fastapi>=0.115.0->-r requirements.txt (line 2))\n  Downloading starlette-1.6.0-py3-none-any.whl.metadata (6.4 kB)\nCollecting pydantic>=2.9.0 (from fastapi>=0.115.0->-r requirements.txt (line 2))\n  Downloading pydantic-2.13.4-py3-none-any.whl.metadata (109 kB)\nCollecting typing-extensions>=4.8.0 (from fastapi>=0.115.0->-r requirements.txt (line 2))\n  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)\nCollecting typing-inspection>=0.4.2 (from fastapi>=0.115.0->-r requirements.txt (line 2))\n  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)\nCollecting annotated-doc>=0.0.2 (from fastapi>=0.115.0->-r requirements.txt (line 2))\n  Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)\nCollecting click>=7.0 (from uvicorn>=0.34.0->-r requirements.txt (line 3))\n  Downloading click-8.4.2-py3-none-any.whl.metadata (2.6 kB)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0.0->-r requirements.txt (line 4)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0.0->-r requirements.txt (line 4)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0.0->-r requirements.txt (line 4)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0.0->-r requirements.txt (line 4)) (2.20.0)\nCollecting annotated-types>=0.6.0 (from pydantic>=2.9.0->fastapi>=0.115.0->-r requirements.txt (line 2))\n  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)\nCollecting pydantic-core==2.46.4 (from pydantic>=2.9.0->fastapi>=0.115.0->-r requirements.txt (line 2))\n  Downloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)\nDownloading httpx-0.28.1-py3-none-any.whl (73 kB)\nDownloading httpcore-1.0.9-py3-none-any.whl (78 kB)\nDownloading fastapi-0.141.1-py3-none-any.whl (131 kB)\nDownloading uvicorn-0.52.1-py3-none-any.whl (79 kB)\nDownloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)\nDownloading click-8.4.2-py3-none-any.whl (119 kB)\nDownloading h11-0.16.0-py3-none-any.whl (37 kB)\nDownloading pydantic-2.13.4-py3-none-any.whl (472 kB)\nDownloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 2.1/2.1 MB 66.3 MB/s  0:00:00\nDownloading annotated_types-0.8.0-py3-none-any.whl (13 kB)\nDownloading starlette-1.6.0-py3-none-any.whl (75 kB)\nDownloading anyio-4.14.2-py3-none-any.whl (125 kB)\nDownloading idna-3.18-py3-none-any.whl (65 kB)\nDownloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)\nDownloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)\nDownloading certifi-2026.7.22-py3-none-any.whl (136 kB)\nInstalling collected packages: typing-extensions, idna, h11, click, certifi, annotated-types, annotated-doc, uvicorn, typing-inspection, pydantic-core, httpcore, anyio, starlette, pydantic, httpx, fastapi\n\nSuccessfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.14.2 certifi-2026.7.22 click-8.4.2 fastapi-0.141.1 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.18 pydantic-2.13.4 pydantic-core-2.46.4 starlette-1.6.0 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.52.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.672,
+      "exit_code": 2,
+      "name": "python_pytest",
+      "output_sha256": "0b49c504d4aa8326abe4b6e0f15322989a82ecdaab6f9f801c41eb8d60d75b82",
+      "output_tail": "==================================== ERRORS ====================================\n_________________ ERROR collecting tests/test_comprehensive.py _________________\nImportError while importing test module '/tmp/crystal-exec-vb2u2ugo/repo/tests/test_comprehensive.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_comprehensive.py:13: in <module>\n    from .integrity.watchdog_daemon import WatchdogDaemon, FileFingerprint, IntegrityEvent\nE   ImportError: attempted relative import with no known parent package\n=========================== short test summary info ============================\nERROR tests/test_comprehensive.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.13s",
+      "status": "FAIL"
+    }
+  ]
+}

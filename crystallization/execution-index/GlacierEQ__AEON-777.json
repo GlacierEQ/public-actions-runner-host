@@ -1,0 +1,65 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "9300d8ed579c8c198ecd325e9c107ab56a3717fff7dac1b78a5b9a7308e4ce0a",
+  "head_sha": "7fc91626f8c98c015d9de0812aabc340ac99709b",
+  "repository": "GlacierEQ/AEON-777",
+  "repository_id": 1260408632,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.09,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.013,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    },
+    {
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "elapsed_s": 0.718,
+      "exit_code": 0,
+      "name": "node_dependencies",
+      "output_sha256": "be2011f979cc6212c2c0561220f9fe922642db5789d4a376a2db284e871eb483",
+      "output_tail": "up to date in 631ms",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test"
+      ],
+      "elapsed_s": 7.617,
+      "exit_code": 1,
+      "name": "node_test",
+      "output_sha256": "3a1a5425b3f5be828be18b91d284ae050aedefe07f01d8d545cb4eced649a7a4",
+      "output_tail": "_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"]},\"computed\":[\"approved_root_missing\",\"case_scope_missing\",\"connector_not_operational\",\"custodian_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"],\"declared\":[\"approved_root_missing\",\"case_scope_missing\",\"connector_not_operational\",\"custodian_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"],\"match\":true},{\"connector_id\":\"iphone_export\",\"root\":{\"connector_id\":\"iphone_export\",\"approved_roots\":[],\"root_scope_state\":\"not_approved\",\"stable_root_ref\":null,\"case_scope\":null,\"custodian\":null,\"sensitivity_ceiling\":\"unclassified\",\"access_mode\":\"blocked\",\"retention_rule\":null,\"original_byte_policy\":\"unassigned\",\"human_review\":{\"state\":\"required\",\"reviewer\":null,\"reviewed_at\":null},\"activation_status\":\"blocked_no_approved_root\",\"blockers\":[\"approved_root_missing\",\"case_scope_missing\",\"connector_not_operational\",\"custodian_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"]},\"computed\":[\"approved_root_missing\",\"case_scope_missing\",\"connector_not_operational\",\"custodian_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"],\"declared\":[\"approved_root_missing\",\"case_scope_missing\",\"connector_not_operational\",\"custodian_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"],\"match\":true},{\"connector_id\":\"chat_history\",\"root\":{\"connector_id\":\"chat_history\",\"approved_roots\":[],\"root_scope_state\":\"not_approved\",\"stable_root_ref\":null,\"case_scope\":null,\"custodian\":null,\"sensitivity_ceiling\":\"unclassified\",\"access_mode\":\"blocked\",\"retention_rule\":null,\"original_byte_policy\":\"unassigned\",\"human_review\":{\"state\":\"required\",\"reviewer\":null,\"reviewed_at\":null},\"activation_status\":\"blocked_no_approved_root\",\"blockers\":[\"approved_root_missing\",\"case_scope_missing\",\"connector_not_operational\",\"custodian_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"]},\"computed\":[\"approved_root_missing\",\"case_scope_missing\",\"connector_not_operational\",\"custodian_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"],\"declared\":[\"approved_root_missing\",\"case_scope_missing\",\"connector_not_operational\",\"custodian_missing\",\"human_review_not_approved\",\"original_byte_policy_invalid\",\"retention_rule_missing\",\"root_scope_not_approved\",\"sensitivity_unclassified\",\"stable_root_ref_missing\",\"unsafe_initial_access_mode\"],\"match\":true}]}\n\nfalse !== true\n\n    at file:///tmp/crystal-exec-ii_d33r1/repo/BRAIN/CONNECTORS/evidence_intake/validate_source_root_activation.mjs:114:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v22.23.1",
+      "status": "FAIL"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "be53d17e280ea7752b5e165d1849d2612148df5a7542ea223351ac3275fe2aad",
+  "head_sha": "c2d1169ccba08aefc590925f7c5315d4de1fe1eb",
+  "repository": "GlacierEQ/anthropic-refusal-replay-harness",
+  "repository_id": 1328440329,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.116,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.014,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 11.893,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "a052b39483658acdf274c0fafc202b465c86c20624158f7d4889e96667dcaa31",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/anthropic-refusal-replay-harness/go/refuse\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}

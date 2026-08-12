@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "d1810dbe1cee3ce2d292f526467870d68d2fafc901875d1dd26abe29a3342fa6",
+  "head_sha": "abd179d5e4648907a42ee279cd85c25bbac9f97f",
+  "repository": "GlacierEQ/databricks-notebook-claim-fence",
+  "repository_id": 1328440587,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.061,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.347,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "3be4d20e50a299d27e906ca278579f9014e0201d590511d01933cad5b861fbec",
+      "output_tail": "...........................                                              [100%]\n27 passed in 0.07s",
+      "status": "PASS"
+    }
+  ]
+}

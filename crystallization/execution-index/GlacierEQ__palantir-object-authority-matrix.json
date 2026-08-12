@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "1cff4c6338a2ab81c9b9bcccdec32ef9d19bb5ab9948d5db7cfee0529de58f10",
+  "head_sha": "98d106ac56b36e798be37576ebfd0a381ffd0c8b",
+  "repository": "GlacierEQ/palantir-object-authority-matrix",
+  "repository_id": 1328441385,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.042,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.235,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "d7778a383366eb67c2e141d9b8503343ee4805d6f3762aaa42ad653c790996af",
+      "output_tail": ".......................                                                  [100%]\n23 passed in 0.03s",
+      "status": "PASS"
+    }
+  ]
+}

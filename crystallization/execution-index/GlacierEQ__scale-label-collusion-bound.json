@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "73b2183ced8f38f5a549b121c06daedf907768d52f94ee679575b04e9a4919f1",
+  "head_sha": "addd98894f32e4709ecd56ef9219c1236e4c10c3",
+  "repository": "GlacierEQ/scale-label-collusion-bound",
+  "repository_id": 1328441599,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.057,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.305,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "89b11df7786789b93e56a1953ac1d788d35268672174a3227e9206b4ae9d70b1",
+      "output_tail": "..................                                                [100%]\n18 passed, 7 subtests passed in 0.04s",
+      "status": "PASS"
+    }
+  ]
+}

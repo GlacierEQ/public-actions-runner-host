@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "462e24b7ddee629c7132dac57adf22908ccad1d5927f284041928d3d16a5e43e",
+  "head_sha": "c97e5f94c37a97b595f053c9f9fb86d565e4fc06",
+  "repository": "GlacierEQ/xai-colossal-cooling",
+  "repository_id": 1220244126,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.053,
+      "exit_code": 1,
+      "name": "python_compile",
+      "output_sha256": "0447debcdad6199439155af54cd32e00ad802e3d38480a4f83a7a5ff69465e1a",
+      "output_tail": "*** Error compiling './integrations/e2b-notion-integration.py'...\n  File \"./integrations/e2b-notion-integration.py\", line 2\n    \\\\\\\"\\\\E2B Runtime Engine + Advanced Zip Tools + Notion Integration\\\\nProduction-ready integration for Aspen Grove ecosystem\\\\\\\"\\\\\"\\\\nimport json\\\\nimport base64\\\\nfrom datetime import datetime\\\\nfrom typing import Optional, Dict, Any\\\\nclass E2BNotionIntegration:\\\\n    \\\\\\\"\\\\\\\"E2B runtime execution with Notion auto-sync\\\\\\\"\\\\\\\"\\\\n    \\\\n    def __init__(self, e2b_api_key: str, notion_token: str):\\\\n        self.e2b_api = \\\\\\\"https://api.e2b.dev/v1\\\\\\\"\\\\n        self.e2b_key = e2b_api_key\\\\n        self.notion_token = notion_token\\\\n        self.config = {\\\\n            \\\\\\\"memory\\\\\\\": \\\\\\\"512MB\\\\\\\",\\\\n            \\\\\\\"storage\\\\\\\": \\\\\\\"10GB\\\\\\\",\\\\n            \\\\\\\"timeout\\\\\\\": \\\\\\\"30s\\\\\\\",\\\\n            \\\\\\\"output_streaming\\\\\\\": True\\\\n        }\\\\n    \\\\n    async def execute_code(\\\\n        self,\\\\n        code: str,\\\\n        language: str = \\\\\\\"python\\\\\\\",\\\\n        sync_to_notion: bool = True,\\\\n        notion_page_id: Optional[str] = None\\\\n    ) -> Dict[str, Any]:\\\\n        \\\\\\\"\\\\\\\n     ^\nSyntaxError: unexpected character after line continuation character\n\n*** Error compiling './xai-colossal-cooling-genius-integration.py'...\n  File \"./xai-colossal-cooling-genius-integration.py\", line 2\n    \"\"\"\n    ^\nSyntaxError: unterminated triple-quoted string literal (detected at line 8)\n\n*** Error compiling './xai-cooling-dash-monitor.py'...\n  File \"./xai-cooling-dash-monitor.py\", line 2\n    \"\"\"\n    ^\nSyntaxError: unterminated triple-quoted string literal (detected at line 14)",
+      "status": "FAIL"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.295,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "e0c091bad34e74a64de6dcd404737695709d15a33720dba52b566169cf03f757",
+      "output_tail": ".......                                                          [100%]\n7 passed, 8 subtests passed in 0.02s",
+      "status": "PASS"
+    }
+  ]
+}

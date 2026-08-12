@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "7fb75ddb804f2684b16f7c0f71ba9a59cc0c6671378d9d3723e5567717aa984a",
+  "head_sha": "c92e65f561882b26411aafbbbdf3853585887616",
+  "repository": "GlacierEQ/palantir-ontology-writeback-ledger",
+  "repository_id": 1328441436,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.036,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.88,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "244c76a6b7ba251339d13003cec7eb3f5ab86060aebc1005663043225b2bfbfc",
+      "output_tail": ".................................                                        [100%]\n33 passed in 0.07s",
+      "status": "PASS"
+    }
+  ]
+}

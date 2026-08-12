@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "c06e43a7f06e8e33ee49393a990ac57a3f266c0e92ceb9a3a6fe678782eb4a45",
+  "head_sha": "156629c65bdeff5397c1370b3e098eec26aa9377",
+  "repository": "GlacierEQ/spacex-autonomy",
+  "repository_id": 1282819678,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.079,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 2.341,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "a2e0e5b23c9dbf8c545e51235ca72ab483db5f919243925157b6c26060381182",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-zps96c7o/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: spacex-autonomy-simulation\n  Building editable for spacex-autonomy-simulation (pyproject.toml): started\n  Building editable for spacex-autonomy-simulation (pyproject.toml): finished with status 'done'\n  Created wheel for spacex-autonomy-simulation: filename=spacex_autonomy_simulation-1.0.0-py3-none-any.whl size=18435 sha256=0943a8916a8d651d8f7b672f94d009056fa78680e3f2856d2794d42389034227\n  Stored in directory: /tmp/pip-ephem-wheel-cache-vookqoi7/wheels/29/98/d5/e2710c7b4c7f1eb752d26945eb9a2ce1a06f8d0a478630ab9d\nSuccessfully built spacex-autonomy-simulation\nInstalling collected packages: spacex-autonomy-simulation\nSuccessfully installed spacex-autonomy-simulation-1.0.0\n\nWARNING: spacex-autonomy-simulation 1.0.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.803,
+      "exit_code": 2,
+      "name": "python_pytest",
+      "output_sha256": "7e6cd3a104cac9e06c5685991eae1acb8bd967985d1378682b04b15f52f53a8c",
+      "output_tail": "==================================== ERRORS ====================================\n_________________ ERROR collecting tests/test_verification.py __________________\nImportError while importing test module '/tmp/crystal-exec-zps96c7o/repo/tests/test_verification.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_verification.py:7: in <module>\n    from scripts.verify_junit import MAX_JUNIT_BYTES, verify_junit\nscripts/verify_junit.py:12: in <module>\n    from defusedxml import ElementTree as SafeET\nE   ModuleNotFoundError: No module named 'defusedxml'\n=========================== short test summary info ============================\nERROR tests/test_verification.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!",
+      "status": "FAIL"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "d0c0ba101ef299451726088fbe22feaa19dfe6647e87b7cb45e7658a6c291293",
+  "head_sha": "17537ed7ee2c7b01edf60953f403ebcb3a6c2fd8",
+  "repository": "GlacierEQ/spacex-conjunction-sentinel",
+  "repository_id": 1298893363,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.059,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 2.838,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "4b57b207d90c922ebb26a3317e066d7cf4400b4a9f9b6508e47abd5727db7324",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-e7ec5xjl/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-conjunction-sentinel\n  Building editable for glaciereq-conjunction-sentinel (pyproject.toml): started\n  Building editable for glaciereq-conjunction-sentinel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-conjunction-sentinel: filename=glaciereq_conjunction_sentinel-1.0.0-0.editable-py3-none-any.whl size=5868 sha256=da7f7073d29f9aa36757b641929c9813f907bf5595ff1b63cf3ee47a61037815\n  Stored in directory: /tmp/pip-ephem-wheel-cache-6natke7z/wheels/73/93/02/52d68a656dc7851eb9701cb9a96579b476a1e10199b4d6d4e2\nSuccessfully built glaciereq-conjunction-sentinel\nInstalling collected packages: glaciereq-conjunction-sentinel\nSuccessfully installed glaciereq-conjunction-sentinel-1.0.0\n\nWARNING: glaciereq-conjunction-sentinel 1.0.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.328,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "6f32c87c28ed17653108cb701ef45598e0340e73816dfd5c9ba7384c64cfdf8f",
+      "output_tail": "..................                                                       [100%]\n18 passed in 0.07s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--all-targets"
+      ],
+      "elapsed_s": 0.006,
+      "exit_code": 1,
+      "name": "cargo_test",
+      "output_sha256": "05c678dccbf887d2e1584d69066fbceb6db80dd2cdc83f3ffab008b68e8f7e27",
+      "output_tail": "error: rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured.\nhelp: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.",
+      "status": "FAIL"
+    }
+  ]
+}

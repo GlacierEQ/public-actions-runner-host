@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "2cfd22ffbd5b9669e085e93e6bc996217030477ef328cd8a2d3b5c16871b8da5",
+  "head_sha": "2357088e9e80ce4d1bf21527be2cd43b7dd9ac96",
+  "repository": "GlacierEQ/apex-control-plane",
+  "repository_id": 1251740621,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.085,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-r",
+        "requirements.txt"
+      ],
+      "elapsed_s": 3.601,
+      "exit_code": 0,
+      "name": "python_dependencies",
+      "output_sha256": "5a62e19ed8d64b59ff9e45df469de1729be6ba569f90eed4bdd463b4bed068c1",
+      "output_tail": ".whl.metadata (6.9 kB)\nCollecting certifi>=2023.5.7 (from requests>=2.31.0->-r requirements.txt (line 1))\n  Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)\nCollecting markdown-it-py>=2.2.0 (from rich>=13.7.0->-r requirements.txt (line 3))\n  Downloading markdown_it_py-4.2.0-py3-none-any.whl.metadata (7.4 kB)\nCollecting pygments<3.0.0,>=2.13.0 (from rich>=13.7.0->-r requirements.txt (line 3))\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting shellingham>=1.3.0 (from typer>=0.12.0->-r requirements.txt (line 4))\n  Downloading shellingham-1.5.4-py2.py3-none-any.whl.metadata (3.5 kB)\nCollecting annotated-doc>=0.0.2 (from typer>=0.12.0->-r requirements.txt (line 4))\n  Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)\nCollecting annotated-types>=0.6.0 (from pydantic>=2.7.0->-r requirements.txt (line 5))\n  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)\nCollecting pydantic-core==2.46.4 (from pydantic>=2.7.0->-r requirements.txt (line 5))\n  Downloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)\nCollecting typing-extensions>=4.14.1 (from pydantic>=2.7.0->-r requirements.txt (line 5))\n  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)\nCollecting typing-inspection>=0.4.2 (from pydantic>=2.7.0->-r requirements.txt (line 5))\n  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)\nCollecting gitdb<5,>=4.0.1 (from gitpython>=3.1.43->-r requirements.txt (line 6))\n  Downloading gitdb-4.0.12-py3-none-any.whl.metadata (1.2 kB)\nCollecting smmap<6,>=3.0.1 (from gitdb<5,>=4.0.1->gitpython>=3.1.43->-r requirements.txt (line 6))\n  Downloading smmap-5.0.3-py3-none-any.whl.metadata (4.6 kB)\nCollecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich>=13.7.0->-r requirements.txt (line 3))\n  Downloading mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)\nDownloading requests-2.34.2-py3-none-any.whl (73 kB)\nDownloading charset_normalizer-3.5.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (247 kB)\nDownloading idna-3.18-py3-none-any.whl (65 kB)\nDownloading urllib3-2.7.0-py3-none-any.whl (131 kB)\nDownloading python_dotenv-1.2.2-py3-none-any.whl (22 kB)\nDownloading rich-15.0.0-py3-none-any.whl (310 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 38.8 MB/s  0:00:00\nDownloading typer-0.27.1-py3-none-any.whl (122 kB)\nDownloading pydantic-2.13.4-py3-none-any.whl (472 kB)\nDownloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 2.1/2.1 MB 55.2 MB/s  0:00:00\nDownloading gitpython-3.1.59-py3-none-any.whl (220 kB)\nDownloading gitdb-4.0.12-py3-none-any.whl (62 kB)\nDownloading smmap-5.0.3-py3-none-any.whl (24 kB)\nDownloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)\nDownloading annotated_types-0.8.0-py3-none-any.whl (13 kB)\nDownloading certifi-2026.7.22-py3-none-any.whl (136 kB)\nDownloading markdown_it_py-4.2.0-py3-none-any.whl (91 kB)\nDownloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)\nDownloading shellingham-1.5.4-py2.py3-none-any.whl (9.8 kB)\nDownloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)\nDownloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)\nInstalling collected packages: urllib3, typing-extensions, smmap, shellingham, python-dotenv, pygments, mdurl, idna, charset_normalizer, certifi, annotated-types, annotated-doc, typing-inspection, requests, pydantic-core, markdown-it-py, gitdb, rich, pydantic, gitpython, typer\n\nSuccessfully installed annotated-doc-0.0.5 annotated-types-0.8.0 certifi-2026.7.22 charset_normalizer-3.5.0 gitdb-4.0.12 gitpython-3.1.59 idna-3.18 markdown-it-py-4.2.0 mdurl-0.1.2 pydantic-2.13.4 pydantic-core-2.46.4 pygments-2.20.0 python-dotenv-1.2.2 requests-2.34.2 rich-15.0.0 shellingham-1.5.4 smmap-5.0.3 typer-0.27.1 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.7.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.009,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    }
+  ]
+}

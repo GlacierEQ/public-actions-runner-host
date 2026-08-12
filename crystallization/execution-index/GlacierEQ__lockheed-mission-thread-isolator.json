@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "32d881b3024eb1311dccc2bcc43e6502ce327ca6a3729a35224c0145865c79a0",
+  "head_sha": "b01b4c4ac65ea14c28fde9264a4ba2971475dc76",
+  "repository": "GlacierEQ/lockheed-mission-thread-isolator",
+  "repository_id": 1328440879,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.054,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.319,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "2d56d33f2483cfdc67de07e347465e6834fb5bf6c27dde89d3d0197df1bd2fdb",
+      "output_tail": "...................                                                      [100%]\n19 passed in 0.05s",
+      "status": "PASS"
+    }
+  ]
+}

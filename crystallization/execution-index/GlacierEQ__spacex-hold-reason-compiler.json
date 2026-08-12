@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "cfdfdd224b20cf4ac8b6f03b27d0c54f68f9e40ae3b043bcf4b7186c4c0ba3fc",
+  "head_sha": "85c9d4348513ad3467b575bc7c43329cca9938fe",
+  "repository": "GlacierEQ/spacex-hold-reason-compiler",
+  "repository_id": 1328441790,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.057,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.362,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "0504efc6478adbfba40f99a87b924ef40670a13625b6f71b6c3394c6f348d8c3",
+      "output_tail": "dupe\n    HoldReasonCompiler._validate(residual)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresidual = HoldResidual(subsystem='weather', code='QUORUM_STALE', detail='HIGH', severity='mission-thread vote stale at t=110.0; source_receipt=8ff93b42c45ead0e16b10af82a35d80d1534b6d77365ea6358ba10f656fff802')\n\n    @staticmethod\n    def _validate(residual: HoldResidual) -> None:\n        if not residual.subsystem.strip() or not _TOKEN_RE.match(residual.subsystem):\n            raise ValueError(\"subsystem must be a non-empty machine-safe token\")\n        if not residual.code.strip() or not _TOKEN_RE.match(residual.code):\n            raise ValueError(\"code must be a non-empty machine-safe token\")\n        if not residual.detail.strip():\n            raise ValueError(\"detail must be non-empty\")\n        if residual.severity not in SEVERITY_RANK:\n>           raise ValueError(f\"unknown severity: {residual.severity}\")\nE           ValueError: unknown severity: mission-thread vote stale at t=110.0; source_receipt=8ff93b42c45ead0e16b10af82a35d80d1534b6d77365ea6358ba10f656fff802\n\nsrc/hold_compiler.py:91: ValueError\n_ QuorumBridgeTests.test_verified_hold_becomes_operator_hold_with_source_provenance _\n\nself = <test_quorum_bridge.QuorumBridgeTests testMethod=test_verified_hold_becomes_operator_hold_with_source_provenance>\n\n    def test_verified_hold_becomes_operator_hold_with_source_provenance(self):\n        receipt = portable_hold_receipt()\n        ok, reason = verify_quorum_receipt(receipt)\n        self.assertTrue(ok, reason)\n>       brief = compile_quorum_receipt(receipt)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_quorum_bridge.py:63: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/quorum_bridge.py:171: in compile_quorum_receipt\n    return engine.compile(residuals_from_quorum(receipt))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc/hold_compiler.py:132: in compile\n    unique = self._dedupe(residuals)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nsrc/hold_compiler.py:102: in _dedupe\n    HoldReasonCompiler._validate(residual)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nresidual = HoldResidual(subsystem='weather', code='WINDS', detail='HIGH', severity='mission-thread NO_GO at t=110.0; source_receipt=93844ecbf1db8daff023896847558646cd0d1899bfe8bfd3906137754a401dd2')\n\n    @staticmethod\n    def _validate(residual: HoldResidual) -> None:\n        if not residual.subsystem.strip() or not _TOKEN_RE.match(residual.subsystem):\n            raise ValueError(\"subsystem must be a non-empty machine-safe token\")\n        if not residual.code.strip() or not _TOKEN_RE.match(residual.code):\n            raise ValueError(\"code must be a non-empty machine-safe token\")\n        if not residual.detail.strip():\n            raise ValueError(\"detail must be non-empty\")\n        if residual.severity not in SEVERITY_RANK:\n>           raise ValueError(f\"unknown severity: {residual.severity}\")\nE           ValueError: unknown severity: mission-thread NO_GO at t=110.0; source_receipt=93844ecbf1db8daff023896847558646cd0d1899bfe8bfd3906137754a401dd2\n\nsrc/hold_compiler.py:91: ValueError\n=========================== short test summary info ============================\nFAILED tests/test_quorum_bridge.py::QuorumBridgeTests::test_go_compiles_to_no_hold - AttributeError: 'HoldBrief' object has no attribute 'hold'\nFAILED tests/test_quorum_bridge.py::QuorumBridgeTests::test_stale_vote_becomes_explicit_owner_hold - ValueError: unknown severity: mission-thread vote stale at t=110.0; source_receipt=8ff93b42c45ead0e16b10af82a35d80d1534b6d77365ea6358ba10f656fff802\nFAILED tests/test_quorum_bridge.py::QuorumBridgeTests::test_verified_hold_becomes_operator_hold_with_source_provenance - ValueError: unknown severity: mission-thread NO_GO at t=110.0; source_receipt=93844ecbf1db8daff023896847558646cd0d1899bfe8bfd3906137754a401dd2\n3 failed, 22 passed, 5 subtests passed in 0.10s",
+      "status": "FAIL"
+    }
+  ]
+}

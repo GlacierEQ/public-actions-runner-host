@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "a0e6729e57ff885309faba44f0c265834edf4afe254e08c792c9885a61fb30f3",
+  "head_sha": "6af397feea78829f494d61e98388bd4f9d90bcbe",
+  "repository": "GlacierEQ/anthropic-safety-monitor",
+  "repository_id": 1283501345,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.069,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[test]"
+      ],
+      "elapsed_s": 2.473,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "2bc9c77af98321fac97788ede550389a4440fc284e780def145e87da45a313a8",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-oldwvisb/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting defusedxml<1,>=0.7.1 (from anthropic-safety-monitor==1.0.0)\n  Downloading defusedxml-0.7.1-py2.py3-none-any.whl.metadata (32 kB)\nDownloading defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)\nBuilding wheels for collected packages: anthropic-safety-monitor\n  Building editable for anthropic-safety-monitor (pyproject.toml): started\n  Building editable for anthropic-safety-monitor (pyproject.toml): finished with status 'done'\n  Created wheel for anthropic-safety-monitor: filename=anthropic_safety_monitor-1.0.0-py3-none-any.whl size=16568 sha256=d51cbe7966581f3198ab88c254141010f28a11c8513c1475a27d9e49245d39a4\n  Stored in directory: /tmp/pip-ephem-wheel-cache-331b6irp/wheels/a5/0e/5b/23a58066a724d318a43b4c25539433a18c86f761c89626db83\nSuccessfully built anthropic-safety-monitor\nInstalling collected packages: defusedxml, anthropic-safety-monitor\n\nSuccessfully installed anthropic-safety-monitor-1.0.0 defusedxml-0.7.1\n\nWARNING: anthropic-safety-monitor 1.0.0 does not provide the extra 'test'",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.017,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
+      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
+      "status": "FAIL"
+    }
+  ]
+}

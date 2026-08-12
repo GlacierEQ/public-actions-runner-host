@@ -1,0 +1,56 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "2973bb5a4b91b737804b86d619040623529ce250f99c0d51fe6a386c2dacf4cf",
+  "head_sha": "9cd23baaaf00c02cfaca156899257a9264797fa2",
+  "repository": "GlacierEQ/openai-reasoning-kv-sentinel",
+  "repository_id": 1311716022,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.059,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-r",
+        "requirements.txt"
+      ],
+      "elapsed_s": 7.047,
+      "exit_code": 0,
+      "name": "python_dependencies",
+      "output_sha256": "7a7a6c34854f09306acc879e66e6db1d7603820cae94e99ccf71da892a9161c5",
+      "output_tail": "Collecting numpy>=1.24 (from -r requirements.txt (line 1))\n  Downloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)\nCollecting onnx>=1.14 (from -r requirements.txt (line 2))\n  Downloading onnx-1.22.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.5 kB)\nCollecting onnxruntime>=1.16 (from -r requirements.txt (line 3))\n  Downloading onnxruntime-1.28.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)\nRequirement already satisfied: protobuf>=4.25.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnx>=1.14->-r requirements.txt (line 2)) (6.33.6)\nRequirement already satisfied: typing_extensions>=4.15.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnx>=1.14->-r requirements.txt (line 2)) (4.16.0)\nCollecting ml_dtypes>=0.5.4 (from onnx>=1.14->-r requirements.txt (line 2))\n  Downloading ml_dtypes-0.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.9 kB)\nCollecting flatbuffers (from onnxruntime>=1.16->-r requirements.txt (line 3))\n  Downloading flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)\nRequirement already satisfied: packaging in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from onnxruntime>=1.16->-r requirements.txt (line 3)) (26.3)\nDownloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 16.7/16.7 MB 171.0 MB/s  0:00:00\nDownloading onnx-1.22.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (19.1 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 19.1/19.1 MB 175.9 MB/s  0:00:00\nDownloading onnxruntime-1.28.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (19.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 19.2/19.2 MB 161.7 MB/s  0:00:00\nDownloading ml_dtypes-0.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (5.0 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 5.0/5.0 MB 183.4 MB/s  0:00:00\nDownloading flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)\nInstalling collected packages: flatbuffers, numpy, onnxruntime, ml_dtypes, onnx\n\nSuccessfully installed flatbuffers-25.12.19 ml_dtypes-0.5.4 numpy-2.5.2 onnx-1.22.0 onnxruntime-1.28.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.739,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "5b49b3b8ce9bba1eb53b932b39984fb0f663a476b244fe538c3731225f06755f",
+      "output_tail": "..................                                                       [100%]\n18 passed in 0.15s",
+      "status": "PASS"
+    }
+  ]
+}

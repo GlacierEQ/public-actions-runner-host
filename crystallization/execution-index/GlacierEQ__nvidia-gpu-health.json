@@ -1,0 +1,40 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "3ae9f804e064dbc45b6e50556f586a2ca78270b95b8b8d3d9d31653b51345ffc",
+  "head_sha": "0d9df45f6b41d9c253b9aa762a366d0f5094936d",
+  "repository": "GlacierEQ/nvidia-gpu-health",
+  "repository_id": 1283500854,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.052,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.612,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "47dd77cf54e141d07c472eb6b6c2b63a4e447e3a3f990ea6af0bf0deab9205a2",
+      "output_tail": "...F.....                                                                [100%]\n=================================== FAILURES ===================================\n______________________________ test_optimal_cool _______________________________\n\n    def test_optimal_cool():\n        h = health_index(GpuSample(temp_c=40, power_w=400, sm_util=0.5, mem_util=0.4))\n        assert h[\"status\"] in (\"OPTIMAL\", \"NOMINAL\")\n>       assert h[\"health_index\"] > 0.3\nE       assert 0.2633 > 0.3\n\ntests/test_gpu_health.py:9: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_gpu_health.py::test_optimal_cool - assert 0.2633 > 0.3\n1 failed, 8 passed in 0.05s",
+      "status": "FAIL"
+    }
+  ]
+}

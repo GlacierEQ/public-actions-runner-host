@@ -1,0 +1,53 @@
+{
+  "completion_claim_allowed": false,
+  "evidence_digest": "3a9ab60a943867085b4fcdf80e54d3ace52fbb8c139da53d600c311757043242",
+  "head_sha": "8deca59d94be7b0a485137b2aab95d0392887f6b",
+  "repository": "GlacierEQ/xai-actuation-receipt-bus",
+  "repository_id": 1328442240,
+  "schema": "glaciereq.crystallization.execution-probe.v1",
+  "status": "TESTED_EXECUTION_EVIDENCE",
+  "steps": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "compileall",
+        "-q",
+        "."
+      ],
+      "elapsed_s": 0.062,
+      "exit_code": 0,
+      "name": "python_compile",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 0.336,
+      "exit_code": 0,
+      "name": "python_pytest",
+      "output_sha256": "31c2d1f1636d192b2ee0d26abea016ff7cd9e6465952a5b2a5fd56e5286e47d3",
+      "output_tail": "..........................                                               [100%]\n26 passed in 0.06s",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "elapsed_s": 11.179,
+      "exit_code": 0,
+      "name": "go_test",
+      "output_sha256": "5aac08596e1d214345f86f7f2444c4667a580f5b31b206e059ef875f305f9e9c",
+      "output_tail": "ok  \tgithub.com/GlacierEQ/xai-actuation-receipt-bus/go/bus\t0.002s",
+      "status": "PASS"
+    }
+  ]
+}
