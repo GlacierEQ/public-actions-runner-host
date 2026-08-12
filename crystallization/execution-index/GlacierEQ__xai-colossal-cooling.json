@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "6fad79db8023dcec92cba950c233995838b407da6415856ce680644ad19521bb",
+  "evidence_digest": "e875598a396d858461281084922c87956404550e693ba426cd27eae1b82033d8",
   "head_sha": "c97e5f94c37a97b595f053c9f9fb86d565e4fc06",
   "repository": "GlacierEQ/xai-colossal-cooling",
   "repository_id": 1220244126,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "BROKEN_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.059,
+      "elapsed_s": 0.048,
       "exit_code": 1,
       "name": "python_compile",
       "output_sha256": "0447debcdad6199439155af54cd32e00ad802e3d38480a4f83a7a5ff69465e1a",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.095,
+      "elapsed_s": 0.08,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "2df1952c329b3c381d2ed676220ca3bbcca6b39f8f639d1e98f516a7a43d99fc",

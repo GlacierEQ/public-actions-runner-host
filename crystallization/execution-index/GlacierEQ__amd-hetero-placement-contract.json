@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "2c5229552ac3a3744f7f11c7fcef16b6adf184310716f7a93e6521308c297ea4",
+  "evidence_digest": "9905c44df28f0cb4626c2f34f49bbcf7924a8827147893f25a72dd3abd91a3ea",
   "head_sha": "e19dea2fe713d0be9bab1a43f7ec2585dd21546e",
   "repository": "GlacierEQ/amd-hetero-placement-contract",
   "repository_id": 1329687670,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.058,
+      "elapsed_s": 0.088,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 1.98,
+      "elapsed_s": 2.79,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "1f059b9013090f88d99ef69ab1ff9bc0350f01a1f18e31ca2b0c08cdfab2c39d",
-      "output_tail": "Collecting pytest>=8.0 (from -r requirements.txt (line 1))\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 58.1 MB/s  0:00:00\nInstalling collected packages: pygments, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-9.1.1",
+      "output_sha256": "b65eb2683ffcf665f8af4a3162d7628d8857a87a0275394cee1e3e2d172dc7d9",
+      "output_tail": "Collecting pytest>=8.0 (from -r requirements.txt (line 1))\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 29.7 MB/s  0:00:00\nInstalling collected packages: pygments, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-9.1.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.745,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "d7ef1225b6ef1b82bfb68c07f9d9d7781b32bfd3fe1c501bf2977c1fcd4d17cd",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-59bked5p/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: amd-hetero-placement-contract\n  Building editable for amd-hetero-placement-contract (pyproject.toml): started\n  Building editable for amd-hetero-placement-contract (pyproject.toml): finished with status 'done'\n  Created wheel for amd-hetero-placement-contract: filename=amd_hetero_placement_contract-1.1.0-0.editable-py3-none-any.whl size=2660 sha256=a5c61c7e6872e8f2fd6aa11c8561b31c0150ff6c389c13a4bed006956439a988\n  Stored in directory: /tmp/pip-ephem-wheel-cache-9ilvoov2/wheels/87/8e/61/dfdbb32e659278c4c815dbc6d8143a39fc16e1810e9ff2f4f1\nSuccessfully built amd-hetero-placement-contract\nInstalling collected packages: amd-hetero-placement-contract\nSuccessfully installed amd-hetero-placement-contract-1.1.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.335,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +76,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.492,
+      "elapsed_s": 0.465,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "fa416df3e377db6a0e4af9ce072abb3ad7a9895832c922bdc5b0e788fb71dd9c",

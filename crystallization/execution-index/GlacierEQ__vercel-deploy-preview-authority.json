@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "f02bf9d9a80ccf2fe629c61bc0bf04e8757858a3aba8d8604a68e3f52d7e08a1",
+  "evidence_digest": "0e4f3fa8724ba03446ec2307f6ce5af118e585bf84ad8b118a787457f6ca8916",
   "head_sha": "296c173c5887a939c6cb99c1e7f670f1b5911c1d",
   "repository": "GlacierEQ/vercel-deploy-preview-authority",
   "repository_id": 1329688770,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.053,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.399,
+      "elapsed_s": 0.405,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
-      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "output_sha256": "d0f5ca3c92ec15539900e6df87d448f70ef57d393ae1b5dd0e7c51fd0ee93e36",
+      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 3.09,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "d253dc57d5b2a50b66476251e576635b1bc6e6d855ba436f6d1dc458d33d87bf",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-214ufnyk/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: vercel-deploy-preview-authority\n  Building editable for vercel-deploy-preview-authority (pyproject.toml): started\n  Building editable for vercel-deploy-preview-authority (pyproject.toml): finished with status 'done'\n  Created wheel for vercel-deploy-preview-authority: filename=vercel_deploy_preview_authority-0.0.1-0.editable-py3-none-any.whl size=2407 sha256=a4e01e1f08f2923cf392461d489b5c766b743e07b8a66b6490550fb8b5e0a362\n  Stored in directory: /tmp/pip-ephem-wheel-cache-sahobq5n/wheels/92/ac/2a/0edd85a2d80021b1d9fbceb9c4e555efaa640e9912466714ad\nSuccessfully built vercel-deploy-preview-authority\nInstalling collected packages: vercel-deploy-preview-authority\nSuccessfully installed vercel-deploy-preview-authority-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.399,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +76,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.319,
+      "elapsed_s": 0.33,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "94fc8fe3ff54e5496692cbf9ce5e6c00ea6b39fb22ab4a865914206948925abe",
-      "output_tail": "...............                                                          [100%]\n15 passed in 0.05s",
+      "output_sha256": "e74f966699ea1a5cd14b5c1a5b0b79385911f857c8601f595144f050d1b3a4b8",
+      "output_tail": "...............                                                          [100%]\n15 passed in 0.04s",
       "status": "PASS"
     }
   ]

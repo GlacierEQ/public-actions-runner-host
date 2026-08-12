@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "401234d164473d57d0a819cde0b26e269caea64ca3fa24cd64dd4f1bcbeaad04",
+  "evidence_digest": "a67599d3592fdacf014bb219b54fb63cef39535ffd125496e3ec05946eb9bc86",
   "head_sha": "e6f1dd9e1fd34de622dcc5a6b6ce1a46ddca0fce",
   "repository": "GlacierEQ/snowflake-warehouse-spend-circuit",
   "repository_id": 1329688677,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.383,
+      "elapsed_s": 0.377,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
-      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "output_sha256": "d0f5ca3c92ec15539900e6df87d448f70ef57d393ae1b5dd0e7c51fd0ee93e36",
+      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.843,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "6ec709a9617687b92c2520a7872077811502c708cc1d8892852183bed7c2f75a",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-de2y5zv7/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: snowflake-warehouse-spend-circuit\n  Building editable for snowflake-warehouse-spend-circuit (pyproject.toml): started\n  Building editable for snowflake-warehouse-spend-circuit (pyproject.toml): finished with status 'done'\n  Created wheel for snowflake-warehouse-spend-circuit: filename=snowflake_warehouse_spend_circuit-0.0.1-0.editable-py3-none-any.whl size=2447 sha256=f00a9f7c81e3a8848a0f21e46e1f131a3c916a82743b64247b51efa67190a593\n  Stored in directory: /tmp/pip-ephem-wheel-cache-pf6ymqog/wheels/7d/01/ab/0b705c4e2a309ed3d5fcae739066a4f2f6665feb1d7bc81d98\nSuccessfully built snowflake-warehouse-spend-circuit\nInstalling collected packages: snowflake-warehouse-spend-circuit\nSuccessfully installed snowflake-warehouse-spend-circuit-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.379,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +76,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.316,
+      "elapsed_s": 0.318,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "5070a6b9acedfdef101e604fa84b561e866a8322ac576fc316cba665d3aabcec",

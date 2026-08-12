@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "e7906e480f2d3a3949f0cd7a6a9aca25e953152cc8b3d7e8f12ae57ae4726860",
+  "evidence_digest": "37aff24bf4c7c8d497eb02451d60698c335fe575ab41d30b3827176fb0b7cd1f",
   "head_sha": "38c1b6ac25344bdeaf47989fceec5b000ce02fc0",
   "repository": "GlacierEQ/zoox-fleet-skill-promotion-gate",
   "repository_id": 1329688877,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.047,
+      "elapsed_s": 0.05,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.382,
+      "elapsed_s": 0.381,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,10 +42,41 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.919,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "a79dd528713dc25d18eebb727abc66c6475e4ff31717a17f2181b654dda1b361",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-5u2nz1_5/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: zoox-fleet-skill-promotion-gate\n  Building editable for zoox-fleet-skill-promotion-gate (pyproject.toml): started\n  Building editable for zoox-fleet-skill-promotion-gate (pyproject.toml): finished with status 'done'\n  Created wheel for zoox-fleet-skill-promotion-gate: filename=zoox_fleet_skill_promotion_gate-0.0.1-0.editable-py3-none-any.whl size=2417 sha256=fb40e2ec18f5708ff7a61b75c2db03dcf18290f9d70621356a86c932c032eaeb\n  Stored in directory: /tmp/pip-ephem-wheel-cache-1reg1rc9/wheels/a8/02/43/03fa86253b2a16394c197de37ca26a24e59e70ec8c7e27ba3d\nSuccessfully built zoox-fleet-skill-promotion-gate\nInstalling collected packages: zoox-fleet-skill-promotion-gate\nSuccessfully installed zoox-fleet-skill-promotion-gate-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.38,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.306,
+      "elapsed_s": 0.313,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "5070a6b9acedfdef101e604fa84b561e866a8322ac576fc316cba665d3aabcec",

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "5d44b3721e03331de8fe36175267416b96d131891a686c4b48233bf4c561dcd0",
+  "evidence_digest": "273ff37673d8d7e82cacf89b21536d057caf9a91e77ae9b22c6f016768f19208",
   "head_sha": "140e8ab86a0201aa9fdb2150d3d80e60b0a397f2",
   "repository": "GlacierEQ/lockheed-martin-mission-assurance-gateway",
   "repository_id": 1329688259,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.048,
+      "elapsed_s": 0.046,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 1.677,
+      "elapsed_s": 1.119,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "01ca2bab87b8c45ea6c16e8e78677eb1d5fed0737a7033c591b74493d7749c0d",
-      "output_tail": "Collecting pytest>=8.0 (from -r requirements.txt (line 1))\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting setuptools>=68 (from -r requirements.txt (line 2))\n  Downloading setuptools-84.0.0-py3-none-any.whl.metadata (6.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.20.0)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading setuptools-84.0.0-py3-none-any.whl (818 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 818.2/818.2 kB 53.3 MB/s  0:00:00\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nInstalling collected packages: setuptools, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pytest-9.1.1 setuptools-84.0.0",
+      "output_sha256": "ecb1da9e8989ff9422a3ed54571bf5cc7e9f324255e24ec890a27275cd0622e6",
+      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (9.1.1)\nCollecting setuptools>=68 (from -r requirements.txt (line 2))\n  Downloading setuptools-84.0.0-py3-none-any.whl.metadata (6.6 kB)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.20.0)\nDownloading setuptools-84.0.0-py3-none-any.whl (818 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 818.2/818.2 kB 67.7 MB/s  0:00:00\nInstalling collected packages: setuptools\nSuccessfully installed setuptools-84.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.816,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "98d38c7fd4da489e2aab48a889da37a80bc408870bed0a03804423fa85b532fc",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-y9xziznw/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: lockheed-martin-mission-assurance-gateway\n  Building editable for lockheed-martin-mission-assurance-gateway (pyproject.toml): started\n  Building editable for lockheed-martin-mission-assurance-gateway (pyproject.toml): finished with status 'done'\n  Created wheel for lockheed-martin-mission-assurance-gateway: filename=lockheed_martin_mission_assurance_gateway-1.0.0-0.editable-py3-none-any.whl size=2901 sha256=ac8245b9ef565920ce3565f8591d0c1c5edd4a2d3a765a627fbd1ebf84790028\n  Stored in directory: /tmp/pip-ephem-wheel-cache-ekh5yki4/wheels/e6/27/04/56422cea339bf33784b6c58d0463c2c5eee0ea6783f4168aa3\nSuccessfully built lockheed-martin-mission-assurance-gateway\nInstalling collected packages: lockheed-martin-mission-assurance-gateway\nSuccessfully installed lockheed-martin-mission-assurance-gateway-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.384,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +76,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.452,
+      "elapsed_s": 0.294,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "e74f966699ea1a5cd14b5c1a5b0b79385911f857c8601f595144f050d1b3a4b8",
-      "output_tail": "...............                                                          [100%]\n15 passed in 0.04s",
+      "output_sha256": "91c322f7f932fe777e61701075bf98d9b75d1d02b905adf6f6fc4361055cd586",
+      "output_tail": "...............                                                          [100%]\n15 passed in 0.03s",
       "status": "PASS"
     }
   ]

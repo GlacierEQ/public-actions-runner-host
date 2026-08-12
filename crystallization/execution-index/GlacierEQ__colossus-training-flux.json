@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "216e8e59d6cd07e7a8d1457710711e340d5f954fddaa07820a6e9a690d03af04",
+  "evidence_digest": "5cba9ca594e8d3e43925f37a54e607d82697fd2890a61f287955a61f66565f55",
   "head_sha": "165b321e86aa44afc23f9ce3bd1cf305d158b6bc",
   "repository": "GlacierEQ/colossus-training-flux",
   "repository_id": 1298893675,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.056,
+      "elapsed_s": 0.059,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.099,
+      "elapsed_s": 0.12,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "ba138f282344d334177050bb04a8722adcd38bbcd63ee5dcf819e3d247877d6a",

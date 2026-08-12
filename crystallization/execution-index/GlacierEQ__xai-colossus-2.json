@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "7bce023f3a1eb93d0d9d77de957398501810baf8a4c516865e95f22da4be4b25",
+  "evidence_digest": "7442737e5c5e3e0ec9869ed7955be3f11f401871ed66382e5e1f4f3619d0f9b4",
   "head_sha": "c7cbc2a12d71896aca2b8213df7e852922d16133",
   "repository": "GlacierEQ/xai-colossus-2",
   "repository_id": 1272029285,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.156,
+      "elapsed_s": 0.147,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,26 +31,23 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.414,
+      "elapsed_s": 0.424,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "3ff1e5ebad1ee687f3264fa8a3d17ecfe7c59d022a729555a5e9c72744b337d5",
-      "output_tail": "Requirement already satisfied: pytest<10,>=8 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8->-r requirements.txt (line 1)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8->-r requirements.txt (line 1)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8->-r requirements.txt (line 1)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8->-r requirements.txt (line 1)) (2.20.0)",
+      "output_sha256": "6675083a3ba79da0f7d9f934e95f6f5bb41440fa612f7f7146a5b5ecabe6b0fe",
+      "output_tail": "Requirement already satisfied: pytest<10,>=8 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8->-r requirements.txt (line 1)) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8->-r requirements.txt (line 1)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8->-r requirements.txt (line 1)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8->-r requirements.txt (line 1)) (2.20.0)",
       "status": "PASS"
     },
     {
       "command": [
-        "python",
-        "-m",
-        "pytest",
-        "-q"
+        "__NOT_RUN_UNDECLARED_TEST_DEPENDENCY__"
       ],
-      "elapsed_s": 19.871,
-      "exit_code": 1,
-      "name": "python_pytest",
-      "output_sha256": "415eb419530a68e2e489806d3fb56efdfecffaf57a9f8e84f6de5d7bcaeaa8ac",
-      "output_tail": "...................FFFF................................................. [ 60%]\n...................................s............                         [100%]\n=================================== FAILURES ===================================\n_____________ TestDevOpsPipeline.test_pipeline_validates_structure _____________\n\nself = <test_devops.TestDevOpsPipeline object at 0x7f69fa0acd10>\npipeline = <core.devops_pipeline.DevOpsPipeline object at 0x7f69f96c7b00>\n\n    @pytest.mark.asyncio\n    async def test_pipeline_validates_structure(self, pipeline):\n        run = await pipeline.run_pipeline(\"xai-colossus-2\")\n>       assert run.stage == PipelineStage.COMPLETE\nE       AssertionError: assert <PipelineStage.FAILED: 'failed'> == <PipelineStage.COMPLETE: 'complete'>\nE        +  where <PipelineStage.FAILED: 'failed'> = PipelineRun(run_id='run-1786570106', repo='xai-colossus-2', branch='main', stage=<PipelineStage.FAILED: 'failed'>, gat...test_output='', started_at=1786570106.7997334, completed_at=1786570106.7997375, error='Repo not found: xai-colossus-2').stage\nE        +  and   <PipelineStage.COMPLETE: 'complete'> = PipelineStage.COMPLETE\n\ntests/test_devops.py:30: AssertionError\n_________________ TestDevOpsPipeline.test_pipeline_runs_pytest _________________\n\nself = <test_devops.TestDevOpsPipeline object at 0x7f69fa0ad430>\npipeline = <core.devops_pipeline.DevOpsPipeline object at 0x7f69f96c7140>\n\n    @pytest.mark.asyncio\n    async def test_pipeline_runs_pytest(self, pipeline):\n        run = await pipeline.run_pipeline(\"xai-colossus-2\")\n        pytest_gates = [g for g in run.gates if g.gate_name == \"pytest\"]\n>       assert len(pytest_gates) == 1\nE       assert 0 == 1\nE        +  where 0 = len([])\n\ntests/test_devops.py:39: AssertionError\n_________________ TestDevOpsPipeline.test_pipeline_audits_code _________________\n\nself = <test_devops.TestDevOpsPipeline object at 0x7f69fa0ad8b0>\npipeline = <core.devops_pipeline.DevOpsPipeline object at 0x7f69f96c8ce0>\n\n    @pytest.mark.asyncio\n    async def test_pipeline_audits_code(self, pipeline):\n        run = await pipeline.run_pipeline(\"xai-colossus-cooling\")\n        audit_gates = [g for g in run.gates if g.gate_name in pipeline.PRO_CODE_GATES]\n>       assert len(audit_gates) == 7\nE       assert 0 == 7\nE        +  where 0 = len([])\n\ntests/test_devops.py:47: AssertionError\n__________________ TestDevOpsPipeline.test_run_all_pipelines ___________________\n\nself = <test_devops.TestDevOpsPipeline object at 0x7f69fa0c0500>\npipeline = <core.devops_pipeline.DevOpsPipeline object at 0x7f69f96ca4e0>\n\n    @pytest.mark.asyncio\n    async def test_run_all_pipelines(self, pipeline):\n        results = await pipeline.run_all_pipelines()\n        assert len(results) == 4\n        passed = [r for r in results if r.stage == PipelineStage.COMPLETE]\n>       assert len(passed) >= 3  # At least 3 should pass\n        ^^^^^^^^^^^^^^^^^^^^^^^\nE       assert 0 >= 3\nE        +  where 0 = len([])\n\ntests/test_devops.py:54: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_devops.py::TestDevOpsPipeline::test_pipeline_validates_structure - AssertionError: assert <PipelineStage.FAILED: 'failed'> == <PipelineStage.COMPLETE: 'complete'>\n +  where <PipelineStage.FAILED: 'failed'> = PipelineRun(run_id='run-1786570106', repo='xai-colossus-2', branch='main', stage=<PipelineStage.FAILED: 'failed'>, gat...test_output='', started_at=1786570106.7997334, completed_at=1786570106.7997375, error='Repo not found: xai-colossus-2').stage\n +  and   <PipelineStage.COMPLETE: 'complete'> = PipelineStage.COMPLETE\nFAILED tests/test_devops.py::TestDevOpsPipeline::test_pipeline_runs_pytest - assert 0 == 1\n +  where 0 = len([])\nFAILED tests/test_devops.py::TestDevOpsPipeline::test_pipeline_audits_code - assert 0 == 7\n +  where 0 = len([])\nFAILED tests/test_devops.py::TestDevOpsPipeline::test_run_all_pipelines - assert 0 >= 3\n +  where 0 = len([])\n4 failed, 115 passed, 1 skipped in 19.27s",
-      "status": "FAIL"
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "python_test_dependency",
+      "output_sha256": "6c7bfbfca3dbd1db31010abdb691006938b7ab73a9c4d14bd4d37bf6bc665b40",
+      "output_tail": "Repository test sources require a runner/plugin that repository manifests do not declare: __UNDECLARED_PYTEST_ASYNCIO__.",
+      "status": "NOT_RUN_UNDECLARED_TEST_DEPENDENCY"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "c9f4136ed5d50231bbe066759bbd6bb5c094146670315b1627ed614b980bb0d0",
+  "evidence_digest": "ca4447c6dd31a1af4d49e016dd9766052ee270c4abe1681d4efe5ed4777f26de",
   "head_sha": "addd98894f32e4709ecd56ef9219c1236e4c10c3",
   "repository": "GlacierEQ/scale-label-collusion-bound",
   "repository_id": 1328441599,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.056,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.109,
+      "elapsed_s": 0.111,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "c3144d3987e621a621fe19e4035bfd2638423e6572ac8e84b3fe2faafcbf6dcc",

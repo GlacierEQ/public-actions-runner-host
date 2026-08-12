@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "e4ff36f896e9c8495c859553aba326d61346b7329eb82a807fff5f0b4b7e7449",
+  "evidence_digest": "41316a2dfc0bc639a939fea5d6a78eb5fe949082f580f5de96760541a70fcdc9",
   "head_sha": "ecbe0b3d06b6e26521abccded6d8c5c8c3c34e94",
   "repository": "GlacierEQ/mongodb-operational-semantic-twin-index",
   "repository_id": 1329688366,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.055,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.365,
+      "elapsed_s": 0.411,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
-      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "output_sha256": "d0f5ca3c92ec15539900e6df87d448f70ef57d393ae1b5dd0e7c51fd0ee93e36",
+      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 3.059,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "325295514ed09f6072b995655dd0933d973e18fa89c5d991799f6a545b13a8f3",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-9e6iqhh0/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: mongodb-operational-semantic-twin-index\n  Building editable for mongodb-operational-semantic-twin-index (pyproject.toml): started\n  Building editable for mongodb-operational-semantic-twin-index (pyproject.toml): finished with status 'done'\n  Created wheel for mongodb-operational-semantic-twin-index: filename=mongodb_operational_semantic_twin_index-1.0.0-0.editable-py3-none-any.whl size=2885 sha256=d98aad3cf77c6072263b33c82dc6bdfcab702ccfc9b8f2e1d5948483a24091db\n  Stored in directory: /tmp/pip-ephem-wheel-cache-47qf_jy_/wheels/d7/19/f8/dc49af0916f03aa25a379e84403b3f6917116e4359c9e7bfe9\nSuccessfully built mongodb-operational-semantic-twin-index\nInstalling collected packages: mongodb-operational-semantic-twin-index\nSuccessfully installed mongodb-operational-semantic-twin-index-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.407,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +76,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.312,
+      "elapsed_s": 0.334,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287",
-      "output_tail": "..............                                                           [100%]\n14 passed in 0.04s",
+      "output_sha256": "d3e09474297abb89a20a2a722c6a4731d1e10473fdeb3dbf63af3e7c51ce1eb5",
+      "output_tail": "..............                                                           [100%]\n14 passed in 0.05s",
       "status": "PASS"
     }
   ]

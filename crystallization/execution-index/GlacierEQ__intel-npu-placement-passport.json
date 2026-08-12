@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "2491523f00230689804ec75eca8f7b72f8f9a4becac4cae8456529297f9e0aff",
+  "evidence_digest": "3868aefc64d6b35297dd9213d113e503f4b4db5c1b56b755115f434596a0effd",
   "head_sha": "e80173e957bb4cc914c92e57a3bf5715aeaaca2f",
   "repository": "GlacierEQ/intel-npu-placement-passport",
   "repository_id": 1329688137,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.047,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.379,
+      "elapsed_s": 0.336,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,10 +42,41 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.601,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "046e94bb09c90cc5cb28af5a52c1477809142ce7eb93b1cb399339ea45ee0b41",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-29_zo1ie/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: intel-npu-placement-passport\n  Building editable for intel-npu-placement-passport (pyproject.toml): started\n  Building editable for intel-npu-placement-passport (pyproject.toml): finished with status 'done'\n  Created wheel for intel-npu-placement-passport: filename=intel_npu_placement_passport-0.0.1-0.editable-py3-none-any.whl size=2360 sha256=1509dac5926e04d80484354816dc27aa951ff8d156730cd1a387a0f7d49c116a\n  Stored in directory: /tmp/pip-ephem-wheel-cache-vjv22tr9/wheels/6b/20/b6/e563a513ec2a85db3186f294c3fd6bd3fc713140a10f600b53\nSuccessfully built intel-npu-placement-passport\nInstalling collected packages: intel-npu-placement-passport\nSuccessfully installed intel-npu-placement-passport-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.338,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.333,
+      "elapsed_s": 0.271,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "980e44fa2d7beb6d61f0e76333d72425e9e05583c12571e206f378eff65e64d0",

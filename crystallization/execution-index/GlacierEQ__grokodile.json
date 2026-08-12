@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b58a97f5b74c0534796df52e8586204cabdbaf97297e3a27771a09661a4e595c",
+  "evidence_digest": "896c243ee23a6c28dcd9969aaccf63076293b1991c7929fcb137ba7059a36815",
   "head_sha": "7982853ccf28f3354dff83b1fbc1517ca4b431c6",
   "repository": "GlacierEQ/grokodile",
   "repository_id": 1303650146,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.053,
+      "elapsed_s": 0.056,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.098,
+      "elapsed_s": 0.103,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "c0c686007b7a39c3a282efa81022b156da199ab81fba88070e72d57746570489",

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "6f6795983c6724c5d396a1a12ad3203df1b84f4bc58257dc366b0b3096901cad",
+  "evidence_digest": "86c673ef2dd6ab222750f0843050ddffb935dfde2bf22ef4212bbdb2c7b4c262",
   "head_sha": "c2d1169ccba08aefc590925f7c5315d4de1fe1eb",
   "repository": "GlacierEQ/anthropic-refusal-replay-harness",
   "repository_id": 1328440329,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.061,
+      "elapsed_s": 0.077,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -37,8 +37,8 @@
       "elapsed_s": 0.129,
       "exit_code": 0,
       "name": "python_unittest",
-      "output_sha256": "14570a20808598f365d688ec52932e56ec86c725cd928ce35a082852ca1e0b9f",
-      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_claim_ceiling_and_fuzz_boundary_do_not_inflate (test_evolution_contract.EvolutionContractTests.test_claim_ceiling_and_fuzz_boundary_do_not_inflate) ... ok\ntest_consumed_cursor_is_exact_proof_bound (test_evolution_contract.EvolutionContractTests.test_consumed_cursor_is_exact_proof_bound) ... ok\ntest_machine_contract_is_conflict_free_json (test_evolution_contract.EvolutionContractTests.test_machine_contract_is_conflict_free_json) ... ok\ntest_next_cursor_is_consistent (test_evolution_contract.EvolutionContractTests.test_next_cursor_is_consistent) ... ok\ntest_evolution_cursor_is_material (test_excellence_state_contract.ExcellenceStateContractTests.test_evolution_cursor_is_material) ... ok\ntest_position_preserves_identity_and_lineage (test_excellence_state_contract.ExcellenceStateContractTests.test_position_preserves_identity_and_lineage) ... ok\ntest_state_is_canonical_and_evolving (test_excellence_state_contract.ExcellenceStateContractTests.test_state_is_canonical_and_evolving) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_cross_version_diff_detects_category_change (test_refusal_harness.HarnessTests.test_cross_version_diff_detects_category_change) ... ok\ntest_cross_version_diff_detects_refusal_loss (test_refusal_harness.HarnessTests.test_cross_version_diff_detects_refusal_loss) ... ok\ntest_cross_version_equivalence_is_deterministic (test_refusal_harness.HarnessTests.test_cross_version_equivalence_is_deterministic) ... ok\ntest_duplicate_case_ids_fail_closed (test_refusal_harness.HarnessTests.test_duplicate_case_ids_fail_closed) ... ok\ntest_fail_allow (test_refusal_harness.HarnessTests.test_fail_allow) ... ok\ntest_mutation_fuzz_preserves_red_line (test_refusal_harness.HarnessTests.test_mutation_fuzz_preserves_red_line) ... ok\ntest_mutation_generation_is_deterministic (test_refusal_harness.HarnessTests.test_mutation_generation_is_deterministic) ... ok\ntest_non_json_args_fail_closed (test_refusal_harness.HarnessTests.test_non_json_args_fail_closed) ... ok\ntest_pass (test_refusal_harness.HarnessTests.test_pass) ... ok\ntest_reason_taxonomy_is_structured_and_versioned (test_refusal_harness.HarnessTests.test_reason_taxonomy_is_structured_and_versioned) ... ok\ntest_unknown_reason_taxonomy_does_not_pass_golden (test_refusal_harness.HarnessTests.test_unknown_reason_taxonomy_does_not_pass_golden) ... ok\n\n----------------------------------------------------------------------\nRan 24 tests in 0.010s\n\nOK",
+      "output_sha256": "2e55dc26429c16cc7eabb7d79b9fa12afcab8a8a5bf6cf32cd4010c7dedcadd6",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_claim_ceiling_and_fuzz_boundary_do_not_inflate (test_evolution_contract.EvolutionContractTests.test_claim_ceiling_and_fuzz_boundary_do_not_inflate) ... ok\ntest_consumed_cursor_is_exact_proof_bound (test_evolution_contract.EvolutionContractTests.test_consumed_cursor_is_exact_proof_bound) ... ok\ntest_machine_contract_is_conflict_free_json (test_evolution_contract.EvolutionContractTests.test_machine_contract_is_conflict_free_json) ... ok\ntest_next_cursor_is_consistent (test_evolution_contract.EvolutionContractTests.test_next_cursor_is_consistent) ... ok\ntest_evolution_cursor_is_material (test_excellence_state_contract.ExcellenceStateContractTests.test_evolution_cursor_is_material) ... ok\ntest_position_preserves_identity_and_lineage (test_excellence_state_contract.ExcellenceStateContractTests.test_position_preserves_identity_and_lineage) ... ok\ntest_state_is_canonical_and_evolving (test_excellence_state_contract.ExcellenceStateContractTests.test_state_is_canonical_and_evolving) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_cross_version_diff_detects_category_change (test_refusal_harness.HarnessTests.test_cross_version_diff_detects_category_change) ... ok\ntest_cross_version_diff_detects_refusal_loss (test_refusal_harness.HarnessTests.test_cross_version_diff_detects_refusal_loss) ... ok\ntest_cross_version_equivalence_is_deterministic (test_refusal_harness.HarnessTests.test_cross_version_equivalence_is_deterministic) ... ok\ntest_duplicate_case_ids_fail_closed (test_refusal_harness.HarnessTests.test_duplicate_case_ids_fail_closed) ... ok\ntest_fail_allow (test_refusal_harness.HarnessTests.test_fail_allow) ... ok\ntest_mutation_fuzz_preserves_red_line (test_refusal_harness.HarnessTests.test_mutation_fuzz_preserves_red_line) ... ok\ntest_mutation_generation_is_deterministic (test_refusal_harness.HarnessTests.test_mutation_generation_is_deterministic) ... ok\ntest_non_json_args_fail_closed (test_refusal_harness.HarnessTests.test_non_json_args_fail_closed) ... ok\ntest_pass (test_refusal_harness.HarnessTests.test_pass) ... ok\ntest_reason_taxonomy_is_structured_and_versioned (test_refusal_harness.HarnessTests.test_reason_taxonomy_is_structured_and_versioned) ... ok\ntest_unknown_reason_taxonomy_does_not_pass_golden (test_refusal_harness.HarnessTests.test_unknown_reason_taxonomy_does_not_pass_golden) ... ok\n\n----------------------------------------------------------------------\nRan 24 tests in 0.009s\n\nOK",
       "status": "PASS"
     },
     {
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 8.08,
+      "elapsed_s": 10.366,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "a052b39483658acdf274c0fafc202b465c86c20624158f7d4889e96667dcaa31",

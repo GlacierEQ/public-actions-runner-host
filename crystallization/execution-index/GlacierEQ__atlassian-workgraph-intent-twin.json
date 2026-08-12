@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "5c1e82cf487d8c39bc32e6c5b78dec6f00536c317f7013bdfd9454924c468127",
+  "evidence_digest": "2d4539ef1e3db9f09bbef07076efef093a72dcbd8f96380a83fa703a520fee07",
   "head_sha": "c9fbae33ffc7f125fd7ceeaf764e1a3bcaa904c4",
   "repository": "GlacierEQ/atlassian-workgraph-intent-twin",
   "repository_id": 1329687665,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.06,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 1.93,
+      "elapsed_s": 2.025,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "67f439dc7d06389c953baa8550fbad9d5c1b6a7a46c9e4812f6dc42b8d195d87",
-      "output_tail": "Collecting pytest>=8.0 (from -r requirements.txt (line 2))\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 62.7 MB/s  0:00:00\nInstalling collected packages: pygments, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-9.1.1",
+      "output_sha256": "20fbf639752b5f31c15826ecc785fb9f7971ca8f7058cf5ae9bd2e1701c9c59e",
+      "output_tail": "Collecting pytest>=8.0 (from -r requirements.txt (line 2))\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 64.5 MB/s  0:00:00\nInstalling collected packages: pygments, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-9.1.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.94,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "45553092024306138e82848effdfe3c18fa2e62aaa7810a96acd6c34239ec277",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-vgv1vjbu/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: atlassian-workgraph-intent-twin\n  Building editable for atlassian-workgraph-intent-twin (pyproject.toml): started\n  Building editable for atlassian-workgraph-intent-twin (pyproject.toml): finished with status 'done'\n  Created wheel for atlassian-workgraph-intent-twin: filename=atlassian_workgraph_intent_twin-1.0.0-0.editable-py3-none-any.whl size=2725 sha256=a2c9f760ee900b0a6d62d01243b931b0f252e8b0542f9323d4e85152d7f974ec\n  Stored in directory: /tmp/pip-ephem-wheel-cache-x5sjx_nx/wheels/84/90/01/b903be92ac853fe7814d6b940bbb1dfaa9a465c013b81137e3\nSuccessfully built atlassian-workgraph-intent-twin\nInstalling collected packages: atlassian-workgraph-intent-twin\nSuccessfully installed atlassian-workgraph-intent-twin-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.39,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +76,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.327,
+      "elapsed_s": 0.345,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "6c000af60fc2ad17c25ebbad4a0a1470133ba28d502d5568c985de813ccb5234",

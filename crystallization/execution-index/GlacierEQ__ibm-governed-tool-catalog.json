@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "78ac416856b7ed817a47fbedc425c4962b2f530b98a2ee00f76af46f58e1ea43",
+  "evidence_digest": "ad9da644b24ac4bcb59be9b7b2f7b474b000dc605385ba1273d6b0776f03e07b",
   "head_sha": "964f4088c74459248d471a0ab3ebf1d700af2325",
   "repository": "GlacierEQ/ibm-governed-tool-catalog",
   "repository_id": 1329688143,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.055,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.381,
+      "elapsed_s": 0.378,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
-      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "output_sha256": "d0f5ca3c92ec15539900e6df87d448f70ef57d393ae1b5dd0e7c51fd0ee93e36",
+      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.857,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "92622b38847ce3bd10efd0f018e5a29832686dcd2d538ba74bf9bb47d248ea6d",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-htue2by8/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: ibm-governed-tool-catalog\n  Building editable for ibm-governed-tool-catalog (pyproject.toml): started\n  Building editable for ibm-governed-tool-catalog (pyproject.toml): finished with status 'done'\n  Created wheel for ibm-governed-tool-catalog: filename=ibm_governed_tool_catalog-0.0.1-0.editable-py3-none-any.whl size=2315 sha256=623d576ffc153a8ff7b7854291cae4b87ae4c916aea4e548476f130afd8040d1\n  Stored in directory: /tmp/pip-ephem-wheel-cache-5szirc4i/wheels/05/63/af/986368cdbdb755aede8db6f25fc31a172a93da790e44773843\nSuccessfully built ibm-governed-tool-catalog\nInstalling collected packages: ibm-governed-tool-catalog\nSuccessfully installed ibm-governed-tool-catalog-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.376,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +76,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.297,
+      "elapsed_s": 0.31,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "980e44fa2d7beb6d61f0e76333d72425e9e05583c12571e206f378eff65e64d0",

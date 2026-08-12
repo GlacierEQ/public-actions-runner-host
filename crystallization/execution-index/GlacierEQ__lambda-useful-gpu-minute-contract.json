@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "4d9c2c0063c58111d0c399fd47ecf2ed536fdbbb9693b130b23ddce6073cb583",
+  "evidence_digest": "b8ab88d6514a1b93664352a5bc64652536be50b42df66b1629f330af7e919bb1",
   "head_sha": "521d53b81300ed0edf3fa300b3113a54ad3c4bf4",
   "repository": "GlacierEQ/lambda-useful-gpu-minute-contract",
   "repository_id": 1329688225,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.363,
+      "elapsed_s": 0.402,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
-      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "output_sha256": "d0f5ca3c92ec15539900e6df87d448f70ef57d393ae1b5dd0e7c51fd0ee93e36",
+      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 2)) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 3.156,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "5f287860dc89c8c33c89724648ffce4ed86f72525f9e5aad962f4b9c7c912b9b",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-aesa0yob/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: lambda-useful-gpu-minute-contract\n  Building editable for lambda-useful-gpu-minute-contract (pyproject.toml): started\n  Building editable for lambda-useful-gpu-minute-contract (pyproject.toml): finished with status 'done'\n  Created wheel for lambda-useful-gpu-minute-contract: filename=lambda_useful_gpu_minute_contract-1.0.0-0.editable-py3-none-any.whl size=2776 sha256=dcf605aec84ffdaa3c6d4962c7a107cf2b2b367aaaef6026bf65d614ba2cc00a\n  Stored in directory: /tmp/pip-ephem-wheel-cache-e3eneu4s/wheels/c5/df/96/9a81e46a7d01527b119764a9ec2c2a72c315db37995d91f9d7\nSuccessfully built lambda-useful-gpu-minute-contract\nInstalling collected packages: lambda-useful-gpu-minute-contract\nSuccessfully installed lambda-useful-gpu-minute-contract-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.402,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +76,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.306,
+      "elapsed_s": 0.347,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287",
-      "output_tail": "..............                                                           [100%]\n14 passed in 0.04s",
+      "output_sha256": "d3e09474297abb89a20a2a722c6a4731d1e10473fdeb3dbf63af3e7c51ce1eb5",
+      "output_tail": "..............                                                           [100%]\n14 passed in 0.05s",
       "status": "PASS"
     }
   ]

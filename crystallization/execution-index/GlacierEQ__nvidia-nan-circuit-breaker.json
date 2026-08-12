@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "29fc650b2b09c65d0403e5dc34c2c521ef2b86819a0847abcfc1cc8ccde89a69",
+  "evidence_digest": "ba39170d04b672fb69b42883f5f65acc9e45beaa4391372fc73b880336f52f67",
   "head_sha": "96d118820af8216f78a33271fc35e7bff53085cd",
   "repository": "GlacierEQ/nvidia-nan-circuit-breaker",
   "repository_id": 1328441142,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.055,
+      "elapsed_s": 0.054,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.101,
+      "elapsed_s": 0.099,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "331aade58fd7d8765cfb59fe7be7abf48a2af882d2d28a74e3d5884743074b74",

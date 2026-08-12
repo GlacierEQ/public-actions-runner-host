@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "d9bc958fb4d85877e61cdf52ab3fffbcc54ec74013bb0d3896a4d2d07a3e7c3d",
+  "evidence_digest": "4393612ba9684aead18a3e2d16c08401d05b208f00f0bc8f4cd984dd962f3487",
   "head_sha": "2cc87f135f175c5c56d025720a2679692cdb1965",
   "repository": "GlacierEQ/tasklet-micro-agent-engine",
   "repository_id": 1311736120,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.071,
+      "elapsed_s": 0.065,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,13 +29,28 @@
         "pip",
         "install",
         "-e",
-        "."
+        ".[dev]"
       ],
-      "elapsed_s": 3.083,
+      "elapsed_s": 3.0,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "21cf8fc7040eb9bb9549511072870a99cc1631c3c6d3aaa7242d25e1ad2d1c11",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-2e9xldir/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-tasklet-runtime\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): started\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tasklet-runtime: filename=glaciereq_tasklet_runtime-1.0.0-0.editable-py3-none-any.whl size=9500 sha256=2903aa8ffb09c2e97194e37ebee21fa071f8409998a20a0416f8f4ec281e535b\n  Stored in directory: /tmp/pip-ephem-wheel-cache-ssu5l_el/wheels/38/9b/71/c2e2177d718a8fcb250664c2c6ed84b98b94589d7eb4d9fc04\nSuccessfully built glaciereq-tasklet-runtime\nInstalling collected packages: glaciereq-tasklet-runtime\nSuccessfully installed glaciereq-tasklet-runtime-1.0.0",
+      "output_sha256": "64a3f955ba66dc3931fe0eea46b30a93aff30ca0a6df63a6cc3dde285136b859",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-78nxbumg/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: pytest<10,>=8.3 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from glaciereq-tasklet-runtime==1.0.0) (8.4.2)\nRequirement already satisfied: ruff<1,>=0.12 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from glaciereq-tasklet-runtime==1.0.0) (0.16.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8.3->glaciereq-tasklet-runtime==1.0.0) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8.3->glaciereq-tasklet-runtime==1.0.0) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8.3->glaciereq-tasklet-runtime==1.0.0) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=8.3->glaciereq-tasklet-runtime==1.0.0) (2.20.0)\nBuilding wheels for collected packages: glaciereq-tasklet-runtime\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): started\n  Building editable for glaciereq-tasklet-runtime (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tasklet-runtime: filename=glaciereq_tasklet_runtime-1.0.0-0.editable-py3-none-any.whl size=9498 sha256=d68049f6863bfd210571fca8d5cb7e96c38b85df61546097dba23db1a2967a30\n  Stored in directory: /tmp/pip-ephem-wheel-cache-syk1lopc/wheels/c9/e7/17/35e54d880583989b38798d5daea7c641337f09b90d9175e81d\nSuccessfully built glaciereq-tasklet-runtime\nInstalling collected packages: glaciereq-tasklet-runtime\nSuccessfully installed glaciereq-tasklet-runtime-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.424,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +60,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 1.069,
+      "elapsed_s": 1.043,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "39a5f3874f121eb7c8be62685d1d754f6e9bde05941dad069077b3dc96ff3f98",

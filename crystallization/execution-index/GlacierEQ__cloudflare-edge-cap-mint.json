@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "0a9271108ab8a971b4321125e8054e020018f0b9555592d4ab8b43849182ea50",
+  "evidence_digest": "23e47658024a5412ba2730f605f3e79ad66f9716ef4f610437b055ee8b95e7db",
   "head_sha": "8eb8f4728998b2fe74498161b7e7e9e13bd6a8d3",
   "repository": "GlacierEQ/cloudflare-edge-cap-mint",
   "repository_id": 1329687779,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.047,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 3.341,
+      "elapsed_s": 1.947,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "e4177804471fe3c38142763a30b29fc467e1ec74f1c1f8db56c67487a028ba3b",
-      "output_tail": "Collecting pytest>=8.0 (from -r requirements.txt (line 2))\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 71.5 MB/s  0:00:00\nInstalling collected packages: pygments, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-9.1.1",
+      "output_sha256": "64f64a074c91bd71240dd9986152a1f9680a0c721ddb5e97cb1acb3b6ff1643c",
+      "output_tail": "Collecting pytest>=8.0 (from -r requirements.txt (line 2))\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest>=8.0->-r requirements.txt (line 2))\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 139.0 MB/s  0:00:00\nInstalling collected packages: pygments, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-9.1.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.785,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "2ed10653c4cbc1cee412fbab4b53553d08ff8da272ddf4b7c553511a1f0dc0f5",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-pitpi0yy/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: cloudflare-edge-cap-mint\n  Building editable for cloudflare-edge-cap-mint (pyproject.toml): started\n  Building editable for cloudflare-edge-cap-mint (pyproject.toml): finished with status 'done'\n  Created wheel for cloudflare-edge-cap-mint: filename=cloudflare_edge_cap_mint-0.1.0-0.editable-py3-none-any.whl size=2297 sha256=0bb2b275a366c05fda32060dc7ae996c5fd7e3d494584c4ef9145a0442ece23b\n  Stored in directory: /tmp/pip-ephem-wheel-cache-f91khg5d/wheels/72/48/97/69be62a258da14ba3afe72b2fa55acb19bc92abbc74d022354\nSuccessfully built cloudflare-edge-cap-mint\nInstalling collected packages: cloudflare-edge-cap-mint\nSuccessfully installed cloudflare-edge-cap-mint-0.1.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.358,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +76,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.474,
+      "elapsed_s": 0.333,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "9bb93f763a32594b8f710095342d0d697af1a3f347052ec2211bbd8e58a0ce7f",
-      "output_tail": "......................                                                   [100%]\n22 passed in 0.06s",
+      "output_sha256": "0eded2a4fc0280d1a657f528943057006de3d41794a2b76fbceb9c89a5fdf0e6",
+      "output_tail": "......................                                                   [100%]\n22 passed in 0.07s",
       "status": "PASS"
     }
   ]

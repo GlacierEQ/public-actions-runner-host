@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "808b0ec57f1ee487995a0e011d386079963f95745073a500c03cfdad847d6ca0",
+  "evidence_digest": "fdec4389979ed2885fdd21f84ce914016f14dfea13c9dfec10e51c59a144c762",
   "head_sha": "b42225fcc145311dc71825f0f5038aeb0112dbd9",
   "repository": "GlacierEQ/scale-eval-poison-sentinel",
   "repository_id": 1328441543,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.058,
+      "elapsed_s": 0.059,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.111,
+      "elapsed_s": 0.112,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "3233c2236f92aec9c004c234606ad9e3185cf4e9c278f5b90d2c422ce28b5049",
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.247,
+      "elapsed_s": 10.685,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "f6ed18c593d19aeb819645efb75a8ee092ca05baadca9032622521fc2c13da09",

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "8fe891706580c4a064607f6b811a3f5061e7520d7766694bd5212f2ba8014d52",
+  "evidence_digest": "c8293345ad628d0d3b828c07d5f299aed647911d43222033db7d36ec6f815b3b",
   "head_sha": "9245f6d62f750dc7e73553a3f95da5a8f26bfbba",
   "repository": "GlacierEQ/groq-batch-admission-gate",
   "repository_id": 1328440633,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.053,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -37,8 +37,8 @@
       "elapsed_s": 0.116,
       "exit_code": 0,
       "name": "python_unittest",
-      "output_sha256": "74572a7e2ee84bea5becff5495e6d774f6b0b29d40528aa0958929b8e423270a",
-      "output_tail": "test_capacity_and_batch_limits_remain_hard_refusals (test_adaptive_admission.AdaptiveAdmissionTests.test_capacity_and_batch_limits_remain_hard_refusals) ... ok\ntest_cold_start_refuses_until_class_has_minimum_evidence (test_adaptive_admission.AdaptiveAdmissionTests.test_cold_start_refuses_until_class_has_minimum_evidence) ... ok\ntest_nonstationary_latency_change_increases_safety_and_refuses (test_adaptive_admission.AdaptiveAdmissionTests.test_nonstationary_latency_change_increases_safety_and_refuses) ... ok\ntest_receipt_is_deterministic_for_same_model_and_load (test_adaptive_admission.AdaptiveAdmissionTests.test_receipt_is_deterministic_for_same_model_and_load) ... ok\ntest_unknown_or_invalid_state_fails_closed (test_adaptive_admission.AdaptiveAdmissionTests.test_unknown_or_invalid_state_fails_closed) ... ok\ntest_workload_classes_keep_independent_evidence_and_budgets (test_adaptive_admission.AdaptiveAdmissionTests.test_workload_classes_keep_independent_evidence_and_budgets) ... ok\ntest_admit_small (test_admission.AdmitTests.test_admit_small) ... ok\ntest_refuse_over_budget (test_admission.AdmitTests.test_refuse_over_budget) ... ok\ntest_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_preserve_legacy_names_and_add_adaptive_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_preserve_legacy_names_and_add_adaptive_mechanisms) ... ok\ntest_evolution_is_consumed_and_next_boundary_is_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_is_consumed_and_next_boundary_is_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_receipt_and_canonical_position_preserve_claim_ceiling (test_evolution_contract.EvolutionContractTests.test_receipt_and_canonical_position_preserve_claim_ceiling) ... ok\ntest_state_consumes_exact_cursor_and_advances (test_evolution_contract.EvolutionContractTests.test_state_consumes_exact_cursor_and_advances) ... ok\ntest_target_contract_is_evolving_and_truth_bounded (test_evolution_contract.EvolutionContractTests.test_target_contract_is_evolving_and_truth_bounded) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 21 tests in 0.009s\n\nOK",
+      "output_sha256": "9c47a4b0a30099d707fd47a8287abac08c54b567bb99fe9fc6ccfe5272ebebb6",
+      "output_tail": "test_capacity_and_batch_limits_remain_hard_refusals (test_adaptive_admission.AdaptiveAdmissionTests.test_capacity_and_batch_limits_remain_hard_refusals) ... ok\ntest_cold_start_refuses_until_class_has_minimum_evidence (test_adaptive_admission.AdaptiveAdmissionTests.test_cold_start_refuses_until_class_has_minimum_evidence) ... ok\ntest_nonstationary_latency_change_increases_safety_and_refuses (test_adaptive_admission.AdaptiveAdmissionTests.test_nonstationary_latency_change_increases_safety_and_refuses) ... ok\ntest_receipt_is_deterministic_for_same_model_and_load (test_adaptive_admission.AdaptiveAdmissionTests.test_receipt_is_deterministic_for_same_model_and_load) ... ok\ntest_unknown_or_invalid_state_fails_closed (test_adaptive_admission.AdaptiveAdmissionTests.test_unknown_or_invalid_state_fails_closed) ... ok\ntest_workload_classes_keep_independent_evidence_and_budgets (test_adaptive_admission.AdaptiveAdmissionTests.test_workload_classes_keep_independent_evidence_and_budgets) ... ok\ntest_admit_small (test_admission.AdmitTests.test_admit_small) ... ok\ntest_refuse_over_budget (test_admission.AdmitTests.test_refuse_over_budget) ... ok\ntest_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_preserve_legacy_names_and_add_adaptive_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_preserve_legacy_names_and_add_adaptive_mechanisms) ... ok\ntest_evolution_is_consumed_and_next_boundary_is_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_is_consumed_and_next_boundary_is_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_receipt_and_canonical_position_preserve_claim_ceiling (test_evolution_contract.EvolutionContractTests.test_receipt_and_canonical_position_preserve_claim_ceiling) ... ok\ntest_state_consumes_exact_cursor_and_advances (test_evolution_contract.EvolutionContractTests.test_state_consumes_exact_cursor_and_advances) ... ok\ntest_target_contract_is_evolving_and_truth_bounded (test_evolution_contract.EvolutionContractTests.test_target_contract_is_evolving_and_truth_bounded) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 21 tests in 0.008s\n\nOK",
       "status": "PASS"
     },
     {
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 11.747,
+      "elapsed_s": 10.547,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "3d073ea55bf54fcd0172b96bfac50401e753d215c1fafb0abfa0765caa9c4489",

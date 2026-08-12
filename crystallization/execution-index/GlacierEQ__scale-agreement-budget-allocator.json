@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "9af4f542e6ee0eb0b29fd3590f184a696aaf78e626c1b0f2fa42a9a723b589fb",
+  "evidence_digest": "4ec8f54d4d6ea7ee309c5766e1a8fdf4210316475a6fba339e9bd32b04cf1487",
   "head_sha": "fb03344fa0bbf37a9e400a6a368d5800418c9ac1",
   "repository": "GlacierEQ/scale-agreement-budget-allocator",
   "repository_id": 1328441495,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.045,
+      "elapsed_s": 0.054,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.086,
+      "elapsed_s": 0.102,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "c9fbfaa842c7581c18c0764bbf63ccae6eb541a9908e7a753f73050217a087e3",
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 9.002,
+      "elapsed_s": 10.785,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "70f569f1618176f68319dc9b4be75b5789f76cb10c2bf8d5cb50315a6e53950e",

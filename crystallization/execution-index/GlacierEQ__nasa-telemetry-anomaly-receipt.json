@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "9171bdbcec4342d609a0e3477f5d8a8eb52470f349f63408e23e5abcbfef96db",
+  "evidence_digest": "4b49998c3c435ea1f6d4c028cec3ff3b2c3e8f04efdd8be5631ac171d8f0c4d2",
   "head_sha": "b7a85b60b0e8359c93ea59a5c7bdeb8904d911fd",
   "repository": "GlacierEQ/nasa-telemetry-anomaly-receipt",
   "repository_id": 1328440971,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.059,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.108,
+      "elapsed_s": 0.106,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "60f89bb9006577ae2566fe2fda525a2639573e47bbbe8194627ce50732c2d836",
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.876,
+      "elapsed_s": 10.485,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "9b68367f7ff29524976ce7a73ac084f7086bf8258156c0860dbcc43b1526b0fe",

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "99552e6e93f366b26452a40a1c9d84c14332dec365e5b017ce9421a9d3bdb9be",
+  "evidence_digest": "e75df15a1104453cbb9ce0d74b8013c31c381929cc6727f99cba7923ea7d7986",
   "head_sha": "b12d0f0a742078310e7df9fb0c082c5ea13e6a0d",
   "repository": "GlacierEQ/job-app-helix",
   "repository_id": 1311828871,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.388,
+      "elapsed_s": 0.371,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,13 +29,28 @@
         "pip",
         "install",
         "-e",
-        "."
+        ".[dev]"
       ],
-      "elapsed_s": 3.119,
+      "elapsed_s": 7.27,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "2d4d76e805837bd71118b17cd3bf4a3b38eb90ec5ec4b153a0bd2035c7750d25",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-wc1pbetn/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting jsonschema<5,>=4.23 (from job-app-helix==0.3.0)\n  Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)\nCollecting protobuf<7,>=6.31 (from job-app-helix==0.3.0)\n  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)\nCollecting attrs>=22.2.0 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)\nCollecting jsonschema-specifications>=2023.03.6 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)\nCollecting referencing>=0.28.4 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)\nCollecting rpds-py>=0.25.0 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)\nRequirement already satisfied: typing-extensions>=4.4.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from referencing>=0.28.4->jsonschema<5,>=4.23->job-app-helix==0.3.0) (4.16.0)\nDownloading jsonschema-4.26.0-py3-none-any.whl (90 kB)\nDownloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)\nDownloading attrs-26.1.0-py3-none-any.whl (67 kB)\nDownloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)\nDownloading referencing-0.37.0-py3-none-any.whl (26 kB)\nDownloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (366 kB)\nBuilding wheels for collected packages: job-app-helix\n  Building editable for job-app-helix (pyproject.toml): started\n  Building editable for job-app-helix (pyproject.toml): finished with status 'done'\n  Created wheel for job-app-helix: filename=job_app_helix-0.3.0-py3-none-any.whl size=210561 sha256=c34a0b1d4f7593abb3647a912fba9597a5962020078469bc6b7c7134632683dd\n  Stored in directory: /tmp/pip-ephem-wheel-cache-crce76yj/wheels/04/1e/1d/9a2e3f7258c71d6f62fc946158ec6ee6f8aa653fbb27a06342\nSuccessfully built job-app-helix\nInstalling collected packages: rpds-py, protobuf, attrs, referencing, jsonschema-specifications, jsonschema, job-app-helix\n\nSuccessfully installed attrs-26.1.0 job-app-helix-0.3.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 protobuf-6.33.6 referencing-0.37.0 rpds-py-2026.6.3",
+      "output_sha256": "5eda48726c629503f36a2beef3d96d9e99bc506af059c5f708d4bb0f07420271",
+      "output_tail": "job-app-helix==0.3.0)\n  Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)\nCollecting rpds-py>=0.25.0 (from jsonschema<5,>=4.23->job-app-helix==0.3.0)\n  Downloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)\nRequirement already satisfied: typing_extensions>=4.6.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from mypy<2,>=1.13->job-app-helix==0.3.0) (4.16.0)\nCollecting mypy_extensions>=1.0.0 (from mypy<2,>=1.13->job-app-helix==0.3.0)\n  Downloading mypy_extensions-1.1.0-py3-none-any.whl.metadata (1.1 kB)\nCollecting pathspec>=1.0.0 (from mypy<2,>=1.13->job-app-helix==0.3.0)\n  Using cached pathspec-1.1.1-py3-none-any.whl.metadata (14 kB)\nCollecting librt>=0.8.0 (from mypy<2,>=1.13->job-app-helix==0.3.0)\n  Downloading librt-0.15.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (1.3 kB)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=9.1.1->job-app-helix==0.3.0) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=9.1.1->job-app-helix==0.3.0) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=9.1.1->job-app-helix==0.3.0) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest<10,>=9.1.1->job-app-helix==0.3.0) (2.20.0)\nDownloading grpcio_tools-1.81.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 2.7/2.7 MB 137.0 MB/s  0:00:00\nDownloading jsonschema-4.26.0-py3-none-any.whl (90 kB)\nDownloading mypy-1.20.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (14.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 14.7/14.7 MB 182.1 MB/s  0:00:00\nDownloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)\nDownloading attrs-26.1.0-py3-none-any.whl (67 kB)\nDownloading grpcio-1.83.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (7.0 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 7.0/7.0 MB 268.4 MB/s  0:00:00\nDownloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)\nDownloading librt-0.15.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (531 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 531.9/531.9 kB 55.3 MB/s  0:00:00\nDownloading mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)\nUsing cached pathspec-1.1.1-py3-none-any.whl (57 kB)\nDownloading referencing-0.37.0-py3-none-any.whl (26 kB)\nDownloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (366 kB)\nDownloading setuptools-84.0.0-py3-none-any.whl (818 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 818.2/818.2 kB 148.3 MB/s  0:00:00\nBuilding wheels for collected packages: job-app-helix\n  Building editable for job-app-helix (pyproject.toml): started\n  Building editable for job-app-helix (pyproject.toml): finished with status 'done'\n  Created wheel for job-app-helix: filename=job_app_helix-0.3.0-py3-none-any.whl size=210559 sha256=86a81ffe384ae6da5b6ab35a7a6d9a07f759ec191439364cc729b1afe7099073\n  Stored in directory: /tmp/pip-ephem-wheel-cache-om11wrac/wheels/21/c5/05/4845f2dea22aab7fb697d136bd0b4934f583dcb06f3491b226\nSuccessfully built job-app-helix\nInstalling collected packages: setuptools, rpds-py, protobuf, pathspec, mypy_extensions, librt, grpcio, attrs, referencing, mypy, grpcio-tools, jsonschema-specifications, jsonschema, job-app-helix\n\nSuccessfully installed attrs-26.1.0 grpcio-1.83.0 grpcio-tools-1.81.1 job-app-helix-0.3.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 librt-0.15.0 mypy-1.20.2 mypy_extensions-1.1.0 pathspec-1.1.1 protobuf-6.33.6 referencing-0.37.0 rpds-py-2026.6.3 setuptools-84.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.422,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +60,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 9.698,
+      "elapsed_s": 10.156,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "1e5b570763147e08aded167d762bd61c8b20fa70108a61f0f5ed9e8b344dee13",

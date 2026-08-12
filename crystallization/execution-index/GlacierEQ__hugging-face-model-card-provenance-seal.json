@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "efb3b07acc86f236069bc2b403e68b99968e08ed2ebfedfa97059e40181de4f6",
+  "evidence_digest": "1191fc309c7e46980b2d944f2c2f05ee9c6c7e30ef878df222bcba9e981df8f2",
   "head_sha": "5fae0885ab537c23dc66bda8ac0ef4429c7ad75b",
   "repository": "GlacierEQ/hugging-face-model-card-provenance-seal",
   "repository_id": 1329688135,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.054,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.371,
+      "elapsed_s": 0.378,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,14 +42,45 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.935,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "382ae40ab0bbca119ca1c9124d65354abbed221180dcee743da9fe95a6f969a7",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-ou_28sg2/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: hugging-face-model-card-provenance-seal\n  Building editable for hugging-face-model-card-provenance-seal (pyproject.toml): started\n  Building editable for hugging-face-model-card-provenance-seal (pyproject.toml): finished with status 'done'\n  Created wheel for hugging-face-model-card-provenance-seal: filename=hugging_face_model_card_provenance_seal-0.0.1-0.editable-py3-none-any.whl size=2549 sha256=50aa0825afd6085177035f285c534bbf41540f107d5b8bc7746bf4d62ff2fe47\n  Stored in directory: /tmp/pip-ephem-wheel-cache-mejx0az7/wheels/cd/eb/59/1117c4697e2481023850c5565771ab7923ab7c53b48cdca48a\nSuccessfully built hugging-face-model-card-provenance-seal\nInstalling collected packages: hugging-face-model-card-provenance-seal\nSuccessfully installed hugging-face-model-card-provenance-seal-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.387,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.294,
+      "elapsed_s": 0.306,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "980e44fa2d7beb6d61f0e76333d72425e9e05583c12571e206f378eff65e64d0",
-      "output_tail": "..........                                                               [100%]\n10 passed in 0.03s",
+      "output_sha256": "dec28853d6884bf5b2a87c0e6d772fceb88acc23cce0c86845e9359b119927b9",
+      "output_tail": "..........                                                               [100%]\n10 passed in 0.04s",
       "status": "PASS"
     }
   ]

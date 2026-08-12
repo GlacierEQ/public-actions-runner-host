@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a035f55165cd6da48e3717bc27ca3509bf18ace7b94ce38161b07c3183143f1d",
+  "evidence_digest": "a6d90b88a959337ac50576c5d664acf4108fd9f66ab5b345a74650978b43afce",
   "head_sha": "c0c5d8b3d3e1adb47480a9619e10ed18ed1e3f76",
   "repository": "GlacierEQ/ai-auto-driller-unified",
   "repository_id": 1304175071,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -12,11 +12,11 @@
         "npm",
         "ci"
       ],
-      "elapsed_s": 2.933,
+      "elapsed_s": 1.6,
       "exit_code": 0,
       "name": "node_dependencies",
-      "output_sha256": "bf5a679845962e055bc827af34bd43f28d73537a9144eac875934e39b56fbf81",
-      "output_tail": "added 99 packages in 3s\n\nnpm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported\nnpm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead\nnpm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead\nnpm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.",
+      "output_sha256": "050c8ad6ba196b9eec23785f99e4cb5a38622cdfe6b9bfdf3492ca89d55010f4",
+      "output_tail": "added 99 packages in 2s\n\nnpm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported\nnpm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead\nnpm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead\nnpm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.",
       "status": "PASS"
     },
     {
@@ -25,7 +25,7 @@
         "run",
         "test"
       ],
-      "elapsed_s": 0.374,
+      "elapsed_s": 0.367,
       "exit_code": 0,
       "name": "node_test",
       "output_sha256": "5a2d69ec760e763a32681a0ca7da97d60aa4c2c1174d6e94fc132f7cda8c8cb2",

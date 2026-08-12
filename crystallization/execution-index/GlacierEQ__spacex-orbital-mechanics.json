@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a47f16a11e04e7f353ca15554faa2c7c1d8c70b8bdd59dbc7138c6990040c8f1",
+  "evidence_digest": "47395863e40e59bd781932ffe1fc9311f51bf8fd2f1832ec45e9fce75a5541c7",
   "head_sha": "b99a1f7ea0534d3a268f9bea432399c9862bd1e4",
   "repository": "GlacierEQ/spacex-orbital-mechanics",
   "repository_id": 1282819480,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.069,
+      "elapsed_s": 0.068,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.109,
+      "elapsed_s": 0.108,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "0e3302533700654903ce89a01a7fb168443632ae0d71e060ac3f227d468b9990",

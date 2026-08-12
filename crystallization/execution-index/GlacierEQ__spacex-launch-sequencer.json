@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "1b6fa1e687696243edfd906cb7a6796f4da9cf15985d183c0b1578ebef8c0916",
+  "evidence_digest": "fd25b33180afa10941b3f720788d15d409da591b55b3b32d14466aeeddd2b7bc",
   "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
   "repository": "GlacierEQ/spacex-launch-sequencer",
   "repository_id": 1282819505,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.065,
+      "elapsed_s": 0.069,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.107,
+      "elapsed_s": 0.116,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "b7bb00f0d055c6f92b30d0f2a5199e0ea9ee62c57081c6d90524cd43c57bc5b8",
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 6.825,
+      "elapsed_s": 7.153,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "601a137305694aa85f21e3a51576b72c72ab57a9c3792a9b60f7167a42e43078",

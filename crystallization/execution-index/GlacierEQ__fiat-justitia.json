@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "89691f8aea7f1d435feb3e76312e9f28d67e201c1934fa01935cf3f0cacb6e9d",
+  "evidence_digest": "a286fae19ecf14f58a623482d49529b63bdf873f097d33a02a7ed5711691db5e",
   "head_sha": "74c279cdf2bd8992a98a3e8631f672846bc1225b",
   "repository": "GlacierEQ/fiat-justitia",
   "repository_id": 1323468703,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.098,
+      "elapsed_s": 0.108,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,13 +29,28 @@
         "pip",
         "install",
         "-e",
-        "."
+        ".[dev]"
       ],
-      "elapsed_s": 3.64,
+      "elapsed_s": 3.629,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "22c0bbe1af1fc7e6edb89fe0f3f72472f5a7af5e00bdc7bce0af5fd2f7957b81",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-c9va16ul/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting protobuf<7,>=5 (from glaciereq-tower-of-babel==1.1.0)\n  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)\nDownloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)\nBuilding wheels for collected packages: glaciereq-tower-of-babel\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): started\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tower-of-babel: filename=glaciereq_tower_of_babel-1.1.0-0.editable-py3-none-any.whl size=2667 sha256=1d89b6511a1bb806cbda44636454f63e919fdd3f0ddfd87c7a023c4df8c0ac88\n  Stored in directory: /tmp/pip-ephem-wheel-cache-6elq33d5/wheels/8e/8e/08/4180369f0be5f72c0e17bc4676b733acbae98304007743cf45\nSuccessfully built glaciereq-tower-of-babel\nInstalling collected packages: protobuf, glaciereq-tower-of-babel\n\nSuccessfully installed glaciereq-tower-of-babel-1.1.0 protobuf-6.33.6",
+      "output_sha256": "6ef1ea03c2fa8205ca346e52ad47c0b0fe68987163a4dab7300ab17cc09246cc",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-9h29op5x/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting protobuf<7,>=5 (from glaciereq-tower-of-babel==1.1.0)\n  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)\nRequirement already satisfied: pytest>=8 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from glaciereq-tower-of-babel==1.1.0) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8->glaciereq-tower-of-babel==1.1.0) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8->glaciereq-tower-of-babel==1.1.0) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8->glaciereq-tower-of-babel==1.1.0) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8->glaciereq-tower-of-babel==1.1.0) (2.20.0)\nDownloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)\nBuilding wheels for collected packages: glaciereq-tower-of-babel\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): started\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tower-of-babel: filename=glaciereq_tower_of_babel-1.1.0-0.editable-py3-none-any.whl size=2668 sha256=9cbde82fe62b5dfaad973807df301cf3e8c95010e6f8617616253f1d5c643a5a\n  Stored in directory: /tmp/pip-ephem-wheel-cache-ud1xtc0l/wheels/d7/94/a2/a928772e89de91ce8ebab7fc23d227bc63bb03855bf6845e0a\nSuccessfully built glaciereq-tower-of-babel\nInstalling collected packages: protobuf, glaciereq-tower-of-babel\n\nSuccessfully installed glaciereq-tower-of-babel-1.1.0 protobuf-6.33.6",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.387,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +60,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 3.239,
+      "elapsed_s": 4.502,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "fafccb585196392cb0ac11b77f36724286bc61924802c6d9c2a4fbbff5c33b9a",
-      "output_tail": ".........................................................                [100%]\n57 passed in 2.97s",
+      "output_sha256": "fb0ed25c0bac7bf1f46b163034c2d2053477aa55c4e9e889792a6a064ee925d2",
+      "output_tail": ".........................................................                [100%]\n57 passed in 4.21s",
       "status": "PASS"
     },
     {
@@ -58,7 +73,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 11.058,
+      "elapsed_s": 12.045,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "155b74a2e1b91126dbc52a03f2eecbe7f373ad56fb8c047c2c4544b065fe3312",

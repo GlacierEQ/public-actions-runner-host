@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "5db214f0de9a6a252c3b94fe1086d2adcc68cd8f6704a1528e47a4a8b09813f4",
+  "evidence_digest": "0d28c0d5424e3d6d255601006ad15f113f3f5b91d4154300ba44e79815b42dc8",
   "head_sha": "6ebc5aed3ddcc0445b5d6914095d6627e9042ee5",
   "repository": "GlacierEQ/deepseek-mla-moe-sentinel",
   "repository_id": 1311730860,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.059,
+      "elapsed_s": 0.05,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.106,
+      "elapsed_s": 0.09,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "c36080565741b8ad47a44ce2715c6df59cce0adb08122d681fd2056bc3746454",

@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "5e48468fd50745aedc4313f62ec9693ae5cfeab11a754f065a58ddc2044bdfdb",
+  "evidence_digest": "2443983367c0ede2a1cf98348380885cdc10da01b2f307e63a5f8f92fee894ff",
   "head_sha": "c147c2259190ff639a6428b60d6b2bde740c4af1",
   "repository": "GlacierEQ/glaciereq-excellence-core",
   "repository_id": 1329352030,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -29,13 +29,28 @@
         "pip",
         "install",
         "-e",
-        "."
+        ".[dev]"
       ],
-      "elapsed_s": 4.981,
+      "elapsed_s": 6.068,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "e6bf5506d1133743b66a68040dc2a741ad493f8ce9f6f0e578a2a4f404702332",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-9ilrgzs2/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting pydantic>=2.0 (from glaciereq-excellence-core==0.1.0)\n  Downloading pydantic-2.13.4-py3-none-any.whl.metadata (109 kB)\nCollecting jsonschema>=4.0 (from glaciereq-excellence-core==0.1.0)\n  Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)\nCollecting attrs>=22.2.0 (from jsonschema>=4.0->glaciereq-excellence-core==0.1.0)\n  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)\nCollecting jsonschema-specifications>=2023.03.6 (from jsonschema>=4.0->glaciereq-excellence-core==0.1.0)\n  Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)\nCollecting referencing>=0.28.4 (from jsonschema>=4.0->glaciereq-excellence-core==0.1.0)\n  Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)\nCollecting rpds-py>=0.25.0 (from jsonschema>=4.0->glaciereq-excellence-core==0.1.0)\n  Downloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)\nCollecting annotated-types>=0.6.0 (from pydantic>=2.0->glaciereq-excellence-core==0.1.0)\n  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)\nCollecting pydantic-core==2.46.4 (from pydantic>=2.0->glaciereq-excellence-core==0.1.0)\n  Downloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)\nCollecting typing-extensions>=4.14.1 (from pydantic>=2.0->glaciereq-excellence-core==0.1.0)\n  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)\nCollecting typing-inspection>=0.4.2 (from pydantic>=2.0->glaciereq-excellence-core==0.1.0)\n  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)\nDownloading jsonschema-4.26.0-py3-none-any.whl (90 kB)\nDownloading attrs-26.1.0-py3-none-any.whl (67 kB)\nDownloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)\nDownloading pydantic-2.13.4-py3-none-any.whl (472 kB)\nDownloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 2.1/2.1 MB 194.9 MB/s  0:00:00\nDownloading annotated_types-0.8.0-py3-none-any.whl (13 kB)\nDownloading referencing-0.37.0-py3-none-any.whl (26 kB)\nDownloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (366 kB)\nDownloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)\nDownloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)\nBuilding wheels for collected packages: glaciereq-excellence-core\n  Building editable for glaciereq-excellence-core (pyproject.toml): started\n  Building editable for glaciereq-excellence-core (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-excellence-core: filename=glaciereq_excellence_core-0.1.0-0.editable-py3-none-any.whl size=4401 sha256=eeaefe9626c1936e73bb6375416b6dc1044732bc21664622edbd0496aadeee59\n  Stored in directory: /tmp/pip-ephem-wheel-cache-8ov920ud/wheels/1a/e0/8a/830c8aa06776886f38ad70b77b5427757daae1800e9e8f1140\nSuccessfully built glaciereq-excellence-core\nInstalling collected packages: typing-extensions, rpds-py, attrs, annotated-types, typing-inspection, referencing, pydantic-core, pydantic, jsonschema-specifications, jsonschema, glaciereq-excellence-core\n\nSuccessfully installed annotated-types-0.8.0 attrs-26.1.0 glaciereq-excellence-core-0.1.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 pydantic-2.13.4 pydantic-core-2.46.4 referencing-0.37.0 rpds-py-2026.6.3 typing-extensions-4.16.0 typing-inspection-0.4.4",
+      "output_sha256": "7657f2b6e6d332c892cb7339b191cdc5718c8543c082f6fd5a07c9178ed8d8ba",
+      "output_tail": "toolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from glaciereq-excellence-core==0.1.0) (8.4.2)\nCollecting attrs>=22.2.0 (from jsonschema>=4.0->glaciereq-excellence-core==0.1.0)\n  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)\nCollecting jsonschema-specifications>=2023.03.6 (from jsonschema>=4.0->glaciereq-excellence-core==0.1.0)\n  Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)\nCollecting referencing>=0.28.4 (from jsonschema>=4.0->glaciereq-excellence-core==0.1.0)\n  Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)\nCollecting rpds-py>=0.25.0 (from jsonschema>=4.0->glaciereq-excellence-core==0.1.0)\n  Downloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)\nCollecting annotated-types>=0.6.0 (from pydantic>=2.0->glaciereq-excellence-core==0.1.0)\n  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)\nCollecting pydantic-core==2.46.4 (from pydantic>=2.0->glaciereq-excellence-core==0.1.0)\n  Downloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)\nCollecting typing-extensions>=4.14.1 (from pydantic>=2.0->glaciereq-excellence-core==0.1.0)\n  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)\nCollecting typing-inspection>=0.4.2 (from pydantic>=2.0->glaciereq-excellence-core==0.1.0)\n  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=7->glaciereq-excellence-core==0.1.0) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=7->glaciereq-excellence-core==0.1.0) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=7->glaciereq-excellence-core==0.1.0) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=7->glaciereq-excellence-core==0.1.0) (2.20.0)\nDownloading jsonschema-4.26.0-py3-none-any.whl (90 kB)\nDownloading attrs-26.1.0-py3-none-any.whl (67 kB)\nDownloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)\nDownloading pydantic-2.13.4-py3-none-any.whl (472 kB)\nDownloading pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 2.1/2.1 MB 11.5 MB/s  0:00:00\nDownloading annotated_types-0.8.0-py3-none-any.whl (13 kB)\nDownloading referencing-0.37.0-py3-none-any.whl (26 kB)\nDownloading rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (366 kB)\nDownloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)\nDownloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)\nBuilding wheels for collected packages: glaciereq-excellence-core\n  Building editable for glaciereq-excellence-core (pyproject.toml): started\n  Building editable for glaciereq-excellence-core (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-excellence-core: filename=glaciereq_excellence_core-0.1.0-0.editable-py3-none-any.whl size=4398 sha256=edbe7b9346bc59bf3cbefe8a121251dd1df283f230b5ea1631ab7c2cdf0cd080\n  Stored in directory: /tmp/pip-ephem-wheel-cache-e7n8li4c/wheels/21/9f/36/88fb06ddc4a466dc0ca6422f533428833d7fc705933e3da32f\nSuccessfully built glaciereq-excellence-core\nInstalling collected packages: typing-extensions, rpds-py, attrs, annotated-types, typing-inspection, referencing, pydantic-core, pydantic, jsonschema-specifications, jsonschema, glaciereq-excellence-core\n\nSuccessfully installed annotated-types-0.8.0 attrs-26.1.0 glaciereq-excellence-core-0.1.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 pydantic-2.13.4 pydantic-core-2.46.4 referencing-0.37.0 rpds-py-2026.6.3 typing-extensions-4.16.0 typing-inspection-0.4.4",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.402,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,12 +60,12 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.018,
-      "exit_code": 1,
+      "elapsed_s": 0.518,
+      "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "output_sha256": "816dda3b5952bb8b57babd0d28d028917fc8182563ea1e819887a99d977727b2",
+      "output_tail": "..............                                                           [100%]\n14 passed in 0.20s",
+      "status": "PASS"
     }
   ]
 }

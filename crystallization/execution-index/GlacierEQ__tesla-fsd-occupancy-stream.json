@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "e7d13b1f3b41c47bd59924644197f39f6c7075f91669055b6a7552d7fc18664d",
+  "evidence_digest": "fd8b341364db8e8bc39e80fda2d1f3f8c48738718edee6f6c1ae61bf95197d6b",
   "head_sha": "0cd416dbb3e10b2a6feee40c9c52a0690f333d2a",
   "repository": "GlacierEQ/tesla-fsd-occupancy-stream",
   "repository_id": 1311725708,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.045,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.103,
+      "elapsed_s": 0.081,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "5555c0ea1446a7be2658b68399e8f5483b49078ffb40a87dfdc3cd87a9c50bcd",

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "f606fbe6b5d1da78af249c4324d00bac977dbd6f7ba3d3229a3ac440a66ae607",
+  "evidence_digest": "d705b3a4e8b5119258b180f6dab6ebe8ac1399d031c875fd51d7f3a0377de940",
   "head_sha": "53adb1c1a82f9906a036b2dafca3ca24eb5c325c",
   "repository": "GlacierEQ/nvidia-deep-reasoning",
   "repository_id": 1283500948,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.06,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.099,
+      "elapsed_s": 0.101,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "72ab33f933092b246687321fa6e3ea4042947c7ff56d6df58ca9295211efe742",

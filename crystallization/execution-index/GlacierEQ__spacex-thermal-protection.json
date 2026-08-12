@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "e136ecdccab809b2cd61cd236ec636728f070007527098c89619ee05c19b6283",
+  "evidence_digest": "1cd9a8190f730ac1b6c97083c3ea97580525e7a52365b56dd6cd25d46d51b153",
   "head_sha": "f35cef2d9c115218766ac3ef8d023f8316ac02f0",
   "repository": "GlacierEQ/spacex-thermal-protection",
   "repository_id": 1283365536,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -30,7 +30,7 @@
         "install",
         "pytest"
       ],
-      "elapsed_s": 0.397,
+      "elapsed_s": 0.401,
       "exit_code": 0,
       "name": "python_test_dependencies",
       "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
@@ -44,11 +44,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.329,
+      "elapsed_s": 0.459,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "9941a843303627e68757a0df3b840d735792bd391d44aa58712275f051ade9e2",
-      "output_tail": ".......................                                                  [100%]\n23 passed in 0.06s",
+      "output_sha256": "a716b4b0bf5116b65690b926f989f158a833dccd43cddc18e76a1883bc457f46",
+      "output_tail": ".......................                                                  [100%]\n23 passed in 0.07s",
       "status": "PASS"
     }
   ]

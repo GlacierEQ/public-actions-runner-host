@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "99a4a9c754188b6280d41e58f332a58de202f330ebdf3c87cec11f29400e6696",
+  "evidence_digest": "20ea8f4da8711572721a988588c1a61a2949e97a7ee5294e5a562b32fe6731f6",
   "head_sha": "e8bc4054babda2be16ea68143e2f273ab39a1127",
   "repository": "GlacierEQ/nebius-cluster-energy-admission",
   "repository_id": 1329688373,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.044,
+      "elapsed_s": 0.05,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.301,
+      "elapsed_s": 0.355,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,10 +42,41 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 3.014,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "c6097907ee58f0dc55dbf7a81e141cfd407d684497346548c51c0dca7e152292",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-ow4hlzf2/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: nebius-cluster-energy-admission\n  Building editable for nebius-cluster-energy-admission (pyproject.toml): started\n  Building editable for nebius-cluster-energy-admission (pyproject.toml): finished with status 'done'\n  Created wheel for nebius-cluster-energy-admission: filename=nebius_cluster_energy_admission-0.0.1-0.editable-py3-none-any.whl size=2416 sha256=08c90a542216b3ba5bad3e6e0bc23f2f8f2ad1785a92a3acc8790697160f1432\n  Stored in directory: /tmp/pip-ephem-wheel-cache-v3kbwp52/wheels/b1/e8/b0/c22694c343f8c0d4f84c4e800494a90def6d385a81ef5d5a35\nSuccessfully built nebius-cluster-energy-admission\nInstalling collected packages: nebius-cluster-energy-admission\nSuccessfully installed nebius-cluster-energy-admission-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.355,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.246,
+      "elapsed_s": 0.293,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "980e44fa2d7beb6d61f0e76333d72425e9e05583c12571e206f378eff65e64d0",

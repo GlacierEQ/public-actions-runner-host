@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "4b8e87cb26f1c9b07041822b947e80116b81a3befd233662ba204b6b08bfecf4",
+  "evidence_digest": "984e52db9d712449f7297aa52801726f6b3757d1fc4356a80e0fe408cc306be3",
   "head_sha": "18f46561b6ff1eb00fb3b5c228f88996c9b13590",
   "repository": "GlacierEQ/spacex-mission-control",
   "repository_id": 1282819628,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.067,
+      "elapsed_s": 0.068,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

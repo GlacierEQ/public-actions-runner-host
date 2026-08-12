@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b7e9b0d1eac60e4ff05f45d82fae9546219b670a9bb89a4d96b11c430d450c58",
+  "evidence_digest": "e8cf56b6d73236240e07fb70d772e32c438061cd02fd11ae1a16c3774ccef9a6",
   "head_sha": "7b036b72c4a004fb0c21a18e08c7311aac8201e1",
   "repository": "GlacierEQ/spacex-cryogenics",
   "repository_id": 1282819656,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.065,
+      "elapsed_s": 0.071,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,26 @@
         "-e",
         "."
       ],
-      "elapsed_s": 2.873,
+      "elapsed_s": 3.037,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "792f201311c714dd231192a4252e4ab134d1aa87e94e951da9b2142b403dc4d5",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-4hoy2iy4/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-cryogenic-twin\n  Building editable for glaciereq-cryogenic-twin (pyproject.toml): started\n  Building editable for glaciereq-cryogenic-twin (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-cryogenic-twin: filename=glaciereq_cryogenic_twin-1.0.0-0.editable-py3-none-any.whl size=5761 sha256=1ac978e04eb657e31e19ed5a9cb7500e496abd7f77fb61d9142a97c0fd679a43\n  Stored in directory: /tmp/pip-ephem-wheel-cache-rafr3ia0/wheels/85/ee/48/c6f702332c35738927a8366bdbd80e559696a8ae3dc7369e69\nSuccessfully built glaciereq-cryogenic-twin\nInstalling collected packages: glaciereq-cryogenic-twin\nSuccessfully installed glaciereq-cryogenic-twin-1.0.0",
+      "output_sha256": "4a124f7d1ca519156be6bcc2be22069867789933b2202d4579e96687d1d61883",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-6gvrhkme/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-cryogenic-twin\n  Building editable for glaciereq-cryogenic-twin (pyproject.toml): started\n  Building editable for glaciereq-cryogenic-twin (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-cryogenic-twin: filename=glaciereq_cryogenic_twin-1.0.0-0.editable-py3-none-any.whl size=5761 sha256=e9ca89ae6f7804a9c17faa18ac0dc555fe19533791dbbbc2ebb64d52ab345cf3\n  Stored in directory: /tmp/pip-ephem-wheel-cache-_02reua0/wheels/aa/a8/9d/9a958276231e1e4b6b9713909e50f016e0cacde8594dd33aee\nSuccessfully built glaciereq-cryogenic-twin\nInstalling collected packages: glaciereq-cryogenic-twin\nSuccessfully installed glaciereq-cryogenic-twin-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.389,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +60,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.695,
+      "elapsed_s": 0.745,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "2d692c6301ce4665ebd2e8b570220f2538221e6ce5f91ba64bc9c9d10a916aba",
-      "output_tail": "....................................                                     [100%]\n36 passed in 0.14s",
+      "output_sha256": "588536d2f20dbda2bb46dbc929a110d2ad069022795c6137a58b3a0c275a1990",
+      "output_tail": "....................................                                     [100%]\n36 passed in 0.15s",
       "status": "PASS"
     }
   ]

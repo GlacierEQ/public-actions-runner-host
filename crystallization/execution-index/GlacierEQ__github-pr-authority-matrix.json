@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "30be41027f0501221b1f60ba274f017097c5ebb77944bb426e405db499f43e37",
+  "evidence_digest": "120c8d9a3db82b44674e095d2d09bbf9c3a5c9de6689e7673789f4d1d57d6ce0",
   "head_sha": "6c7c5b503905d6b0eb0500d527bee07da7bb5744",
   "repository": "GlacierEQ/github-pr-authority-matrix",
   "repository_id": 1329687989,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.048,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.375,
+      "elapsed_s": 0.36,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,10 +42,41 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.877,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "5e0bcfc203c3e742fd591d2a939c70f024d0888776f7a0f1525fd0eecccfda09",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-ayx5cdqx/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: github-pr-authority-matrix\n  Building editable for github-pr-authority-matrix (pyproject.toml): started\n  Building editable for github-pr-authority-matrix (pyproject.toml): finished with status 'done'\n  Created wheel for github-pr-authority-matrix: filename=github_pr_authority_matrix-1.0.0-0.editable-py3-none-any.whl size=2331 sha256=f17355fbbff1191ef0ed18db7c66e889f675b068eb3e52162be70a01dcc11061\n  Stored in directory: /tmp/pip-ephem-wheel-cache-hcqo40_8/wheels/51/e4/29/bc8c60080e16af0e7e608709d42c445daa36eab823a4decf48\nSuccessfully built github-pr-authority-matrix\nInstalling collected packages: github-pr-authority-matrix\nSuccessfully installed github-pr-authority-matrix-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.353,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.329,
+      "elapsed_s": 0.312,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "02d196c8a738516023ad571ade99d30ba7decc99c1633593f2764208121d83e4",

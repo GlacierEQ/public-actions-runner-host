@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "507d8df81fd7373c1685465e7da22ce7c5c2f28e4ea2ed48870854c227a8aee2",
+  "evidence_digest": "a3d7fa416a270638f833982c79f99a08fd2c9c348b850d10b8845b2431413340",
   "head_sha": "12220f27fafb9fd1e642e9e7302f3965efe2da59",
   "repository": "GlacierEQ/spacex-telemetry",
   "repository_id": 1282819449,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.072,
+      "elapsed_s": 0.069,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,11 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 3.688,
+      "elapsed_s": 3.193,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "bea48ffea5390f2f7ac25dd687df82f49ca7285e082c84fbe564414c7f10c598",
-      "output_tail": "Collecting protobuf>=5.26 (from -r requirements.txt (line 1))\n  Downloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)\nCollecting numpy>=1.24 (from -r requirements.txt (line 2))\n  Downloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)\nDownloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl (327 kB)\nDownloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 16.7/16.7 MB 92.7 MB/s  0:00:00\nInstalling collected packages: protobuf, numpy\n\nSuccessfully installed numpy-2.5.2 protobuf-7.35.1",
+      "output_sha256": "3d8fa1babd5846fceac0ac626556dd21c67d020a02cc190fce35c5041731c761",
+      "output_tail": "Collecting protobuf>=5.26 (from -r requirements.txt (line 1))\n  Downloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)\nCollecting numpy>=1.24 (from -r requirements.txt (line 2))\n  Downloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)\nDownloading protobuf-7.35.1-cp310-abi3-manylinux2014_x86_64.whl (327 kB)\nDownloading numpy-2.5.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 16.7/16.7 MB 238.6 MB/s  0:00:00\nInstalling collected packages: protobuf, numpy\n\nSuccessfully installed numpy-2.5.2 protobuf-7.35.1",
       "status": "PASS"
     },
     {
@@ -50,7 +50,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.15,
+      "elapsed_s": 0.134,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "9af98c2e01d3579760f73572dd805a0418c1d705bfe0f72815a1b721507aca60",
@@ -63,7 +63,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.901,
+      "elapsed_s": 12.221,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "a556278dfda06a017678b852c8b3601406f06703b8ca2b062130c7d228d65d53",

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "cf5135376ff6c921062227415651e75d3bbf1b4c02e5f972033c9de4921028d5",
+  "evidence_digest": "645d40bd3c3ca20a79da04d74c7a5e46d86e9f7a9401be8043556fd3efda1e0c",
   "head_sha": "46f0061f27070e5bcfbfcfe77d5b06b0e014c31f",
   "repository": "GlacierEQ/anduril-track-envelope-compiler",
   "repository_id": 1328440165,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.087,
+      "elapsed_s": 0.129,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.364,
+      "elapsed_s": 0.458,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "4f7898b9bae5318333c50e0d95d3243feaec19cdc3e4db2672fab642ff055cbe",

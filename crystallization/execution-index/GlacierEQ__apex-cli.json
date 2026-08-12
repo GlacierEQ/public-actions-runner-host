@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "22e648bbbe2ebd287f424d41a9423bce5582ccef069cd4f0951994e5a1aa0c91",
+  "evidence_digest": "c5855eb970556aadd93f017cd53ca37a4993745bfa57243ad489e36a248c950f",
   "head_sha": "d3a4757b8cea0b4247a717a463ce3674a6f17793",
   "repository": "GlacierEQ/apex-cli",
   "repository_id": 1283462312,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "TESTED_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.181,
+      "elapsed_s": 0.203,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,20 +26,30 @@
       "command": [
         "python",
         "-m",
-        "unittest",
-        "discover",
-        "-s",
-        "tests",
-        "-p",
-        "test*.py",
-        "-v"
+        "pip",
+        "install",
+        "pytest"
       ],
-      "elapsed_s": 0.095,
+      "elapsed_s": 2.301,
       "exit_code": 0,
-      "name": "python_unittest",
-      "output_sha256": "060bdad3b2264e481964d060e3ba9a95883b73d770949674fd8f7928a3458c5e",
-      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... skipped 'receipts not yet bound'\n\n----------------------------------------------------------------------\nRan 6 tests in 0.001s\n\nOK (skipped=1)",
+      "name": "python_test_dependencies",
+      "output_sha256": "dce0ae77b668919c1bdf4920c88273b33e305dc413e7ee9185c1aee7ac1d833a",
+      "output_tail": "Collecting pytest\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest)\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest)\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest)\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest)\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 26.7 MB/s  0:00:00\nInstalling collected packages: pygments, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-9.1.1",
       "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 1.808,
+      "exit_code": 2,
+      "name": "python_pytest",
+      "output_sha256": "f07a03c5d7c3cec44bfd48674d5cb52515aad3fb1add6fe6b07345da064572e8",
+      "output_tail": "==================================== ERRORS ====================================\n_________ ERROR collecting bundle/scripts/test_end_to_end_casebuild.py _________\nImportError while importing test module '/tmp/crystal-exec-pef_w04q/repo/bundle/scripts/test_end_to_end_casebuild.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nbundle/scripts/test_end_to_end_casebuild.py:15: in <module>\n    from case_forge import CaseForge\nE   ModuleNotFoundError: No module named 'case_forge'\n=========================== short test summary info ============================\nERROR bundle/scripts/test_end_to_end_casebuild.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 1.40s",
+      "status": "FAIL"
     }
   ]
 }

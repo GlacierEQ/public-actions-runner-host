@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "5f05a1b9804cc835a2a69e128bb3fee214761fb70b6ae977dc461b9726226db8",
+  "evidence_digest": "5e2e8454c668231f0a77757b59e7b10957bc895a172986e3bbbe4220eb9c3468",
   "head_sha": "8d7de1d9f837af48702c62d9e70d9b6e5b1c123e",
   "repository": "GlacierEQ/manus-autonomous-web-agent",
   "repository_id": 1311737026,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.055,
+      "elapsed_s": 0.058,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.111,
+      "elapsed_s": 0.102,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "b0687494a97308b1515ed52e5df7defbc0fe1543009feb5138c8bfc937cf3c5d",

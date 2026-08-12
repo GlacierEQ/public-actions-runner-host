@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "f279d632b75e4d3d09a4909f7b0c3ed3a4c24fe8d9798adce196bd3085005db7",
+  "evidence_digest": "3d6f8d7576c0b748498c86a90ad60e19fd5dc362d1fd37bd5b9140236e29f2e1",
   "head_sha": "7bfdb2aa33f2ba95bb9b5b981e8930aa89e6c5f1",
   "repository": "GlacierEQ/waymo-uncertainty-lane-graph",
   "repository_id": 1328442171,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.049,
+      "elapsed_s": 0.051,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.106,
+      "elapsed_s": 0.109,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "bf4d9fa3251dd89c7a540bdc697843e12153cb092634c9b91516aacaf722ad6c",
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 9.07,
+      "elapsed_s": 11.193,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "15cb23fb681a7a856fa5ef3f009a78cf1bedad68762354fa2e0dd08fb127c3b5",

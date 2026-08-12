@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a35fec45e019ba12860a6245df718e81e914f0696cc13d11674fc67b53dd386d",
+  "evidence_digest": "3634585ad56f4948f32f255bc94d1b21fa60d9710a57317716a43320dbd72c4b",
   "head_sha": "b7189b4b7b40b753eb4b1d7c21bb3e94e07d078a",
   "repository": "GlacierEQ/windsurf-cascade-intent-twin",
   "repository_id": 1329688876,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.056,
+      "elapsed_s": 0.053,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.401,
+      "elapsed_s": 0.389,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,10 +42,41 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.882,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "421a03a47339d6e7e51d76ca475d43f8293360a18b4d071c1bbdb0e939b2f498",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-_78z4xwn/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: windsurf-cascade-intent-twin\n  Building editable for windsurf-cascade-intent-twin (pyproject.toml): started\n  Building editable for windsurf-cascade-intent-twin (pyproject.toml): finished with status 'done'\n  Created wheel for windsurf-cascade-intent-twin: filename=windsurf_cascade_intent_twin-0.0.1-0.editable-py3-none-any.whl size=2366 sha256=c17d5eae431c7167d04a183c183a085d5413ebab35c152e8f35a0a8b8cbf1750\n  Stored in directory: /tmp/pip-ephem-wheel-cache-wp599hpz/wheels/da/59/8c/e5a3c671914936c72222509d76f0d618b41883be7f14ff87b4\nSuccessfully built windsurf-cascade-intent-twin\nInstalling collected packages: windsurf-cascade-intent-twin\nSuccessfully installed windsurf-cascade-intent-twin-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.391,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.655,
+      "elapsed_s": 0.626,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "980e44fa2d7beb6d61f0e76333d72425e9e05583c12571e206f378eff65e64d0",

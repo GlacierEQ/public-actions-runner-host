@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a1159648ab9a2a6c30d8591eb9d6993bf9697df883999c826d36c706d368a1ac",
+  "evidence_digest": "25e5f5ea48fcf759164d76730911d0973c1294be410fc02cc8769576ca4c3f8c",
   "head_sha": "21c1fc7009c7f7c618396ab8c333990bd0ffc5db",
   "repository": "GlacierEQ/GlacierEQ_Swarm",
   "repository_id": 1303414196,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "TESTED_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "BROKEN_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.135,
+      "elapsed_s": 0.134,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -26,20 +26,30 @@
       "command": [
         "python",
         "-m",
-        "unittest",
-        "discover",
-        "-s",
-        "tests",
-        "-p",
-        "test*.py",
-        "-v"
+        "pip",
+        "install",
+        "pytest"
       ],
-      "elapsed_s": 0.4,
+      "elapsed_s": 0.376,
       "exit_code": 0,
-      "name": "python_unittest",
-      "output_sha256": "1be1f1f405d896c6d4b6dd26cb826d7e4161ac42fb7907282ca792d6ea007430",
-      "output_tail": "sent; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_incomplete_result_remains_unresolved_and_next_generation_advances (test_crystallization_dispatch.CrystallizationDispatchTests.test_incomplete_result_remains_unresolved_and_next_generation_advances) ... ok\ntest_ledger_never_hides_unresolved_archives_or_forks (test_crystallization_dispatch.CrystallizationDispatchTests.test_ledger_never_hides_unresolved_archives_or_forks) ... ok\ntest_ledger_refuses_conflicting_result_under_same_task_identity (test_crystallization_dispatch.CrystallizationDispatchTests.test_ledger_refuses_conflicting_result_under_same_task_identity) ... ok\ntest_protocol_failure_exits_nonzero (test_crystallization_dispatch.CrystallizationDispatchTests.test_protocol_failure_exits_nonzero) ... ok\ntest_should_submit_never_treats_archive_or_fork_as_resolved (test_crystallization_dispatch.CrystallizationDispatchTests.test_should_submit_never_treats_archive_or_fork_as_resolved) ... ok\ntest_task_id_is_generation_addressed (test_crystallization_dispatch.CrystallizationDispatchTests.test_task_id_is_generation_addressed) ... ok\ntest_terminal_result_advances_only_that_repository (test_crystallization_dispatch.CrystallizationDispatchTests.test_terminal_result_advances_only_that_repository) ... ok\ntest_valid_incomplete_work_unit_exits_zero_as_truth_not_transport_failure (test_crystallization_dispatch.CrystallizationDispatchTests.test_valid_incomplete_work_unit_exits_zero_as_truth_not_transport_failure) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... skipped 'receipts not yet bound'\ntest_cold_start_demo_executes_real_swarm_lifecycle (test_swarm.TestGlacierEQSwarm.test_cold_start_demo_executes_real_swarm_lifecycle) ... ok\ntest_draining_worker_gets_no_new_work (test_swarm.TestGlacierEQSwarm.test_draining_worker_gets_no_new_work) ... ok\ntest_duplicate_worker_and_task_ids_are_refused (test_swarm.TestGlacierEQSwarm.test_duplicate_worker_and_task_ids_are_refused) ... ok\ntest_failed_task_requeues_to_alternate_worker (test_swarm.TestGlacierEQSwarm.test_failed_task_requeues_to_alternate_worker) ... ok\ntest_heartbeat_must_be_monotonic_and_can_recover_worker_health (test_swarm.TestGlacierEQSwarm.test_heartbeat_must_be_monotonic_and_can_recover_worker_health) ... ok\ntest_load_balances_equal_workers_deterministically (test_swarm.TestGlacierEQSwarm.test_load_balances_equal_workers_deterministically) ... ok\ntest_no_capable_worker_leaves_task_queued (test_swarm.TestGlacierEQSwarm.test_no_capable_worker_leaves_task_queued) ... ok\ntest_priority_dispatches_highest_value_first (test_swarm.TestGlacierEQSwarm.test_priority_dispatches_highest_value_first) ... ok\ntest_retry_budget_eventually_dead_letters_task (test_swarm.TestGlacierEQSwarm.test_retry_budget_eventually_dead_letters_task) ... ok\ntest_routes_by_capability_and_capacity (test_swarm.TestGlacierEQSwarm.test_routes_by_capability_and_capacity) ... ok\ntest_snapshot_round_trip_preserves_assignments_and_integrity (test_swarm.TestGlacierEQSwarm.test_snapshot_round_trip_preserves_assignments_and_integrity) ... ok\ntest_snapshot_tamper_is_refused (test_swarm.TestGlacierEQSwarm.test_snapshot_tamper_is_refused) ... ok\ntest_telemetry_chain_proves_lifecycle (test_swarm.TestGlacierEQSwarm.test_telemetry_chain_proves_lifecycle) ... ok\ntest_unhealthy_worker_requeues_active_work (test_swarm.TestGlacierEQSwarm.test_unhealthy_worker_requeues_active_work) ... ok\n\n----------------------------------------------------------------------\nRan 28 tests in 0.042s\n\nOK (skipped=1)",
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "elapsed_s": 1.298,
+      "exit_code": 1,
+      "name": "python_pytest",
+      "output_sha256": "421fc69c8c63af18bdef4afd5a1922b485f9d16a7ab787ecd6f3cc263ea65160",
+      "output_tail": "_ledger>\n\n    def test_flipper_exit0_and_ledger(self):\n        r = subprocess.run([sys.executable, str(FLIP)], capture_output=True, text=True, timeout=120)\n>       self.assertEqual(r.returncode, 0, r.stderr + r.stdout)\nE       AssertionError: 2 != 0 : /opt/hostedtoolcache/Python/3.12.13/x64/bin/python: can't open file '/tmp/crystal-exec-7eiqniwg/home/GlacierEQ_Swarm/automations/token-100pct-savings-flipper.py': [Errno 2] No such file or directory\n\nautomations/tests/test_token_100pct.py:61: AssertionError\n=========================== short test summary info ============================\nFAILED automations/tests/test_aworkers.py::TestAWorkers::test_merge_memory - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/repo/automations/tests/aworkers_orchestrator.py'\nFAILED automations/tests/test_aworkers.py::TestAWorkers::test_registry_and_memory_exist - AssertionError: False is not true\nFAILED automations/tests/test_aworkers.py::TestAWorkers::test_run_flipper_device_stability - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/repo/automations/tests/aworkers_orchestrator.py'\nFAILED automations/tests/test_aworkers.py::TestAWorkers::test_status_exit0 - AssertionError: 2 != 0 : /opt/hostedtoolcache/Python/3.12.13/x64/bin/python: can't open file '/tmp/crystal-exec-7eiqniwg/repo/automations/tests/aworkers_orchestrator.py': [Errno 2] No such file or directory\nFAILED automations/tests/test_setup_maximized.py::TestAgentsMonolith::test_agents_progressive_and_device_pin - FileNotFoundError: [Errno 2] No such file or directory: '/Users/kcbflux/AGENTS.md'\nFAILED automations/tests/test_setup_maximized.py::TestAgentsMonolith::test_state_artifacts_exist - AssertionError: False is not true : missing /Users/kcbflux/GlacierEQ_Swarm/state/ecosystem_map.json\nFAILED automations/tests/test_setup_maximized.py::TestDeviceStabilityFlipper::test_free_kb_returns_positive_int - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/repo/automations/tests/device-stability-flipper.py'\nFAILED automations/tests/test_setup_maximized.py::TestDeviceStabilityFlipper::test_main_writes_structured_snapshot - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/repo/automations/tests/device-stability-flipper.py'\nFAILED automations/tests/test_setup_maximized.py::TestFlipperEntrypoints::test_aeon_and_github_write_state - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/repo/automations/tests/aeon-moc-procode-scanner.py'\nFAILED automations/tests/test_token_100pct.py::TestTokenSaverConnector::test_measure_savings_honest - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/home/.grok/skills/path-of-highest-power/.hidden_pistons/token_saver_connector.py'\nFAILED automations/tests/test_token_100pct.py::TestTokenSaverConnector::test_microwave_batch_parallel - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/home/.grok/skills/path-of-highest-power/.hidden_pistons/token_saver_connector.py'\nFAILED automations/tests/test_token_100pct.py::TestTokenSaverConnector::test_pure_pointer_externalizes - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/home/.grok/skills/path-of-highest-power/.hidden_pistons/token_saver_connector.py'\nFAILED automations/tests/test_token_100pct.py::TestTokenSaverConnector::test_route_compute - FileNotFoundError: [Errno 2] No such file or directory: '/tmp/crystal-exec-7eiqniwg/home/.grok/skills/path-of-highest-power/.hidden_pistons/token_saver_connector.py'\nFAILED automations/tests/test_token_100pct.py::TestFlipper::test_flipper_exit0_and_ledger - AssertionError: 2 != 0 : /opt/hostedtoolcache/Python/3.12.13/x64/bin/python: can't open file '/tmp/crystal-exec-7eiqniwg/home/GlacierEQ_Swarm/automations/token-100pct-savings-flipper.py': [Errno 2] No such file or directory\n14 failed, 52 passed, 1 skipped in 1.03s",
+      "status": "FAIL"
     }
   ]
 }

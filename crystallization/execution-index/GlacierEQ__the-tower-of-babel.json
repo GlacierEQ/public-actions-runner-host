@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "bddb4689d5fd99cbfbe88e0bc30bf9c22ffc9ba2d08cf54a5835e8a20a9be4c9",
+  "evidence_digest": "da3b1f6e5cfc6de55dba9e31c7b20d8d5ec0fcd822b0d4b0cbc68b33b1645c44",
   "head_sha": "fab6abe811ea20d60d4a7fa9c2063093aac24475",
   "repository": "GlacierEQ/the-tower-of-babel",
   "repository_id": 1316402874,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.103,
+      "elapsed_s": 0.109,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,13 +29,28 @@
         "pip",
         "install",
         "-e",
-        "."
+        ".[dev]"
       ],
-      "elapsed_s": 3.039,
+      "elapsed_s": 3.169,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "0acd3458542906c5633efb52cfb68ba26d784d321a5ed2c15acb9069770fc3a9",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-8e16bjl9/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: protobuf<7,>=5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from glaciereq-tower-of-babel==1.1.0) (6.33.6)\nBuilding wheels for collected packages: glaciereq-tower-of-babel\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): started\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tower-of-babel: filename=glaciereq_tower_of_babel-1.1.0-0.editable-py3-none-any.whl size=2668 sha256=269b7ce152ddb2d8611cc2c820e6f81d72c3d5d858265df28365a7d62272100f\n  Stored in directory: /tmp/pip-ephem-wheel-cache-xgvpoodq/wheels/a8/29/c5/03f14d8790f190e30534aee8ccd9a4c4954aa21203d7f5a8e6\nSuccessfully built glaciereq-tower-of-babel\nInstalling collected packages: glaciereq-tower-of-babel\n  Attempting uninstall: glaciereq-tower-of-babel\n    Found existing installation: glaciereq-tower-of-babel 1.1.0\n    Uninstalling glaciereq-tower-of-babel-1.1.0:\n      Successfully uninstalled glaciereq-tower-of-babel-1.1.0\nSuccessfully installed glaciereq-tower-of-babel-1.1.0",
+      "output_sha256": "6d212ada5617122219ad5908a5fe93745a7742984e848b5e090210c7b3ec55d3",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-kdm1et0n/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: protobuf<7,>=5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from glaciereq-tower-of-babel==1.1.0) (6.33.6)\nRequirement already satisfied: pytest>=8 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from glaciereq-tower-of-babel==1.1.0) (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8->glaciereq-tower-of-babel==1.1.0) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8->glaciereq-tower-of-babel==1.1.0) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8->glaciereq-tower-of-babel==1.1.0) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8->glaciereq-tower-of-babel==1.1.0) (2.20.0)\nBuilding wheels for collected packages: glaciereq-tower-of-babel\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): started\n  Building editable for glaciereq-tower-of-babel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-tower-of-babel: filename=glaciereq_tower_of_babel-1.1.0-0.editable-py3-none-any.whl size=2669 sha256=7684ab16453860ff3b4655f532f75da896d2b14515b1ac1b4db918c4bb527c1d\n  Stored in directory: /tmp/pip-ephem-wheel-cache-5ori61zo/wheels/fa/20/22/ab9710eacde9efd969038a74ea6f980718621ed253d5f992a7\nSuccessfully built glaciereq-tower-of-babel\nInstalling collected packages: glaciereq-tower-of-babel\n  Attempting uninstall: glaciereq-tower-of-babel\n    Found existing installation: glaciereq-tower-of-babel 1.1.0\n    Uninstalling glaciereq-tower-of-babel-1.1.0:\n      Successfully uninstalled glaciereq-tower-of-babel-1.1.0\nSuccessfully installed glaciereq-tower-of-babel-1.1.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.399,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +60,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 1.634,
+      "elapsed_s": 1.625,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "b440d540dce24a98fdc59861c53cf1f76998ff1acb9ad6e0fa9209158b217e0f",
-      "output_tail": "................................................................. [ 97%]\n..                                                                       [100%]\n67 passed, 7 subtests passed in 1.07s",
+      "output_sha256": "cfd5669e7683e2019abfa0c4dc163bb7d4be46b5b0561144fbb56cc47f301d47",
+      "output_tail": "................................................................. [ 97%]\n..                                                                       [100%]\n67 passed, 7 subtests passed in 1.03s",
       "status": "PASS"
     },
     {
@@ -58,7 +73,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 7.412,
+      "elapsed_s": 7.209,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "155b74a2e1b91126dbc52a03f2eecbe7f373ad56fb8c047c2c4544b065fe3312",

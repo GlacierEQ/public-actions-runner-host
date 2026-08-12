@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "7f52cada9a17e6666fac3141bb9707459867ff6b18592004c665ce2dd682b186",
+  "evidence_digest": "82547ca68ae01f4cbbd62049fe0e96eb2c9859c0db77313fe174bf9e38170fd5",
   "head_sha": "bf6d01baaf20ff34dfb9f7fbf830dfe4925f1ffe",
   "repository": "GlacierEQ/scale-ai-label-consensus-fence",
   "repository_id": 1329688681,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.053,
+      "elapsed_s": 0.052,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.824,
+      "elapsed_s": 0.781,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,14 +42,45 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 4.066,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "067a118c9c2a4f834afff6a4a03b47d24bd92688efb308b8629ecd61a12555ac",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-3mm_lsee/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: scale-ai-label-consensus-fence\n  Building editable for scale-ai-label-consensus-fence (pyproject.toml): started\n  Building editable for scale-ai-label-consensus-fence (pyproject.toml): finished with status 'done'\n  Created wheel for scale-ai-label-consensus-fence: filename=scale_ai_label_consensus_fence-1.0.0-0.editable-py3-none-any.whl size=2704 sha256=f83bcf73945699c23f5bc84533b962ae99e95dfb99d54df053c24756afdb1f30\n  Stored in directory: /tmp/pip-ephem-wheel-cache-7x47d5bt/wheels/88/2a/b0/519125e7fa479cb2faf7a3d6c24fd0feb4119f0a629dab26a9\nSuccessfully built scale-ai-label-consensus-fence\nInstalling collected packages: scale-ai-label-consensus-fence\nSuccessfully installed scale-ai-label-consensus-fence-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.758,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 1.569,
+      "elapsed_s": 1.415,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "93f5e9030419cb578e3ece2003e86c8d3606dd4518739e2a5949d913ecb0c074",
-      "output_tail": "..............                                                           [100%]\n14 passed in 0.11s",
+      "output_sha256": "86114e922c0e72112f7e7fa8535be25232286700eca197d690674e6f0944cadc",
+      "output_tail": "..............                                                           [100%]\n14 passed in 0.10s",
       "status": "PASS"
     }
   ]

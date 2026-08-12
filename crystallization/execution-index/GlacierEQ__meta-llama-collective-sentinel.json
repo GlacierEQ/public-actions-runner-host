@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "58c59918aa8c22a923dd3f3b12852103ca33ffdb1f9b9d405c5a17f0d22a3e7a",
+  "evidence_digest": "47186892851c13dca856964b9a41608547edfa8986ce055f8b60633e059864cb",
   "head_sha": "3b4337348863308276f88d765036e2e75c89a62d",
   "repository": "GlacierEQ/meta-llama-collective-sentinel",
   "repository_id": 1311725893,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.101,
+      "elapsed_s": 0.1,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "ec0d8dd997bd7e7e85cbdae638c6597b08adda0b6abff4bffb34e2f453d603f1",

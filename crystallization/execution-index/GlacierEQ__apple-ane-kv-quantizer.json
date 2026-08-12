@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "da3120c3566a05cc6ed052b285cdca74fdf41ab491a03937b35f208368e06129",
+  "evidence_digest": "f96eb313db5b2c0f9c6eafaec0410a54654ff4ebee79c610b5586bd521833087",
   "head_sha": "2b257a5813a4586e20457ce48cccac9cce71a0cc",
   "repository": "GlacierEQ/apple-ane-kv-quantizer",
   "repository_id": 1311725532,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.099,
+      "elapsed_s": 0.062,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.223,
+      "elapsed_s": 0.117,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "9067c29c3999928a7535ab6933e5c5780b3128507f1bdbce35e3787d14fdf019",

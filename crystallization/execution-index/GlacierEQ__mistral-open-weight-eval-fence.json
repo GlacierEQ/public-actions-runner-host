@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "ebc6cd13791b43c8bd1a2a4ca29dbd8222660d1c7971784c1348fafcbd83b577",
+  "evidence_digest": "2e781e5d538878ff1ce814e809abd18e9f4aec6fcc8eaa54086c06dfb6728078",
   "head_sha": "83498ddbd6177907b6a753957e81014701874e9d",
   "repository": "GlacierEQ/mistral-open-weight-eval-fence",
   "repository_id": 1329688256,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.051,
+      "elapsed_s": 0.04,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.364,
+      "elapsed_s": 0.288,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,14 +42,45 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.311,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "5986e320641d0052327df68bc6ae53bc8c41750ada365a6a1ab58f6afec4dd2d",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-rzeufoui/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: mistral-open-weight-eval-fence\n  Building editable for mistral-open-weight-eval-fence (pyproject.toml): started\n  Building editable for mistral-open-weight-eval-fence (pyproject.toml): finished with status 'done'\n  Created wheel for mistral-open-weight-eval-fence: filename=mistral_open_weight_eval_fence-1.0.0-0.editable-py3-none-any.whl size=2720 sha256=411f632e877d1dfb3c95beffc1c515ddf0e1ba8711c7eb69ee1c57ba147afe5a\n  Stored in directory: /tmp/pip-ephem-wheel-cache-jnf5pihz/wheels/b9/d4/48/4e09d1a8edf0f188b0df1692dcabb88a8d9903bcb764f77ef5\nSuccessfully built mistral-open-weight-eval-fence\nInstalling collected packages: mistral-open-weight-eval-fence\nSuccessfully installed mistral-open-weight-eval-fence-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.284,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.307,
+      "elapsed_s": 0.238,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287",
-      "output_tail": "..............                                                           [100%]\n14 passed in 0.04s",
+      "output_sha256": "211ca7447f6341b5c28c8040850a8f368367f2cce961f9270c7c77ce7b3dc852",
+      "output_tail": "..............                                                           [100%]\n14 passed in 0.03s",
       "status": "PASS"
     }
   ]

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "d965d012c8556344f58f0907d53010b1ae17c23290ecb9d814a4d70db0121ee2",
+  "evidence_digest": "23734d785e37ec80265428ebcaf866b5be6058b55d66d5bb79a0afbed9aec58d",
   "head_sha": "f14f7a2cde849cad42078251cd5c374e97954fc1",
   "repository": "GlacierEQ/crusoe-rack-to-token-autopilot",
   "repository_id": 1329687888,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.049,
+      "elapsed_s": 0.051,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.424,
+      "elapsed_s": 0.417,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,14 +42,45 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.932,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "cde3ed253b687dcbe1410b526d40f554ec89915dd7a519f2876638c61ded4076",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-5678viqx/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: crusoe-rack-to-token-autopilot\n  Building editable for crusoe-rack-to-token-autopilot (pyproject.toml): started\n  Building editable for crusoe-rack-to-token-autopilot (pyproject.toml): finished with status 'done'\n  Created wheel for crusoe-rack-to-token-autopilot: filename=crusoe_rack_to_token_autopilot-1.0.0-0.editable-py3-none-any.whl size=2718 sha256=6544353d38cb2feff31b46502e69964e9920bfd35e9986cf56d5e4f2b4216820\n  Stored in directory: /tmp/pip-ephem-wheel-cache-blm861mr/wheels/dc/48/46/7f14ead2266cbf5698a6ed92b1a6b438190efd633e3ad0ecbb\nSuccessfully built crusoe-rack-to-token-autopilot\nInstalling collected packages: crusoe-rack-to-token-autopilot\nSuccessfully installed crusoe-rack-to-token-autopilot-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.386,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.311,
+      "elapsed_s": 0.314,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "d3e09474297abb89a20a2a722c6a4731d1e10473fdeb3dbf63af3e7c51ce1eb5",
-      "output_tail": "..............                                                           [100%]\n14 passed in 0.05s",
+      "output_sha256": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287",
+      "output_tail": "..............                                                           [100%]\n14 passed in 0.04s",
       "status": "PASS"
     }
   ]

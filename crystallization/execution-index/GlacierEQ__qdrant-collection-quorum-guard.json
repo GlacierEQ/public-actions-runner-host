@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b2c19cf6d2bb182c746e175777b7f4d753c3956ecb828041c7cc4b8801bbe7e5",
+  "evidence_digest": "804cb3204a0a334a591c1ffb12d588d8b7c968fb69024340c44e3fefb8a75a5e",
   "head_sha": "9f9130c0377cd9eaea83fe4ce6ebc0ea0e194076",
   "repository": "GlacierEQ/qdrant-collection-quorum-guard",
   "repository_id": 1329688454,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.047,
+      "elapsed_s": 0.048,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.393,
+      "elapsed_s": 0.399,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,14 +42,45 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.959,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "38befd5a3cda6cbc162f03d4540529b17512f8e50ad9c071b274dbf71c2aa901",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-rl40m_yy/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: qdrant-collection-quorum-guard\n  Building editable for qdrant-collection-quorum-guard (pyproject.toml): started\n  Building editable for qdrant-collection-quorum-guard (pyproject.toml): finished with status 'done'\n  Created wheel for qdrant-collection-quorum-guard: filename=qdrant_collection_quorum_guard-0.0.1-0.editable-py3-none-any.whl size=2396 sha256=8b84eb371f0424d71c7d5bed0dec6df9b8e9e37e435da16abdc795dda40d42d3\n  Stored in directory: /tmp/pip-ephem-wheel-cache-y7p5l4m9/wheels/cc/3d/54/ef6bc287583b654de5d76cd38bc33c32776c0339dffcc191ce\nSuccessfully built qdrant-collection-quorum-guard\nInstalling collected packages: qdrant-collection-quorum-guard\nSuccessfully installed qdrant-collection-quorum-guard-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.396,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.306,
+      "elapsed_s": 0.451,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "5070a6b9acedfdef101e604fa84b561e866a8322ac576fc316cba665d3aabcec",
-      "output_tail": ".............                                                            [100%]\n13 passed in 0.04s",
+      "output_sha256": "a929507797f2ae0fefe5ce7d9f3bec06eb05c2e998f246180c4c3dd0eee1c73a",
+      "output_tail": ".............                                                            [100%]\n13 passed in 0.05s",
       "status": "PASS"
     }
   ]

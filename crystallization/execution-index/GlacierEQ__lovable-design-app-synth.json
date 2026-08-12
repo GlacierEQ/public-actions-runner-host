@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "15e30ffb6e399f562d1d80c2b5037d1f9e865fb4a70f833476bb4fd4fc90e55a",
+  "evidence_digest": "7f453ae603d0a29eacbcef217371af3acd4c77fb47915b1c35fe07ec65ac5398",
   "head_sha": "6e21abcee8448ce6c2c2bb3af71739a0487f5f74",
   "repository": "GlacierEQ/lovable-design-app-synth",
   "repository_id": 1311738133,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.056,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.097,
+      "elapsed_s": 0.106,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "0e2cb5f8a8be63ed43b00f99fde07a08229cc76eee65912c317973ea64607737",

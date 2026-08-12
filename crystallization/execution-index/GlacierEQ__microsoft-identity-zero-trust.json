@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "9165a2346d015846616573fe89f252388c5740804208eefacf27c61202cc7a71",
+  "evidence_digest": "141f3df5861acf6a24a3c5e60b7b28c9b587aae08b0a268a34f5566b7bcbd722",
   "head_sha": "e32ce938992599aa411528f561eaf58c3cf0500d",
   "repository": "GlacierEQ/microsoft-identity-zero-trust",
   "repository_id": 1298894063,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.054,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.099,
+      "elapsed_s": 0.094,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "f283c7466fa443cff13314077c3931588545c86405fb3515a279ea4f67b0907d",

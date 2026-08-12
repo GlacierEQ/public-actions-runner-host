@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "cdf4b6de541cfedb06bdf53bd58f1b78f7e3a34d95ae149b2470fc8860d554ca",
+  "evidence_digest": "0e019e8bdf026d6f0ec4efc8bd5dd0adeec8241b1dfc9939e3ea07b1f402dfa1",
   "head_sha": "0c485f0d5c03b78f9bec360f30217713048643ec",
   "repository": "GlacierEQ/openai-reasoning-budget-futures",
   "repository_id": 1328441212,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.056,
+      "elapsed_s": 0.049,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.105,
+      "elapsed_s": 0.09,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "95370f027b31bb91cfb109f1edd1a083c37a618c83bf173cade93b3bdf862afc",

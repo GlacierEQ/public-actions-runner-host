@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "1366ca092bbbfca95f7d251e672d02fa9bce5928009a8df05554a9a83182e1ae",
+  "evidence_digest": "c3aa430449996d3d026a45092003838bb1cfb98480cc67ba25b53cfbb2b223ca",
   "head_sha": "d2b828cc7b4fc12bc04da04408fe9288b34ecba0",
   "repository": "GlacierEQ/comet-browser-agent-bridge",
   "repository_id": 1311739397,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.184,
+      "elapsed_s": 0.107,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "fa10a94bc3ad7aea13120093046785ccd5024f673d14f36b481086c50d85d154",

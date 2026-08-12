@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "247767450d7117322c309de964c651ab47f869305511761c5c8ff137f3d650e9",
+  "evidence_digest": "cd3779555c46e915594ed72e28adff9170d69151b8260d7c126762bbcecaa5d2",
   "head_sha": "17537ed7ee2c7b01edf60953f403ebcb3a6c2fd8",
   "repository": "GlacierEQ/spacex-conjunction-sentinel",
   "repository_id": 1298893363,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.064,
+      "elapsed_s": 0.05,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,26 @@
         "-e",
         "."
       ],
-      "elapsed_s": 3.083,
+      "elapsed_s": 2.222,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "bf3b30400d076f2dd3437974d097953b8ff5b0cd2a345530aa60d63c067ce374",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-dm62b_zs/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-conjunction-sentinel\n  Building editable for glaciereq-conjunction-sentinel (pyproject.toml): started\n  Building editable for glaciereq-conjunction-sentinel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-conjunction-sentinel: filename=glaciereq_conjunction_sentinel-1.0.0-0.editable-py3-none-any.whl size=5867 sha256=801607cd31a7b6feac92e19aee1acaf714a35abb75a140e983abcfe3f1641339\n  Stored in directory: /tmp/pip-ephem-wheel-cache-5r6hcirb/wheels/6b/b2/3c/131a2df0efc336077514ed3775ae27265f55d0313349b9b3ee\nSuccessfully built glaciereq-conjunction-sentinel\nInstalling collected packages: glaciereq-conjunction-sentinel\nSuccessfully installed glaciereq-conjunction-sentinel-1.0.0",
+      "output_sha256": "78da849347e1466c5004560ba6c2b5d5f3dbba80f8ffa304a8572bf48e83cfbe",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-9qpihscb/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-conjunction-sentinel\n  Building editable for glaciereq-conjunction-sentinel (pyproject.toml): started\n  Building editable for glaciereq-conjunction-sentinel (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-conjunction-sentinel: filename=glaciereq_conjunction_sentinel-1.0.0-0.editable-py3-none-any.whl size=5868 sha256=1943c93cec95f1eccb57b26da69d48defc4d5f83eee7679193b75992977a640c\n  Stored in directory: /tmp/pip-ephem-wheel-cache-pp992p4m/wheels/34/74/84/d8a3ce15310f60aa70076869ea4359f6f7315dfbffff9a3748\nSuccessfully built glaciereq-conjunction-sentinel\nInstalling collected packages: glaciereq-conjunction-sentinel\nSuccessfully installed glaciereq-conjunction-sentinel-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.293,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,25 +60,26 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.332,
+      "elapsed_s": 0.261,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "8536c2a85296b85a602af5d049e8a1d62498800749ab9fbe048826acba30dd90",
-      "output_tail": "..................                                                       [100%]\n18 passed in 0.06s",
+      "output_sha256": "fa416df3e377db6a0e4af9ce072abb3ad7a9895832c922bdc5b0e788fb71dd9c",
+      "output_tail": "..................                                                       [100%]\n18 passed in 0.05s",
       "status": "PASS"
     },
     {
       "command": [
         "cargo",
+        "+stable",
         "test",
         "--all-targets"
       ],
-      "elapsed_s": 0.007,
-      "exit_code": 1,
+      "elapsed_s": 10.581,
+      "exit_code": 0,
       "name": "cargo_test",
-      "output_sha256": "05c678dccbf887d2e1584d69066fbceb6db80dd2cdc83f3ffab008b68e8f7e27",
-      "output_tail": "error: rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured.\nhelp: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.",
-      "status": "FAIL"
+      "output_sha256": "518df08a4d6e5d1820d580068d392c8005968574744216c3c9c4bca43f7d980f",
+      "output_tail": "running 3 tests\ntest tests::invalid_eccentricity_is_rejected ... ok\ntest tests::iss_like_state_has_physical_radius_and_speed ... ok\ntest tests::propagation_changes_position ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\ninfo: syncing channel updates for stable-x86_64-unknown-linux-gnu\ninfo: latest update on 2026-07-16 for version 1.97.1 (8bab26f4f 2026-07-14)\ninfo: downloading 6 components\n   Compiling conjunction-sentinel-orbit v1.0.0 (/tmp/crystal-exec-9qpihscb/repo)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.38s\n     Running unittests src/orbit_propagator.rs (target/debug/deps/conjunction_sentinel_orbit-6e186c051c889f26)",
+      "status": "PASS"
     }
   ]
 }

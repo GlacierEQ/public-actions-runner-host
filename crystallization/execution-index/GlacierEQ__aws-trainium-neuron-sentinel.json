@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "831c9f27f22b27c68dd16aedeff153fdfe4f9458ff0ab8b725a91a8ffc3cb8d7",
+  "evidence_digest": "86284f88b23e2807c0749349cb97c7da7df6a6e45b604f594ed42a3789650ef2",
   "head_sha": "fe8b7f563b8f23c4ce6d104980d88134cbd72b60",
   "repository": "GlacierEQ/aws-trainium-neuron-sentinel",
   "repository_id": 1311726095,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.047,
+      "elapsed_s": 0.051,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.101,
+      "elapsed_s": 0.103,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "5f3c177ed3feb415c0559ddbfbaf031d95aff0a4b32a0b23a443db4113319b4c",

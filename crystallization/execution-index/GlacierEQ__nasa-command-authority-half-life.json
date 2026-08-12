@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "7ed59e68a6d4e3475a932a1f0ececcc2ca7046ae6d4f027bcb0ae0ba949a11b7",
+  "evidence_digest": "5171629bcf8eb066e90456b13333ef78502b90b785f74fa5082ce6c00389c2d5",
   "head_sha": "5b6c8a158e0477def60c61210faffc1210d3698a",
   "repository": "GlacierEQ/nasa-command-authority-half-life",
   "repository_id": 1328440929,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.056,
+      "elapsed_s": 0.059,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,11 +34,11 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.108,
+      "elapsed_s": 0.112,
       "exit_code": 0,
       "name": "python_unittest",
-      "output_sha256": "91feea406b174fac3ee73380b74e21cdceeb09a0b1861a698cbfead479291135",
-      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_name_repository_native_command_authority (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_command_authority) ... ok\ntest_evolution_and_public_boundary_are_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_public_boundary_are_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_telemetry_edge_is_complementary_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_telemetry_edge_is_complementary_not_integrated) ... ok\ntest_expired (test_command_authority.CmdTests.test_expired) ... ok\ntest_fire_in_window (test_command_authority.CmdTests.test_fire_in_window) ... ok\ntest_replay (test_command_authority.CmdTests.test_replay) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.005s\n\nOK",
+      "output_sha256": "373a9d57a69be85b0b5a6d55e68c4920057cf0cab1c073e5712a3347a924e01e",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_capabilities_name_repository_native_command_authority (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_command_authority) ... ok\ntest_evolution_and_public_boundary_are_material (test_canonical_position_contract.CanonicalPositionContractTests.test_evolution_and_public_boundary_are_material) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_and_lineage_are_preserved) ... ok\ntest_telemetry_edge_is_complementary_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_telemetry_edge_is_complementary_not_integrated) ... ok\ntest_expired (test_command_authority.CmdTests.test_expired) ... ok\ntest_fire_in_window (test_command_authority.CmdTests.test_fire_in_window) ... ok\ntest_replay (test_command_authority.CmdTests.test_replay) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.006s\n\nOK",
       "status": "PASS"
     },
     {
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 6.865,
+      "elapsed_s": 7.149,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "86bad86cb05458dc14160dd59fd7e184dbe4b310852088e51b34a6242448a552",

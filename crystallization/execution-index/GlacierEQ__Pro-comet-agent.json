@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "9f745802685927470e7fe64249e46bb90676fe606a94e7e70ca227cba8f1bfdb",
-  "head_sha": "670ce817bd1df5f0f491413386d079ced25ee6c7",
+  "evidence_digest": "ac4f87f2d5d064df5366b0fb6c1c6156c676f5c82255d82328981be5d653c312",
+  "head_sha": "e82ef882a622f04e4f66fe7e3a9b4deee56f48b0",
   "repository": "GlacierEQ/Pro-comet-agent",
   "repository_id": 1260815818,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "BROKEN_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.068,
+      "elapsed_s": 0.07,
       "exit_code": 1,
       "name": "python_compile",
       "output_sha256": "f41aee4503887c6878cfe68dcdf1aedefe3e90df08fa4c1d97bb795f47763ed5",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.102,
+      "elapsed_s": 0.1,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "f283c7466fa443cff13314077c3931588545c86405fb3515a279ea4f67b0907d",
@@ -46,11 +46,11 @@
         "npm",
         "ci"
       ],
-      "elapsed_s": 7.37,
+      "elapsed_s": 7.764,
       "exit_code": 0,
       "name": "node_dependencies",
-      "output_sha256": "3090452002cba64c918d7f23919ab11485a9106bfbe6ccb50779a1008b483557",
-      "output_tail": "added 607 packages in 7s\n\nnpm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported\nnpm warn deprecated supertest@6.3.4: Please upgrade to supertest v7.1.3+, see release notes at https://github.com/forwardemail/supertest/releases/tag/v7.1.3 - maintenance is supported by Forward Email @ https://forwardemail.net\nnpm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead\nnpm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead\nnpm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net\nnpm warn deprecated uuid@9.0.1: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).\nnpm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.",
+      "output_sha256": "7fa4d54e17f2d382ec1a100539b067935ffb41a2d0936a08d4cdcedb44c1c559",
+      "output_tail": "added 607 packages in 8s\n\nnpm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm warn deprecated supertest@6.3.4: Please upgrade to supertest v7.1.3+, see release notes at https://github.com/forwardemail/supertest/releases/tag/v7.1.3 - maintenance is supported by Forward Email @ https://forwardemail.net\nnpm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported\nnpm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.\nnpm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me\nnpm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead\nnpm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead\nnpm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net\nnpm warn deprecated uuid@9.0.1: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).\nnpm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.",
       "status": "PASS"
     },
     {
@@ -59,11 +59,11 @@
         "run",
         "test"
       ],
-      "elapsed_s": 0.763,
+      "elapsed_s": 0.79,
       "exit_code": 0,
       "name": "node_test",
-      "output_sha256": "69ce9294b04c0309a3ef5d438db8bbd7b9fea91b8b08f9211cb523ecbf3b3ea4",
-      "output_tail": "> comet-agent@2.0.0 test\n> jest\n\n\nPASS src/__tests__/smoke.test.ts\n  System Smoke Test\n    \u2713 Dependencies are loaded (2 ms)\n    \u2713 Environment is accessible\n\nTest Suites: 1 passed, 1 total\nTests:       2 passed, 2 total\nSnapshots:   0 total\nTime:        0.291 s\nRan all test suites.",
+      "output_sha256": "ca877577aecb9fa32e40386bbd9bcbfdda1bcebd156050380787c39fe12890af",
+      "output_tail": "> comet-agent@2.0.0 test\n> jest\n\n\nPASS src/__tests__/smoke.test.ts\n  System Smoke Test\n    \u2713 Dependencies are loaded (2 ms)\n    \u2713 Environment is accessible\n\nTest Suites: 1 passed, 1 total\nTests:       2 passed, 2 total\nSnapshots:   0 total\nTime:        0.309 s\nRan all test suites.",
       "status": "PASS"
     },
     {
@@ -72,12 +72,12 @@
         "run",
         "build"
       ],
-      "elapsed_s": 2.3,
-      "exit_code": 2,
+      "elapsed_s": 2.042,
+      "exit_code": 0,
       "name": "node_build",
-      "output_sha256": "6d62ee6868bd48bbf49c7cdc7dd759bfe62eef8e996ba8f6e4238a25e7a7c49b",
-      "output_tail": "> comet-agent@2.0.0 build\n> tsc\n\nsrc/providers/comet/CometProvider.ts(14,51): error TS6133: 'CDPSession' is declared but its value is never read.",
-      "status": "FAIL"
+      "output_sha256": "a6915c9304656100b588cc6c06c99d70f4cd36eb03802c9ed3dc8b2fedb581b0",
+      "output_tail": "> comet-agent@2.0.0 build\n> tsc",
+      "status": "PASS"
     }
   ]
 }

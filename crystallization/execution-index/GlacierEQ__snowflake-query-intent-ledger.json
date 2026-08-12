@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "af6a9cff799f200f9ab97dc207bd14845de5c17cc70b175240f6bcac1e7fa008",
+  "evidence_digest": "a2fa58f7f5a5717795a69ec77cec8d48ecf67911fc7c75ecd96129d76c55461b",
   "head_sha": "f1c254816c3b7bf3aae6700609e04496108849cf",
   "repository": "GlacierEQ/snowflake-query-intent-ledger",
   "repository_id": 1328441724,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.056,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.106,
+      "elapsed_s": 0.11,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "9d99ea432549f9e50fe6f758be105c772f0e799b37f0cb4e640a2185b8f7b5f3",

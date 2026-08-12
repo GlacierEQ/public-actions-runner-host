@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "30f4b8bdb4bc37e582158e38147cb836f754e87b6f7270295d8e306f9472adaa",
+  "evidence_digest": "b00787f9273b5f0efc93422a37664bcef5d91e9cb8244c293e89bc8c8803cc97",
   "head_sha": "fbe24a5fdb945283c9db84e8ad8c2252f8fe5299",
   "repository": "GlacierEQ/cerebras-wafer-batch-admission-gate",
   "repository_id": 1329687776,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 2.394,
+      "elapsed_s": 1.122,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "5b4314d62c8c065e40d7e9a3024a221bf428d8335fcd485d284bcee858dd7827",
-      "output_tail": "Collecting pytest>=8.0 (from -r requirements.txt (line 1))\n  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)\nCollecting setuptools>=68 (from -r requirements.txt (line 2))\n  Downloading setuptools-84.0.0-py3-none-any.whl.metadata (6.6 kB)\nCollecting iniconfig>=1.0.1 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=22 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest>=8.0->-r requirements.txt (line 1))\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-9.1.1-py3-none-any.whl (386 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading setuptools-84.0.0-py3-none-any.whl (818 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 818.2/818.2 kB 38.0 MB/s  0:00:00\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 66.9 MB/s  0:00:00\nInstalling collected packages: setuptools, pygments, pluggy, packaging, iniconfig, pytest\n\nSuccessfully installed iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-9.1.1 setuptools-84.0.0",
+      "output_sha256": "137b3bd2c1885f4b2303b43ff3e8211642c04f9376fbf29cae872c414c20ca31",
+      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (8.4.2)\nCollecting setuptools>=68 (from -r requirements.txt (line 2))\n  Downloading setuptools-84.0.0-py3-none-any.whl.metadata (6.6 kB)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.20.0)\nDownloading setuptools-84.0.0-py3-none-any.whl (818 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 818.2/818.2 kB 78.4 MB/s  0:00:00\nInstalling collected packages: setuptools\nSuccessfully installed setuptools-84.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.742,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "52d7b47a68b18e24c07288a760496c32f8ba5fbee5d3aa2f25c0e35238aa5502",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-y5b1u5d6/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: cerebras-wafer-batch-admission-gate\n  Building editable for cerebras-wafer-batch-admission-gate (pyproject.toml): started\n  Building editable for cerebras-wafer-batch-admission-gate (pyproject.toml): finished with status 'done'\n  Created wheel for cerebras-wafer-batch-admission-gate: filename=cerebras_wafer_batch_admission_gate-1.0.0-0.editable-py3-none-any.whl size=2786 sha256=c22343ed01e63dccfcd2b353b76b47e664c66101f71649ae8afe6857a8490588\n  Stored in directory: /tmp/pip-ephem-wheel-cache-lzdgbp6n/wheels/bf/49/50/9294c6639d007c8f8be2a68acdb63d3a334508be7b3e345c06\nSuccessfully built cerebras-wafer-batch-admission-gate\nInstalling collected packages: cerebras-wafer-batch-admission-gate\nSuccessfully installed cerebras-wafer-batch-admission-gate-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.378,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +76,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.502,
+      "elapsed_s": 0.314,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "e74f966699ea1a5cd14b5c1a5b0b79385911f857c8601f595144f050d1b3a4b8",

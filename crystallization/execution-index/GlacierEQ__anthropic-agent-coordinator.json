@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "7b3e5665d1eaa87183255aa6fe4c928fd45106099972e25473750fcfc722fee2",
+  "evidence_digest": "018e2ba9e89f57f0cdfe9a32a5390a195c91af84cfb3199c68c26eafc8503094",
   "head_sha": "7d15bfaec0040e7a55d4b435abcf0fe9e7b19cb1",
   "repository": "GlacierEQ/anthropic-agent-coordinator",
   "repository_id": 1283501399,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.075,
+      "elapsed_s": 0.698,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,13 +29,28 @@
         "pip",
         "install",
         "-e",
-        "."
+        ".[dev]"
       ],
-      "elapsed_s": 3.904,
+      "elapsed_s": 5.951,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "1afa9e155df2601461694f854add7cf5d44941befa1b54c4fbb5ee04e5ab9814",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-hxd7y68_/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: anthropic-agent-coordinator\n  Building editable for anthropic-agent-coordinator (pyproject.toml): started\n  Building editable for anthropic-agent-coordinator (pyproject.toml): finished with status 'done'\n  Created wheel for anthropic-agent-coordinator: filename=anthropic_agent_coordinator-1.0.0-py3-none-any.whl size=19748 sha256=850cbcf04ecba34222fb43a4b21f6a95a6280539806a1276aa55e31ae8c94dd2\n  Stored in directory: /tmp/pip-ephem-wheel-cache-1gd1wp_w/wheels/93/1d/f0/c5e7b48797d4aeb4dde10a008c4f04fc19fb2dc1776381635a\nSuccessfully built anthropic-agent-coordinator\nInstalling collected packages: anthropic-agent-coordinator\nSuccessfully installed anthropic-agent-coordinator-1.0.0",
+      "output_sha256": "ccf475b136149c45d3fc9ff7614b3422d61191c7fa792f2e45c38439b6eaa2a2",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-qbc6u4ck/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting build<2,>=1.2 (from anthropic-agent-coordinator==1.0.0)\n  Downloading build-1.5.0-py3-none-any.whl.metadata (5.7 kB)\nCollecting pytest<9,>=8.3 (from anthropic-agent-coordinator==1.0.0)\n  Downloading pytest-8.4.2-py3-none-any.whl.metadata (7.7 kB)\nCollecting ruff<1,>=0.9 (from anthropic-agent-coordinator==1.0.0)\n  Downloading ruff-0.16.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (26 kB)\nCollecting packaging>=24.0 (from build<2,>=1.2->anthropic-agent-coordinator==1.0.0)\n  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pyproject_hooks (from build<2,>=1.2->anthropic-agent-coordinator==1.0.0)\n  Downloading pyproject_hooks-1.2.0-py3-none-any.whl.metadata (1.3 kB)\nCollecting iniconfig>=1 (from pytest<9,>=8.3->anthropic-agent-coordinator==1.0.0)\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest<9,>=8.3->anthropic-agent-coordinator==1.0.0)\n  Using cached pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest<9,>=8.3->anthropic-agent-coordinator==1.0.0)\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading build-1.5.0-py3-none-any.whl (26 kB)\nDownloading pytest-8.4.2-py3-none-any.whl (365 kB)\nUsing cached pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading ruff-0.16.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.5 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 11.5/11.5 MB 127.3 MB/s  0:00:00\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nUsing cached packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 202.1 MB/s  0:00:00\nDownloading pyproject_hooks-1.2.0-py3-none-any.whl (10 kB)\nBuilding wheels for collected packages: anthropic-agent-coordinator\n  Building editable for anthropic-agent-coordinator (pyproject.toml): started\n  Building editable for anthropic-agent-coordinator (pyproject.toml): finished with status 'done'\n  Created wheel for anthropic-agent-coordinator: filename=anthropic_agent_coordinator-1.0.0-py3-none-any.whl size=19747 sha256=041e6d1593176d22b07863871c779915ad4c0060037cdce78930d1c6c26a6a76\n  Stored in directory: /tmp/pip-ephem-wheel-cache-oyf1_fhw/wheels/82/4c/3e/e59cfe61ce54c8216e2224eecee8dac422559964562d76c0bc\nSuccessfully built anthropic-agent-coordinator\nInstalling collected packages: ruff, pyproject_hooks, pygments, pluggy, packaging, iniconfig, anthropic-agent-coordinator, pytest, build\n\nSuccessfully installed anthropic-agent-coordinator-1.0.0 build-1.5.0 iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pyproject_hooks-1.2.0 pytest-8.4.2 ruff-0.16.2",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.418,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,12 +60,12 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.018,
-      "exit_code": 1,
+      "elapsed_s": 0.74,
+      "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "output_sha256": "7e730e668a350b46356fa17f08814f190331c7d65372340df7b15934b26e1819",
+      "output_tail": ".....................................................................    [100%]",
+      "status": "PASS"
     }
   ]
 }

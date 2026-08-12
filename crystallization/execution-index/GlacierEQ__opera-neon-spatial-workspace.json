@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "b7de625ae5d0b163b3c1ce0ee36e5ceae836f3c6ba2644ca82a5136965f878f7",
+  "evidence_digest": "ef9b399c3150f950a3d5bf36b2c0228559f837dafdf0f9ddca070de977f348cd",
   "head_sha": "209c741c50a062e03f961601b4ffd4208e436cf9",
   "repository": "GlacierEQ/opera-neon-spatial-workspace",
   "repository_id": 1311738876,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.056,
+      "elapsed_s": 0.052,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.102,
+      "elapsed_s": 0.096,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "8046c2749fdb5544bde6c7a2b988ca4582e552bc7ff12f7dcbf8752f394c94a2",

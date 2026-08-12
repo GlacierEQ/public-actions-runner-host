@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "7747d205900c0eaea9450ba8ea9411b9aecfc34fa6ecc0c550de6b9dc8cedf89",
+  "evidence_digest": "5e56704d04507d33824565dd5acaeb8625482115069273914f2495425f9df86a",
   "head_sha": "f8992a0ac0ab4608d10e7bb2e20444c9cbad54fd",
   "repository": "GlacierEQ/spacex-ground-network",
   "repository_id": 1282819532,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.069,
+      "elapsed_s": 0.067,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,26 @@
         "-e",
         "."
       ],
-      "elapsed_s": 3.032,
+      "elapsed_s": 3.051,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "4704dc1185da62fa69175c79c7fcac4535298228fd91082ae435dd73fe31d555",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-qa9w97hi/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-ground-network\n  Building editable for glaciereq-ground-network (pyproject.toml): started\n  Building editable for glaciereq-ground-network (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-ground-network: filename=glaciereq_ground_network-1.0.0-0.editable-py3-none-any.whl size=5783 sha256=d60a97d6856da4d82215a838b65e741e0cce3e0723fd3743b6527d4b7f2327c7\n  Stored in directory: /tmp/pip-ephem-wheel-cache-mzozvjg_/wheels/7f/a1/a8/39fd4373db2fada7a8c6879eaab189f21ab64691e3deaa27d1\nSuccessfully built glaciereq-ground-network\nInstalling collected packages: glaciereq-ground-network\nSuccessfully installed glaciereq-ground-network-1.0.0",
+      "output_sha256": "d61914e70dae8c22d72a0d4c3df52e4787235f3bb5090390038ee8588a4a3fc8",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-s3235bzq/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-ground-network\n  Building editable for glaciereq-ground-network (pyproject.toml): started\n  Building editable for glaciereq-ground-network (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-ground-network: filename=glaciereq_ground_network-1.0.0-0.editable-py3-none-any.whl size=5784 sha256=3207d7c9daadfff61b55b64e69e6c336c5f8784900c6ba019877c34cfdf6213e\n  Stored in directory: /tmp/pip-ephem-wheel-cache-3v53c62g/wheels/cf/7f/c1/352fcdd282fcaaa1560f0d9f90a5a7ce1d96f64f4dd268e9db\nSuccessfully built glaciereq-ground-network\nInstalling collected packages: glaciereq-ground-network\nSuccessfully installed glaciereq-ground-network-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.392,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +60,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.418,
+      "elapsed_s": 0.448,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "0bfa7ba8a2aab94887db3b1ef94e4ee0a2c19fbed14478da4e9ed605aa2d5922",
@@ -58,7 +73,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.173,
+      "elapsed_s": 11.022,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "14e76a541e907df9e244d81b7c8be867c872b2d7dda44a74aaf1b914cfbb2e13",

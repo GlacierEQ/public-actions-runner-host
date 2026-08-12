@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "96ae1f48ea802706d850e528ebdd65e98d972bc70e83c6a94e508a7a37683c27",
+  "evidence_digest": "5d6b3d5f536d3fd8c6bf521672ee7e62b3e99aa37e61e924b2c8173a08cde8bb",
   "head_sha": "d0faea92adde563d1c5343a9af4efc9164f88550",
   "repository": "GlacierEQ/supabase-policy-carrying-ai-data-plane",
   "repository_id": 1329688774,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.054,
+      "elapsed_s": 0.045,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.389,
+      "elapsed_s": 0.343,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,10 +42,41 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.573,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "ccda35f8e3caf1a56ffb812523f6be7153c45a67f1d67a45e08db8ea8dc704e8",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-dntpdsr3/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: supabase-policy-carrying-ai-data-plane\n  Building editable for supabase-policy-carrying-ai-data-plane (pyproject.toml): started\n  Building editable for supabase-policy-carrying-ai-data-plane (pyproject.toml): finished with status 'done'\n  Created wheel for supabase-policy-carrying-ai-data-plane: filename=supabase_policy_carrying_ai_data_plane-0.0.1-0.editable-py3-none-any.whl size=2544 sha256=7b21756718ced6af3673c6b717f56ca0a3bbf1beca68fd13749a1c0e9cfea73f\n  Stored in directory: /tmp/pip-ephem-wheel-cache-r6_s1lf7/wheels/60/91/3f/9a5b0710f471243cf3c7aa8a430d98fc5cd874f99512cba1ae\nSuccessfully built supabase-policy-carrying-ai-data-plane\nInstalling collected packages: supabase-policy-carrying-ai-data-plane\nSuccessfully installed supabase-policy-carrying-ai-data-plane-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.338,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.343,
+      "elapsed_s": 0.299,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "a7bd639deefee22d4ec94251e2395fd9f0b2e765f0e37e416d58b37b85fce372",

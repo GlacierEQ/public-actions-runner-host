@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "9ed006d4096201d235c6f5838e8437c5fef0ce1d1ca4658892279744876c0fac",
+  "evidence_digest": "22c5853a980f8feb601e35f8c7adac6649c1a02dd2c194e0a844bfded0b67e16",
   "head_sha": "87933393b4f5a5089404ebe5c1a4e24c865fd139",
   "repository": "GlacierEQ/xai-colossus-energy-alpha",
   "repository_id": 1276320627,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.061,
+      "elapsed_s": 0.062,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.101,
+      "elapsed_s": 0.105,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "f283c7466fa443cff13314077c3931588545c86405fb3515a279ea4f67b0907d",

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "0fe691658bf418dbc399a384814da238a0cc1b47b0f3628a172354a4a5750b58",
+  "evidence_digest": "70628b8a0de876055da2980f3437e13935ee25cf9c69095267770de737e37f3f",
   "head_sha": "a5b03fd5a7f766d2f2116d62d9af56eed0f234b3",
   "repository": "GlacierEQ/nvidia-gradient-integrity-quorum",
   "repository_id": 1328441063,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.053,
+      "elapsed_s": 0.055,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.104,
+      "elapsed_s": 0.109,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "806485f2c354acff9a99ba64ea309bea25da6a0328471a03ab91a77fe64bb540",

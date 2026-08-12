@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "3395cc361ed88a8d52079031d2c5abb9df076308bbea3739f9da2bc1514e4069",
+  "evidence_digest": "32ec427e0a54dfce6451216004e544236ddd60f4d414ef653540789ec0d790c4",
   "head_sha": "1820ee6fb1108a89c207423fa8b10c3a2779bb6f",
   "repository": "GlacierEQ/cursor-patch-intent-twin",
   "repository_id": 1329687883,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.077,
+      "elapsed_s": 0.081,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.364,
+      "elapsed_s": 0.365,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,14 +42,45 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.848,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "903bb352f16fe650e1d2f477d240491c29645e4f6d153b1352eb9cd4b0929b88",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-r9p4k92m/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: cursor-patch-intent-twin\n  Building editable for cursor-patch-intent-twin (pyproject.toml): started\n  Building editable for cursor-patch-intent-twin (pyproject.toml): finished with status 'done'\n  Created wheel for cursor-patch-intent-twin: filename=cursor_patch_intent_twin-1.1.0-0.editable-py3-none-any.whl size=2787 sha256=f346aab1206645af145d03fcc60e6a223333ad40e5afc31ae57eeb06ae6f1482\n  Stored in directory: /tmp/pip-ephem-wheel-cache-058ftv9k/wheels/c2/50/fb/9f8d66054a8b1dcad5cf6efea2933a60b1ce3a652f9f81a325\nSuccessfully built cursor-patch-intent-twin\nInstalling collected packages: cursor-patch-intent-twin\nSuccessfully installed cursor-patch-intent-twin-1.1.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.363,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.675,
+      "elapsed_s": 0.729,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "55a3f94e97183fdc05313bdd36d54e233560f7a8d739184f7c3c10953d4eae67",
-      "output_tail": "..................................                                       [100%]\n34 passed in 0.41s",
+      "output_sha256": "9138bb9771e1746ec6a8f901fd76b584382e6fc9c044568d4eacfce3d4075e2b",
+      "output_tail": "..................................                                       [100%]\n34 passed in 0.46s",
       "status": "PASS"
     }
   ]

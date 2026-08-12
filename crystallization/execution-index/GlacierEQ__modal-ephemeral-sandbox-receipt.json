@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "cdb7dcb7cb1d6de492ff16e2dbafaa6d9ee65faf28da37d420c4cd16d1d7769a",
+  "evidence_digest": "726d87bcdd3ed8c6a66873339ada5b509ee55c3e2549b2a5c1989570a45b7ae6",
   "head_sha": "8571a92c313fa0733b4c7f4736f190aced1adbc4",
   "repository": "GlacierEQ/modal-ephemeral-sandbox-receipt",
   "repository_id": 1329688328,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.052,
+      "elapsed_s": 0.057,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.364,
+      "elapsed_s": 0.373,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,10 +42,41 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.999,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "aac52e9af9c7db7c0daf0ddb3365eadedf2a36a1cb9e24f2d2513ac82c16d3ea",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-b2kse5lp/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: modal-ephemeral-sandbox-receipt\n  Building editable for modal-ephemeral-sandbox-receipt (pyproject.toml): started\n  Building editable for modal-ephemeral-sandbox-receipt (pyproject.toml): finished with status 'done'\n  Created wheel for modal-ephemeral-sandbox-receipt: filename=modal_ephemeral_sandbox_receipt-0.0.1-0.editable-py3-none-any.whl size=2411 sha256=1f96d4472f7dfb0dec81c7c0fd47473145fb77fad30a298692b12988f6b1307e\n  Stored in directory: /tmp/pip-ephem-wheel-cache-cvpwea92/wheels/54/fb/bd/1f0b94fb485c1744190864ccf7ac93030309dd3812f3e7d182\nSuccessfully built modal-ephemeral-sandbox-receipt\nInstalling collected packages: modal-ephemeral-sandbox-receipt\nSuccessfully installed modal-ephemeral-sandbox-receipt-0.0.1",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.385,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.293,
+      "elapsed_s": 0.305,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "980e44fa2d7beb6d61f0e76333d72425e9e05583c12571e206f378eff65e64d0",

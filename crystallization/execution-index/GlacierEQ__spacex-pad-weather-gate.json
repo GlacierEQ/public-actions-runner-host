@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a7d57c95478814a789449dba7f8980e21483b17fc700cbf6696bcc375d3d597d",
+  "evidence_digest": "c3832d91f4d2aa3e43ee2c670036908fb0c64f1f226b11a8dcb0fca2ec844de8",
   "head_sha": "7f8ca0a9d4e346b7350b30e2a9263a10b3baae26",
   "repository": "GlacierEQ/spacex-pad-weather-gate",
   "repository_id": 1298893525,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "INCOMPLETE_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.058,
+      "elapsed_s": 0.062,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,8 +29,8 @@
       "elapsed_s": 0,
       "exit_code": null,
       "name": "python_test_dependency",
-      "output_sha256": "504dd8bcd10a738e9bca0deab651ba9f0d4ed677b5073e56012416876a034e55",
-      "output_tail": "Tests require pytest but the repository does not declare pytest in package metadata, requirements, pytest config, or its native CI install contract.",
+      "output_sha256": "ed264fd7f82136fec27d7930307a83aa1b0b9dc2bd7d9a37ad56d1fcd4387dd4",
+      "output_tail": "Repository test sources require a runner/plugin that repository manifests do not declare: __UNDECLARED_PYTEST__.",
       "status": "NOT_RUN_UNDECLARED_TEST_DEPENDENCY"
     },
     {
@@ -39,7 +39,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 6.842,
+      "elapsed_s": 7.28,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "d5aa2cd1b855eb11f1dd453cbc49ba50581c065b0840c98e425b6ac5e1dbb0dd",

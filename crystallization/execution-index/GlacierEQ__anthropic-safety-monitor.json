@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "69e2ca239ccf41c3d5417fe313c08bee448c93400699a07a56b37bda5d6ba315",
+  "evidence_digest": "ebfbb5f4bc82819ab8257a85f02a9f241c0e37125e7c89a1ebe3dc118bc35c4a",
   "head_sha": "6af397feea78829f494d61e98388bd4f9d90bcbe",
   "repository": "GlacierEQ/anthropic-safety-monitor",
   "repository_id": 1283501345,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.135,
+      "elapsed_s": 0.1,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,13 +29,28 @@
         "pip",
         "install",
         "-e",
-        "."
+        ".[dev]"
       ],
-      "elapsed_s": 3.399,
+      "elapsed_s": 5.844,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "ab48bf695b73e294391e10b880e85187504013bdd1ab71034dd589deaafa4eaf",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-_88aliv5/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting defusedxml<1,>=0.7.1 (from anthropic-safety-monitor==1.0.0)\n  Downloading defusedxml-0.7.1-py2.py3-none-any.whl.metadata (32 kB)\nDownloading defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)\nBuilding wheels for collected packages: anthropic-safety-monitor\n  Building editable for anthropic-safety-monitor (pyproject.toml): started\n  Building editable for anthropic-safety-monitor (pyproject.toml): finished with status 'done'\n  Created wheel for anthropic-safety-monitor: filename=anthropic_safety_monitor-1.0.0-py3-none-any.whl size=16571 sha256=0686c974f92e1cd8c8871b1b55f7ca58546b723e9c8321bbaf9d7a8f4c959d3e\n  Stored in directory: /tmp/pip-ephem-wheel-cache-aruqxydz/wheels/ca/4a/83/3754148337b01136df7a5bbfc77d088c5b3186e482950b8a56\nSuccessfully built anthropic-safety-monitor\nInstalling collected packages: defusedxml, anthropic-safety-monitor\n\nSuccessfully installed anthropic-safety-monitor-1.0.0 defusedxml-0.7.1",
+      "output_sha256": "51d76eaab847623f5ae5bb74c8550865570b33000c1f52aa4946edd923304b44",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-8cptup0g/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Installing backend dependencies: started\n  Installing backend dependencies: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting defusedxml<1,>=0.7.1 (from anthropic-safety-monitor==1.0.0)\n  Downloading defusedxml-0.7.1-py2.py3-none-any.whl.metadata (32 kB)\nCollecting build<2,>=1.2 (from anthropic-safety-monitor==1.0.0)\n  Downloading build-1.5.0-py3-none-any.whl.metadata (5.7 kB)\nCollecting pytest<9,>=8.3 (from anthropic-safety-monitor==1.0.0)\n  Downloading pytest-8.4.2-py3-none-any.whl.metadata (7.7 kB)\nCollecting ruff<1,>=0.9 (from anthropic-safety-monitor==1.0.0)\n  Downloading ruff-0.16.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (26 kB)\nCollecting packaging>=24.0 (from build<2,>=1.2->anthropic-safety-monitor==1.0.0)\n  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pyproject_hooks (from build<2,>=1.2->anthropic-safety-monitor==1.0.0)\n  Downloading pyproject_hooks-1.2.0-py3-none-any.whl.metadata (1.3 kB)\nCollecting iniconfig>=1 (from pytest<9,>=8.3->anthropic-safety-monitor==1.0.0)\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest<9,>=8.3->anthropic-safety-monitor==1.0.0)\n  Using cached pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest<9,>=8.3->anthropic-safety-monitor==1.0.0)\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nDownloading build-1.5.0-py3-none-any.whl (26 kB)\nDownloading defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)\nDownloading pytest-8.4.2-py3-none-any.whl (365 kB)\nUsing cached pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading ruff-0.16.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.5 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 11.5/11.5 MB 106.9 MB/s  0:00:00\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nUsing cached packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 221.9 MB/s  0:00:00\nDownloading pyproject_hooks-1.2.0-py3-none-any.whl (10 kB)\nBuilding wheels for collected packages: anthropic-safety-monitor\n  Building editable for anthropic-safety-monitor (pyproject.toml): started\n  Building editable for anthropic-safety-monitor (pyproject.toml): finished with status 'done'\n  Created wheel for anthropic-safety-monitor: filename=anthropic_safety_monitor-1.0.0-py3-none-any.whl size=16570 sha256=e678ed8e08f5a271922c690b4f33916a9e58c78308dc6b9e5a4aaab74d812576\n  Stored in directory: /tmp/pip-ephem-wheel-cache-lkd8ty6e/wheels/0b/7b/85/33e49f3d7a4a9607f2c7e41b18734992fbd1adb29bac6b5bae\nSuccessfully built anthropic-safety-monitor\nInstalling collected packages: ruff, pyproject_hooks, pygments, pluggy, packaging, iniconfig, defusedxml, pytest, build, anthropic-safety-monitor\n\nSuccessfully installed anthropic-safety-monitor-1.0.0 build-1.5.0 defusedxml-0.7.1 iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pyproject_hooks-1.2.0 pytest-8.4.2 ruff-0.16.2",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.388,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,12 +60,12 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.028,
-      "exit_code": 1,
+      "elapsed_s": 0.578,
+      "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "output_sha256": "60fa7aabcc416b6db90211a8e058e12359db81fe7392afc0293958973cd59871",
+      "output_tail": "..........................................................               [100%]",
+      "status": "PASS"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "3d2354f2d86ab833ccff4919906ca02d6e3ad77b5ab39ba372dfc8b27d9fb726",
+  "evidence_digest": "55dad73d8b9c109d5d86bd1d2bf0bdad36748852fe75df008a7537023f8ec163",
   "head_sha": "abd179d5e4648907a42ee279cd85c25bbac9f97f",
   "repository": "GlacierEQ/databricks-notebook-claim-fence",
   "repository_id": 1328440587,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.059,
+      "elapsed_s": 0.06,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.115,
+      "elapsed_s": 0.121,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "2338209213b940f2424a0078bf2bfb2c01953e6ef7f671c52102373caf766ce9",

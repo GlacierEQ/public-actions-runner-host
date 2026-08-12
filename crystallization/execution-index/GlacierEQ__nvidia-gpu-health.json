@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "ee061cabd99cd406bc0cf9be9e952981e3c102fba5486e2aebf86f82ddf43c88",
+  "evidence_digest": "3c12c9e9fcb2c9cc24dd16a7a2fe7d56bea8c980fed10804a5ebc86ea44b0245",
   "head_sha": "0e1a6b5b5315549298e0414238f3c2923a521000",
   "repository": "GlacierEQ/nvidia-gpu-health",
   "repository_id": 1283500854,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.101,
+      "elapsed_s": 0.1,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "7daf9a628051d9083584d1b7ca1921254157432b7d3762d1b39682453756a1ca",

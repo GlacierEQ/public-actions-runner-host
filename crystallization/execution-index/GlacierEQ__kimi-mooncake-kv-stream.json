@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "8ba7c9a385736bc3cd593be27fee6d21096d7db6603a1955d87e60c6f9f11fc1",
+  "evidence_digest": "b044cf1677cfdd181c476606a298203caaa1228cdcd712c9b45108db77f50fea",
   "head_sha": "dc7a9de8cff6583f0dfbd7bbd7f105da5a8bded1",
   "repository": "GlacierEQ/kimi-mooncake-kv-stream",
   "repository_id": 1311731029,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.056,
+      "elapsed_s": 0.062,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.1,
+      "elapsed_s": 0.108,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "34d15fe270c6f3446ccd28abeabb0a2426ef998f7ba25c3ce304994ea99cded5",

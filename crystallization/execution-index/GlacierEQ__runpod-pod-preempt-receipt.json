@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "70080830f8fde16842a5513e1cd4abd7ac5ff3d0f0a7ca1b88dbf9c98acd89c9",
+  "evidence_digest": "13b86de2e749d93cc858462e54c4314abd605301d256a1f98e05ac5d222a4b9b",
   "head_sha": "ed0f92363aa1506886c945384ebc36dddd007138",
   "repository": "GlacierEQ/runpod-pod-preempt-receipt",
   "repository_id": 1329688619,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.053,
+      "elapsed_s": 0.055,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,7 +31,7 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 0.364,
+      "elapsed_s": 0.386,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
       "output_sha256": "a161d40b4f9246a085f2e38b466a1bc87d8cad59faf8cf18f085eec4cfebf1b9",
@@ -42,14 +42,45 @@
       "command": [
         "python",
         "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.954,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "7c0ae9f5d1325134c2c30b91c9612528d27399d43a4cf2a6a54cabe88fcd62fd",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-n29jr0qz/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: runpod-pod-preempt-receipt\n  Building editable for runpod-pod-preempt-receipt (pyproject.toml): started\n  Building editable for runpod-pod-preempt-receipt (pyproject.toml): finished with status 'done'\n  Created wheel for runpod-pod-preempt-receipt: filename=runpod_pod_preempt_receipt-1.0.0-0.editable-py3-none-any.whl size=2633 sha256=8dbfa76c77e00717a2ef170217fb94a02164de196d5218e1dd3a56637b67b753\n  Stored in directory: /tmp/pip-ephem-wheel-cache-lozf_41g/wheels/1b/19/d8/194c45a88cd87402f86cd0346038ad47302e7f4f637c458763\nSuccessfully built runpod-pod-preempt-receipt\nInstalling collected packages: runpod-pod-preempt-receipt\nSuccessfully installed runpod-pod-preempt-receipt-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.401,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.306,
+      "elapsed_s": 0.335,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287",
-      "output_tail": "..............                                                           [100%]\n14 passed in 0.04s",
+      "output_sha256": "d3e09474297abb89a20a2a722c6a4731d1e10473fdeb3dbf63af3e7c51ce1eb5",
+      "output_tail": "..............                                                           [100%]\n14 passed in 0.05s",
       "status": "PASS"
     }
   ]

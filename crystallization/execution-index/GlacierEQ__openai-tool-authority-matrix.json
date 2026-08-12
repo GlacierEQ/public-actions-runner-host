@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "c555ac420dae420ceb8a47b1a8109edca85a573836e1a46b682c8775fb96a476",
+  "evidence_digest": "96d00215580ea143e80f44168876ed255fea1e3a6c1f3cf83018fa9e3255b500",
   "head_sha": "e8b95ee5821d2438665930466dc6a9600ac703c2",
   "repository": "GlacierEQ/openai-tool-authority-matrix",
   "repository_id": 1328441275,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.045,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,11 +34,11 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.109,
+      "elapsed_s": 0.085,
       "exit_code": 0,
       "name": "python_unittest",
-      "output_sha256": "f35d7a5f375e9d97eb1838c2c34e58d8c97b1c044f7b4b8bdf3f4105f7a376ec",
-      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_budget_edge_is_complementary_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_budget_edge_is_complementary_not_integrated) ... ok\ntest_capabilities_name_repository_native_authority_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_authority_mechanisms) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_execution_and_public_boundaries_are_explicit (test_canonical_position_contract.CanonicalPositionContractTests.test_execution_and_public_boundaries_are_explicit) ... ok\ntest_specialist_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_specialist_identity_and_lineage_are_preserved) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_argument_smuggling_refused (test_tool_authority.ToolTests.test_argument_smuggling_refused) ... ok\ntest_default_deny (test_tool_authority.ToolTests.test_default_deny) ... ok\ntest_missing_args (test_tool_authority.ToolTests.test_missing_args) ... ok\ntest_receipt_binds_arguments (test_tool_authority.ToolTests.test_receipt_binds_arguments) ... ok\ntest_refused_request_id_cannot_be_retried_with_changed_args (test_tool_authority.ToolTests.test_refused_request_id_cannot_be_retried_with_changed_args) ... ok\ntest_replay_refused_after_allow (test_tool_authority.ToolTests.test_replay_refused_after_allow) ... ok\ntest_request_id_is_required (test_tool_authority.ToolTests.test_request_id_is_required) ... ok\ntest_schema_without_optional_args_still_rejects_extras (test_tool_authority.ToolTests.test_schema_without_optional_args_still_rejects_extras) ... ok\ntest_scoped_allow (test_tool_authority.ToolTests.test_scoped_allow) ... ok\ntest_unknown_tool_is_explicit (test_tool_authority.ToolTests.test_unknown_tool_is_explicit) ... ok\ntest_wildcard_grant (test_tool_authority.ToolTests.test_wildcard_grant) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 0.005s\n\nOK",
+      "output_sha256": "d9443988547d1ac766322338477bcc8d99a12b807fb1df895fd9abe9c7397a84",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_budget_edge_is_complementary_not_integrated (test_canonical_position_contract.CanonicalPositionContractTests.test_budget_edge_is_complementary_not_integrated) ... ok\ntest_capabilities_name_repository_native_authority_mechanisms (test_canonical_position_contract.CanonicalPositionContractTests.test_capabilities_name_repository_native_authority_mechanisms) ... ok\ntest_evolving_state_is_gate_complete (test_canonical_position_contract.CanonicalPositionContractTests.test_evolving_state_is_gate_complete) ... ok\ntest_execution_and_public_boundaries_are_explicit (test_canonical_position_contract.CanonicalPositionContractTests.test_execution_and_public_boundaries_are_explicit) ... ok\ntest_specialist_identity_and_lineage_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_specialist_identity_and_lineage_are_preserved) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_argument_smuggling_refused (test_tool_authority.ToolTests.test_argument_smuggling_refused) ... ok\ntest_default_deny (test_tool_authority.ToolTests.test_default_deny) ... ok\ntest_missing_args (test_tool_authority.ToolTests.test_missing_args) ... ok\ntest_receipt_binds_arguments (test_tool_authority.ToolTests.test_receipt_binds_arguments) ... ok\ntest_refused_request_id_cannot_be_retried_with_changed_args (test_tool_authority.ToolTests.test_refused_request_id_cannot_be_retried_with_changed_args) ... ok\ntest_replay_refused_after_allow (test_tool_authority.ToolTests.test_replay_refused_after_allow) ... ok\ntest_request_id_is_required (test_tool_authority.ToolTests.test_request_id_is_required) ... ok\ntest_schema_without_optional_args_still_rejects_extras (test_tool_authority.ToolTests.test_schema_without_optional_args_still_rejects_extras) ... ok\ntest_scoped_allow (test_tool_authority.ToolTests.test_scoped_allow) ... ok\ntest_unknown_tool_is_explicit (test_tool_authority.ToolTests.test_unknown_tool_is_explicit) ... ok\ntest_wildcard_grant (test_tool_authority.ToolTests.test_wildcard_grant) ... ok\n\n----------------------------------------------------------------------\nRan 22 tests in 0.004s\n\nOK",
       "status": "PASS"
     }
   ]

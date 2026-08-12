@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "053e6e6b0b3a40548012f52d061d771115cd7a83fb3bf1fea5a958271dd8ff7a",
+  "evidence_digest": "de28b5bea4722b0732e333a7ff4814eec46b93988405a11b3db38ae26b62ea9a",
   "head_sha": "cdf9d671976628cdb8994f7e2b93df2ad435f203",
   "repository": "GlacierEQ/spiral-engine",
   "repository_id": 1191089639,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {

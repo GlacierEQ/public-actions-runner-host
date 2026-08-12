@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "c0b0441a0087d45d5c1d6ee125afa6a12ea88e0ef8a0e26d82806dc99471ca28",
+  "evidence_digest": "3c1dc282fba0f426bbbdb208b7418b84601e1e9e79dc201d10c7bfdf5e486cb6",
   "head_sha": "eac3cab001306225b99da41c37370528331966dd",
   "repository": "GlacierEQ/AKOS",
   "repository_id": 1289648128,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 1.015,
+      "elapsed_s": 0.181,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -29,13 +29,28 @@
         "pip",
         "install",
         "-e",
-        "."
+        ".[dev]"
       ],
-      "elapsed_s": 5.277,
+      "elapsed_s": 5.703,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "35531c3653a3911af1fac81c51544cdc425568ace49ec4b7f148cdb1c5e432f7",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-fphkaxcs/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nCollecting PyYAML<7,>=6.0 (from akos-operational-cognition==0.9.0)\n  Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)\nCollecting requests<3,>=2.32 (from akos-operational-cognition==0.9.0)\n  Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)\nCollecting charset_normalizer<4,>=2 (from requests<3,>=2.32->akos-operational-cognition==0.9.0)\n  Downloading charset_normalizer-3.5.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (44 kB)\nCollecting idna<4,>=2.5 (from requests<3,>=2.32->akos-operational-cognition==0.9.0)\n  Downloading idna-3.18-py3-none-any.whl.metadata (6.1 kB)\nCollecting urllib3<3,>=1.26 (from requests<3,>=2.32->akos-operational-cognition==0.9.0)\n  Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)\nCollecting certifi>=2023.5.7 (from requests<3,>=2.32->akos-operational-cognition==0.9.0)\n  Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)\nDownloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 807.9/807.9 kB 72.2 MB/s  0:00:00\nDownloading requests-2.34.2-py3-none-any.whl (73 kB)\nDownloading charset_normalizer-3.5.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (247 kB)\nDownloading idna-3.18-py3-none-any.whl (65 kB)\nDownloading urllib3-2.7.0-py3-none-any.whl (131 kB)\nDownloading certifi-2026.7.22-py3-none-any.whl (136 kB)\nBuilding wheels for collected packages: akos-operational-cognition\n  Building editable for akos-operational-cognition (pyproject.toml): started\n  Building editable for akos-operational-cognition (pyproject.toml): finished with status 'done'\n  Created wheel for akos-operational-cognition: filename=akos_operational_cognition-0.9.0-0.editable-py3-none-any.whl size=12238 sha256=c8d8854c0fa8957ff5a98ffbece6feffd61b57293fc439c9ed4bf2428054433a\n  Stored in directory: /tmp/pip-ephem-wheel-cache-xk4hs11i/wheels/00/e5/cc/de4d133d45f8e0d78e06b1c81c3ced9f5b15882924cb546aae\nSuccessfully built akos-operational-cognition\nInstalling collected packages: urllib3, PyYAML, idna, charset_normalizer, certifi, requests, akos-operational-cognition\n\nSuccessfully installed PyYAML-6.0.3 akos-operational-cognition-0.9.0 certifi-2026.7.22 charset_normalizer-3.5.0 idna-3.18 requests-2.34.2 urllib3-2.7.0",
+      "output_sha256": "d6831bd0f1e79ccce317c92b6507ae1b0e3f1d4c238a45820181526bfa50209b",
+      "output_tail": "tadata (pyproject.toml): finished with status 'done'\nCollecting PyYAML<7,>=6.0 (from akos-operational-cognition==0.9.0)\n  Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)\nCollecting requests<3,>=2.32 (from akos-operational-cognition==0.9.0)\n  Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)\nCollecting pytest<9,>=8.3 (from akos-operational-cognition==0.9.0)\n  Downloading pytest-8.4.2-py3-none-any.whl.metadata (7.7 kB)\nCollecting ruff<1,>=0.9 (from akos-operational-cognition==0.9.0)\n  Downloading ruff-0.16.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (26 kB)\nCollecting iniconfig>=1 (from pytest<9,>=8.3->akos-operational-cognition==0.9.0)\n  Downloading iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting packaging>=20 (from pytest<9,>=8.3->akos-operational-cognition==0.9.0)\n  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nCollecting pluggy<2,>=1.5 (from pytest<9,>=8.3->akos-operational-cognition==0.9.0)\n  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)\nCollecting pygments>=2.7.2 (from pytest<9,>=8.3->akos-operational-cognition==0.9.0)\n  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)\nCollecting charset_normalizer<4,>=2 (from requests<3,>=2.32->akos-operational-cognition==0.9.0)\n  Downloading charset_normalizer-3.5.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (44 kB)\nCollecting idna<4,>=2.5 (from requests<3,>=2.32->akos-operational-cognition==0.9.0)\n  Downloading idna-3.18-py3-none-any.whl.metadata (6.1 kB)\nCollecting urllib3<3,>=1.26 (from requests<3,>=2.32->akos-operational-cognition==0.9.0)\n  Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)\nCollecting certifi>=2023.5.7 (from requests<3,>=2.32->akos-operational-cognition==0.9.0)\n  Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)\nDownloading pytest-8.4.2-py3-none-any.whl (365 kB)\nDownloading pluggy-1.6.0-py3-none-any.whl (20 kB)\nDownloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 807.9/807.9 kB 84.1 MB/s  0:00:00\nDownloading requests-2.34.2-py3-none-any.whl (73 kB)\nDownloading charset_normalizer-3.5.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (247 kB)\nDownloading idna-3.18-py3-none-any.whl (65 kB)\nDownloading ruff-0.16.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.5 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 11.5/11.5 MB 224.1 MB/s  0:00:00\nDownloading urllib3-2.7.0-py3-none-any.whl (131 kB)\nDownloading certifi-2026.7.22-py3-none-any.whl (136 kB)\nDownloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nDownloading packaging-26.3-py3-none-any.whl (129 kB)\nDownloading pygments-2.20.0-py3-none-any.whl (1.2 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 1.2/1.2 MB 143.2 MB/s  0:00:00\nBuilding wheels for collected packages: akos-operational-cognition\n  Building editable for akos-operational-cognition (pyproject.toml): started\n  Building editable for akos-operational-cognition (pyproject.toml): finished with status 'done'\n  Created wheel for akos-operational-cognition: filename=akos_operational_cognition-0.9.0-0.editable-py3-none-any.whl size=12240 sha256=446c86abd5edd10069fab72decaee34b98bee0c1e5fb7b02473e4f86d798adb6\n  Stored in directory: /tmp/pip-ephem-wheel-cache-n_8pgl1p/wheels/9e/2c/7f/52861974925a8bcd81c8df1fb79e740da6774668cb791844e1\nSuccessfully built akos-operational-cognition\nInstalling collected packages: urllib3, ruff, PyYAML, pygments, pluggy, packaging, iniconfig, idna, charset_normalizer, certifi, requests, pytest, akos-operational-cognition\n\nSuccessfully installed PyYAML-6.0.3 akos-operational-cognition-0.9.0 certifi-2026.7.22 charset_normalizer-3.5.0 idna-3.18 iniconfig-2.3.0 packaging-26.3 pluggy-1.6.0 pygments-2.20.0 pytest-8.4.2 requests-2.34.2 ruff-0.16.2 urllib3-2.7.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.386,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,12 +60,12 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.028,
-      "exit_code": 1,
+      "elapsed_s": 0.924,
+      "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "970d54a6a56f13bea1aff5b49144ba932588de13b53bb78b22970b1b89d444b9",
-      "output_tail": "/opt/hostedtoolcache/Python/3.12.13/x64/bin/python: No module named pytest",
-      "status": "FAIL"
+      "output_sha256": "50b529af8226293436803be891fab419cd2881eb4402ce1dddfba18e5f95d83c",
+      "output_tail": "........................................................................ [ 86%]\n...........                                                              [100%]",
+      "status": "PASS"
     },
     {
       "command": [
@@ -58,11 +73,11 @@
         "run",
         "test"
       ],
-      "elapsed_s": 4.096,
+      "elapsed_s": 3.915,
       "exit_code": 0,
       "name": "node_test",
-      "output_sha256": "35be1b58ea626a8ea1ce1073b4efb038c3ec0c148914afe6183aa58795744397",
-      "output_tail": "> @glaciereq/akos@0.3.0-rc.1 pretest\n> npm install --ignore-scripts\n\n\nadded 7 packages in 3s\n\n> @glaciereq/akos@0.3.0-rc.1 test\n> npm --workspace @glaciereq/akos-runtime test\n\n\n> @glaciereq/akos-runtime@0.3.0 test\n> tsx --test tests/*.test.ts\n\nTAP version 13\n# Subtest: normalization and object identity are deterministic\nok 1 - normalization and object identity are deterministic\n  ---\n  duration_ms: 1.711574\n  type: 'test'\n  ...\n# Subtest: a mutable GitHub-looking pointer cannot self-promote\nok 2 - a mutable GitHub-looking pointer cannot self-promote\n  ---\n  duration_ms: 0.410208\n  type: 'test'\n  ...\n# Subtest: an immutable authenticated repository pointer may promote\nok 3 - an immutable authenticated repository pointer may promote\n  ---\n  duration_ms: 0.260778\n  type: 'test'\n  ...\n# Subtest: primary records require an immutable evidence hash\nok 4 - primary records require an immutable evidence hash\n  ---\n  duration_ms: 0.273251\n  type: 'test'\n  ...\n# Subtest: secret-bearing material is quarantined without reproducing the secret\nok 5 - secret-bearing material is quarantined without reproducing the secret\n  ---\n  duration_ms: 0.580407\n  type: 'test'\n  ...\n# Subtest: court-facing artifacts reject unresolved sources\nok 6 - court-facing artifacts reject unresolved sources\n  ---\n  duration_ms: 0.226444\n  type: 'test'\n  ...\n# Subtest: evidence manifest is stable across order and duplicate inputs\nok 7 - evidence manifest is stable across order and duplicate inputs\n  ---\n  duration_ms: 0.407693\n  type: 'test'\n  ...\n# Subtest: contradiction graph emits explicit conflict edges\nok 8 - contradiction graph emits explicit conflict edges\n  ---\n  duration_ms: 0.712855\n  type: 'test'\n  ...\n# Subtest: HTTP surface exposes health and executes the guarded pipeline\nok 9 - HTTP surface exposes health and executes the guarded pipeline\n  ---\n  duration_ms: 43.140796\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 252.704142",
+      "output_sha256": "45f636ba7e0463f5b45c563adf755c86207f97d23e82352a6048f18562ec6bf8",
+      "output_tail": "> @glaciereq/akos@0.3.0-rc.1 pretest\n> npm install --ignore-scripts\n\n\nadded 7 packages in 3s\n\n> @glaciereq/akos@0.3.0-rc.1 test\n> npm --workspace @glaciereq/akos-runtime test\n\n\n> @glaciereq/akos-runtime@0.3.0 test\n> tsx --test tests/*.test.ts\n\nTAP version 13\n# Subtest: normalization and object identity are deterministic\nok 1 - normalization and object identity are deterministic\n  ---\n  duration_ms: 1.74777\n  type: 'test'\n  ...\n# Subtest: a mutable GitHub-looking pointer cannot self-promote\nok 2 - a mutable GitHub-looking pointer cannot self-promote\n  ---\n  duration_ms: 0.418754\n  type: 'test'\n  ...\n# Subtest: an immutable authenticated repository pointer may promote\nok 3 - an immutable authenticated repository pointer may promote\n  ---\n  duration_ms: 0.262041\n  type: 'test'\n  ...\n# Subtest: primary records require an immutable evidence hash\nok 4 - primary records require an immutable evidence hash\n  ---\n  duration_ms: 0.273622\n  type: 'test'\n  ...\n# Subtest: secret-bearing material is quarantined without reproducing the secret\nok 5 - secret-bearing material is quarantined without reproducing the secret\n  ---\n  duration_ms: 0.565969\n  type: 'test'\n  ...\n# Subtest: court-facing artifacts reject unresolved sources\nok 6 - court-facing artifacts reject unresolved sources\n  ---\n  duration_ms: 0.227034\n  type: 'test'\n  ...\n# Subtest: evidence manifest is stable across order and duplicate inputs\nok 7 - evidence manifest is stable across order and duplicate inputs\n  ---\n  duration_ms: 0.410508\n  type: 'test'\n  ...\n# Subtest: contradiction graph emits explicit conflict edges\nok 8 - contradiction graph emits explicit conflict edges\n  ---\n  duration_ms: 0.729755\n  type: 'test'\n  ...\n# Subtest: HTTP surface exposes health and executes the guarded pipeline\nok 9 - HTTP surface exposes health and executes the guarded pipeline\n  ---\n  duration_ms: 44.435879\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 249.41688",
       "status": "PASS"
     },
     {
@@ -71,11 +86,11 @@
         "run",
         "build"
       ],
-      "elapsed_s": 1.727,
+      "elapsed_s": 1.763,
       "exit_code": 0,
       "name": "node_build",
-      "output_sha256": "b221c780476577f183498faf25e326babcda6bfa87d6b5c8f25f7a639db60ae2",
-      "output_tail": "> @glaciereq/akos@0.3.0-rc.1 prebuild\n> npm install --ignore-scripts\n\n\nup to date in 252ms\n\n> @glaciereq/akos@0.3.0-rc.1 build\n> npm --workspace @glaciereq/akos-runtime run build\n\n\n> @glaciereq/akos-runtime@0.3.0 build\n> tsc -p tsconfig.json",
+      "output_sha256": "b03402bff8097b0288dae3544352e9431cead43b7c2d6e0c11aeeba7fcf3306e",
+      "output_tail": "> @glaciereq/akos@0.3.0-rc.1 prebuild\n> npm install --ignore-scripts\n\n\nup to date in 281ms\n\n> @glaciereq/akos@0.3.0-rc.1 build\n> npm --workspace @glaciereq/akos-runtime run build\n\n\n> @glaciereq/akos-runtime@0.3.0 build\n> tsc -p tsconfig.json",
       "status": "PASS"
     }
   ]

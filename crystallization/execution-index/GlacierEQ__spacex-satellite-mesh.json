@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "796099ab6062279219376d20ad6db0373e36b8ae50131dafa2f3b802e1536f1f",
+  "evidence_digest": "71ebfada457b8424427b310e9662f9931d011ddb2dcf0dfc967cc2390e05264d",
   "head_sha": "489cff52ed1da8c5e7da0769807bad8b58ef394f",
   "repository": "GlacierEQ/spacex-satellite-mesh",
   "repository_id": 1282819584,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.074,
+      "elapsed_s": 0.073,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,26 @@
         "-e",
         "."
       ],
-      "elapsed_s": 3.144,
+      "elapsed_s": 2.843,
       "exit_code": 0,
       "name": "python_package_install",
-      "output_sha256": "005172c1f4fdcc7d7f60c788d2cb664b26c1be1454183b1c2636ae6fddf44c8d",
-      "output_tail": "Obtaining file:///tmp/crystal-exec-l2i2fk1j/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-satellite-mesh\n  Building editable for glaciereq-satellite-mesh (pyproject.toml): started\n  Building editable for glaciereq-satellite-mesh (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-satellite-mesh: filename=glaciereq_satellite_mesh-1.0.0-0.editable-py3-none-any.whl size=5787 sha256=d3d0b63dc46447221c1e75bf72e713c4e045ef8949dfe93b5dbe35ae14b7ad5c\n  Stored in directory: /tmp/pip-ephem-wheel-cache-fesrvweb/wheels/28/cf/ea/7a5e47c72c56322d78f5fdc4553809dcdc7e16c7f6529773ab\nSuccessfully built glaciereq-satellite-mesh\nInstalling collected packages: glaciereq-satellite-mesh\nSuccessfully installed glaciereq-satellite-mesh-1.0.0",
+      "output_sha256": "bdcad05ef02bb099c59861a34ab25467a554735b72d706592cde50e02aea67f0",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-k9dbeix4/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: glaciereq-satellite-mesh\n  Building editable for glaciereq-satellite-mesh (pyproject.toml): started\n  Building editable for glaciereq-satellite-mesh (pyproject.toml): finished with status 'done'\n  Created wheel for glaciereq-satellite-mesh: filename=glaciereq_satellite_mesh-1.0.0-0.editable-py3-none-any.whl size=5787 sha256=cc1a3a4bb5fc3040d92e2b63ed25e4465eb0bcab1287c6fe6bdf0a1a6cc97e4f\n  Stored in directory: /tmp/pip-ephem-wheel-cache-bboc3wk0/wheels/ef/2d/30/ce113290db01c6c0ac1b5c54e7243f0d7785499b774e0d3a73\nSuccessfully built glaciereq-satellite-mesh\nInstalling collected packages: glaciereq-satellite-mesh\nSuccessfully installed glaciereq-satellite-mesh-1.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.366,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,7 +60,7 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.426,
+      "elapsed_s": 0.417,
       "exit_code": 0,
       "name": "python_pytest",
       "output_sha256": "0bfa7ba8a2aab94887db3b1ef94e4ee0a2c19fbed14478da4e9ed605aa2d5922",
@@ -55,15 +70,16 @@
     {
       "command": [
         "cargo",
+        "+stable",
         "test",
         "--all-targets"
       ],
-      "elapsed_s": 0.006,
-      "exit_code": 1,
+      "elapsed_s": 12.757,
+      "exit_code": 0,
       "name": "cargo_test",
-      "output_sha256": "05c678dccbf887d2e1584d69066fbceb6db80dd2cdc83f3ffab008b68e8f7e27",
-      "output_tail": "error: rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured.\nhelp: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.",
-      "status": "FAIL"
+      "output_sha256": "076d54c0c69de81dae7fc30e5f402958e6ce474919d6e4ee110e19a0358247d9",
+      "output_tail": "running 4 tests\ntest tests::invalid_edges_are_rejected ... ok\ntest tests::inactive_endpoint_is_not_routable ... ok\ntest tests::chooses_lowest_latency_viable_route ... ok\ntest tests::saturated_link_is_not_routable ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\ninfo: syncing channel updates for stable-x86_64-unknown-linux-gnu\ninfo: latest update on 2026-07-16 for version 1.97.1 (8bab26f4f 2026-07-14)\ninfo: downloading 6 components\n   Compiling satellite-mesh-routing v1.0.0 (/tmp/crystal-exec-k9dbeix4/repo)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.39s\n     Running unittests src/routing_engine.rs (target/debug/deps/satellite_mesh_routing-93b2b660177da111)",
+      "status": "PASS"
     }
   ]
 }

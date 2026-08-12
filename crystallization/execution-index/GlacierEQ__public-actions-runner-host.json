@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "7fcd62b678ec56ee4daed8386e74d57f4942d605a6bc5c79e76032b466f4c060",
-  "head_sha": "4a1d38fc59acb1394db7d190993ffa28c74b041a",
+  "evidence_digest": "4edbcb1dfab8554e2eb4d5544439f39955571bf08b7b9bef8f98b06f4e8d7063",
+  "head_sha": "487d5c9e53bf63fbd4b89a798b5b90af0ba1724e",
   "repository": "GlacierEQ/public-actions-runner-host",
   "repository_id": 1265621488,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.207,
+      "elapsed_s": 0.204,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -30,7 +30,7 @@
         "install",
         "pytest"
       ],
-      "elapsed_s": 0.39,
+      "elapsed_s": 0.392,
       "exit_code": 0,
       "name": "python_test_dependencies",
       "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
@@ -44,11 +44,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 5.782,
+      "elapsed_s": 5.924,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "b3ba94608c51a1c10d33824de1a0212290c855038ae89f74620851e17f85f0af",
-      "output_tail": "........................................................................ [ 33%]\n........................................................................ [ 67%]\n.....................................................................    [100%]\n213 passed in 5.15s",
+      "output_sha256": "15ed2ad46b01471ae35147d8dbd167dcd5b9ac320447320aa6f5c14229685e41",
+      "output_tail": "........................................................................ [ 33%]\n........................................................................ [ 67%]\n.....................................................................    [100%]\n213 passed in 5.33s",
       "status": "PASS"
     }
   ]

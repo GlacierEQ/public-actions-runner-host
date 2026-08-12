@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "79edd5b9713616f014c80a2ff7e2acc14f01eae69770568acb9c47184cbff566",
+  "evidence_digest": "715768ef1231fb047d508acccfa61f5e1c723faa00afe8e6fd58f3661500ae92",
   "head_sha": "846b0f3492c3a03463a9b1b98ef8189c2badf95c",
   "repository": "GlacierEQ/cloudflare-bot-intent-receipt",
   "repository_id": 1328440400,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.058,
+      "elapsed_s": 0.052,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.11,
+      "elapsed_s": 0.095,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "00a6f10048578af130060e8e6229c5e716041f34ae462ea6b89437bf026a32a1",
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 10.93,
+      "elapsed_s": 7.844,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "60d8bc0a27fbf7110389112ca8d96384f5725403c1b4afa306cc2be32bbd3ec6",

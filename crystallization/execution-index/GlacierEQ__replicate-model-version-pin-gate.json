@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "9e9eb58c338f6b6de284706db2798742f05a6e4d112aa6df74bc57742da0630e",
+  "evidence_digest": "47f3e6918a7b8d45d3a1ad357f921ed2a13c5a14b089eab0d454af67410ad364",
   "head_sha": "cb8a90cccf8000828859543a761ca4d96a18b558",
   "repository": "GlacierEQ/replicate-model-version-pin-gate",
   "repository_id": 1329688552,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.051,
+      "elapsed_s": 0.04,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -31,11 +31,42 @@
         "-r",
         "requirements.txt"
       ],
-      "elapsed_s": 1.251,
+      "elapsed_s": 0.926,
       "exit_code": 0,
       "name": "python_dependencies:requirements.txt",
-      "output_sha256": "f58899958a71456da79aec579a9f411a99b16412e7b4ba0257de1537d4768548",
-      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (9.1.1)\nCollecting setuptools>=68 (from -r requirements.txt (line 2))\n  Downloading setuptools-84.0.0-py3-none-any.whl.metadata (6.6 kB)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.20.0)\nDownloading setuptools-84.0.0-py3-none-any.whl (818 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 818.2/818.2 kB 10.4 MB/s  0:00:00\nInstalling collected packages: setuptools\nSuccessfully installed setuptools-84.0.0",
+      "output_sha256": "2c4c2ea483f2870a2d41adf2b90c96d669d29f7f7d6bacae4cc4edf68c2c4b2e",
+      "output_tail": "Requirement already satisfied: pytest>=8.0 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (9.1.1)\nCollecting setuptools>=68 (from -r requirements.txt (line 2))\n  Downloading setuptools-84.0.0-py3-none-any.whl.metadata (6.6 kB)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest>=8.0->-r requirements.txt (line 1)) (2.20.0)\nDownloading setuptools-84.0.0-py3-none-any.whl (818 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 818.2/818.2 kB 39.9 MB/s  0:00:00\nInstalling collected packages: setuptools\nSuccessfully installed setuptools-84.0.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "elapsed_s": 2.141,
+      "exit_code": 0,
+      "name": "python_package_install",
+      "output_sha256": "1ff97f74df9b58ced471868f503963aa0e8ecbb24f262e304e882ff49f9e9f10",
+      "output_tail": "Obtaining file:///tmp/crystal-exec-tk50mvfz/repo\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: replicate-model-version-pin-gate\n  Building editable for replicate-model-version-pin-gate (pyproject.toml): started\n  Building editable for replicate-model-version-pin-gate (pyproject.toml): finished with status 'done'\n  Created wheel for replicate-model-version-pin-gate: filename=replicate_model_version_pin_gate-1.1.0-0.editable-py3-none-any.whl size=2736 sha256=89b6df962686dd652226e851b487007493d94713a7718465bcfb075a9bf12431\n  Stored in directory: /tmp/pip-ephem-wheel-cache-ppja_yqr/wheels/13/24/70/02fe0280fa0d337059301ddd806e2e6ec4c808b33b1004ae6a\nSuccessfully built replicate-model-version-pin-gate\nInstalling collected packages: replicate-model-version-pin-gate\nSuccessfully installed replicate-model-version-pin-gate-1.1.0",
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "pytest"
+      ],
+      "elapsed_s": 0.29,
+      "exit_code": 0,
+      "name": "python_test_dependencies",
+      "output_sha256": "bf2a89486676c389cfde423e536fea4edccf09970163b89383d743e97977bbae",
+      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (9.1.1)\nRequirement already satisfied: iniconfig>=1.0.1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=22 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
       "status": "PASS"
     },
     {
@@ -45,11 +76,11 @@
         "pytest",
         "-q"
       ],
-      "elapsed_s": 0.337,
+      "elapsed_s": 0.253,
       "exit_code": 0,
       "name": "python_pytest",
-      "output_sha256": "9bb93f763a32594b8f710095342d0d697af1a3f347052ec2211bbd8e58a0ce7f",
-      "output_tail": "......................                                                   [100%]\n22 passed in 0.06s",
+      "output_sha256": "a0c703b034e1021a72bdff8c2f791c9f5c6865ccbfd5f08f4a5a6af622f8f2a9",
+      "output_tail": "......................                                                   [100%]\n22 passed in 0.04s",
       "status": "PASS"
     }
   ]

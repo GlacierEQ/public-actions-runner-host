@@ -1,11 +1,11 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "c123e74406e8f5f9768ecb969bca98f3c650cb4606d1d15d0b47875fef14b781",
+  "evidence_digest": "61b4dc2c116df97b13e25bcc74ecff397b585281967ea20fd1bb1efd9caea259",
   "head_sha": "c00d46a8bdc5a50966c384b640362066a1c9372e",
   "repository": "GlacierEQ/xai-colossus-energy",
   "repository_id": 1248866166,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
-  "status": "BROKEN_EXECUTION_EVIDENCE",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
+  "status": "INCOMPLETE_EXECUTION_EVIDENCE",
   "steps": [
     {
       "command": [
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.173,
+      "elapsed_s": 0.169,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -24,45 +24,28 @@
     },
     {
       "command": [
-        "python",
-        "-m",
-        "pip",
-        "install",
-        "pytest"
+        "__NOT_RUN_UNDECLARED_TEST_DEPENDENCY__"
       ],
-      "elapsed_s": 0.371,
-      "exit_code": 0,
-      "name": "python_test_dependencies",
-      "output_sha256": "3b2f856fe8dcb9bb15cba4b8020d3c0b3cdeecfd2eb899d4fbc191ad7635b9fe",
-      "output_tail": "Requirement already satisfied: pytest in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (8.4.2)\nRequirement already satisfied: iniconfig>=1 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.3.0)\nRequirement already satisfied: packaging>=20 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (26.3)\nRequirement already satisfied: pluggy<2,>=1.5 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (1.6.0)\nRequirement already satisfied: pygments>=2.7.2 in /opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages (from pytest) (2.20.0)",
-      "status": "PASS"
-    },
-    {
-      "command": [
-        "python",
-        "-m",
-        "pytest",
-        "-q"
-      ],
-      "elapsed_s": 0.729,
-      "exit_code": 2,
-      "name": "python_pytest",
-      "output_sha256": "a6bde6a04cb749698d1376f69ef42dec9fd76f6807b30c2c42f016748c3fda31",
-      "output_tail": "h:\nimported module 'test_power_budget' has this __file__ attribute:\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_power_budget.py\nwhich is not the same as the test file we want to collect:\n  /tmp/crystal-exec-owhhs_dk/repo/tests/test_power_budget.py\nHINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules\n__________________ ERROR collecting tests/test_pue_tracker.py __________________\nimport file mismatch:\nimported module 'test_pue_tracker' has this __file__ attribute:\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_pue_tracker.py\nwhich is not the same as the test file we want to collect:\n  /tmp/crystal-exec-owhhs_dk/repo/tests/test_pue_tracker.py\nHINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules\n________________ ERROR collecting tests/test_pue_tracker_v2.py _________________\nimport file mismatch:\nimported module 'test_pue_tracker_v2' has this __file__ attribute:\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_pue_tracker_v2.py\nwhich is not the same as the test file we want to collect:\n  /tmp/crystal-exec-owhhs_dk/repo/tests/test_pue_tracker_v2.py\nHINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules\n______________ ERROR collecting tests/test_supabase_telemetry.py _______________\nimport file mismatch:\nimported module 'test_supabase_telemetry' has this __file__ attribute:\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_supabase_telemetry.py\nwhich is not the same as the test file we want to collect:\n  /tmp/crystal-exec-owhhs_dk/repo/tests/test_supabase_telemetry.py\nHINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules\n=============================== warnings summary ===============================\nalpha/test_grid_balancer.py:15\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_grid_balancer.py:15: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.asyncio\n\nalpha/test_grid_balancer.py:19\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_grid_balancer.py:19: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.asyncio\n\nalpha/test_grid_balancer.py:27\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_grid_balancer.py:27: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.asyncio\n\nalpha/test_grid_balancer.py:32\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_grid_balancer.py:32: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.asyncio\n\nalpha/test_grid_balancer.py:37\n  /tmp/crystal-exec-owhhs_dk/repo/alpha/test_grid_balancer.py:37: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.asyncio\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR alpha/test_megapack_model.py\nERROR compliance/tests/test_emissions.py\nERROR tests/test_energy_balancer_mcp.py\nERROR tests/test_grid_balancer.py\nERROR tests/test_megapack_controller.py\nERROR tests/test_megapack_state_machine.py\nERROR tests/test_power_budget.py\nERROR tests/test_pue_tracker.py\nERROR tests/test_pue_tracker_v2.py\nERROR tests/test_supabase_telemetry.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 10 errors during collection !!!!!!!!!!!!!!!!!!!\n5 warnings, 10 errors in 0.44s",
-      "status": "FAIL"
+      "elapsed_s": 0,
+      "exit_code": null,
+      "name": "python_test_dependency",
+      "output_sha256": "6c7bfbfca3dbd1db31010abdb691006938b7ab73a9c4d14bd4d37bf6bc665b40",
+      "output_tail": "Repository test sources require a runner/plugin that repository manifests do not declare: __UNDECLARED_PYTEST_ASYNCIO__.",
+      "status": "NOT_RUN_UNDECLARED_TEST_DEPENDENCY"
     },
     {
       "command": [
         "cargo",
+        "+stable",
         "test",
         "--all-targets"
       ],
-      "elapsed_s": 0.007,
-      "exit_code": 1,
+      "elapsed_s": 11.781,
+      "exit_code": 0,
       "name": "cargo_test",
-      "output_sha256": "05c678dccbf887d2e1584d69066fbceb6db80dd2cdc83f3ffab008b68e8f7e27",
-      "output_tail": "error: rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured.\nhelp: run 'rustup default stable' to download the latest stable release of Rust and set it as your default toolchain.",
-      "status": "FAIL"
+      "output_sha256": "475684cfcb685e54a9c6ee3e2d91fa7e75f63e64999414db71a9c54bd33ab666",
+      "output_tail": "running 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 6 tests\ntest default_scenario_preserves_the_original_overhead_formula ... ok\ntest negative_headroom_is_a_scenario_shortfall ... ok\ntest rejects_invalid_capacity ... ok\ntest explicit_pue_produces_reviewable_headroom ... ok\ntest rejects_invalid_pue ... ok\ntest rejects_non_finite_or_negative_active_power ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\ninfo: syncing channel updates for stable-x86_64-unknown-linux-gnu\ninfo: latest update on 2026-07-16 for version 1.97.1 (8bab26f4f 2026-07-14)\ninfo: downloading 6 components\n   Compiling colossus-energy-model v0.1.0 (/tmp/crystal-exec-ct263xsw/repo)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.17s\n     Running unittests src/lib.rs (target/debug/deps/colossus_energy_model-f91a8e6f926c46de)\n     Running tests/energy_optimizer_rust.rs (target/debug/deps/energy_optimizer_rust-d85178c646c379e5)",
+      "status": "PASS"
     }
   ]
 }

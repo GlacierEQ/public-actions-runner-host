@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "27b2f08478de88eae5e63a665dc59d9514f67490f70c66eefac52edac0c630f4",
+  "evidence_digest": "2064cf8af2bd073cfc2b7dedd057b712a32444eca1b4e5289b7b95de8062c592",
   "head_sha": "992964add70855fa18c885f84f777350885e2883",
   "repository": "GlacierEQ/lockheed-dual-key-actuator-fence",
   "repository_id": 1328440764,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.071,
+      "elapsed_s": 0.072,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.135,
+      "elapsed_s": 0.138,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "7978b92990eba0e9585ffd5b79d0aeed81470842a2c3a33b266597a99685ef75",

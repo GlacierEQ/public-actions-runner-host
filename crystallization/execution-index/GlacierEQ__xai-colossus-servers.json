@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "0b7b4198929ca4fabd0b9f3aeecd8952306a09c0171da673d658c8dc17785c83",
+  "evidence_digest": "ee29039a74e568b08cbfc579c11793f6edeb4b9e91aa7c8dc15a6959ffc42a36",
   "head_sha": "676d6b7d1912d116f0f9204dd7aca14d03a00f90",
   "repository": "GlacierEQ/xai-colossus-servers",
   "repository_id": 1248846708,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "INCOMPLETE_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -29,8 +29,8 @@
       "elapsed_s": 0,
       "exit_code": null,
       "name": "python_test_dependency",
-      "output_sha256": "504dd8bcd10a738e9bca0deab651ba9f0d4ed677b5073e56012416876a034e55",
-      "output_tail": "Tests require pytest but the repository does not declare pytest in package metadata, requirements, pytest config, or its native CI install contract.",
+      "output_sha256": "ed264fd7f82136fec27d7930307a83aa1b0b9dc2bd7d9a37ad56d1fcd4387dd4",
+      "output_tail": "Repository test sources require a runner/plugin that repository manifests do not declare: __UNDECLARED_PYTEST__.",
       "status": "NOT_RUN_UNDECLARED_TEST_DEPENDENCY"
     }
   ]

@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "463d66ea1ca73cb25d2feb74d27a69aa320216ba25166e8d41e10afc9510253c",
+  "evidence_digest": "685c5664242d2a9ebfa40ef13b9113f058266624b4d3e25e4cceffdabecf5175",
   "head_sha": "4c1bc3593c40a5d0c09ef556bdf57a85891f3d09",
   "repository": "GlacierEQ/waymo-phantom-freespace-certificate",
   "repository_id": 1328442114,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.057,
+      "elapsed_s": 0.062,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "f3cdc3a39f97ebd441de02d821b581e5bee9048f28301f37c6b40350665b5217",
@@ -34,7 +34,7 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.109,
+      "elapsed_s": 0.11,
       "exit_code": 0,
       "name": "python_unittest",
       "output_sha256": "9a2abcb16059f5a80c774a50652da7b138ac8ef8a8bdd527ec85552615046cfb",

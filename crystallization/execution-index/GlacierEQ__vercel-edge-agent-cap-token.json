@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "45b7bbccad387020d99156bb3886a9465357f5a4c9f179e36c2e696c56551107",
+  "evidence_digest": "e714f6cb8d0c024b9626238bf58c0398ef5d8f784136800c86437167d05fbd2e",
   "head_sha": "1ed5946bb9430d20b4eee653b6ad12be28146275",
   "repository": "GlacierEQ/vercel-edge-agent-cap-token",
   "repository_id": 1328441985,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.045,
+      "elapsed_s": 0.055,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,11 +34,11 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.085,
+      "elapsed_s": 0.102,
       "exit_code": 0,
       "name": "python_unittest",
-      "output_sha256": "84df9d0b7d9ef5344f707f28d88115620d016b1d9ef9350974e9b06a343d394b",
-      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_identity_lineage_and_claim_boundary_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_lineage_and_claim_boundary_are_preserved) ... ok\ntest_next_evolution_is_material_without_weakening_current_authority (test_canonical_position_contract.CanonicalPositionContractTests.test_next_evolution_is_material_without_weakening_current_authority) ... ok\ntest_replay_nonclaim_remains_explicit (test_canonical_position_contract.CanonicalPositionContractTests.test_replay_nonclaim_remains_explicit) ... ok\ntest_state_advances_only_with_exact_hardening_proof (test_canonical_position_contract.CanonicalPositionContractTests.test_state_advances_only_with_exact_hardening_proof) ... ok\ntest_allow (test_edge_cap.EdgeCapTests.test_allow) ... ok\ntest_body_mismatch (test_edge_cap.EdgeCapTests.test_body_mismatch) ... ok\ntest_cross_language_known_mac_vector (test_edge_cap.EdgeCapTests.test_cross_language_known_mac_vector) ... ok\ntest_expired_fails_closed (test_edge_cap.EdgeCapTests.test_expired_fails_closed) ... ok\ntest_malformed_inputs_fail_closed (test_edge_cap.EdgeCapTests.test_malformed_inputs_fail_closed) ... ok\ntest_nested_body_digest_known_vector_and_key_order (test_edge_cap.EdgeCapTests.test_nested_body_digest_known_vector_and_key_order) ... ok\ntest_structured_payload_blocks_delimiter_ambiguity (test_edge_cap.EdgeCapTests.test_structured_payload_blocks_delimiter_ambiguity) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 0.003s\n\nOK",
+      "output_sha256": "2f32d11de0cb66836034db9f334c54910ee217f83ec6e0222fe37a1ec38a5406",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_identity_lineage_and_claim_boundary_are_preserved (test_canonical_position_contract.CanonicalPositionContractTests.test_identity_lineage_and_claim_boundary_are_preserved) ... ok\ntest_next_evolution_is_material_without_weakening_current_authority (test_canonical_position_contract.CanonicalPositionContractTests.test_next_evolution_is_material_without_weakening_current_authority) ... ok\ntest_replay_nonclaim_remains_explicit (test_canonical_position_contract.CanonicalPositionContractTests.test_replay_nonclaim_remains_explicit) ... ok\ntest_state_advances_only_with_exact_hardening_proof (test_canonical_position_contract.CanonicalPositionContractTests.test_state_advances_only_with_exact_hardening_proof) ... ok\ntest_allow (test_edge_cap.EdgeCapTests.test_allow) ... ok\ntest_body_mismatch (test_edge_cap.EdgeCapTests.test_body_mismatch) ... ok\ntest_cross_language_known_mac_vector (test_edge_cap.EdgeCapTests.test_cross_language_known_mac_vector) ... ok\ntest_expired_fails_closed (test_edge_cap.EdgeCapTests.test_expired_fails_closed) ... ok\ntest_malformed_inputs_fail_closed (test_edge_cap.EdgeCapTests.test_malformed_inputs_fail_closed) ... ok\ntest_nested_body_digest_known_vector_and_key_order (test_edge_cap.EdgeCapTests.test_nested_body_digest_known_vector_and_key_order) ... ok\ntest_structured_payload_blocks_delimiter_ambiguity (test_edge_cap.EdgeCapTests.test_structured_payload_blocks_delimiter_ambiguity) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 0.004s\n\nOK",
       "status": "PASS"
     }
   ]

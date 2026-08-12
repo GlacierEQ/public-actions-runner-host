@@ -1,10 +1,10 @@
 {
   "completion_claim_allowed": false,
-  "evidence_digest": "a110f964e448a3f202efffa040f359fd69857f063777491281235aefcf5befcf",
+  "evidence_digest": "479eeff8d57c85960f54f3d79aec6d28483053656b58efc75a7db4abea3747a4",
   "head_sha": "0a7c9b82172db55b4a7a2aeb1497760d8f493267",
   "repository": "GlacierEQ/anduril-sensor-health-quorum",
   "repository_id": 1328440076,
-  "schema": "glaciereq.crystallization.execution-probe.v2",
+  "schema": "glaciereq.crystallization.execution-probe.v3",
   "status": "TESTED_EXECUTION_EVIDENCE",
   "steps": [
     {
@@ -15,7 +15,7 @@
         "-q",
         "."
       ],
-      "elapsed_s": 0.103,
+      "elapsed_s": 0.042,
       "exit_code": 0,
       "name": "python_compile",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -34,11 +34,11 @@
         "test*.py",
         "-v"
       ],
-      "elapsed_s": 0.334,
+      "elapsed_s": 0.108,
       "exit_code": 0,
       "name": "python_unittest",
-      "output_sha256": "e335dda7dd6368796b948bfc6db2969fa54bf800462e38febd9823ca31c1056f",
-      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_exact_candidate_consumed_current_cursor (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_exact_candidate_consumed_current_cursor) ... ok\ntest_next_cursor_is_consistent_everywhere (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_next_cursor_is_consistent_everywhere) ... ok\ntest_provenance_limits_remain_explicit (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_provenance_limits_remain_explicit) ... ok\ntest_target_contract_is_valid_and_conflict_free (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_target_contract_is_valid_and_conflict_free) ... ok\ntest_evolution_cursor_is_material (test_excellence_state_contract.ExcellenceStateContractTests.test_evolution_cursor_is_material) ... ok\ntest_position_preserves_identity_and_lineage (test_excellence_state_contract.ExcellenceStateContractTests.test_position_preserves_identity_and_lineage) ... ok\ntest_state_is_canonical_and_evolving (test_excellence_state_contract.ExcellenceStateContractTests.test_state_is_canonical_and_evolving) ... ok\ntest_correlated_multiplicity_cannot_reinstate (test_health_evolution.SensorHealthEvolutionTests.test_correlated_multiplicity_cannot_reinstate) ... ok\ntest_correlated_reporters_count_as_one_domain (test_health_evolution.SensorHealthEvolutionTests.test_correlated_reporters_count_as_one_domain) ... ok\ntest_receipt_and_invalid_labels (test_health_evolution.SensorHealthEvolutionTests.test_receipt_and_invalid_labels) ... ok\ntest_recovery_requires_threshold_then_distinct_rounds (test_health_evolution.SensorHealthEvolutionTests.test_recovery_requires_threshold_then_distinct_rounds) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_self_report_forbidden (test_sensor_health.HealthTests.test_self_report_forbidden) ... ok\ntest_suspend (test_sensor_health.HealthTests.test_suspend) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 0.006s\n\nOK",
+      "output_sha256": "cfdd8150eb859a7db7fe42ea40df59d01c80871fc12b790001f42fcacbf7a705",
+      "output_tail": "test_central_mechanism_refuse_or_edge (test_adversarial.AdversarialEliteTests.test_central_mechanism_refuse_or_edge)\nExercise shipped refuse/edge paths when present; never crash open. ... ok\ntest_module_importable (test_adversarial.AdversarialEliteTests.test_module_importable) ... ok\ntest_refuse_bad_import_path_does_not_shadow (test_adversarial.AdversarialEliteTests.test_refuse_bad_import_path_does_not_shadow) ... ok\ntest_exact_candidate_consumed_current_cursor (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_exact_candidate_consumed_current_cursor) ... ok\ntest_next_cursor_is_consistent_everywhere (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_next_cursor_is_consistent_everywhere) ... ok\ntest_provenance_limits_remain_explicit (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_provenance_limits_remain_explicit) ... ok\ntest_target_contract_is_valid_and_conflict_free (test_evolution_receipt_contract.EvolutionReceiptContractTests.test_target_contract_is_valid_and_conflict_free) ... ok\ntest_evolution_cursor_is_material (test_excellence_state_contract.ExcellenceStateContractTests.test_evolution_cursor_is_material) ... ok\ntest_position_preserves_identity_and_lineage (test_excellence_state_contract.ExcellenceStateContractTests.test_position_preserves_identity_and_lineage) ... ok\ntest_state_is_canonical_and_evolving (test_excellence_state_contract.ExcellenceStateContractTests.test_state_is_canonical_and_evolving) ... ok\ntest_correlated_multiplicity_cannot_reinstate (test_health_evolution.SensorHealthEvolutionTests.test_correlated_multiplicity_cannot_reinstate) ... ok\ntest_correlated_reporters_count_as_one_domain (test_health_evolution.SensorHealthEvolutionTests.test_correlated_reporters_count_as_one_domain) ... ok\ntest_receipt_and_invalid_labels (test_health_evolution.SensorHealthEvolutionTests.test_receipt_and_invalid_labels) ... ok\ntest_recovery_requires_threshold_then_distinct_rounds (test_health_evolution.SensorHealthEvolutionTests.test_recovery_requires_threshold_then_distinct_rounds) ... ok\ntest_expired (test_promotion_authority.PromotionAuthTests.test_expired) ... ok\ntest_issue_verify (test_promotion_authority.PromotionAuthTests.test_issue_verify) ... ok\ntest_real_machine_grant_verifies_against_proof_receipt (test_promotion_authority.PromotionAuthTests.test_real_machine_grant_verifies_against_proof_receipt) ... ok\ntest_self_report_forbidden (test_sensor_health.HealthTests.test_self_report_forbidden) ... ok\ntest_suspend (test_sensor_health.HealthTests.test_suspend) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 0.004s\n\nOK",
       "status": "PASS"
     },
     {
@@ -47,7 +47,7 @@
         "test",
         "./..."
       ],
-      "elapsed_s": 7.349,
+      "elapsed_s": 8.126,
       "exit_code": 0,
       "name": "go_test",
       "output_sha256": "07d00dccfd89cd47370956010733743efe2de627d441824aa1528f883169f38d",
