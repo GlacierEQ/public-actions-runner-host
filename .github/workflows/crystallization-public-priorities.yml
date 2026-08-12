@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/crystallization_public_priorities.py'
       - 'crystallization/public-estate-registry.json'
+      - 'crystallization/content-index/**'
       - '.github/workflows/crystallization-public-priorities.yml'
   workflow_dispatch:
 
@@ -36,6 +37,7 @@ jobs:
           assert priorities['source_registry_digest'] == registry['registry_digest']
           assert priorities['source_repository_count'] == registry['repository_count']
           assert priorities['completion_claim_allowed'] is False
+          assert priorities['schema'] == 'glaciereq.crystallization.public-priorities.v2'
           expected = {'GATE_DOMINANT','DEPLOYABLE_UNTESTED','SOURCE_UNTESTED','SOURCE_MISSING','ARCHIVE_LINEAGE','FORK_LINEAGE'}
           assert set(priorities['queues']) == expected
           for name in expected:
@@ -46,7 +48,12 @@ jobs:
             assert queue['source_registry_digest'] == registry['registry_digest']
             assert queue['parent_queue_digest'] == priorities['queue_digest']
             assert queue['completion_claim_allowed'] is False
-          print(json.dumps(priorities['queue_counts'], sort_keys=True))
+          source_untested = {r['repository'] for r in priorities['queues']['SOURCE_UNTESTED']}
+          assert 'GlacierEQ/ai-auto-driller-unified' not in source_untested, 'native npm test contract was ignored'
+          print(json.dumps({
+            'queue_counts': priorities['queue_counts'],
+            'effective_test_contract_repositories': priorities['repositories_with_effective_test_contracts']
+          }, sort_keys=True))
           PY
       - name: Commit queue projections
         shell: bash
@@ -59,5 +66,5 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'inventory: materialize public Crystallization queues'
+          git commit -m 'inventory: materialize semantic Crystallization queues'
           git push origin HEAD:main
