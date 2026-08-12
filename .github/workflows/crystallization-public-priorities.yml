@@ -1,0 +1,54 @@
+name: Crystallization Public Priorities
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/crystallization_public_priorities.py'
+      - 'crystallization/public-estate-registry.json'
+      - '.github/workflows/crystallization-public-priorities.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crystallization-public-priorities
+  cancel-in-progress: false
+
+jobs:
+  derive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+      - name: Derive deterministic work queues
+        run: python3 scripts/crystallization_public_priorities.py
+      - name: Validate queue provenance
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          registry = json.loads(Path('crystallization/public-estate-registry.json').read_text())
+          priorities = json.loads(Path('crystallization/public-estate-priorities.json').read_text())
+          assert priorities['source_registry_digest'] == registry['registry_digest']
+          assert priorities['source_repository_count'] == registry['repository_count']
+          assert priorities['completion_claim_allowed'] is False
+          assert set(priorities['queues']) == {'GATE_DOMINANT','DEPLOYABLE_UNTESTED','SOURCE_UNTESTED','SOURCE_MISSING','ARCHIVE_LINEAGE','FORK_LINEAGE'}
+          print(json.dumps(priorities['queue_counts'], sort_keys=True))
+          PY
+      - name: Commit queue projection
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add crystallization/public-estate-priorities.json
+          if git diff --cached --quiet; then
+            echo 'Priority projection unchanged.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'inventory: derive public Crystallization work queues'
+          git push origin HEAD:main
