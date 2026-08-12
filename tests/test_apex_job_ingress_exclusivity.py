@@ -64,9 +64,13 @@ def test_canonical_issue_ingress_separates_source_and_receipt_authority() -> Non
     workload = workflow_step_block(text, "Mint one-repository private workload token")
     assert "APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.source_repo }}" in workload
     assert '--repository "$APEX_WORKLOAD_REPOSITORY"' in workload
-    assert "--permission contents=read" in workload
-    assert "--permission contents=write" not in workload
-    assert "--operation public-action-workload" in workload
+    assert 'permission="contents=read"' in workload
+    assert 'operation="public-action-workload"' in workload
+    assert 'if [ "$APEX_ACTION" = "docket-sync" ]; then' in workload
+    assert workload.count('permission="contents=write"') == 1
+    assert 'operation="jefs-docket-acquisition"' in workload
+    assert '--permission "$permission"' in workload
+    assert '--operation "$operation"' in workload
     assert '--repository "${{ steps.plan.outputs.source_repo }}"' not in workload
 
     checkout = workflow_step_block(
