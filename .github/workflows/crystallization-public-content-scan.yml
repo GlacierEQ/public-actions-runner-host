@@ -1,0 +1,112 @@
+name: Crystallization Public Content Scan
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/crystallization_public_content_scan.py'
+      - '.github/workflows/crystallization-public-content-scan.yml'
+      - 'crystallization/public-estate-registry.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crystallization-public-content-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Crawl every tracked file in assigned repositories
+        id: scan
+        continue-on-error: true
+        run: |
+          python3 scripts/crystallization_public_content_scan.py \
+            --registry crystallization/public-estate-registry.json \
+            --shard-index '${{ matrix.shard }}' \
+            --shard-count 8 \
+            --output-dir '/tmp/crystal-shard-${{ matrix.shard }}'
+      - name: Upload shard evidence even when an individual repository failed
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: crystallization-content-shard-${{ matrix.shard }}
+          path: /tmp/crystal-shard-${{ matrix.shard }}
+          if-no-files-found: error
+          retention-days: 30
+      - name: Refuse silent shard incompleteness
+        if: always()
+        run: |
+          if [[ '${{ steps.scan.outcome }}' != 'success' ]]; then
+            echo 'One or more repositories in this shard were not fully content-scanned.' >&2
+            exit 1
+          fi
+
+  merge:
+    if: always()
+    needs: scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+      - name: Download all shard evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: crystallization-content-shard-*
+          path: /tmp/crystallization-shards
+      - name: Merge repository evidence into durable index
+        id: merge
+        continue-on-error: true
+        run: |
+          rm -rf crystallization/content-index
+          mkdir -p crystallization/content-index
+          python3 scripts/crystallization_public_content_scan.py \
+            --merge-dir /tmp/crystallization-shards \
+            --output-dir crystallization/content-index \
+            --expected-repos 160
+      - name: Commit durable per-repository content evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add crystallization/public-content-index.json crystallization/content-index/*.json
+          if git diff --cached --quiet; then
+            echo 'Content evidence already matches scanned heads.'
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'inventory: crawl every tracked file in active public originals'
+            git push origin HEAD:main
+          fi
+      - name: Refuse partial Phase-1 content coverage
+        if: always()
+        run: |
+          if [[ '${{ steps.merge.outcome }}' != 'success' ]]; then
+            echo 'Public original content scan remains incomplete; partial evidence was committed explicitly.' >&2
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          index = json.loads(Path('crystallization/public-content-index.json').read_text())
+          assert index['repository_count'] == 160
+          assert index['expected_repository_count'] == 160
+          assert index['content_scan_complete'] is True
+          assert index['incomplete'] == []
+          assert index['completion_claim_allowed'] is False
+          print(index['index_digest'])
+          PY
