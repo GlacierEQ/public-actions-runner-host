@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          fetch-depth: 1
+          fetch-depth: 0
       - name: Download all execution evidence
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -96,12 +96,21 @@ jobs:
           git add crystallization/public-execution-index.json crystallization/execution-index/*.json
           if git diff --cached --quiet; then
             echo 'Execution evidence already matches probed heads.'
-          else
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'proof: execute native contracts across active public originals'
-            git push origin HEAD:main
+            exit 0
           fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'proof: execute native contracts across active public originals'
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then
+              exit 0
+            fi
+            git rebase --abort >/dev/null 2>&1 || true
+            sleep $((attempt * 2))
+          done
+          echo 'Unable to persist execution evidence after four fast-forward retries.' >&2
+          exit 1
       - name: Enforce complete execution-evidence coverage
         if: always()
         run: |
