@@ -2,9 +2,9 @@
 """Run secretless reproducible execution probes across public original repos.
 
 The probe is evidence, not a universal build system. It executes only commands
-that are strongly implied by repository-native manifests. Unsupported repos stay
-UNKNOWN for execution instead of being declared healthy. Failures are recorded,
-never papered over by archiving or by a successful unrelated lint command.
+strongly implied by repository-native manifests and test sources. Unsupported or
+unreproducible contracts remain explicitly incomplete instead of being declared
+healthy or falsely broken by an invented test runner.
 """
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -21,8 +22,10 @@ from typing import Any
 
 ENV_ALLOW = {
     "PATH", "LANG", "LC_ALL", "TZ", "TERM", "RUNNER_OS", "RUNNER_ARCH",
-    "ImageOS", "ImageVersion", "HOME",
+    "ImageOS", "ImageVersion", "HOME", "CARGO_HOME", "RUSTUP_HOME",
+    "GOROOT", "GOPATH", "JAVA_HOME", "JAVA_HOME_17_X64", "JAVA_HOME_21_X64",
 }
+TEST_FILE_RE = re.compile(r"(^|/)(test_[^/]+|[^/]+_test)\.py$", re.I)
 
 
 def digest(value: Any) -> str:
@@ -31,6 +34,7 @@ def digest(value: Any) -> str:
 
 def clean_env(home: str) -> dict[str, str]:
     env = {k: v for k, v in os.environ.items() if k in ENV_ALLOW}
+    # Keep toolchain homes injected by setup actions. Only isolate HOME itself.
     env.update({
         "HOME": home,
         "CI": "1",
@@ -67,7 +71,6 @@ def run_step(name: str, command: list[str], cwd: Path, env: dict[str, str], time
     if isinstance(stderr, bytes):
         stderr = stderr.decode("utf-8", errors="replace")
     combined = (stdout + "\n" + stderr).strip()
-    # Logs are public-repo/secretless, but store only bounded tails plus digest.
     return {
         "name": name,
         "command": command,
@@ -79,12 +82,71 @@ def run_step(name: str, command: list[str], cwd: Path, env: dict[str, str], time
     }
 
 
+def synthetic_step(name: str, status: str, message: str) -> dict[str, Any]:
+    return {
+        "name": name,
+        "command": [f"__{status}__"],
+        "status": status,
+        "exit_code": None,
+        "elapsed_s": 0,
+        "output_sha256": hashlib.sha256(message.encode()).hexdigest(),
+        "output_tail": message,
+    }
+
+
 def package_json(repo: Path) -> dict[str, Any]:
     try:
         raw = json.loads((repo / "package.json").read_text())
         return raw if isinstance(raw, dict) else {}
     except Exception:
         return {}
+
+
+def python_test_files(repo: Path) -> list[Path]:
+    files = []
+    for path in repo.rglob("*.py"):
+        try:
+            rel = path.relative_to(repo).as_posix()
+        except ValueError:
+            continue
+        if TEST_FILE_RE.search(rel):
+            files.append(path)
+    return sorted(files)
+
+
+def text_contains(paths: list[Path], needles: tuple[str, ...]) -> bool:
+    for path in paths:
+        try:
+            text = path.read_text(errors="replace")
+        except OSError:
+            continue
+        if any(needle in text for needle in needles):
+            return True
+    return False
+
+
+def declared_pytest(repo: Path) -> bool:
+    manifests = [
+        repo / "requirements.txt", repo / "requirements-dev.txt",
+        repo / "requirements-test.txt", repo / "pyproject.toml",
+        repo / "pytest.ini", repo / "tox.ini",
+    ]
+    for path in manifests:
+        if path.is_file():
+            try:
+                if "pytest" in path.read_text(errors="replace").lower():
+                    return True
+            except OSError:
+                pass
+    workflows = list((repo / ".github" / "workflows").glob("*.yml")) + list((repo / ".github" / "workflows").glob("*.yaml"))
+    for path in workflows:
+        try:
+            text = path.read_text(errors="replace").lower()
+        except OSError:
+            continue
+        if "pytest" in text and "pip install" in text:
+            return True
+    return False
 
 
 def python_steps(repo: Path) -> list[tuple[str, list[str], int]]:
@@ -94,14 +156,29 @@ def python_steps(repo: Path) -> list[tuple[str, list[str], int]]:
     steps: list[tuple[str, list[str], int]] = [
         ("python_compile", ["python", "-m", "compileall", "-q", "."], 180),
     ]
-    tests_exist = any((repo / name).exists() for name in ("tests", "test", "pytest.ini", "tox.ini"))
-    if tests_exist:
-        # Install declared dependencies before pytest when a conventional contract exists.
-        if (repo / "requirements.txt").is_file():
-            steps.append(("python_dependencies", ["python", "-m", "pip", "install", "-r", "requirements.txt"], 300))
-        elif (repo / "pyproject.toml").is_file():
-            steps.append(("python_package_install", ["python", "-m", "pip", "install", "-e", ".[test]"], 300))
-        steps.append(("python_pytest", ["python", "-m", "pytest", "-q"], 300))
+    tests = python_test_files(repo)
+    if not tests:
+        return steps
+
+    requirements = [name for name in ("requirements.txt", "requirements-dev.txt", "requirements-test.txt") if (repo / name).is_file()]
+    for name in requirements:
+        steps.append((f"python_dependencies:{name}", ["python", "-m", "pip", "install", "-r", name], 300))
+    if not requirements and (repo / "pyproject.toml").is_file():
+        steps.append(("python_package_install", ["python", "-m", "pip", "install", "-e", "."], 300))
+
+    pytest_source = text_contains(tests, ("import pytest", "from pytest", "pytest."))
+    pytest_contract = pytest_source or (repo / "pytest.ini").is_file() or "pytest" in (repo / "pyproject.toml").read_text(errors="replace").lower() if (repo / "pyproject.toml").is_file() else pytest_source or (repo / "pytest.ini").is_file()
+    if pytest_contract:
+        if declared_pytest(repo):
+            # A workflow-only declaration still needs the runner installed here.
+            if not requirements and not (repo / "pyproject.toml").is_file():
+                steps.append(("python_test_dependencies", ["python", "-m", "pip", "install", "pytest"], 300))
+            steps.append(("python_pytest", ["python", "-m", "pytest", "-q"], 300))
+        else:
+            steps.append(("python_test_dependency", ["__UNDECLARED_PYTEST__"], 0))
+    else:
+        # stdlib unittest is the correct zero-dependency default, not pytest-by-fiat.
+        steps.append(("python_unittest", ["python", "-m", "unittest", "discover", "-s", "tests", "-p", "test*.py", "-v"], 300))
     return steps
 
 
@@ -110,6 +187,8 @@ def node_steps(repo: Path) -> list[tuple[str, list[str], int]]:
     if not manifest:
         return []
     scripts = manifest.get("scripts") if isinstance(manifest.get("scripts"), dict) else {}
+    dependency_maps = [manifest.get(name) for name in ("dependencies", "devDependencies", "optionalDependencies", "peerDependencies")]
+    has_dependencies = any(isinstance(value, dict) and value for value in dependency_maps)
     steps: list[tuple[str, list[str], int]] = []
     if (repo / "pnpm-lock.yaml").is_file():
         steps.append(("node_dependencies", ["corepack", "pnpm", "install", "--frozen-lockfile"], 360))
@@ -117,15 +196,14 @@ def node_steps(repo: Path) -> list[tuple[str, list[str], int]]:
     elif (repo / "yarn.lock").is_file():
         steps.append(("node_dependencies", ["corepack", "yarn", "install", "--immutable"], 360))
         runner = ["corepack", "yarn", "run"]
-    elif (repo / "package-lock.json").is_file():
+    elif (repo / "package-lock.json").is_file() or (repo / "npm-shrinkwrap.json").is_file():
         steps.append(("node_dependencies", ["npm", "ci"], 360))
         runner = ["npm", "run"]
-    elif (repo / "npm-shrinkwrap.json").is_file():
-        steps.append(("node_dependencies", ["npm", "ci"], 360))
+    elif has_dependencies:
+        steps.append(("node_dependencies", ["__NO_LOCKFILE__"], 0))
         runner = ["npm", "run"]
     else:
-        # Reproducible dependency install cannot be proven without a lockfile.
-        steps.append(("node_dependencies", ["__NO_LOCKFILE__"], 0))
+        # A dependency-free package does not need a lockfile merely to execute scripts.
         runner = ["npm", "run"]
     for script in ("test", "build"):
         if script in scripts:
@@ -153,13 +231,17 @@ def native_steps(repo: Path) -> list[tuple[str, list[str], int]]:
 def classify(steps: list[dict[str, Any]]) -> str:
     if not steps:
         return "NO_SUPPORTED_EXECUTION_CONTRACT"
-    material = [s for s in steps if s["status"] != "NOT_RUN_NO_LOCKFILE"]
+    incomplete_statuses = {
+        "NOT_RUN_NO_LOCKFILE", "NOT_RUN_UNDECLARED_TEST_DEPENDENCY",
+        "SKIPPED_DEPENDENCY_UNAVAILABLE",
+    }
+    material = [s for s in steps if s["status"] not in incomplete_statuses]
     if any(s["status"] in {"FAIL", "TIMEOUT", "TOOL_MISSING"} for s in material):
         return "BROKEN_EXECUTION_EVIDENCE"
-    if any(s["status"] == "NOT_RUN_NO_LOCKFILE" for s in steps):
-        # Other passing language checks do not erase an unreproducible Node contract.
+    if any(s["status"] in incomplete_statuses for s in steps):
         return "INCOMPLETE_EXECUTION_EVIDENCE"
-    if any(s["name"].endswith("test") or "pytest" in s["name"] for s in material):
+    test_names = {"python_unittest", "python_pytest", "go_test", "cargo_test", "maven_test", "gradle_test", "node_test"}
+    if any(s["name"] in test_names for s in material):
         return "TESTED_EXECUTION_EVIDENCE"
     return "BUILDABLE_EXECUTION_EVIDENCE"
 
@@ -179,7 +261,7 @@ def probe_repo(record: dict[str, Any], out: Path) -> dict[str, Any]:
             head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
         except Exception as exc:
             result = {
-                "schema": "glaciereq.crystallization.execution-probe.v1",
+                "schema": "glaciereq.crystallization.execution-probe.v2",
                 "repository": full_name,
                 "repository_id": record["id"],
                 "status": "CLONE_ERROR",
@@ -192,39 +274,29 @@ def probe_repo(record: dict[str, Any], out: Path) -> dict[str, Any]:
 
         env = clean_env(str(root / "home"))
         Path(env["HOME"]).mkdir(parents=True, exist_ok=True)
+        if (repo / "src").is_dir():
+            env["PYTHONPATH"] = str(repo / "src")
         specs = native_steps(repo)
         executed: list[dict[str, Any]] = []
         dependency_failed = False
         for name, command, timeout_s in specs:
             if command == ["__NO_LOCKFILE__"]:
-                executed.append({
-                    "name": name,
-                    "command": command,
-                    "status": "NOT_RUN_NO_LOCKFILE",
-                    "exit_code": None,
-                    "elapsed_s": 0,
-                    "output_sha256": hashlib.sha256(b"no-lockfile").hexdigest(),
-                    "output_tail": "Reproducible Node dependency installation refused because no lockfile was found.",
-                })
+                executed.append(synthetic_step(name, "NOT_RUN_NO_LOCKFILE", "Reproducible Node dependency installation refused because declared dependencies exist without a lockfile."))
                 dependency_failed = True
                 continue
-            if dependency_failed and name.startswith("node_") and name != "node_dependencies":
-                executed.append({
-                    "name": name,
-                    "command": command,
-                    "status": "SKIPPED_DEPENDENCY_UNAVAILABLE",
-                    "exit_code": None,
-                    "elapsed_s": 0,
-                    "output_sha256": hashlib.sha256(b"skipped-dependency").hexdigest(),
-                    "output_tail": "Skipped because the repository lacks a reproducible Node dependency lockfile.",
-                })
+            if command == ["__UNDECLARED_PYTEST__"]:
+                executed.append(synthetic_step(name, "NOT_RUN_UNDECLARED_TEST_DEPENDENCY", "Tests require pytest but the repository does not declare pytest in package metadata, requirements, pytest config, or its native CI install contract."))
+                dependency_failed = True
+                continue
+            if dependency_failed and (name.startswith("node_") or name.startswith("python_")) and "dependencies" not in name:
+                executed.append(synthetic_step(name, "SKIPPED_DEPENDENCY_UNAVAILABLE", "Skipped because a required reproducible dependency contract is unavailable."))
                 continue
             step = run_step(name, command, repo, env, timeout_s)
             executed.append(step)
-            if name in {"node_dependencies", "python_dependencies", "python_package_install"} and step["status"] != "PASS":
+            if (name.startswith("node_dependencies") or name.startswith("python_dependencies") or name in {"python_package_install", "python_test_dependencies"}) and step["status"] != "PASS":
                 dependency_failed = True
         result = {
-            "schema": "glaciereq.crystallization.execution-probe.v1",
+            "schema": "glaciereq.crystallization.execution-probe.v2",
             "repository": full_name,
             "repository_id": record["id"],
             "head_sha": head,
@@ -254,7 +326,7 @@ def scan_shard(registry_path: Path, output: Path, shard_index: int, shard_count:
         write_result(output, result)
         results.append(result)
     summary = {
-        "schema": "glaciereq.crystallization.execution-shard.v1",
+        "schema": "glaciereq.crystallization.execution-shard.v2",
         "shard_index": shard_index,
         "shard_count": shard_count,
         "repositories": len(results),
@@ -284,11 +356,12 @@ def merge(shards: Path, output: Path, expected: int) -> int:
             "head_sha": data.get("head_sha"),
             "status": data["status"],
             "failed_steps": [s["name"] for s in data.get("steps", []) if s["status"] in {"FAIL", "TIMEOUT", "TOOL_MISSING"}],
+            "incomplete_steps": [s["name"] for s in data.get("steps", []) if s["status"].startswith("NOT_RUN_") or s["status"].startswith("SKIPPED_")],
             "evidence_digest": data["evidence_digest"],
         })
     rows.sort(key=lambda r: r["repository"].lower())
     index = {
-        "schema": "glaciereq.crystallization.public-execution-index.v1",
+        "schema": "glaciereq.crystallization.public-execution-index.v2",
         "scope": "ACTIVE_NONFORK_NONARCHIVED_PUBLIC_ORIGINALS",
         "repository_count": len(rows),
         "expected_repository_count": expected,
