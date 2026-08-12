@@ -36,19 +36,28 @@ jobs:
           assert priorities['source_registry_digest'] == registry['registry_digest']
           assert priorities['source_repository_count'] == registry['repository_count']
           assert priorities['completion_claim_allowed'] is False
-          assert set(priorities['queues']) == {'GATE_DOMINANT','DEPLOYABLE_UNTESTED','SOURCE_UNTESTED','SOURCE_MISSING','ARCHIVE_LINEAGE','FORK_LINEAGE'}
+          expected = {'GATE_DOMINANT','DEPLOYABLE_UNTESTED','SOURCE_UNTESTED','SOURCE_MISSING','ARCHIVE_LINEAGE','FORK_LINEAGE'}
+          assert set(priorities['queues']) == expected
+          for name in expected:
+            file = Path('crystallization/queues') / f"{name.lower().replace('_', '-')}.json"
+            queue = json.loads(file.read_text())
+            assert queue['queue'] == name
+            assert queue['count'] == priorities['queue_counts'][name]
+            assert queue['source_registry_digest'] == registry['registry_digest']
+            assert queue['parent_queue_digest'] == priorities['queue_digest']
+            assert queue['completion_claim_allowed'] is False
           print(json.dumps(priorities['queue_counts'], sort_keys=True))
           PY
-      - name: Commit queue projection
+      - name: Commit queue projections
         shell: bash
         run: |
           set -euo pipefail
-          git add crystallization/public-estate-priorities.json
+          git add crystallization/public-estate-priorities.json crystallization/queues/*.json
           if git diff --cached --quiet; then
-            echo 'Priority projection unchanged.'
+            echo 'Priority projections unchanged.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'inventory: derive public Crystallization work queues'
+          git commit -m 'inventory: materialize public Crystallization queues'
           git push origin HEAD:main

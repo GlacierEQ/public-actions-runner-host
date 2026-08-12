@@ -36,10 +36,24 @@ def compact(repo: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def queue_document(name: str, items: list[dict[str, Any]], registry_digest: str, queue_digest: str) -> dict[str, Any]:
+    return {
+        "schema": "glaciereq.crystallization.public-queue.v1",
+        "queue": name,
+        "scope": "PUBLIC_OWNER_REPOSITORIES",
+        "source_registry_digest": registry_digest,
+        "parent_queue_digest": queue_digest,
+        "count": len(items),
+        "completion_claim_allowed": False,
+        "repositories": items,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--registry", default="crystallization/public-estate-registry.json")
     parser.add_argument("--output", default="crystallization/public-estate-priorities.json")
+    parser.add_argument("--queue-dir", default="crystallization/queues")
     args = parser.parse_args()
 
     registry = json.loads(Path(args.registry).read_text())
@@ -108,12 +122,22 @@ def main() -> int:
     }
     result["queue_digest"] = digest({"source_registry_digest": result["source_registry_digest"], "queues": queues})
     Path(args.output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+
+    queue_dir = Path(args.queue_dir)
+    queue_dir.mkdir(parents=True, exist_ok=True)
+    for name, items in queues.items():
+        queue_path = queue_dir / f"{name.lower().replace('_', '-')}.json"
+        queue_path.write_text(
+            json.dumps(queue_document(name, items, result["source_registry_digest"], result["queue_digest"]), indent=2, sort_keys=True) + "\n"
+        )
+
     print(json.dumps({
         "status": "PASS",
         "source_repository_count": result["source_repository_count"],
         "active_nonfork_nonarchived": result["active_nonfork_nonarchived"],
         "queue_counts": counts,
         "queue_digest": result["queue_digest"],
+        "queue_dir": str(queue_dir),
     }, indent=2, sort_keys=True))
     return 0
 
