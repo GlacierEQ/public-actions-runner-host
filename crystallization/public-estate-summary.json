@@ -1,0 +1,27 @@
+{
+  "archived": 40,
+  "completion_claim_allowed": false,
+  "disabled": 0,
+  "forks": 510,
+  "gate_surface_exceeds_source_surface": 7,
+  "next_required_phase": "SEMANTIC_RECONSTRUCTION_AND_CAPABILITY_GAP_ANALYSIS",
+  "owner": "GlacierEQ",
+  "phase0_complete": true,
+  "profile_public_repos": 670,
+  "public_only": true,
+  "recursive_tree_truncations_recovered": 0,
+  "registry_digest": "547724a1457f18f7897de8c3f4ff4147d8a0606e9e0745a5ccc81fe6775e7475",
+  "repository_count": 670,
+  "schema": "glaciereq.crystallization.public-estate-summary.v1",
+  "scope": "PUBLIC_OWNER_REPOSITORIES",
+  "statuses": {
+    "ARCHIVED_REQUIRES_LINEAGE": 40,
+    "DISCOVERED": 630,
+    "UNKNOWN": 0
+  },
+  "tree_errors": 0,
+  "with_deployment_surface": 241,
+  "with_gate_surface": 184,
+  "with_source": 635,
+  "with_tests": 431
+}
