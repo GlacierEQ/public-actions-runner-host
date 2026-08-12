@@ -15,5 +15,5 @@ jobs:
     uses: GlacierEQ/public-actions-runner-host/.github/workflows/reusable-quick-ci.yml@main
     with:
       repo_name: ${{ github.event.repository.name }}
-      language: python
-      verify_script: scripts/ci/public-action-face-ci.sh
+      language: javascript
+      verify_script: .github/verification/apex-evolution-proof.sh
