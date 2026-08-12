@@ -1,0 +1,49 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 54724,
+    "execution_surfaces": 1,
+    "files_read": 25,
+    "source_files": 6,
+    "test_files": 3,
+    "text_files": 25,
+    "text_lines": 1323,
+    "tracked_entries": 25,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "011c3ff6f198758a51c03472c6f7b4d3cc73e8899429c020c207a007d907101c",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 9,
+    ".md": 5,
+    ".py": 6,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "a31d8972810783cbae8d167281e5620dc6059789",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/cloudflare-edge-cap-mint",
+  "repository_id": 1329687779,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_edge_cap_mint.py"
+  ],
+  "tree_digest_phase0": "13f221228e8882848cf6682b9e124368aadba1aca71061f546dc125e97e74304",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 991959,
+    "execution_surfaces": 5,
+    "files_read": 223,
+    "source_files": 87,
+    "test_files": 12,
+    "text_files": 223,
+    "text_lines": 25273,
+    "tracked_entries": 223,
+    "workflow_files": 7
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "6dcba388f1d938aba854b45ef91b3f8207630282c0a02470bf424c65efbc5502",
+  "execution_surfaces": [
+    "flagship/rust/Cargo.toml",
+    "flagship/rust/src/main.rs",
+    "go.mod",
+    "pyproject.toml",
+    "src/tower/cli.py"
+  ],
+  "extension_counts": {
+    ".agda": 2,
+    ".c": 4,
+    ".cairo": 2,
+    ".capnp": 2,
+    ".cpp": 2,
+    ".cu": 3,
+    ".dl": 2,
+    ".dot": 1,
+    ".ex": 2,
+    ".f90": 2,
+    ".fbs": 2,
+    ".go": 4,
+    ".hs": 2,
+    ".java": 2,
+    ".jl": 2,
+    ".js": 1,
+    ".json": 49,
+    ".kt": 2,
+    ".lean": 4,
+    ".lock": 1,
+    ".lua": 2,
+    ".md": 20,
+    ".mlir": 2,
+    ".mod": 1,
+    ".mojo": 2,
+    ".odin": 2,
+    ".properties": 1,
+    ".proto": 5,
+    ".py": 49,
+    ".qasm": 2,
+    ".r": 2,
+    ".rs": 3,
+    ".sbt": 1,
+    ".scala": 2,
+    ".sh": 1,
+    ".sql": 3,
+    ".sv": 2,
+    ".swift": 2,
+    ".toml": 2,
+    ".ts": 3,
+    ".v": 4,
+    ".vhd": 2,
+    ".wat": 3,
+    ".yml": 10,
+    ".zig": 2,
+    "<none>": 4
+  },
+  "head_sha": "74c279cdf2bd8992a98a3e8631f672846bc1225b",
+  "marker_files": [
+    {
+      "blob_sha": "45e3db15e66823065bcb53861c429a3d02f666ca",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            89
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "tools/audit_advanced_exhibits.py"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/fiat-justitia",
+  "repository_id": 1323468703,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_advanced_exhibits.py",
+    "tests/test_claim_contracts.py",
+    "tests/test_cuda_nvidia_flagship.py",
+    "tests/test_flagship.py",
+    "tests/test_jax_grok_flagship.py",
+    "tests/test_main_ruleset_contract.py",
+    "tests/test_nervous_system_contract.py",
+    "tests/test_release_hardening.py",
+    "tests/test_security_boundaries.py",
+    "tests/test_spiral_engine.py",
+    "tests/test_supply_chain_contract.py",
+    "tests/test_tower_of_babel.py"
+  ],
+  "tree_digest_phase0": "3cb5972d98cf385a621f2555253e6a69434d79b83202eb0802f43f12a38d2774",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/advanced-exhibits.yml",
+    ".github/workflows/branch-hygiene.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/main-ruleset-contract.yml",
+    ".github/workflows/nervous-system-contract.yml",
+    ".github/workflows/spiral.yml",
+    ".github/workflows/tower.yml"
+  ]
+}

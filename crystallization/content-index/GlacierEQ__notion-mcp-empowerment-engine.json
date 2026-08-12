@@ -1,0 +1,101 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 240019,
+    "deployment_files": 5,
+    "execution_surfaces": 3,
+    "files_read": 48,
+    "source_files": 20,
+    "test_files": 3,
+    "text_files": 48,
+    "text_lines": 7311,
+    "tracked_entries": 48,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "Dockerfile",
+    "deploy-cosmic.sh",
+    "deploy-high-power-persistent.sh",
+    "scripts/deploy-extended-constellation.sh",
+    "scripts/deployment-monitor.js"
+  ],
+  "evidence_digest": "875ebf2913d91a1647a990b835913a6570a8f0a9a7705625bef355da34ec648b",
+  "execution_surfaces": [
+    "Dockerfile",
+    "package.json",
+    "src/index.ts"
+  ],
+  "extension_counts": {
+    ".cosmic": 1,
+    ".js": 2,
+    ".json": 11,
+    ".lionagi": 1,
+    ".md": 7,
+    ".py": 9,
+    ".sh": 5,
+    ".ts": 4,
+    ".txt": 2,
+    ".yml": 2,
+    "<none>": 4
+  },
+  "head_sha": "c7008ca071445dbdeb5880d50de7f6b416df9c7b",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {
+    "build": "tsc",
+    "deploy-cosmic": "chmod +x deploy-cosmic.sh && ./deploy-cosmic.sh",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "docker-down": "docker-compose -f docker-compose.cosmic.yml down",
+    "docker-logs": "docker-compose -f docker-compose.cosmic.yml logs -f",
+    "docker-rebuild": "docker-compose -f docker-compose.cosmic.yml down && docker-compose -f docker-compose.cosmic.yml build --no-cache && docker-compose -f docker-compose.cosmic.yml up -d",
+    "docker-up": "docker-compose -f docker-compose.cosmic.yml up -d",
+    "evidence-fusion": "curl -X POST localhost:8000/api/evidence/fusion -H 'Content-Type: application/json'",
+    "format": "prettier --write src/**/*.ts",
+    "github-intelligence": "curl -X POST localhost:8000/api/github/analyze -H 'Content-Type: application/json'",
+    "health-check": "curl http://localhost:8000/health",
+    "install-python": "pip3 install -r requirements.txt",
+    "legal-research": "curl -X POST localhost:8000/api/legal/research -H 'Content-Type: application/json'",
+    "lint": "eslint src --ext .ts",
+    "lionagi-metrics": "curl localhost:8000/api/metrics/lionagi",
+    "pineapple-scan": "curl -X POST localhost:8000/api/evidence/pineapple-scan -H 'Content-Type: application/json'",
+    "quantum-status": "curl localhost:8000/api/quantum/status",
+    "setup-all": "npm install && npm run install-python && npm run build",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "tro-workflow": "curl -X POST localhost:8000/api/tro/generate -H 'Content-Type: application/json' -d '{\"case_id\":\"1FDV-23-0001009\"}'",
+    "vr-courtroom": "open http://localhost:9000/vr"
+  },
+  "repository": "GlacierEQ/notion-mcp-empowerment-engine",
+  "repository_id": 1070019437,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_empower.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "5b1e8cfd79b4895977afec667c96f682f83e210590c79a20ebd0d5fe84798146",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

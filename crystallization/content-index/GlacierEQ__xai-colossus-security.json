@@ -1,0 +1,107 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 250323,
+    "files_read": 71,
+    "source_files": 33,
+    "test_files": 7,
+    "text_files": 71,
+    "text_lines": 6838,
+    "tracked_entries": 71,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "ac046b5866e6e1ecaaca40571871dfac2f4ed0245c1f3a5615dfd7010eb8cbae",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 14,
+    ".md": 14,
+    ".py": 32,
+    ".sh": 1,
+    ".yml": 2,
+    "<none>": 8
+  },
+  "head_sha": "2f6daf5735fdc973e8238a67efad8c45bf7b06b9",
+  "marker_files": [
+    {
+      "blob_sha": "9edf055aec54cf2f4a3a36f32cc5c3c8a25944d8",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            126
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "9205771eaf8d5ec6a12e6266f8c81191750a99fc",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            29
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "alpha/crypto/engine.py"
+    },
+    {
+      "blob_sha": "8226d718254d5473d39d1f5e09a2eda928c61392",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            68
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "src/crypto/engine.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 1,
+    "PLACEHOLDER": 2,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/xai-colossus-security",
+  "repository_id": 1248862320,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "access-control/tests/test_rbac.py",
+    "incident-response/tests/test_playbook.py",
+    "tests/test_adversarial.py",
+    "tests/test_crypto.py",
+    "tests/test_hydra.py",
+    "tests/test_portfolio_truth_surface.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "37799a712683a095c64f2221225293629db99b0c99950520306a2c3342051359",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/security-core-truth.yml"
+  ]
+}

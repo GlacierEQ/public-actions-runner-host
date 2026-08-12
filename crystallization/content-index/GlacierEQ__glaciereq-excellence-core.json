@@ -1,0 +1,75 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 28168,
+    "execution_surfaces": 1,
+    "files_read": 14,
+    "source_files": 9,
+    "test_files": 1,
+    "text_files": 14,
+    "text_lines": 874,
+    "tracked_entries": 14,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "61c2961bd0f65cc9d3083570473e639abad748d55cece10f52cea2dfd8c76413",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 1,
+    ".md": 1,
+    ".py": 9,
+    ".toml": 1,
+    ".yml": 1,
+    "<none>": 1
+  },
+  "head_sha": "c147c2259190ff639a6428b60d6b2bde740c4af1",
+  "marker_files": [
+    {
+      "blob_sha": "3f2ad790713f006c740a1ccf1f87337ec6c985e8",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            207
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "src/glaciereq_excellence_core.py"
+    },
+    {
+      "blob_sha": "9db69604abab2c6257de82ee6ac4705bea16a512",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            27
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "src/glaciereq_excellence_core/base.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 2
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/glaciereq-excellence-core",
+  "repository_id": 1329352030,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_core.py"
+  ],
+  "tree_digest_phase0": "5a988b0d88d65977c3936e5d302606d28e1237ca8f6c80765cc6b10c35405f71",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

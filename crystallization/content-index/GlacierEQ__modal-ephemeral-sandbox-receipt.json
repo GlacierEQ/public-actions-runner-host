@@ -1,0 +1,144 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 58029,
+    "execution_surfaces": 1,
+    "files_read": 23,
+    "source_files": 7,
+    "test_files": 4,
+    "text_files": 23,
+    "text_lines": 1618,
+    "tracked_entries": 23,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "41af1cb22c1319c5b71c61a44bfe84583f8122953b11e8445649d034e0df9ba7",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 7,
+    ".md": 4,
+    ".py": 7,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "8571a92c313fa0733b4c7f4736f190aced1adbc4",
+  "marker_files": [
+    {
+      "blob_sha": "9a39e6dbd733655f8976567ac4b017454bcacafc",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            106
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            91,
+            106
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "DEV_UP_INSTRUCTIONS.md"
+    },
+    {
+      "blob_sha": "ee671969ae6762b71ececcbab8653d3fd26bb973",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            29
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "675f31fe2030f06fb52922ef21e93f80bd1f9be6",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            34,
+            58
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/ephemeral_sandbox_receipt.py"
+    },
+    {
+      "blob_sha": "012ba74a8a637429b8f096ab426c578ca750ed8f",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            3
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "tests/test_ephemeral_sandbox_receipt.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "FUTURE_AGENT": 5,
+    "SCAFFOLD_ONLY": 3,
+    "SCAFFOLD_STUB": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/modal-ephemeral-sandbox-receipt",
+  "repository_id": 1329688328,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_ephemeral_sandbox_receipt.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "ae5cc79a5e5d0f5e7c945fa11e7031b681b46732164e5ad9f9736fbb10df1b59",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

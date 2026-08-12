@@ -1,0 +1,129 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 2,
+    "bytes_read": 413733,
+    "execution_surfaces": 4,
+    "files_read": 87,
+    "source_files": 43,
+    "test_files": 6,
+    "text_files": 85,
+    "text_lines": 12896,
+    "tracked_entries": 87,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "1be83ac7bb2b3e8aa6ee71967f4a98cea6a001715c95a35709bf8c7642780c76",
+  "execution_surfaces": [
+    "brain/server/package.json",
+    "brain/server/server.js",
+    "package.json",
+    "server.js"
+  ],
+  "extension_counts": {
+    ".example": 1,
+    ".gz": 1,
+    ".html": 2,
+    ".js": 28,
+    ".json": 12,
+    ".log": 1,
+    ".manifest": 1,
+    ".md": 19,
+    ".py": 4,
+    ".pyc": 1,
+    ".sh": 10,
+    ".sql": 1,
+    ".yaml": 1,
+    ".yml": 1,
+    "<none>": 4
+  },
+  "head_sha": "d7e1882344a815c0361f0e70fb560985eaba9695",
+  "marker_files": [
+    {
+      "blob_sha": "97190e7df7a352f9dad06b3969f5b062afdbaadd",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            69
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "PRIMARY_DRAFTER_DOCTRINE.md"
+    },
+    {
+      "blob_sha": "4a090087b27213a3c037a32c53d2379be42413f7",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            70
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "brain/server/routes/connectors.js"
+    },
+    {
+      "blob_sha": "c4ce439d17636d69a22d9b640a81bea7cd78011c",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            72
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "public/dashboard.html"
+    },
+    {
+      "blob_sha": "1c64cc955878e695b770df6951abf20fbadf218b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            9
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "quality.md"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 1,
+    "PLACEHOLDER": 3
+  },
+  "package_scripts": {
+    "check": "node --check server.js && node --check lib/provenance.js && node --check lib/ws-tickets.js && node --check middleware/security.js && node --check brain/agents/authority-safe-orchestrator.js && node --check routes/brain.js && node --check routes/agents.js && bash -n scripts/process-filings.sh",
+    "dev": "node server.js",
+    "start": "node server.js",
+    "test": "npm run test:truth-integrity",
+    "test:adversarial": "node --test tests/agent-authority.test.js tests/ingestion.test.js tests/dashboard-boundary.test.js",
+    "test:security": "node --test tests/security.test.js tests/agent-authority.test.js tests/dashboard-boundary.test.js",
+    "test:truth-integrity": "node --test tests/*.test.js",
+    "test:unit": "node --test tests/provenance.test.js tests/ws-tickets.test.js"
+  },
+  "repository": "GlacierEQ/legal-powerhouse",
+  "repository_id": 1323470958,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/agent-authority.test.js",
+    "tests/dashboard-boundary.test.js",
+    "tests/ingestion.test.js",
+    "tests/provenance.test.js",
+    "tests/security.test.js",
+    "tests/ws-tickets.test.js"
+  ],
+  "tree_digest_phase0": "2a3bdcdfb4b5391d6ea55af1c7347fdd9c6d722866132f678c3b1ca53adf611f",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

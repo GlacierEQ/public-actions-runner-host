@@ -1,0 +1,64 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 139200,
+    "files_read": 28,
+    "source_files": 11,
+    "test_files": 7,
+    "text_files": 28,
+    "text_lines": 3491,
+    "tracked_entries": 28,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "c8b28425f7f959f2ead0a18f445fe8922810240a57bd8607ab37ddaa38dd71b6",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 10,
+    ".md": 4,
+    ".py": 11,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "992964add70855fa18c885f84f777350885e2883",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/lockheed-dual-key-actuator-fence",
+  "repository_id": 1328440764,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_canonical_position_contract.py",
+    "tests/test_dual_key_fence.py",
+    "tests/test_evolution_contract.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_quorum_fence.py"
+  ],
+  "tree_digest_phase0": "74c0d99cc6aefbb816b31242de5e930e1d294e0989128dbb45ca609c711f455a",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

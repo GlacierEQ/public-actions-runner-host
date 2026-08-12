@@ -1,0 +1,82 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 76106,
+    "execution_surfaces": 1,
+    "files_read": 33,
+    "source_files": 14,
+    "test_files": 4,
+    "text_files": 33,
+    "text_lines": 2106,
+    "tracked_entries": 33,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "bd8965f8917228ac52662a0177a8421598c53c9603e56f926833c286dfee4f69",
+  "execution_surfaces": [
+    "go.mod"
+  ],
+  "extension_counts": {
+    ".go": 2,
+    ".json": 8,
+    ".md": 6,
+    ".mod": 1,
+    ".py": 11,
+    ".sh": 1,
+    ".yml": 2,
+    "<none>": 2
+  },
+  "head_sha": "7f8ca0a9d4e346b7350b30e2a9263a10b3baae26",
+  "marker_files": [
+    {
+      "blob_sha": "0bffad3a5a652372fad818b6946a783f4f6449cc",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            66
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "machine/excellence-state.json"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/spacex-pad-weather-gate",
+  "repository_id": 1298893525,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_public_truth.py",
+    "tests/test_weather_gate.py"
+  ],
+  "tree_digest_phase0": "a70c310fef89f8e6325f3fa702303981ec3c08a57b39c2064f4beb96fafe5dc1",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/public-truth.yml"
+  ]
+}

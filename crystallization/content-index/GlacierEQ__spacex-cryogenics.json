@@ -1,0 +1,63 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 102184,
+    "files_read": 36,
+    "source_files": 16,
+    "test_files": 5,
+    "text_files": 36,
+    "text_lines": 2919,
+    "tracked_entries": 36,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "0cd0e9e7f1d3ea8ce14eb4cbbd599ae49dfd9d5a94059d75ed78230f45fcb1a1",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".cpp": 1,
+    ".json": 9,
+    ".md": 8,
+    ".py": 15,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "b5341873a78d7c4d5b097f86139688447ad14131",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/spacex-cryogenics",
+  "repository_id": 1282819656,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_boiloff.py",
+    "tests/test_core.py",
+    "tests/test_cryogenics.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "880eb3020fda1c336e82bd1cdc76d07fb8510b7856ab6247f02ca48f451b688d",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

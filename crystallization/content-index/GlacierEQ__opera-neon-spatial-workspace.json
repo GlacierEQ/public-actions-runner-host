@@ -1,0 +1,57 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 68531,
+    "files_read": 28,
+    "source_files": 10,
+    "test_files": 3,
+    "text_files": 28,
+    "text_lines": 1891,
+    "tracked_entries": 28
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "1b1e7635ecd9cfa17116bd8ed49e53d68c567a7b423df6d315fe7dadc3822f2f",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".cpp": 1,
+    ".json": 9,
+    ".md": 7,
+    ".py": 9,
+    "<none>": 2
+  },
+  "head_sha": "209c741c50a062e03f961601b4ffd4208e436cf9",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/opera-neon-spatial-workspace",
+  "repository_id": 1311738876,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_neon.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "e0ec9247349d851dc9707bbaff4736fbd8c838a63eff326e45a55783f0f9f83d",
+  "unreadable": [],
+  "workflow_files": []
+}

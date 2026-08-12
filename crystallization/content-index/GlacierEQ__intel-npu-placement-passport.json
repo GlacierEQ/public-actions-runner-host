@@ -1,0 +1,144 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 58011,
+    "execution_surfaces": 1,
+    "files_read": 23,
+    "source_files": 7,
+    "test_files": 4,
+    "text_files": 23,
+    "text_lines": 1619,
+    "tracked_entries": 23,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "b9aa37f4ea667d15019f1aa0f6c4e0608485c457f6a59432dd769cb20be32bb4",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 7,
+    ".md": 4,
+    ".py": 7,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "e80173e957bb4cc914c92e57a3bf5715aeaaca2f",
+  "marker_files": [
+    {
+      "blob_sha": "6b963e28b26ced67b7e2a31ed302bf6cf0ff06fe",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            106
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            91,
+            106
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "DEV_UP_INSTRUCTIONS.md"
+    },
+    {
+      "blob_sha": "3c4ad61724243cc76bf798dc7ea9618481006521",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            30
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "dd159c08800ce0d2325998c35a55ac56d4965f11",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            34,
+            58
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/npu_placement_passport.py"
+    },
+    {
+      "blob_sha": "ac5ede85b0d6760b2171b629795c730594c92259",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            3
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "tests/test_npu_placement_passport.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "FUTURE_AGENT": 5,
+    "SCAFFOLD_ONLY": 3,
+    "SCAFFOLD_STUB": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/intel-npu-placement-passport",
+  "repository_id": 1329688137,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_npu_placement_passport.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "c0699d73f83c58056f397b6e174a8d98ca79fe23af8557a282c2777274b66da4",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

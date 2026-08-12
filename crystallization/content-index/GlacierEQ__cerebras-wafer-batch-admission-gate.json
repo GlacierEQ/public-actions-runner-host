@@ -1,0 +1,144 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 58311,
+    "execution_surfaces": 1,
+    "files_read": 23,
+    "source_files": 7,
+    "test_files": 4,
+    "text_files": 23,
+    "text_lines": 1619,
+    "tracked_entries": 23,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "ab1c8d54b9c3d2e018b9e054eef1124975bb127a3e2ae38e3fa37337ed69bcb2",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 7,
+    ".md": 4,
+    ".py": 7,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "ee27bbcb518b5babe6205971375c7e4b53ad4038",
+  "marker_files": [
+    {
+      "blob_sha": "e261533b915a29c755e5c2ebaf0266a367c59f45",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            106
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            91,
+            106
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "DEV_UP_INSTRUCTIONS.md"
+    },
+    {
+      "blob_sha": "7bcc5d4cd020997b62dde3e01378d910941d895e",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            30
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "cda7c9e578114f0ccd32186314f8d8732516ed29",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            34,
+            58
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/wafer_batch_admission_gate.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    },
+    {
+      "blob_sha": "c54d9e9681e28e4611252970d9e43cb6735a8caa",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            3
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "tests/test_wafer_batch_admission_gate.py"
+    }
+  ],
+  "marker_totals": {
+    "FUTURE_AGENT": 5,
+    "SCAFFOLD_ONLY": 3,
+    "SCAFFOLD_STUB": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/cerebras-wafer-batch-admission-gate",
+  "repository_id": 1329687776,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_wafer_batch_admission_gate.py"
+  ],
+  "tree_digest_phase0": "855939c33406a9167e98038e25b5c3a6e7482bcb5bf1c7ebd26850ad0d56a516",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

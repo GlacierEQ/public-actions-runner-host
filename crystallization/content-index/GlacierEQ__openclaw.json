@@ -1,0 +1,73 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 269756,
+    "deployment_files": 1,
+    "execution_surfaces": 3,
+    "files_read": 42,
+    "source_files": 18,
+    "test_files": 4,
+    "text_files": 42,
+    "text_lines": 7527,
+    "tracked_entries": 42
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "Dockerfile"
+  ],
+  "evidence_digest": "350c67f0aad0bbec118addf56f280f304093986c497f75436088b0396669797f",
+  "execution_surfaces": [
+    "Dockerfile",
+    "cli.py",
+    "server.py"
+  ],
+  "extension_counts": {
+    ".json": 11,
+    ".jsonl": 1,
+    ".mastermind-ultimate": 1,
+    ".md": 2,
+    ".megamind": 1,
+    ".megamind-ultimate": 1,
+    ".omni-agent": 1,
+    ".py": 18,
+    ".stealth-claw": 1,
+    ".stealth-microwave": 1,
+    ".txt": 1,
+    "<none>": 3
+  },
+  "head_sha": "e29d1eccbeda725cef2ee7816caea2f6816c899e",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/openclaw",
+  "repository_id": 1312457380,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_comprehensive.py",
+    "tests/test_openclaw.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "262560b2560f760cc51bb65a0d3e1011b594918c4b03d47ea0d80491978b9364",
+  "unreadable": [],
+  "workflow_files": []
+}

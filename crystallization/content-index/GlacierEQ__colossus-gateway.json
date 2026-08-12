@@ -1,0 +1,295 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 1,
+    "bytes_read": 1172451,
+    "deployment_files": 2,
+    "execution_surfaces": 18,
+    "files_read": 223,
+    "source_files": 162,
+    "test_files": 13,
+    "text_files": 222,
+    "text_lines": 29579,
+    "tracked_entries": 223,
+    "workflow_files": 3
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "DEPLOYMENT.md",
+    "vercel.json"
+  ],
+  "evidence_digest": "182b29feb39155993584f5a2ba7933ca67f75f8e2804c0b3e1c0651977367e57",
+  "execution_surfaces": [
+    "package.json",
+    "src/godmind/connectors/index.ts",
+    "src/index.ts",
+    "src/logic/index.ts",
+    "src/mycelium/index.ts",
+    "src/pistons/index.ts",
+    "src/server.ts",
+    "src/tools/index.ts",
+    "supabase/functions/apex-github-bootstrap-resume-v2/index.ts",
+    "supabase/functions/apex-github-bootstrap-resume/index.ts",
+    "supabase/functions/apex-github-oidc-broker/index.ts",
+    "supabase/functions/apex-github-oidc-estate-atlas-enrich/index.ts",
+    "supabase/functions/apex-github-oidc-estate-atlas-refresh/index.ts",
+    "supabase/functions/apex-github-repo-atlas-seed/index.ts",
+    "supabase/functions/apex-keymaster-broker/index.ts",
+    "supabase/functions/apex-notion-broker/index.ts",
+    "supabase/functions/apex-repo-atlas-redacted-receipt/index.ts",
+    "vercel.json"
+  ],
+  "extension_counts": {
+    ".ex": 1,
+    ".example": 2,
+    ".js": 1,
+    ".json": 21,
+    ".md": 31,
+    ".mjs": 3,
+    ".py": 32,
+    ".sh": 2,
+    ".sql": 17,
+    ".toml": 1,
+    ".ts": 106,
+    ".yml": 3,
+    "<none>": 3
+  },
+  "head_sha": "4581d1b894ae4588c1e60f784db66fe35b51a857",
+  "marker_files": [
+    {
+      "blob_sha": "b654f0fa38e4f0f6ded21a1aada5667284120edf",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            38
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "blob_sha": "c5052befe9a81cad36d714e713b2d3d6df7c1e00",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            46
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": ".github/workflows/public-truth.yml"
+    },
+    {
+      "blob_sha": "caf0ec362d778a693814bcbc7698302ca0454552",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            31
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "c57d312e6890a408e404e2a54329e4d0f4e289b0",
+      "markers": [
+        {
+          "count": 6,
+          "lines": [
+            163,
+            165
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "api/keymaster-connect.ts"
+    },
+    {
+      "blob_sha": "6005b63e60cf84e9e87e1fdee1833a47879859fa",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            63
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "api/notion-connect.ts"
+    },
+    {
+      "blob_sha": "5ed5b3cb6911fdd090c301b474bf8faedfe8998e",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            30
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "docs/receipts/2026-08-08-computer-user-family-lineage-verification.md"
+    },
+    {
+      "blob_sha": "060db948b59fad222033e1c15313d0494f841b28",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            90
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "docs/receipts/2026-08-08-portfolio-proof-rotor-11.md"
+    },
+    {
+      "blob_sha": "4f956388149dc77c65bdd6f5013d1cc722befbb0",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            266
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "src/bridge/toolBridge.ts"
+    },
+    {
+      "blob_sha": "3ce82271cabc962a80f9187ff6f89efef5191d98",
+      "markers": [
+        {
+          "count": 4,
+          "lines": [
+            108,
+            112,
+            116,
+            140
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "src/godmind/userscript.user.js"
+    },
+    {
+      "blob_sha": "e2a4df320ca22849d15574dd1ea25d6dec050b49",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "src/integrations/connector_registry.py"
+    },
+    {
+      "blob_sha": "57453ab46ea5ac243facfd050fe41930eb9eb901",
+      "markers": [
+        {
+          "count": 4,
+          "lines": [
+            134,
+            146,
+            158,
+            170
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "src/memory/gauntlet_patch.py"
+    },
+    {
+      "blob_sha": "e13ca900d7311ac54693954b6d811f2908026c22",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            95
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/memory/memory_router.py"
+    },
+    {
+      "blob_sha": "414109f1913e63376201ae15f800690f9fe4634c",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            163
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/memory/pinecone_client.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "FUTURE_AGENT": 2,
+    "NOT_IMPLEMENTED": 6,
+    "PLACEHOLDER": 16,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {
+    "audit:prod": "npm audit --omit=dev --audit-level=high",
+    "build": "npm run typecheck:api && npm test && tsc",
+    "check:config": "node scripts/check-config.mjs",
+    "postinstall": "node scripts/vercel-install-gate.mjs",
+    "start": "tsx src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "typecheck:api": "tsc -p tsconfig.api.json",
+    "verify": "npm run typecheck && npm run typecheck:api && npm test && npm run audit:prod && npm run verify:public",
+    "verify:public": "node scripts/verify-public-surface.mjs"
+  },
+  "repository": "GlacierEQ/colossus-gateway",
+  "repository_id": 1232784516,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "src/energy/tests/test_energy.py",
+    "src/index.test.ts",
+    "src/integrations/tests/test_connector_registry.py",
+    "src/memory/tests/test_memory_hooks.py",
+    "src/memory/tests/test_memory_router.py",
+    "src/remote.test.ts",
+    "tests/boxBridge.test.ts",
+    "tests/keymasterClient.test.ts",
+    "tests/keymasterOidcBrokerSource.test.ts",
+    "tests/securityHardening.test.ts",
+    "tests/test_adversarial.py",
+    "tests/test_gateway_surface.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "6c12a77d707368cfff91a6f64d163be8fa09bc1108e40863f923a5fa2a82e483",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/gauntlet-memory-ci.yml",
+    ".github/workflows/public-truth.yml"
+  ]
+}

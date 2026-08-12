@@ -1,0 +1,127 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 189000,
+    "files_read": 71,
+    "source_files": 29,
+    "test_files": 8,
+    "text_files": 71,
+    "text_lines": 4624,
+    "tracked_entries": 71,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "b35c55c6c31ddefac12cf78a9a8894de62851406eb5fc2885db443b43824288f",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".bak": 1,
+    ".json": 21,
+    ".jsonl": 1,
+    ".md": 10,
+    ".py": 28,
+    ".sh": 1,
+    ".yml": 2,
+    "<none>": 7
+  },
+  "head_sha": "676d6b7d1912d116f0f9204dd7aca14d03a00f90",
+  "marker_files": [
+    {
+      "blob_sha": "079244b1e92fc6b8f26b77bff2ebeda1a602da05",
+      "markers": [
+        {
+          "count": 5,
+          "lines": [
+            96,
+            97,
+            98,
+            99,
+            100
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "36190df1c80515568baefaae9d5b2e9357c02aab",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            22
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "gauntlet_integration/server_gauntlet.py"
+    },
+    {
+      "blob_sha": "29d87d9b08f14d5ac5a8962b5e2eaedd9e0156d7",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            130
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "server_inventory.py"
+    },
+    {
+      "blob_sha": "6b219432e44c09bf2e153f58bbe823e88584546a",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            44
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "telemetry-feeds/feed_publisher.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 5,
+    "PLACEHOLDER": 3,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/xai-colossus-servers",
+  "repository_id": 1248846708,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "fleet/tests/test_fleet_manager.py",
+    "tests/test_adversarial.py",
+    "tests/test_diag_and_feeds.py",
+    "tests/test_portfolio_truth_surface.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_rack_planner.py",
+    "tests/test_server_inventory.py",
+    "tests/test_server_logic.py"
+  ],
+  "tree_digest_phase0": "85fd208747480f5c6f342949fc735544c1dc21c3be7f3c23b99665df49841d9c",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/servers-core-truth.yml"
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 58836,
+    "execution_surfaces": 1,
+    "files_read": 23,
+    "source_files": 7,
+    "test_files": 4,
+    "text_files": 23,
+    "text_lines": 1618,
+    "tracked_entries": 23,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "dc3c34ddc17690c892edd85d424bcd456f080643b4aaa3d5161fd215026020f6",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 7,
+    ".md": 4,
+    ".py": 7,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "37520d13feb2c6d65ba3e0a6fe701245202ffc55",
+  "marker_files": [
+    {
+      "blob_sha": "d6fe0c1f9d690113f25fdb7fe82c6095fb178650",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            106
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            91,
+            106
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "DEV_UP_INSTRUCTIONS.md"
+    },
+    {
+      "blob_sha": "0dd3885fc29a9a8ebaeceb4981809610c9f52463",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            29
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "0e67c1ca4c21afd9c1884271e6831734d57373cd",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            34,
+            58
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/open_model_fidelity_passport.py"
+    },
+    {
+      "blob_sha": "d6e05ad7678ddf198748c67c20154256658e927c",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            3
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "tests/test_open_model_fidelity_passport.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "FUTURE_AGENT": 5,
+    "SCAFFOLD_ONLY": 3,
+    "SCAFFOLD_STUB": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/together-ai-open-model-fidelity-passport",
+  "repository_id": 1329688777,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_open_model_fidelity_passport.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "ff5571e1269dc5360e13b93d99fd15f7c610fe91d450dbe74145ef98a3a41c1f",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 58485,
+    "execution_surfaces": 1,
+    "files_read": 23,
+    "source_files": 7,
+    "test_files": 4,
+    "text_files": 23,
+    "text_lines": 1618,
+    "tracked_entries": 23,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "467e4e6318491c1ce07298df7d1d675b492f604b2da42d76b65b02c6cdce12a1",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 7,
+    ".md": 4,
+    ".py": 7,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "a419eb6df796653cec98584c0699391d1cad7b7e",
+  "marker_files": [
+    {
+      "blob_sha": "e5380dd76eb69bbb17167c7ba4e5ce194f779f04",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            106
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            91,
+            106
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "DEV_UP_INSTRUCTIONS.md"
+    },
+    {
+      "blob_sha": "17b03f239b1a38d63f38e5b6bfd545fe304a8409",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            29
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "01525dffdd19207291500e6711e929699c9de46a",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            1
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            34,
+            58
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/mission_assurance_gateway.py"
+    },
+    {
+      "blob_sha": "781b6ef3bb76607b51718609fdf8aac3ff55c7cf",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            3
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "tests/test_mission_assurance_gateway.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "FUTURE_AGENT": 5,
+    "SCAFFOLD_ONLY": 3,
+    "SCAFFOLD_STUB": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/lockheed-martin-mission-assurance-gateway",
+  "repository_id": 1329688259,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_mission_assurance_gateway.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "fd4ee24a714217065e89a4f0ffdac09f63d08ec917ff12f999feae8072c5ab2b",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

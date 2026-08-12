@@ -1,0 +1,49 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 39274,
+    "execution_surfaces": 1,
+    "files_read": 13,
+    "source_files": 6,
+    "test_files": 4,
+    "text_files": 13,
+    "text_lines": 1199,
+    "tracked_entries": 13,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "b61f9d9d2988827cbdc898e1fbbd60c8cbb45207e7fff9c98ddd5f3e22df6a3f",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".md": 2,
+    ".py": 6,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "e19dea2fe713d0be9bab1a43f7ec2585dd21546e",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/amd-hetero-placement-contract",
+  "repository_id": 1329687670,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_completion.py",
+    "tests/test_hetero_placement_contract.py"
+  ],
+  "tree_digest_phase0": "e099491a87b9c0b18359288d8048ce2ea55e12b57ce89865735993686eda7288",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 1,
+    "bytes_read": 640177,
+    "execution_surfaces": 1,
+    "files_read": 142,
+    "source_files": 104,
+    "test_files": 18,
+    "text_files": 141,
+    "text_lines": 16946,
+    "tracked_entries": 142,
+    "workflow_files": 3
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "e38220aaa7e6604aa74bbae0ee51bf4150da77625e4ed58443f1bb59b9281567",
+  "execution_surfaces": [
+    "Cargo.toml"
+  ],
+  "extension_counts": {
+    ".example": 1,
+    ".json": 13,
+    ".jsonl": 2,
+    ".md": 14,
+    ".py": 100,
+    ".rs": 3,
+    ".sh": 1,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 3,
+    "<none>": 3
+  },
+  "head_sha": "c00d46a8bdc5a50966c384b640362066a1c9372e",
+  "marker_files": [
+    {
+      "blob_sha": "5c6809fd5ee1302ff64f1f55f30829f51e03c8b7",
+      "markers": [
+        {
+          "count": 4,
+          "lines": [
+            96,
+            97,
+            98,
+            99
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 4,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/xai-colossus-energy",
+  "repository_id": 1248866166,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "compliance/tests/test_emissions.py",
+    "src/memory/tests/__init__.py",
+    "src/memory/tests/test_energy_memory_bridge.py",
+    "src/memory/tests/test_memory_bridge.py",
+    "tests/energy_optimizer_rust.rs",
+    "tests/test_adversarial.py",
+    "tests/test_energy_balancer_mcp.py",
+    "tests/test_energy_optimizer.py",
+    "tests/test_grid_balancer.py",
+    "tests/test_megapack_controller.py",
+    "tests/test_megapack_model.py",
+    "tests/test_megapack_state_machine.py",
+    "tests/test_portfolio_truth_surface.py",
+    "tests/test_power_budget.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_pue_tracker.py",
+    "tests/test_pue_tracker_v2.py",
+    "tests/test_supabase_telemetry.py"
+  ],
+  "tree_digest_phase0": "9545577c358f35eb1469c1203787f7fb584cadabbb1fc69778ebbc608fcff824",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/energy-core-truth.yml",
+    ".github/workflows/memory-health.yml"
+  ]
+}

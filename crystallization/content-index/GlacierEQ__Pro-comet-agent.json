@@ -1,0 +1,161 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 2,
+    "bytes_read": 625918,
+    "deployment_files": 3,
+    "execution_surfaces": 7,
+    "files_read": 86,
+    "source_files": 39,
+    "symlinks": 1,
+    "test_files": 4,
+    "text_files": 84,
+    "text_lines": 16001,
+    "tracked_entries": 87,
+    "workflow_files": 1
+  },
+  "coverage_complete": false,
+  "default_branch": "main",
+  "deployment_files": [
+    "DEPLOYMENT_INTEGRATION_REPORT.md",
+    "Dockerfile",
+    "vercel.json"
+  ],
+  "evidence_digest": "c96563933fda82dc63782266c00544049d56c14e4a99986d155961a8d36dc468",
+  "execution_surfaces": [
+    "Dockerfile",
+    "apex-github-worker/apex-github-worker/src/index.ts",
+    "apex-github-worker/package.json",
+    "package.json",
+    "src/index.ts",
+    "src/server/app.ts",
+    "vercel.json"
+  ],
+  "extension_counts": {
+    ".example": 1,
+    ".ipynb": 1,
+    ".json": 16,
+    ".md": 21,
+    ".prisma": 1,
+    ".py": 17,
+    ".sh": 1,
+    ".toml": 1,
+    ".ts": 21,
+    ".yml": 1,
+    "<none>": 5
+  },
+  "head_sha": "670ce817bd1df5f0f491413386d079ced25ee6c7",
+  "marker_files": [
+    {
+      "blob_sha": "ab7fca33671289acab5d4f580a2e47e5bed747f9",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            3
+          ],
+          "marker": "TODO"
+        },
+        {
+          "count": 1,
+          "lines": [
+            3
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "HIRE_EXCLUDE.md"
+    },
+    {
+      "blob_sha": "5366c5c5bd9115ce5c20fb469e55183ba161bd0a",
+      "markers": [
+        {
+          "count": 22,
+          "lines": [
+            1
+          ],
+          "marker": "TODO"
+        },
+        {
+          "count": 6,
+          "lines": [
+            1
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "modules/universal_tools_framework.py"
+    },
+    {
+      "blob_sha": "8b90d3d4adb106c9cf336beab1e9d184e234a88b",
+      "markers": [
+        {
+          "count": 2,
+          "lines": [
+            73
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "src/workflows/mymap/mymapWorkflow.ts"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 7,
+    "PLACEHOLDER": 2,
+    "SKIP_ALL": 1,
+    "TODO": 23
+  },
+  "package_scripts": {
+    "browsers:install": "npx playwright install chromium",
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "docker:build": "docker build -t comet-agent .",
+    "docker:run": "docker run -p 8787:8787 comet-agent",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:e2e": "jest --testPathPattern=e2e",
+    "test:watch": "jest --watch"
+  },
+  "repository": "GlacierEQ/Pro-comet-agent",
+  "repository_id": 1260815818,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCAN_INCOMPLETE",
+  "test_files": [
+    "src/__tests__/smoke.test.ts",
+    "tests/test_adversarial.py",
+    "tests/test_comet_agent.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "032672683044bdb0154eb8abedb20b15cebe55da4497830557f7df887fe5df82",
+  "unreadable": [
+    {
+      "path": "skills",
+      "reason": "FileNotFoundError"
+    }
+  ],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

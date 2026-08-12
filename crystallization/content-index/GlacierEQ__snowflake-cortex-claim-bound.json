@@ -1,0 +1,64 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 71856,
+    "files_read": 29,
+    "source_files": 10,
+    "test_files": 6,
+    "text_files": 29,
+    "text_lines": 1763,
+    "tracked_entries": 29,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "aa0adca613e5e2e95bedd88a8a0ddce665a03994244f01d3c8104fee92068bc9",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 10,
+    ".md": 5,
+    ".py": 9,
+    ".sql": 1,
+    ".yml": 1,
+    "<none>": 3
+  },
+  "head_sha": "e02ba22ef0a6a36f6ef6b166b61f60a4698d5757",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/snowflake-cortex-claim-bound",
+  "repository_id": 1328441657,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_canonical_position_contract.py",
+    "tests/test_cortex_bound.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_sql_fixture.py"
+  ],
+  "tree_digest_phase0": "bfd5e6822c70399814c3817190b7cfd6383ace0afbd1fe456b2cd6f05d19bfad",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 23400,
+    "execution_surfaces": 1,
+    "files_read": 16,
+    "source_files": 5,
+    "test_files": 3,
+    "text_files": 16,
+    "text_lines": 620,
+    "tracked_entries": 16,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "3dd041e0c645bd7346e848434fb21991ec23b50fbae7677124a9f651803decca",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 2,
+    ".md": 4,
+    ".py": 5,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "586b36fcaa3e2136a3f3fe24d6c92f44ad6cafe1",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/replicate-model-version-pin-gate",
+  "repository_id": 1329688552,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_model_version_pin_gate.py"
+  ],
+  "tree_digest_phase0": "e1131cc87aca6dfc4e7472d8604e2097a462dfef8aa72c30ca7994ff56451510",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 865907,
+    "execution_surfaces": 5,
+    "files_read": 230,
+    "source_files": 99,
+    "test_files": 14,
+    "text_files": 230,
+    "text_lines": 20071,
+    "tracked_entries": 230,
+    "workflow_files": 7
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "3652f9e8f14965c5018366d510e5d2ff8f0b20059e2f19dd4bb0afde5bac5d77",
+  "execution_surfaces": [
+    "flagship/rust/Cargo.toml",
+    "flagship/rust/src/main.rs",
+    "go.mod",
+    "pyproject.toml",
+    "src/tower/cli.py"
+  ],
+  "extension_counts": {
+    ".agda": 2,
+    ".c": 4,
+    ".cairo": 2,
+    ".capnp": 2,
+    ".clj": 2,
+    ".cpp": 2,
+    ".cs": 2,
+    ".cu": 3,
+    ".dart": 2,
+    ".dl": 2,
+    ".dot": 1,
+    ".erl": 2,
+    ".ex": 2,
+    ".f90": 2,
+    ".fbs": 2,
+    ".go": 4,
+    ".hs": 2,
+    ".java": 2,
+    ".jl": 2,
+    ".js": 1,
+    ".json": 41,
+    ".kt": 3,
+    ".lean": 4,
+    ".lock": 1,
+    ".lua": 4,
+    ".md": 15,
+    ".mlir": 2,
+    ".mod": 1,
+    ".mojo": 2,
+    ".odin": 2,
+    ".properties": 1,
+    ".proto": 5,
+    ".py": 52,
+    ".qasm": 2,
+    ".r": 2,
+    ".rs": 3,
+    ".scala": 4,
+    ".sh": 3,
+    ".sol": 2,
+    ".sql": 3,
+    ".sv": 2,
+    ".swift": 2,
+    ".toml": 2,
+    ".ts": 3,
+    ".v": 4,
+    ".vhd": 2,
+    ".wat": 3,
+    ".yml": 10,
+    ".zig": 2,
+    "<none>": 4
+  },
+  "head_sha": "f7e132c9717eda574f3bb5f643b2f983309f319f",
+  "marker_files": [
+    {
+      "blob_sha": "a9a3651052decbe0a5ad2b9d47abaf74c4492e89",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            125
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "tools/audit_advanced_exhibits.py"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/the-tower-of-babel",
+  "repository_id": 1316402874,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_advanced_exhibits.py",
+    "tests/test_adversarial.py",
+    "tests/test_claim_contracts.py",
+    "tests/test_cuda_nvidia_flagship.py",
+    "tests/test_evidence_promotion_requirements.py",
+    "tests/test_flagship.py",
+    "tests/test_jax_grok_flagship.py",
+    "tests/test_main_ruleset_contract.py",
+    "tests/test_nervous_system_contract.py",
+    "tests/test_release_hardening.py",
+    "tests/test_security_boundaries.py",
+    "tests/test_spiral_engine.py",
+    "tests/test_supply_chain_contract.py",
+    "tests/test_tower_of_babel.py"
+  ],
+  "tree_digest_phase0": "39d0493c763ce306f43959afee1ddd6b856ff396cdb9c4da0cb79d2a2ae38c75",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/advanced-exhibits.yml",
+    ".github/workflows/branch-hygiene.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/main-ruleset-contract.yml",
+    ".github/workflows/nervous-system-contract.yml",
+    ".github/workflows/spiral.yml",
+    ".github/workflows/tower.yml"
+  ]
+}

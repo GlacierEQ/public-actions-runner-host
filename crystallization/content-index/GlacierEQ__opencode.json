@@ -1,0 +1,44 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 198788,
+    "execution_surfaces": 1,
+    "files_read": 43,
+    "source_files": 27,
+    "test_files": 2,
+    "text_files": 43,
+    "text_lines": 6142,
+    "tracked_entries": 43
+  },
+  "coverage_complete": true,
+  "default_branch": "master",
+  "deployment_files": [],
+  "evidence_digest": "5e6cdaedd00b5ca5001028c34ed822af872b174b1c069f5adebea35fd8628728",
+  "execution_surfaces": [
+    "quantum_nexus/mcp/server.py"
+  ],
+  "extension_counts": {
+    ".md": 13,
+    ".py": 26,
+    ".sh": 1,
+    ".template": 1,
+    ".txt": 1,
+    "<none>": 1
+  },
+  "head_sha": "d33c77644e6ebb883580ef7f6691acae2c60ece9",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/opencode",
+  "repository_id": 1321358481,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "mastermind/tests/__init__.py",
+    "mastermind/tests/test_runtime.py"
+  ],
+  "tree_digest_phase0": "19e31ef894cd59f4946d9ba50d83cfd085c9538b4b23d03db6a1c079606cf3ad",
+  "unreadable": [],
+  "workflow_files": []
+}

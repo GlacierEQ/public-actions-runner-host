@@ -1,0 +1,93 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 90867,
+    "execution_surfaces": 2,
+    "files_read": 29,
+    "source_files": 10,
+    "test_files": 3,
+    "text_files": 29,
+    "text_lines": 2438,
+    "tracked_entries": 29,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "7c0dc6375e0186849c51e47bbf280573538d0dd6aa50f19f9d8c26e3b96dc187",
+  "execution_surfaces": [
+    "Cargo.toml",
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 8,
+    ".md": 6,
+    ".py": 9,
+    ".rs": 1,
+    ".toml": 2,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "43fc94f2a4932ea04dca607120c764ef3240b1c9",
+  "marker_files": [
+    {
+      "blob_sha": "d498877cdf3decff2fb633f32a25dd20b12b0c15",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            20
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "bac9d9b4d8a39b152bd22b914c27d3d33331743c",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            9
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "machine/excellence-state.json"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 2,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/spacex-conjunction-sentinel",
+  "repository_id": 1298893363,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_conjunction.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "d2ed891f4dd382b875e54a858bdd21f672eaa57cb3869f52bbf9ae8cead76e8e",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

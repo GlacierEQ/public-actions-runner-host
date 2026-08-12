@@ -1,0 +1,292 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 3,
+    "bytes_read": 3180980,
+    "deployment_files": 2,
+    "execution_surfaces": 8,
+    "files_read": 538,
+    "sensitive_named_paths": 1,
+    "source_files": 108,
+    "symlinks": 11,
+    "test_files": 8,
+    "text_files": 535,
+    "text_lines": 70528,
+    "tracked_entries": 549,
+    "workflow_files": 5
+  },
+  "coverage_complete": false,
+  "default_branch": "main",
+  "deployment_files": [
+    "services/supermemory-github-bridge/Dockerfile",
+    "services/supermemory-github-bridge/vercel.json"
+  ],
+  "evidence_digest": "de13fbaa539d536d1f3ba7ce8e1b7aa28a96f92282a50de0a2d07ac4960da5ee",
+  "execution_surfaces": [
+    "BRAIN/ACTORS/package.json",
+    "BRAIN/CONNECTORS/package.json",
+    "package.json",
+    "services/supermemory-github-bridge/Dockerfile",
+    "services/supermemory-github-bridge/package.json",
+    "services/supermemory-github-bridge/src/server.mjs",
+    "services/supermemory-github-bridge/vercel.json",
+    "supabase/functions/memory-federation-dispatcher/index.ts"
+  ],
+  "extension_counts": {
+    ".csv": 4,
+    ".docx": 12,
+    ".example": 1,
+    ".gz": 1,
+    ".json": 130,
+    ".md": 208,
+    ".mermaid": 1,
+    ".mjs": 78,
+    ".py": 22,
+    ".sql": 7,
+    ".tex": 5,
+    ".ts": 1,
+    ".txt": 52,
+    ".yaml": 1,
+    ".yml": 5,
+    "<none>": 10
+  },
+  "head_sha": "7fc91626f8c98c015d9de0812aabc340ac99709b",
+  "marker_files": [
+    {
+      "blob_sha": "a3a549ce38f2c4be08f05ba27417f940a7607840",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            15
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "BONE_FRACTURE_ADMISSIONS.txt"
+    },
+    {
+      "blob_sha": "584605db3ebead9cf922746a01952e5bc39560d0",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            5656
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "BRAIN/CONNECTORS/CONNECTOR_FABRIC.json"
+    },
+    {
+      "blob_sha": "e2e270e88a88d1d2689cf63eb9182b8028552a49",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            90
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "BRAIN/CONNECTORS/migrate_connector_fabric_v1_2.mjs"
+    },
+    {
+      "blob_sha": "d3d0f11e7fb25a92f55e7dcbe9854c5468e35a91",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            77
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "BRAIN/RUNTIME_INTEGRATION_STATUS.md"
+    },
+    {
+      "blob_sha": "bd86da09a7d816973ecee8169962332a02b8acf5",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "COERCIVE_CONTROL_LOG.txt"
+    },
+    {
+      "blob_sha": "20f61ab8754eca7a1e4d2dbe717e632e41508f8d",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            22
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "DECLARATION_CLAIMS_FOR_CROSS_REF.txt"
+    },
+    {
+      "blob_sha": "e10b0dd919aeb5f31cf1ba5981fd800ef6137429",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            21
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "TERESA_DECL_HARVEST.txt"
+    },
+    {
+      "blob_sha": "b22a9b25dd467173e62b6dcb0c87150a33f37f0c",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            63
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "connectors/pro_comet_notion_sync.py"
+    },
+    {
+      "blob_sha": "83aca5a42f12cf55691dc48b75c0ea6bf0f6fe37",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            88
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "forensic_tools/aegis_whisperx_transcriber.py"
+    },
+    {
+      "blob_sha": "9a66d9bb8365a78aab090b69b592fa978b494776",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            50
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "services/supermemory-github-bridge/README.md"
+    },
+    {
+      "blob_sha": "f2adda2f042752852107ed6c126afd21b3143111",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            108
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "supabase/functions/memory-federation-dispatcher/index.ts"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 2,
+    "PLACEHOLDER": 4,
+    "SKIP_ALL": 1,
+    "TODO": 5
+  },
+  "package_scripts": {
+    "test": "npm --prefix BRAIN/ACTORS install --ignore-scripts --no-audit --no-fund && npm --prefix BRAIN/ACTORS test && npm --prefix BRAIN/CONNECTORS ci --ignore-scripts --no-audit --no-fund && npm --prefix BRAIN/CONNECTORS test"
+  },
+  "repository": "GlacierEQ/AEON-777",
+  "repository_id": 1260408632,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [
+    "CREDENTIAL_ROTATION_GUIDE.md"
+  ],
+  "status": "CONTENT_SCAN_INCOMPLETE",
+  "test_files": [
+    "BRAIN/CONNECTORS/memory_federation/tests/federation.test.mjs",
+    "services/supermemory-github-bridge/test/app.test.mjs",
+    "services/supermemory-github-bridge/test/bridge.test.mjs",
+    "services/supermemory-github-bridge/test/helpers.mjs",
+    "services/supermemory-github-bridge/test/ledger.test.mjs",
+    "tests/test_adversarial.py",
+    "tests/test_moc_index.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "eb84c2d843735d3121c3e8adbeba996e563ba835fe139478b89d85020bf5668a",
+  "unreadable": [
+    {
+      "path": "BAR_COMPLAINTS/BAR_COMPLAINT_BROWER_3396.md",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "BAR_COMPLAINTS/BAR_COMPLAINT_BROWER_3396_1.md",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "BAR_COMPLAINTS/DOCS-0024-20260423-odc_complaint_brower.pdf",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "BAR_COMPLAINTS/DUPE-BAR_COMPLAINT_BROWER_3396.md",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "COGNITIVE_DIRECTIVES.json",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "EX_PARTE_COMMUNICATIONS/UNCATEGORIZED_Brower_and_Yamatani.m4a",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "EX_PARTE_COMMUNICATIONS/UNCATEGORIZED_Brower_and_Yamatani_1.m4a",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "EX_PARTE_COMMUNICATIONS/UNCATEGORIZED_Brower_and_Yamatani_2.m4a",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "EX_PARTE_COMMUNICATIONS/UNCATEGORIZED_Brower_and_Yamatani_3.m4a",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "EX_PARTE_COMMUNICATIONS/UNDATED_DOC_Brower_and_Yamatanim4a.m4a",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "EX_PARTE_COMMUNICATIONS/UNDATED_DOC_Brower_and_Yamatanim4a_copy1.m4a",
+      "reason": "FileNotFoundError"
+    }
+  ],
+  "workflow_files": [
+    ".github/workflows/casebrain-doer-gate.yml",
+    ".github/workflows/ci-cd-pipeline.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/fileboss-automation.yml",
+    ".github/workflows/supermemory-github-bridge-ci.yml"
+  ]
+}

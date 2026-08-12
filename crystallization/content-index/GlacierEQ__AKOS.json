@@ -1,0 +1,201 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 1420212,
+    "deployment_files": 2,
+    "execution_surfaces": 6,
+    "files_read": 373,
+    "source_files": 94,
+    "test_files": 31,
+    "text_files": 373,
+    "text_lines": 37452,
+    "tracked_entries": 373,
+    "workflow_files": 13
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "render.yaml",
+    "runtime/Dockerfile"
+  ],
+  "evidence_digest": "dcce90c857d70744c89de9f6b6d925330d7d752905b988050a836fdf63c77c4a",
+  "execution_surfaces": [
+    "career_intelligence/cli.py",
+    "package.json",
+    "pyproject.toml",
+    "runtime/Dockerfile",
+    "runtime/package.json",
+    "runtime/src/index.ts"
+  ],
+  "extension_counts": {
+    ".css": 1,
+    ".example": 1,
+    ".html": 1,
+    ".ini": 1,
+    ".json": 100,
+    ".md": 140,
+    ".proto": 1,
+    ".py": 86,
+    ".sh": 1,
+    ".sql": 2,
+    ".toml": 1,
+    ".ts": 4,
+    ".txt": 1,
+    ".yaml": 16,
+    ".yml": 13,
+    "<none>": 4
+  },
+  "head_sha": "eac3cab001306225b99da41c37370528331966dd",
+  "marker_files": [
+    {
+      "blob_sha": "757a0d10d8de7e4f2bef7ecd0724678a3e5b14cc",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            96
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        },
+        {
+          "count": 1,
+          "lines": [
+            97
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": ".integrity/test_watchdog_daemon.py"
+    },
+    {
+      "blob_sha": "5735bdd70baad571025e5f3c297ce3854e097b76",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            19
+          ],
+          "marker": "PLACEHOLDER"
+        },
+        {
+          "count": 1,
+          "lines": [
+            25
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "docs/prompts/AKOS_FORGE/03_BUILD.md"
+    },
+    {
+      "blob_sha": "2415fa75ec81346ac360f0c0a79647f506a3b35d",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            11
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "docs/prompts/AKOS_FORGE/README.md"
+    },
+    {
+      "blob_sha": "2b7504ee4f52ec4f15674d54114385178e9d27cc",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            241
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "schemas/canonical/system.schema.json"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "FUTURE_AGENT": 1,
+    "NOT_IMPLEMENTED": 1,
+    "PLACEHOLDER": 2,
+    "SKIP_ALL": 2,
+    "TODO": 1
+  },
+  "package_scripts": {
+    "build": "npm --workspace @glaciereq/akos-runtime run build",
+    "ci": "npm install --ignore-scripts && npm run typecheck && npm test && npm run build",
+    "prebuild": "npm install --ignore-scripts",
+    "pretest": "npm install --ignore-scripts",
+    "pretypecheck": "npm install --ignore-scripts",
+    "test": "npm --workspace @glaciereq/akos-runtime test",
+    "typecheck": "npm --workspace @glaciereq/akos-runtime run typecheck"
+  },
+  "repository": "GlacierEQ/AKOS",
+  "repository_id": 1289648128,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "runtime/tests/runtime.test.ts",
+    "specs/AKOS-ACE-001_AGENTIC_COGNITIVE_EVOLUTION.md",
+    "specs/AKOS-ACE-002_EVOLUTION_GOVERNANCE_MODEL.md",
+    "specs/AKOS-CK-001_COGNITIVE_KERNEL.md",
+    "specs/AKOS-COM-001_CANONICAL_OBJECT_MODEL.md",
+    "specs/AKOS-ECHO-002_PILLAR_PISTON_OPERATING_MODEL.md",
+    "specs/AKOS-GIT-001_MASTER_STRAND.md",
+    "specs/AKOS-LAW-001_FOUNDATIONAL_LAWS.md",
+    "specs/AKOS-META-001_METADATA_STANDARD.md",
+    "specs/AKOS-OC-001A_EXECUTION_AUTHORITY_ADDENDUM.md",
+    "specs/AKOS-OC-001_OPERATIONAL_COGNITION.md",
+    "specs/AKOS-OC-002_OPERATIONAL_MATURITY.md",
+    "stones/monolith/tests/cases.json",
+    "stones/psysoc-x/tests/cases.json",
+    "stones/resume-master/tests/cases.json",
+    "stones/web-design-pro/tests/cases.json",
+    "stones/web-design-pro/tests/multidimensional-cases.json",
+    "tests/test_adversarial.py",
+    "tests/test_best_of_all_worlds_contract.py",
+    "tests/test_canonical_estate_schemas.py",
+    "tests/test_career_intelligence.py",
+    "tests/test_career_platform_v2.py",
+    "tests/test_computer_kernel_client.py",
+    "tests/test_infinity_stones.py",
+    "tests/test_projection_layers.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_psysoc_x.py",
+    "tests/test_repo_excellence_public_contract.py",
+    "tests/test_resume_master_stones.py",
+    "tests/test_verification_tools.py",
+    "tests/test_verify_manifest.py"
+  ],
+  "tree_digest_phase0": "f4ef55b442c99fcc98da16977d81254003d1f55d0375e384d72154315df2d4d8",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/akos-runtime-ci.yml",
+    ".github/workflows/apply-aspen-grove-branch-protection.yml",
+    ".github/workflows/aspen-grove-contract-reusable.yml",
+    ".github/workflows/aspen-grove-health-reusable.yml",
+    ".github/workflows/aspen-grove-manifest.yml",
+    ".github/workflows/career-intelligence.yml",
+    ".github/workflows/career-platform-v2.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/finisher.yml",
+    ".github/workflows/infinity-stones.yml",
+    ".github/workflows/integrity.yml",
+    ".github/workflows/nervous-system-contract.yml",
+    ".github/workflows/resume-master-stones.yml"
+  ]
+}

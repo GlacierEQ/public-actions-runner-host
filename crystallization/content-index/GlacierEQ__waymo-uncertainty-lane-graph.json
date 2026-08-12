@@ -1,0 +1,68 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 68262,
+    "execution_surfaces": 1,
+    "files_read": 31,
+    "source_files": 11,
+    "test_files": 6,
+    "text_files": 31,
+    "text_lines": 1831,
+    "tracked_entries": 31,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "80b736d5dbefb8e09a3c0638a641ec315dc0ff837fe43a040970b2b131b06fae",
+  "execution_surfaces": [
+    "go.mod"
+  ],
+  "extension_counts": {
+    ".go": 2,
+    ".json": 10,
+    ".md": 5,
+    ".mod": 1,
+    ".py": 9,
+    ".yml": 1,
+    "<none>": 3
+  },
+  "head_sha": "7bfdb2aa33f2ba95bb9b5b981e8930aa89e6c5f1",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/waymo-uncertainty-lane-graph",
+  "repository_id": 1328442171,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_canonical_position_contract.py",
+    "tests/test_excellence_state_contract.py",
+    "tests/test_lane_graph.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "8057185dff4372957f8075ff86b02d4adda01dc8f305c23b545a0939ab5f82fe",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 135116,
+    "execution_surfaces": 1,
+    "files_read": 43,
+    "source_files": 22,
+    "test_files": 7,
+    "text_files": 43,
+    "text_lines": 3795,
+    "tracked_entries": 43,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "master",
+  "deployment_files": [],
+  "evidence_digest": "3591cd1840e03350c212cc8a9597f23c3888942c9c8f9e1c161d6c3c1ca3f33e",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 10,
+    ".md": 7,
+    ".py": 20,
+    ".sh": 1,
+    ".toml": 1,
+    ".ts": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "7d15bfaec0040e7a55d4b435abcf0fe9e7b19cb1",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/anthropic-agent-coordinator",
+  "repository_id": 1283501399,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_coordinator.py",
+    "tests/test_dag_router.py",
+    "tests/test_legacy_allocator.py",
+    "tests/test_policy_and_scale.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_verification.py"
+  ],
+  "tree_digest_phase0": "798d3b05c215051c0648e7d61e16155acf3895e43da17f25d0c283a64a3572d4",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

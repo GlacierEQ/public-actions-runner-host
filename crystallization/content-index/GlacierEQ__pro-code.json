@@ -1,0 +1,134 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 1,
+    "bytes_read": 480701,
+    "execution_surfaces": 1,
+    "files_read": 110,
+    "source_files": 33,
+    "symlinks": 2,
+    "test_files": 10,
+    "text_files": 109,
+    "text_lines": 11914,
+    "tracked_entries": 112,
+    "workflow_files": 3
+  },
+  "coverage_complete": false,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "4b09f7ddfe5ca3f25e6ec2f05353313e3180a635f0b3fd9159e91250925178cf",
+  "execution_surfaces": [
+    "package.json"
+  ],
+  "extension_counts": {
+    ".css": 2,
+    ".example": 1,
+    ".hs": 2,
+    ".html": 1,
+    ".js": 2,
+    ".json": 22,
+    ".md": 30,
+    ".mjs": 7,
+    ".png": 1,
+    ".py": 10,
+    ".rs": 1,
+    ".sh": 1,
+    ".svg": 4,
+    ".ts": 7,
+    ".tsx": 3,
+    ".yml": 12,
+    "<none>": 4
+  },
+  "head_sha": "65143bc5713f56e501b037ea628df8bc70fd5fee",
+  "marker_files": [
+    {
+      "blob_sha": "f05b42d247ac708f23863175092ab220e9ab41b5",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            63
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "EASTER_EGGS.md"
+    },
+    {
+      "blob_sha": "62dd7212a4e35d9085a923201821280a6478cd14",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            487
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "src/App.css"
+    },
+    {
+      "blob_sha": "891dd760f6416651093325df2d61e65c5ee1d370",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            331
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "src/App.tsx"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 3
+  },
+  "package_scripts": {
+    "build": "tsc && vite build",
+    "dev": "node scripts/dev.mjs",
+    "dev:ui": "vite",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "runtime": "node server/automatic-runtime.mjs",
+    "runtime:bare": "node server/nexus.mjs",
+    "start": "node server/automatic-runtime.mjs",
+    "test": "node --test server/nexus.test.mjs server/automation.test.mjs server/automatic-runtime.test.mjs && node node_modules/vitest/vitest.mjs run --exclude server/nexus.test.mjs --exclude server/automation.test.mjs --exclude server/automatic-runtime.test.mjs",
+    "test:runtime": "node --test server/nexus.test.mjs server/automation.test.mjs server/automatic-runtime.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "workers": "ls -la $HOME/.kiro/workers"
+  },
+  "repository": "GlacierEQ/pro-code",
+  "repository_id": 1256771846,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCAN_INCOMPLETE",
+  "test_files": [
+    "server/automatic-runtime.test.mjs",
+    "server/automation.test.mjs",
+    "server/nexus.test.mjs",
+    "src/workers.test.ts",
+    "test/app.test.ts",
+    "tests/ASTValidatorSpec.hs",
+    "tests/test_adversarial.py",
+    "tests/test_computer_kernel_dispatch.py",
+    "tests/test_pro_code.py",
+    "tests/test_rust_governor.py"
+  ],
+  "tree_digest_phase0": "0b90a79445c3366a09169b52855208b4e0fa427df53a695963c863a54a5cbb77",
+  "unreadable": [
+    {
+      "path": "MASTERMIND_CORE",
+      "reason": "FileNotFoundError"
+    },
+    {
+      "path": "ORBIT_OMEGA_SKILL",
+      "reason": "FileNotFoundError"
+    }
+  ],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/helix-verify.yml",
+    ".github/workflows/nervous-system-contract.yml"
+  ]
+}

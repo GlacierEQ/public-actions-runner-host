@@ -1,0 +1,292 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 20,
+    "bytes_read": 994880,
+    "execution_surfaces": 2,
+    "files_read": 189,
+    "sensitive_named_paths": 1,
+    "source_files": 90,
+    "test_files": 4,
+    "text_files": 169,
+    "text_lines": 24773,
+    "tracked_entries": 189,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "master",
+  "deployment_files": [],
+  "evidence_digest": "bd4755985a6b88c68e2e41f9eec3bf451ff2c53194244f96c6864d1e415884c0",
+  "execution_surfaces": [
+    "bundle/core/pyproject.toml",
+    "servers/synthesizer/main.py"
+  ],
+  "extension_counts": {
+    ".conf": 1,
+    ".json": 6,
+    ".md": 11,
+    ".py": 83,
+    ".sh": 7,
+    ".toml": 1,
+    ".txt": 7,
+    ".yml": 2,
+    "<none>": 71
+  },
+  "head_sha": "d3a4757b8cea0b4247a717a463ce3674a6f17793",
+  "marker_files": [
+    {
+      "blob_sha": "992f71c9f8663373cd40e080cff410183be029f0",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            57
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "apex-deploy-agent"
+    },
+    {
+      "blob_sha": "c8e8b98db54b87c0e54ad7d291e8c79f8f643a81",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            66
+          ],
+          "marker": "PLACEHOLDER"
+        },
+        {
+          "count": 1,
+          "lines": [
+            66
+          ],
+          "marker": "TODO"
+        },
+        {
+          "count": 1,
+          "lines": [
+            66
+          ],
+          "marker": "FIXME"
+        }
+      ],
+      "path": "apex-deploy-gemma4"
+    },
+    {
+      "blob_sha": "809b13024b61c993e01da56f62f0f06d2360e67a",
+      "markers": [
+        {
+          "count": 2,
+          "lines": [
+            60,
+            108
+          ],
+          "marker": "PLACEHOLDER"
+        },
+        {
+          "count": 1,
+          "lines": [
+            60
+          ],
+          "marker": "TODO"
+        },
+        {
+          "count": 1,
+          "lines": [
+            60
+          ],
+          "marker": "FIXME"
+        }
+      ],
+      "path": "apex-deploy-omni"
+    },
+    {
+      "blob_sha": "cae445f50ae4080973b06a8019a7fd2ed6281049",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            72
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "apex-deploy-stealth-claw"
+    },
+    {
+      "blob_sha": "35596333b9a9717b459b541cf5a530ce335a2849",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            100
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "apex-setup"
+    },
+    {
+      "blob_sha": "33aef8e349be55374d865d2dbff7753e94014953",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            291
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "bundle/core/pipeline.py"
+    },
+    {
+      "blob_sha": "d32c81dd1a975b5702f1861c648c6d2983c44e0a",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            57
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "bundle/scripts/apex-deploy-agent"
+    },
+    {
+      "blob_sha": "26f5da0d6993e4056c99e6d84635013fb275601e",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            66
+          ],
+          "marker": "PLACEHOLDER"
+        },
+        {
+          "count": 1,
+          "lines": [
+            66
+          ],
+          "marker": "TODO"
+        },
+        {
+          "count": 1,
+          "lines": [
+            66
+          ],
+          "marker": "FIXME"
+        }
+      ],
+      "path": "bundle/scripts/apex-deploy-gemma4"
+    },
+    {
+      "blob_sha": "0f0c88dc1166b8699075e7ca1444b0e22d426250",
+      "markers": [
+        {
+          "count": 2,
+          "lines": [
+            60,
+            108
+          ],
+          "marker": "PLACEHOLDER"
+        },
+        {
+          "count": 1,
+          "lines": [
+            60
+          ],
+          "marker": "TODO"
+        },
+        {
+          "count": 1,
+          "lines": [
+            60
+          ],
+          "marker": "FIXME"
+        }
+      ],
+      "path": "bundle/scripts/apex-deploy-omni"
+    },
+    {
+      "blob_sha": "342233df1e60281c6d3b2c8ac4570e0c1b4397eb",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            72
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "bundle/scripts/apex-deploy-stealth-claw"
+    },
+    {
+      "blob_sha": "f685d3207aad324574b0f0991ec18514ffd3f496",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            100
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "bundle/scripts/apex-setup"
+    },
+    {
+      "blob_sha": "33aef8e349be55374d865d2dbff7753e94014953",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            291
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "core/pipeline.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "FIXME": 4,
+    "NOT_IMPLEMENTED": 2,
+    "PLACEHOLDER": 12,
+    "SKIP_ALL": 1,
+    "TODO": 4
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/apex-cli",
+  "repository_id": 1283462312,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [
+    "bundle/scripts/refresh_dropbox_token.py"
+  ],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_end_to_end_casebuild.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_public_surface.py"
+  ],
+  "tree_digest_phase0": "e4b2c90f7f5aaade6dd90ccc4a2b09203d87628a0172b1c403226ae5c34a8471",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/public-truth.yml"
+  ]
+}

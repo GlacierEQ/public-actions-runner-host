@@ -1,0 +1,68 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 510234,
+    "files_read": 95,
+    "source_files": 72,
+    "test_files": 8,
+    "text_files": 95,
+    "text_lines": 13696,
+    "tracked_entries": 95,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "master",
+  "deployment_files": [],
+  "evidence_digest": "92dbb8aaa11540f1dfe4284f6e60d6780aa679e5bacbe8768492ccd0a8869ca3",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 8,
+    ".md": 10,
+    ".py": 71,
+    ".sh": 1,
+    ".txt": 1,
+    ".yml": 2,
+    "<none>": 2
+  },
+  "head_sha": "c7cbc2a12d71896aca2b8213df7e852922d16133",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/xai-colossus-2",
+  "repository_id": 1272029285,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_cli.py",
+    "tests/test_devops.py",
+    "tests/test_end_to_end.py",
+    "tests/test_mastermind.py",
+    "tests/test_portfolio_router.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_public_truth_surface.py"
+  ],
+  "tree_digest_phase0": "f3afc451bf9bf5fb1bae3c6abf37e96dbf55a7e13bee44c3e972449febc9c9e6",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/portfolio-router-truth.yml"
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 175698,
+    "execution_surfaces": 1,
+    "files_read": 45,
+    "source_files": 22,
+    "test_files": 7,
+    "text_files": 45,
+    "text_lines": 4570,
+    "tracked_entries": 45,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "407c1a4adca2aaff15f7179c7bcf0852c776d1f6ddcd28988e634240c96aeae6",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 14,
+    ".md": 4,
+    ".py": 22,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "1820ee6fb1108a89c207423fa8b10c3a2779bb6f",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    },
+    {
+      "blob_sha": "12eac683c82423637cef5089aa25733cfd65b99c",
+      "markers": [
+        {
+          "count": 3,
+          "lines": [
+            36,
+            112,
+            115
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "tests/test_unified_diff_intent.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1,
+    "TODO": 3
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/cursor-patch-intent-twin",
+  "repository_id": 1329687883,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_intent_monitor_benchmark.py",
+    "tests/test_patch_intent_twin.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_real_patch_adapters.py",
+    "tests/test_unified_diff_intent.py"
+  ],
+  "tree_digest_phase0": "e94663195e1f3dc46ab80b2e676c72c326e4b89d73a3146ca34936180fbb0212",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

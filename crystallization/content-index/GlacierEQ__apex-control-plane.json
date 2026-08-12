@@ -1,0 +1,88 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 1,
+    "bytes_read": 89022276,
+    "deployment_files": 1,
+    "files_read": 128,
+    "source_files": 47,
+    "test_files": 11,
+    "text_files": 127,
+    "text_lines": 1949640,
+    "tracked_entries": 128,
+    "workflow_files": 7
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "constellation/v0.8/DEPLOYMENT_CHECKPOINT.md"
+  ],
+  "evidence_digest": "781f9aef340cc183709c2469b8fe6fbe72b617883665d0b20b1103b879436e81",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".b64": 1,
+    ".example": 2,
+    ".json": 41,
+    ".md": 17,
+    ".odin": 2,
+    ".onnx": 1,
+    ".proto": 1,
+    ".py": 41,
+    ".sh": 4,
+    ".sha256": 1,
+    ".sql": 1,
+    ".txt": 1,
+    ".yaml": 2,
+    ".yml": 7,
+    "<none>": 6
+  },
+  "head_sha": "2357088e9e80ce4d1bf21527be2cd43b7dd9ac96",
+  "marker_files": [
+    {
+      "blob_sha": "6ce2fc1160839c1c713fa05b6fd2f515a4191502",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            35
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/apex-control-plane",
+  "repository_id": 1251740621,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "jack/tests/conftest.py",
+    "jack/tests/test_jack_relentless_gate.py",
+    "tests/test_adversarial.py",
+    "tests/test_audit_hardening.py",
+    "tests/test_auto_boot.py",
+    "tests/test_control_plane.py",
+    "tests/test_notion_continuity_gate.py",
+    "tests/test_prime_directive_boot.py",
+    "tests/test_prime_directive_enforcer.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_scan_repos.py"
+  ],
+  "tree_digest_phase0": "41532dee2f9a0bfc59981c61dff10467dba958b2eece60dfed142eb4d9bbf225",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/apex-daily.yml",
+    ".github/workflows/casebrain-ci.yml",
+    ".github/workflows/casey-auto-boot.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/daily-audit.yml",
+    ".github/workflows/daily_audit.yml",
+    ".github/workflows/secret_scan.yml"
+  ]
+}

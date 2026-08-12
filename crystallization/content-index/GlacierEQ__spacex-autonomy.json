@@ -1,0 +1,72 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 186283,
+    "execution_surfaces": 2,
+    "files_read": 52,
+    "source_files": 31,
+    "test_files": 8,
+    "text_files": 52,
+    "text_lines": 5453,
+    "tracked_entries": 52,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "2d324c04dbf826a40057a86287f4c6ba5101ff9bb8f26cbd1646603327d57da0",
+  "execution_surfaces": [
+    "go/go.mod",
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".go": 2,
+    ".json": 8,
+    ".md": 8,
+    ".mod": 1,
+    ".py": 29,
+    ".toml": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "156629c65bdeff5397c1370b3e098eec26aa9377",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/spacex-autonomy",
+  "repository_id": 1282819678,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_autonomy.py",
+    "tests/test_cli.py",
+    "tests/test_core.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_public_truth.py",
+    "tests/test_sidecar.py",
+    "tests/test_verification.py"
+  ],
+  "tree_digest_phase0": "1df5c1dfca74934c88ae757fea701170b6e0ec3c2fbc081804903365efde2555",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

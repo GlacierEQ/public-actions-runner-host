@@ -1,0 +1,45 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 16385,
+    "deployment_files": 1,
+    "files_read": 8,
+    "source_files": 3,
+    "test_files": 2,
+    "text_files": 8,
+    "text_lines": 432,
+    "tracked_entries": 8,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "phase1/DEPLOYMENT_GUIDE.md"
+  ],
+  "evidence_digest": "b34abecef5d2ae47fe3a50310d4b660fa9d36a5fc366e5edf21ef6e3db9cfede",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".md": 3,
+    ".py": 3,
+    ".yaml": 1,
+    ".yml": 1
+  },
+  "head_sha": "ad307c30ab53df53876c7ecaff6682964c5ae5b1",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/computer-user-storage",
+  "repository_id": 1321125650,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_health_check_framework.py",
+    "tests/test_public_surface.py"
+  ],
+  "tree_digest_phase0": "6ccafd2798137a90b7ed3eadbbf0d5515f1d1c99226c2c39f16d4da0c4d018a1",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/public-truth.yml"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 33376,
+    "execution_surfaces": 1,
+    "files_read": 12,
+    "source_files": 5,
+    "test_files": 3,
+    "text_files": 12,
+    "text_lines": 991,
+    "tracked_entries": 12,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "b553c1e31a33d27cfd308306e3855ce37144f6c9a3ebb3d5f970fe3e8086f21d",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".md": 2,
+    ".py": 5,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "6c7c5b503905d6b0eb0500d527bee07da7bb5744",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/github-pr-authority-matrix",
+  "repository_id": 1329687989,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_pr_authority_matrix.py"
+  ],
+  "tree_digest_phase0": "2a8d0957eef5625531f064300ab18f3b3cf4d0ff5b1be57b07ea3c33a04e9ed1",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

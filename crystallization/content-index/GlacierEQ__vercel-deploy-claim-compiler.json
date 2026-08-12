@@ -1,0 +1,63 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 83123,
+    "files_read": 28,
+    "source_files": 10,
+    "test_files": 5,
+    "text_files": 28,
+    "text_lines": 2097,
+    "tracked_entries": 28,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "9b49df8d5161a36ebcda17f74e57c947661b7f0cb13b7ec3a270ef7fa591e652",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 10,
+    ".md": 5,
+    ".mjs": 2,
+    ".py": 8,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "150a8ff31dd05fa1b35f50a1d693b9815d619f73",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/vercel-deploy-claim-compiler",
+  "repository_id": 1328441920,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_canonical_position_contract.py",
+    "tests/test_claim_compiler.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "9927c6d8580681dbd1ce09e8fcb1bce444fd2a1b2698a252ac42e4687e195b38",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 3591389,
+    "deployment_files": 1,
+    "execution_surfaces": 1,
+    "files_read": 252,
+    "sensitive_named_paths": 3,
+    "source_files": 76,
+    "test_files": 24,
+    "text_files": 252,
+    "text_lines": 94539,
+    "tracked_entries": 252,
+    "workflow_files": 23
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "Dockerfile"
+  ],
+  "evidence_digest": "58caaef450a8db88fab4c54ed1a3f4614f414cc2222a71fff33def4139f1f8ea",
+  "execution_surfaces": [
+    "Dockerfile"
+  ],
+  "extension_counts": {
+    ".cmd": 1,
+    ".json": 135,
+    ".md": 10,
+    ".ps1": 1,
+    ".py": 73,
+    ".sh": 2,
+    ".sql": 1,
+    ".txt": 2,
+    ".yml": 23,
+    "<none>": 4
+  },
+  "head_sha": "15405d611590009428c161565da363f268a1a4db",
+  "marker_files": [
+    {
+      "blob_sha": "048c9ab2d666ce00c270730d577cbb2c8b718be5",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            35
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            37
+          ],
+          "marker": "PLACEHOLDER"
+        },
+        {
+          "count": 1,
+          "lines": [
+            38
+          ],
+          "marker": "TODO"
+        },
+        {
+          "count": 1,
+          "lines": [
+            39
+          ],
+          "marker": "FIXME"
+        },
+        {
+          "count": 2,
+          "lines": [
+            40
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        },
+        {
+          "count": 1,
+          "lines": [
+            43
+          ],
+          "marker": "FAKE_SUCCESS"
+        },
+        {
+          "count": 1,
+          "lines": [
+            44
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "scripts/crystallization_public_content_scan.py"
+    },
+    {
+      "blob_sha": "9ae631c136101cd96ae06c07de52f2d30c222c23",
+      "markers": [
+        {
+          "count": 2,
+          "lines": [
+            223,
+            244
+          ],
+          "marker": "FAKE_SUCCESS"
+        }
+      ],
+      "path": "tests/test_publish_verified_boundary.py"
+    }
+  ],
+  "marker_totals": {
+    "FAKE_SUCCESS": 3,
+    "FIXME": 1,
+    "NOT_IMPLEMENTED": 2,
+    "PLACEHOLDER": 1,
+    "SCAFFOLD_STUB": 1,
+    "SKIP_ALL": 1,
+    "TODO": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/public-actions-runner-host",
+  "repository_id": 1265621488,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [
+    "scripts/keymaster_oidc_token.py",
+    "scripts/revoke_github_installation_token.py",
+    "tests/test_keymaster_oidc_token.py"
+  ],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/conftest.py",
+    "tests/test_action_face_checkout_workload.py",
+    "tests/test_apex_job_ingress_exclusivity.py",
+    "tests/test_apex_windows_launcher.py",
+    "tests/test_bounded_file_receipts.py",
+    "tests/test_code_domain.py",
+    "tests/test_domain_registry.py",
+    "tests/test_fileboss_operator_code_validation.py",
+    "tests/test_fileboss_successor_security_validation.py",
+    "tests/test_github_app_manifest_bootstrap.py",
+    "tests/test_isolated_catalog_runner_import.py",
+    "tests/test_keymaster_oidc_token.py",
+    "tests/test_mega_pdf_function_genome_recovery.py",
+    "tests/test_monolith_atlas_optional_category.py",
+    "tests/test_monolith_company_registry_runtime.py",
+    "tests/test_monolith_evolution_adapter.py",
+    "tests/test_monolith_ip_governance_adapter.py",
+    "tests/test_monolith_legal_live_safe_path.py",
+    "tests/test_private_legal_validation_actions.py",
+    "tests/test_publish_verified_boundary.py",
+    "tests/test_retired_action_contracts.py",
+    "tests/test_specialized_monolith_runners.py",
+    "tests/test_tool_system_validate_adapter.py",
+    "tests/test_workload_isolation.py"
+  ],
+  "tree_digest_phase0": "ce9474f7e8670d40cdefcc5f818e6f6b027b17ee3eb77bf431ed56481068ad31",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/actions-storage-relief.yml",
+    ".github/workflows/apex-encrypted-courier-branch.yml",
+    ".github/workflows/apex-github-app-bridge-canary.yml",
+    ".github/workflows/apex-pillar-runner.yml",
+    ".github/workflows/casebrain-validation.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/crystallization-public-content-scan.yml",
+    ".github/workflows/crystallization-public-estate-inventory.yml",
+    ".github/workflows/crystallization-public-priorities.yml",
+    ".github/workflows/jefs-docket-acquire.yml",
+    ".github/workflows/legal-brief-pipeline.yml",
+    ".github/workflows/mega-pdf-private-relay-core.yml",
+    ".github/workflows/mega-pdf-private-relay-pr.yml",
+    ".github/workflows/mega-pdf-private-relay.yml",
+    ".github/workflows/one-shot-full-monolith-gate-proof.yml",
+    ".github/workflows/overleaf-trigger.yml",
+    ".github/workflows/public-projection-safety.yml",
+    ".github/workflows/public-relay-harness.yml",
+    ".github/workflows/reusable-ci.yml",
+    ".github/workflows/reusable-quick-ci.yml",
+    ".github/workflows/reusable-shared.yml",
+    ".github/workflows/runner-team-contract.yml",
+    ".github/workflows/supermemory-cleanup.yml"
+  ]
+}

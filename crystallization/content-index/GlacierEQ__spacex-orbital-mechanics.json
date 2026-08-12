@@ -1,0 +1,81 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 115661,
+    "files_read": 41,
+    "source_files": 18,
+    "test_files": 6,
+    "text_files": 41,
+    "text_lines": 3376,
+    "tracked_entries": 41,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "6340f3cc048df50ac4cb35f1f941e10815cbd1ac6388857864cbcd994b471fc9",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".cpp": 1,
+    ".jl": 1,
+    ".json": 9,
+    ".md": 9,
+    ".py": 16,
+    ".sh": 1,
+    ".yml": 2,
+    "<none>": 2
+  },
+  "head_sha": "b99a1f7ea0534d3a268f9bea432399c9862bd1e4",
+  "marker_files": [
+    {
+      "blob_sha": "b367f4236d7dba85c8c971eb6f34a172b03e4504",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            66
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "machine/excellence-state.json"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/spacex-orbital-mechanics",
+  "repository_id": 1282819480,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_core.py",
+    "tests/test_lambert_solver.py",
+    "tests/test_orbital.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_public_truth.py"
+  ],
+  "tree_digest_phase0": "a422deefdf1d65ba36d7b681179aae8c383f41161518cbde5f34bb5413adb115",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/public-truth.yml"
+  ]
+}

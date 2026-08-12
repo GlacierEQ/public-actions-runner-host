@@ -1,0 +1,60 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 36955,
+    "deployment_files": 1,
+    "execution_surfaces": 2,
+    "files_read": 7,
+    "source_files": 3,
+    "text_files": 7,
+    "text_lines": 418,
+    "tracked_entries": 7
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "vercel.json"
+  ],
+  "evidence_digest": "119831c9ccf191b946aaad14d5858864893e92a4f1824346eea5a5614a5d87b7",
+  "execution_surfaces": [
+    "assets/app.js",
+    "vercel.json"
+  ],
+  "extension_counts": {
+    ".css": 1,
+    ".html": 1,
+    ".js": 2,
+    ".json": 1,
+    ".md": 1,
+    ".sql": 1
+  },
+  "head_sha": "1a347a86a0b50e0d8e082ca36c9073ae3464e506",
+  "marker_files": [
+    {
+      "blob_sha": "ccb3996d5ed5b6b33a6a2cb1ff01f8f0ad8fbf7f",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            70
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "index.html"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/command-center",
+  "repository_id": 1331905763,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [],
+  "tree_digest_phase0": "c217b9ba13cd1801c4ed31aa4fd287084f422ed410e0853b3667eeade2e65573",
+  "unreadable": [],
+  "workflow_files": []
+}

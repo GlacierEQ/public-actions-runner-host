@@ -1,0 +1,86 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 162240,
+    "deployment_files": 3,
+    "execution_surfaces": 6,
+    "files_read": 44,
+    "source_files": 26,
+    "test_files": 10,
+    "text_files": 44,
+    "text_lines": 4763,
+    "tracked_entries": 44,
+    "workflow_files": 3
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "Dockerfile",
+    "examples/deploy.spec.example.json",
+    "vercel.json"
+  ],
+  "evidence_digest": "c5fb5d899dc752817f1a57a5238887b0e99570013ca9ea9511b0c38fa03c18f2",
+  "execution_surfaces": [
+    "Dockerfile",
+    "api/index.py",
+    "echo/cli.py",
+    "echo/main.py",
+    "pyproject.toml",
+    "vercel.json"
+  ],
+  "extension_counts": {
+    ".json": 2,
+    ".md": 8,
+    ".py": 25,
+    ".sh": 1,
+    ".toml": 1,
+    ".txt": 1,
+    ".yaml": 1,
+    ".yml": 4,
+    "<none>": 1
+  },
+  "head_sha": "6acdb3be1739f1659f3cec9f4b7d39d5799cd476",
+  "marker_files": [
+    {
+      "blob_sha": "a1f2db1a350e5282bd2c749db518f152ad026817",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            185
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "README.md"
+    }
+  ],
+  "marker_totals": {
+    "TODO": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/ECHO",
+  "repository_id": 1318002795,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/integration/test_akos_echo_chain.py",
+    "tests/test_auth_rollout.py",
+    "tests/test_authority.py",
+    "tests/test_behavioral.py",
+    "tests/test_db_runtime.py",
+    "tests/test_hardening.py",
+    "tests/test_integration_trust.py",
+    "tests/test_managed_postgres.py",
+    "tests/test_production_config.py",
+    "tests/test_public_surface.py"
+  ],
+  "tree_digest_phase0": "bdc8d5ca076d5609a28ac7d83cd265fb48f94b60d19477ed5a449f6875d8c754",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ai-autonomous-deploy.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/live-verify.yml"
+  ]
+}

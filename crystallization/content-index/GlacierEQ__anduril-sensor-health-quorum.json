@@ -1,0 +1,69 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 64341,
+    "execution_surfaces": 1,
+    "files_read": 33,
+    "source_files": 12,
+    "test_files": 7,
+    "text_files": 33,
+    "text_lines": 1627,
+    "tracked_entries": 33,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "c1a9fcf4993d040e1fa44ee484d1735ae999805abe5d7c690f449e7b2ac2f266",
+  "execution_surfaces": [
+    "go.mod"
+  ],
+  "extension_counts": {
+    ".go": 2,
+    ".json": 11,
+    ".md": 5,
+    ".mod": 1,
+    ".py": 10,
+    ".yml": 1,
+    "<none>": 3
+  },
+  "head_sha": "0a7c9b82172db55b4a7a2aeb1497760d8f493267",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/anduril-sensor-health-quorum",
+  "repository_id": 1328440076,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_evolution_receipt_contract.py",
+    "tests/test_excellence_state_contract.py",
+    "tests/test_health_evolution.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_sensor_health.py"
+  ],
+  "tree_digest_phase0": "fa0fa9e8d055f3894bae8d5b48794c06fc5c547988178cc6890eafc722d2f6a0",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 109351,
+    "execution_surfaces": 1,
+    "files_read": 42,
+    "source_files": 19,
+    "test_files": 5,
+    "text_files": 42,
+    "text_lines": 3161,
+    "tracked_entries": 42,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "d16511f4fbe7c7bfe6165871f3d3fe7f87db461dc046f5824da828a08292863d",
+  "execution_surfaces": [
+    "go.mod"
+  ],
+  "extension_counts": {
+    ".go": 2,
+    ".json": 9,
+    ".md": 9,
+    ".mod": 1,
+    ".py": 16,
+    ".sh": 1,
+    ".yml": 2,
+    "<none>": 2
+  },
+  "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
+  "marker_files": [
+    {
+      "blob_sha": "1f939f005bb507eb884f3e1bd54328b280a25de6",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            65
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "machine/excellence-state.json"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/spacex-launch-sequencer",
+  "repository_id": 1282819505,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_core.py",
+    "tests/test_countdown_truth.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_sequencer.py"
+  ],
+  "tree_digest_phase0": "1fa7c43d7a120e4049d944ffc93e8991a57d8c2ad7c7ec515c9f2cb78c67c49b",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/public-truth.yml"
+  ]
+}

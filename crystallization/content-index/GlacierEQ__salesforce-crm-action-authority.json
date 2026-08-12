@@ -1,0 +1,49 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 48868,
+    "execution_surfaces": 1,
+    "files_read": 24,
+    "source_files": 5,
+    "test_files": 3,
+    "text_files": 24,
+    "text_lines": 1337,
+    "tracked_entries": 24,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "df52321ad09cf3d84246b2b09db48456a3af6b54586fa1ccd5e3ee958987fea4",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 9,
+    ".md": 5,
+    ".py": 5,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "a3c02b640262c58da407d07a7e2a8939072425d9",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/salesforce-crm-action-authority",
+  "repository_id": 1329688666,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_crm_action_authority.py"
+  ],
+  "tree_digest_phase0": "e90f7a63d65e13c8e35823767741b4e9d0f9c7f8ada8589407ef9841c88f1d7f",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

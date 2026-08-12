@@ -1,0 +1,71 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 88209,
+    "files_read": 47,
+    "source_files": 18,
+    "test_files": 13,
+    "text_files": 47,
+    "text_lines": 2362,
+    "tracked_entries": 47,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "master",
+  "deployment_files": [],
+  "evidence_digest": "a3179c135dc45bb00afe5270ef79b822b3aa93d9b21e3efd1869246caba9b57f",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 10,
+    ".md": 7,
+    ".py": 18,
+    ".sha256": 8,
+    ".yml": 1,
+    "<none>": 3
+  },
+  "head_sha": "caccc2ec7e23ccbaeed74bae22c940b79d790b2a",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/xai-colossus-cooling-alpha",
+  "repository_id": 1276320261,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/run_tests.py",
+    "tests/run_tests.py.sha256",
+    "tests/test_adversarial.py",
+    "tests/test_compaction.py",
+    "tests/test_compaction.py.sha256",
+    "tests/test_emergency.py",
+    "tests/test_emergency.py.sha256",
+    "tests/test_integration.py",
+    "tests/test_integration.py.sha256",
+    "tests/test_nominal.py",
+    "tests/test_nominal.py.sha256",
+    "tests/test_promotion_authority.py",
+    "tests/test_thermal_spec.py"
+  ],
+  "tree_digest_phase0": "0e2865552868409332989fd763c0ce18172c78ad64b5c8de06d7c56eec1d0595",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

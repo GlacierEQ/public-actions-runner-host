@@ -1,0 +1,133 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 327156,
+    "execution_surfaces": 1,
+    "files_read": 27,
+    "source_files": 16,
+    "text_files": 27,
+    "text_lines": 6241,
+    "tracked_entries": 27,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "47f65cae923c29522538120bf534383ddd9ffff8cfabe80c1b4e8f0ab59670c6",
+  "execution_surfaces": [
+    "package.json"
+  ],
+  "extension_counts": {
+    ".html": 1,
+    ".js": 16,
+    ".json": 3,
+    ".md": 5,
+    ".yml": 1,
+    "<none>": 1
+  },
+  "head_sha": "c0c5d8b3d3e1adb47480a9619e10ed18ed1e3f76",
+  "marker_files": [
+    {
+      "blob_sha": "ea2fedb129277b1b5e588fd68bf5056c3d88b374",
+      "markers": [
+        {
+          "count": 2,
+          "lines": [
+            27,
+            33
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "docs/IOS_BOOKMARKLETS.md"
+    },
+    {
+      "blob_sha": "29738c3a2db0777adc0a48585da80bf5f773ecf7",
+      "markers": [
+        {
+          "count": 4,
+          "lines": [
+            69,
+            96,
+            160
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "scripts/auto-driller-master.user.js"
+    },
+    {
+      "blob_sha": "32eb15f99b11aebecaae9dc8dce1c4947a2a715a",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            116
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "scripts/chatgpt-max.user.js"
+    },
+    {
+      "blob_sha": "31704b5c5b1d3487aebbf106053451555a0c9356",
+      "markers": [
+        {
+          "count": 2,
+          "lines": [
+            109
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "scripts/notion-max.user.js"
+    },
+    {
+      "blob_sha": "114505b18f20e04001e845155602c368d37ed585",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            38
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "scripts/perplexity-max.user.js"
+    },
+    {
+      "blob_sha": "a13602cf2e65c535a36929531050eaeb01d92cf6",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            88
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "scripts/validation_harness.js"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 11
+  },
+  "package_scripts": {
+    "lint": "eslint scripts/ --ext .js",
+    "test": "npm run test:legacy && npm run test:master",
+    "test:legacy": "node scripts/validation_harness.js",
+    "test:master": "node scripts/master_validation_harness.js",
+    "validate": "npm test"
+  },
+  "repository": "GlacierEQ/ai-auto-driller-unified",
+  "repository_id": 1304175071,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [],
+  "tree_digest_phase0": "9da0adbfc2a04595ae2b763d753f2fe35068fc2606add15c4a09697614eefc1d",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}

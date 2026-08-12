@@ -1,0 +1,63 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 86156,
+    "files_read": 28,
+    "source_files": 10,
+    "test_files": 6,
+    "text_files": 28,
+    "text_lines": 2320,
+    "tracked_entries": 28,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "829109694493ab4cd97e8fb366b8742c6df4fef6886495ec0874a55bb24ffcd8",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 10,
+    ".md": 5,
+    ".py": 10,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "c92e65f561882b26411aafbbbdf3853585887616",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/palantir-ontology-writeback-ledger",
+  "repository_id": 1328441436,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_canonical_position_contract.py",
+    "tests/test_lineage_authorized_writeback.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_writeback_ledger.py"
+  ],
+  "tree_digest_phase0": "ae6522d763316e28ae7cfb2e1a4951476d71cf369fdcfa402f3fa8750b835b0c",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

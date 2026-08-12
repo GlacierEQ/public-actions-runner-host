@@ -1,0 +1,541 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 4082933,
+    "deployment_files": 1,
+    "execution_surfaces": 4,
+    "files_read": 728,
+    "sensitive_named_paths": 4,
+    "source_files": 180,
+    "test_files": 86,
+    "text_files": 728,
+    "text_lines": 99018,
+    "tracked_entries": 728,
+    "workflow_files": 22
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "vercel.json"
+  ],
+  "evidence_digest": "e368b40ac2c21bdbf3a9b5043aa17c5f333ff75f74265f370559ef51691c89e9",
+  "execution_surfaces": [
+    "pyproject.toml",
+    "site/app.js",
+    "src/job_app_helix/cli.py",
+    "vercel.json"
+  ],
+  "extension_counts": {
+    ".css": 4,
+    ".html": 1,
+    ".js": 3,
+    ".json": 287,
+    ".jsonc": 1,
+    ".jsonl": 2,
+    ".lock": 1,
+    ".log": 141,
+    ".md": 80,
+    ".proto": 1,
+    ".py": 176,
+    ".toml": 1,
+    ".tpl": 1,
+    ".txt": 1,
+    ".xml": 1,
+    ".yaml": 1,
+    ".yml": 22,
+    "<none>": 4
+  },
+  "head_sha": "63eb32b86d49328eebe02731852cc44345374c6d",
+  "marker_files": [
+    {
+      "blob_sha": "d1f1be953d110f80981b7c108f2c70058e631208",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            5
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        }
+      ],
+      "path": "audits/INNOVATION_SCAFFOLD_BATCH_LATEST.md"
+    },
+    {
+      "blob_sha": "9219481601408f5a919bf8999d9f202d73e29878",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            86
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "docs/PORTFOLIO_COMPILER_ARCHITECTURE.md"
+    },
+    {
+      "blob_sha": "ab9e832102c6eb47f8f2b1ae435b4b643fc8e838",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            71
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "docs/PROOF_WEIGHTED_PORTFOLIO_AUDIT_STANDARD.md"
+    },
+    {
+      "blob_sha": "87b5d5f6b952f59015bd33e6225599a06c13cac4",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            56
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "docs/SPECIALIZED_LANGUAGES_ARCHITECTURE.md"
+    },
+    {
+      "blob_sha": "a8eb53809d321f0c3a3a63a2f887d7a9a0174dbf",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            194
+          ],
+          "marker": "TODO"
+        }
+      ],
+      "path": "excellence/framework/PIP_TO_BODYBUILDER_PIPELINE.md"
+    },
+    {
+      "blob_sha": "68cb9957c3eac6127b46a0fa8951959bbe134ddd",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            93
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "excellence/tools/elite_estate_elevator.py"
+    },
+    {
+      "blob_sha": "122381464b798f9ef250a9a03c801c53d9cc5665",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            440
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            440
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        }
+      ],
+      "path": "excellence/waves/wave_c_plan.json"
+    },
+    {
+      "blob_sha": "de26f77ddb67d9256fe021cf9e250a885cf4512a",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            167
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "helix/automations/brainsync_path_sanitize.py"
+    },
+    {
+      "blob_sha": "699a86cad43fb38a3e32499cf38946fb06ddc6a7",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            44
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "hire_package/casey-barton/PORTFOLIO_EXPANSION_MAP.md"
+    },
+    {
+      "blob_sha": "3f5d8ac04f67cb79af2898e035a1389913dcd834",
+      "markers": [
+        {
+          "count": 5,
+          "lines": [
+            56,
+            57,
+            58,
+            59,
+            60
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "manifests/company_second_depth.json"
+    },
+    {
+      "blob_sha": "1c64cc955878e695b770df6951abf20fbadf218b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            9
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "quality.md"
+    },
+    {
+      "blob_sha": "d9da82f20e568b211dc4ebb299b9352711b33808",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            234
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "scripts/build_compiled_recruiter_site.py"
+    },
+    {
+      "blob_sha": "ac3ac28018583e0b2f62fc6b74665403e662eee7",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            434
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "scripts/build_recruiter_site.py"
+    },
+    {
+      "blob_sha": "d9457c998d7312e64d11624d09106d039f4bc6b7",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            108
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            108
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 1,
+          "lines": [
+            116
+          ],
+          "marker": "PLACEHOLDER"
+        },
+        {
+          "count": 2,
+          "lines": [
+            115,
+            117
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        },
+        {
+          "count": 2,
+          "lines": [
+            110,
+            112
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/job_app_helix/crystallization_crawler.py"
+    },
+    {
+      "blob_sha": "bab8cac29930236d9a0dc7870088e477945b555c",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            21
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 2,
+          "lines": [
+            16,
+            21
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 2,
+          "lines": [
+            18,
+            19
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "src/job_app_helix/promotion_invariants.py"
+    },
+    {
+      "blob_sha": "330d1ee73ce0514f988742b0200c61d4115efdf1",
+      "markers": [
+        {
+          "count": 4,
+          "lines": [
+            90,
+            157,
+            159,
+            162
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "src/job_app_helix/repo_excellence.py"
+    },
+    {
+      "blob_sha": "d77895af33e5884665095b0ca156c717071f2e0d",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            112
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            112
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        },
+        {
+          "count": 8,
+          "lines": [
+            15,
+            76,
+            99,
+            136,
+            176,
+            198,
+            216,
+            237
+          ],
+          "marker": "FAKE_SUCCESS"
+        }
+      ],
+      "path": "tests/test_crystallization_crawler.py"
+    },
+    {
+      "blob_sha": "9a8c9ebae0963c74d21c9347755498c0b5510615",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            73
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "tests/test_hyper_excellence_authority.py"
+    },
+    {
+      "blob_sha": "f9b7a14c444c017869914ec76e417b7fe7b8cf03",
+      "markers": [
+        {
+          "count": 8,
+          "lines": [
+            33,
+            189,
+            215,
+            239,
+            268,
+            302,
+            340,
+            364
+          ],
+          "marker": "FAKE_SUCCESS"
+        }
+      ],
+      "path": "tests/test_obsolete_branch_cleanup.py"
+    },
+    {
+      "blob_sha": "702e8c9633bedaa13d40ba7b67b4bfc2c36a8ae5",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            18
+          ],
+          "marker": "SCAFFOLD_STUB"
+        },
+        {
+          "count": 1,
+          "lines": [
+            18
+          ],
+          "marker": "SCAFFOLD_ONLY"
+        }
+      ],
+      "path": "tests/test_promotion_invariants.py"
+    }
+  ],
+  "marker_totals": {
+    "FAKE_SUCCESS": 16,
+    "FUTURE_AGENT": 5,
+    "NOT_IMPLEMENTED": 7,
+    "PLACEHOLDER": 13,
+    "SCAFFOLD_ONLY": 7,
+    "SCAFFOLD_STUB": 5,
+    "SKIP_ALL": 1,
+    "TODO": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/job-app-helix",
+  "repository_id": 1311828871,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [
+    "excellence/receipts/wave_c_scratch/leaves/crusoe-rack-to-token-autopilot/launch.log",
+    "excellence/receipts/wave_c_scratch/leaves/crusoe-rack-to-token-autopilot/proof.log",
+    "excellence/receipts/wave_c_scratch/leaves/crusoe-rack-to-token-autopilot/proof_after_bind.log",
+    "excellence/receipts/wave_c_scratch/leaves/crusoe-rack-to-token-autopilot/state_after.json"
+  ],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "excellence/harness/tests/test_frontier_smoke.py",
+    "excellence/harness/tests/test_lockheed_triad.py",
+    "excellence/harness/tests/test_palantir_stack.py",
+    "excellence/harness/tests/test_spacex_stack.py",
+    "tests/fixtures/repository_health_elite.json",
+    "tests/test_application_registry.py",
+    "tests/test_branch_steward.py",
+    "tests/test_campaign.py",
+    "tests/test_candidate_application_surface.py",
+    "tests/test_candidate_portfolio_boundary.py",
+    "tests/test_capability_proof_deployment_boundary.py",
+    "tests/test_capability_proof_lens.py",
+    "tests/test_capability_proof_lens_js_contract.py",
+    "tests/test_company_analysis_topology.py",
+    "tests/test_company_second_depth.py",
+    "tests/test_compiled_recruiter_site.py",
+    "tests/test_complete_delivery_package.py",
+    "tests/test_coreweave_reliability_lab.py",
+    "tests/test_coreweave_reliability_lab_remediation.py",
+    "tests/test_crystallization_crawl_cli.py",
+    "tests/test_crystallization_crawler.py",
+    "tests/test_cursor_lineage_audit.py",
+    "tests/test_estate_capability_discovery.py",
+    "tests/test_estate_compiler.py",
+    "tests/test_estate_intelligence.py",
+    "tests/test_estate_public_wave_1.py",
+    "tests/test_estate_work_queue.py",
+    "tests/test_final_form_package.py",
+    "tests/test_final_form_package_builder.py",
+    "tests/test_governed_repository_surface.py",
+    "tests/test_hyper_excellence_authority.py",
+    "tests/test_innovation_engine.py",
+    "tests/test_innovation_engine_final_hardening.py",
+    "tests/test_intel_npu_provenance_audit.py",
+    "tests/test_library_program.py",
+    "tests/test_live_assessment_registry.py",
+    "tests/test_live_evidence_adapter.py",
+    "tests/test_live_evidence_cli.py",
+    "tests/test_live_portfolio_freshness.py",
+    "tests/test_live_repository_links.py",
+    "tests/test_obsolete_branch_cleanup.py",
+    "tests/test_owned_library_census.py",
+    "tests/test_owned_library_estate_counts.py",
+    "tests/test_p0_innovation_build_status.py",
+    "tests/test_p0_innovation_builds.py",
+    "tests/test_p0_innovation_semantic_audit.py",
+    "tests/test_p0_real_implementation_surface_audit.py",
+    "tests/test_portfolio_audit_claims.py",
+    "tests/test_portfolio_candidate_reconciliation.py",
+    "tests/test_portfolio_census_action_queue_validation.py",
+    "tests/test_portfolio_census_aggregate.py",
+    "tests/test_portfolio_compiler_contract.py",
+    "tests/test_portfolio_program.py",
+    "tests/test_portfolio_root_truth.py",
+    "tests/test_private_crystallization_publisher.py",
+    "tests/test_promotion_invariants.py",
+    "tests/test_proof_identity_receipts.py",
+    "tests/test_proof_weighted_audit.py",
+    "tests/test_public_portfolio_census.py",
+    "tests/test_public_repository_governance_wave.py",
+    "tests/test_public_repository_surface_decisions.py",
+    "tests/test_public_repository_surface_reconciliation.py",
+    "tests/test_public_repository_surface_reconciliation_wave10.py",
+    "tests/test_public_repository_surface_reconciliation_wave11.py",
+    "tests/test_public_repository_surface_reconciliation_wave12.py",
+    "tests/test_public_repository_surface_reconciliation_wave13.py",
+    "tests/test_public_repository_surface_reconciliation_wave14.py",
+    "tests/test_public_repository_surface_reconciliation_wave15.py",
+    "tests/test_public_repository_surface_reconciliation_wave3.py",
+    "tests/test_public_repository_surface_reconciliation_wave4.py",
+    "tests/test_public_repository_surface_reconciliation_wave5.py",
+    "tests/test_public_repository_surface_reconciliation_wave6.py",
+    "tests/test_public_repository_surface_reconciliation_wave7.py",
+    "tests/test_public_repository_surface_reconciliation_wave8.py",
+    "tests/test_public_repository_surface_reconciliation_wave9.py",
+    "tests/test_readme_mesh.py",
+    "tests/test_recruiter_site_deployment.py",
+    "tests/test_repo_excellence.py",
+    "tests/test_repo_excellence_canonicalization.py",
+    "tests/test_repo_excellence_evolution.py",
+    "tests/test_repository_health.py",
+    "tests/test_repository_surface.py",
+    "tests/test_scaffold_runtime.py",
+    "tests/test_supabase_motherduck_capability_donors.py",
+    "tests/test_supabase_motherduck_lineage_audit.py",
+    "tests/test_worker_science.py"
+  ],
+  "tree_digest_phase0": "f419ead14a33109d09551972dcdb4fb78f49f3beef26aad6cf3cb03dfc8ddbe8",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/application-registry-validation.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/cleanup-obsolete-branches.yml",
+    ".github/workflows/company-innovation-expansion.yml",
+    ".github/workflows/crystallization-estate-crawl.yml",
+    ".github/workflows/crystallization-estate-push-smoke.yml",
+    ".github/workflows/estate-compiler.yml",
+    ".github/workflows/final-form-package.yml",
+    ".github/workflows/frontier-innovation-engine.yml",
+    ".github/workflows/live-repository-evidence.yml",
+    ".github/workflows/live-repository-links.yml",
+    ".github/workflows/p0-innovation-build-verification.yml",
+    ".github/workflows/pages.yml",
+    ".github/workflows/portfolio-census.yml",
+    ".github/workflows/portfolio-compiler-integrity.yml",
+    ".github/workflows/portfolio-live-freshness.yml",
+    ".github/workflows/portfolio-root-truth.yml",
+    ".github/workflows/proof-identity-self-verification.yml",
+    ".github/workflows/proof-weighted-portfolio-audit.yml",
+    ".github/workflows/refresh-uv-lock.yml",
+    ".github/workflows/repo-excellence-contract.yml",
+    ".github/workflows/repository-health-engine.yml"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 31446,
+    "execution_surfaces": 1,
+    "files_read": 12,
+    "source_files": 5,
+    "test_files": 3,
+    "text_files": 12,
+    "text_lines": 946,
+    "tracked_entries": 12,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "e86311b4b2953877baa9bd4ab640983bcde6c00c91181c01b864f2fe1349622a",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".md": 2,
+    ".py": 5,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "56e9f8ccbe3e62a112bc37ba0a9c181b3c025110",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/linear-issue-intent-twin",
+  "repository_id": 1329688253,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_issue_intent_twin.py"
+  ],
+  "tree_digest_phase0": "292f903a97c74944762f09cb2a43c82dcd569c4038000bbd32969cef6d850eeb",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

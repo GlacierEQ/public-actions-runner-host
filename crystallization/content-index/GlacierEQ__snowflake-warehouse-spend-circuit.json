@@ -1,0 +1,80 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 35704,
+    "execution_surfaces": 1,
+    "files_read": 23,
+    "source_files": 7,
+    "test_files": 4,
+    "text_files": 23,
+    "text_lines": 1045,
+    "tracked_entries": 23,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "b235fc6fa7dbd134c88c7089b653580ddc4c95904d534f962e04418f0920df3a",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 7,
+    ".md": 4,
+    ".py": 7,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "e6f1dd9e1fd34de622dcc5a6b6ce1a46ddca0fce",
+  "marker_files": [
+    {
+      "blob_sha": "feddd3e00b99ab97d6fa1d0e177e6851acc3d522",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            38
+          ],
+          "marker": "FUTURE_AGENT"
+        }
+      ],
+      "path": "DEV_UP_INSTRUCTIONS.md"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "FUTURE_AGENT": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/snowflake-warehouse-spend-circuit",
+  "repository_id": 1329688677,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_warehouse_spend_circuit.py"
+  ],
+  "tree_digest_phase0": "b2365535eacd8b8b80609cb53c13efee320fa3a584e157b65545961d10faeb10",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

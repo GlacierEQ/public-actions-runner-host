@@ -1,0 +1,77 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 474987,
+    "execution_surfaces": 1,
+    "files_read": 79,
+    "source_files": 62,
+    "test_files": 30,
+    "text_files": 79,
+    "text_lines": 12826,
+    "tracked_entries": 79,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "ce3c83e9ad21b07ee1ea035bed18983fc9589365b5316a468334b852e8e2e71e",
+  "execution_surfaces": [
+    "package.json"
+  ],
+  "extension_counts": {
+    ".json": 1,
+    ".md": 13,
+    ".mjs": 62,
+    ".yml": 2,
+    "<none>": 1
+  },
+  "head_sha": "4a1ca8e5c88a62e8a94a43213b2c509af6afcea3",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "repository": "GlacierEQ/sigma-glue",
+  "repository_id": 1319647702,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "docs/SPEC.md",
+    "tests/adapter-contract.test.mjs",
+    "tests/approval-binding.test.mjs",
+    "tests/claim-ledger.test.mjs",
+    "tests/colossus-dispatch.test.mjs",
+    "tests/dispatch-local-clock-and-reason.test.mjs",
+    "tests/durable-store.test.mjs",
+    "tests/execution-ledger.test.mjs",
+    "tests/gatekeeper-signatures.test.mjs",
+    "tests/github-contents-convergence.test.mjs",
+    "tests/github-contents-hardening.test.mjs",
+    "tests/github-contents-reference.test.mjs",
+    "tests/helpers/claim-worker.mjs",
+    "tests/helpers/dispatch-attempt-worker.mjs",
+    "tests/helpers/execution-worker.mjs",
+    "tests/helpers/gatekeeper-fixture.mjs",
+    "tests/idempotency-concurrency.test.mjs",
+    "tests/idempotency-ledger.test.mjs",
+    "tests/idempotency-recovery.test.mjs",
+    "tests/opaque-broker-colossus-http.test.mjs",
+    "tests/permit-dispatch-fence-migration.test.mjs",
+    "tests/permit-dispatch-fence-time.test.mjs",
+    "tests/permit-dispatch-fence.test.mjs",
+    "tests/provider-boundary-proof.test.mjs",
+    "tests/provider-outcome-recovery.test.mjs",
+    "tests/provider-recovery-ledger.test.mjs",
+    "tests/reconciliation-match-integrity.test.mjs",
+    "tests/verified-colossus-gateway.test.mjs",
+    "tests/verified-execution-ledger.test.mjs",
+    "tests/vertical-slice.test.mjs"
+  ],
+  "tree_digest_phase0": "236ad0e7a102f0559fb92559be460286842ab165fe88830139e547068910d9aa",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/github-provider-live-proof.yml"
+  ]
+}

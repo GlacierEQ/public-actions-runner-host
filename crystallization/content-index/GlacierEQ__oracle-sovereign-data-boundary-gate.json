@@ -1,0 +1,49 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 27227,
+    "execution_surfaces": 1,
+    "files_read": 16,
+    "source_files": 5,
+    "test_files": 3,
+    "text_files": 16,
+    "text_lines": 714,
+    "tracked_entries": 16,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "3e4809ccea6bbf959027e8a96332447c308f0639f0ef5b77412a3443bcb2c2d5",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 2,
+    ".md": 4,
+    ".py": 5,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "e80f8ab32fe0fe282cbf3d60a9fa7aaac19fbf4c",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/oracle-sovereign-data-boundary-gate",
+  "repository_id": 1329688417,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_sovereign_data_boundary_gate.py"
+  ],
+  "tree_digest_phase0": "ef430d1d573eb23d348a03cb94a2a22576a0858e96f944a50a217153fb1c4a4e",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

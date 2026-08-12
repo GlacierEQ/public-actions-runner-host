@@ -1,0 +1,58 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 73503,
+    "files_read": 29,
+    "source_files": 10,
+    "test_files": 3,
+    "text_files": 29,
+    "text_lines": 2031,
+    "tracked_entries": 29
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "256497bb308903d41d010a79e629ed30b9665a841308c9c411da6ce071e35402",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".cu": 1,
+    ".go": 1,
+    ".json": 9,
+    ".md": 7,
+    ".py": 9,
+    "<none>": 2
+  },
+  "head_sha": "0cd416dbb3e10b2a6feee40c9c52a0690f333d2a",
+  "marker_files": [
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/tesla-fsd-occupancy-stream",
+  "repository_id": 1311725708,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_adversarial.py",
+    "tests/test_fsd.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "981fd9d4151abdcea46b8a38f3765436e725ac2428a9cce8d776be22e9e0d36b",
+  "unreadable": [],
+  "workflow_files": []
+}

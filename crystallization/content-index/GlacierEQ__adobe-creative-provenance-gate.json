@@ -1,0 +1,50 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 47969,
+    "execution_surfaces": 1,
+    "files_read": 15,
+    "source_files": 7,
+    "test_files": 4,
+    "text_files": 15,
+    "text_lines": 1452,
+    "tracked_entries": 15,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "7c7c5a099d0e11aeceeaa904917b43395bd71bfe6a32ab0662d178c44370ed81",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 1,
+    ".md": 2,
+    ".py": 7,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "f4c56d2266d48d19bb9128bc41fb4080968533cb",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/adobe-creative-provenance-gate",
+  "repository_id": 1329687664,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_cli.py",
+    "tests/test_creative_provenance_gate.py"
+  ],
+  "tree_digest_phase0": "d0fdc1843b7597eaf10a490c38ff5d440874ead1a84870376f0b06f01ff23a23",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

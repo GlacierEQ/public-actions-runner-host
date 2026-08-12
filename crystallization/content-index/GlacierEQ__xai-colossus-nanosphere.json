@@ -1,0 +1,109 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 312298,
+    "files_read": 85,
+    "source_files": 46,
+    "test_files": 6,
+    "text_files": 85,
+    "text_lines": 8402,
+    "tracked_entries": 85,
+    "workflow_files": 2
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "ac1645ba7c51ac01f4ec256261aa503889fdef92e2e393e14a01b3280db372be",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".cpp": 2,
+    ".h": 1,
+    ".json": 16,
+    ".md": 14,
+    ".py": 42,
+    ".sh": 1,
+    ".txt": 1,
+    ".yml": 2,
+    "<none>": 6
+  },
+  "head_sha": "15c1767271a56bb3d1270ce2027639081c4a38f9",
+  "marker_files": [
+    {
+      "blob_sha": "e025269692c12a937c8eae8ccfa3fcb2bc8e3353",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            150
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "README.md"
+    },
+    {
+      "blob_sha": "96a50adf552288fe2b6a3a138a7f16752fa2404e",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            33
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "alpha/ucode_hotpatcher.py"
+    },
+    {
+      "blob_sha": "3593690094c07ede4db7f8e598ffbdd5984d2bd4",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            32
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "microcode-engine/ucode_hotpatcher.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 1,
+    "PLACEHOLDER": 2,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/xai-colossus-nanosphere",
+  "repository_id": 1248919654,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/__init__.py",
+    "tests/test_adversarial.py",
+    "tests/test_circuit_optimizer_gauntlet.py",
+    "tests/test_nanosphere_unittest.py",
+    "tests/test_portfolio_truth_surface.py",
+    "tests/test_promotion_authority.py"
+  ],
+  "tree_digest_phase0": "f525df40dae03f4fc0e40d9b9389908de0d3174b9ca4f1ec59863e39f9156d20",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/nanosphere-core-truth.yml"
+  ]
+}

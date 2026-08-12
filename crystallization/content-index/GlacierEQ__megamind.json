@@ -1,0 +1,60 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 271107,
+    "execution_surfaces": 2,
+    "files_read": 62,
+    "source_files": 30,
+    "test_files": 11,
+    "text_files": 62,
+    "text_lines": 5753,
+    "tracked_entries": 62,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "0b66b12f26a5064f1281dd6f169156f1d3ef5df237d41e436da938a48c272235",
+  "execution_surfaces": [
+    "pyproject.toml",
+    "src/megamind/cli.py"
+  ],
+  "extension_counts": {
+    ".json": 9,
+    ".md": 1,
+    ".modelfile": 8,
+    ".py": 30,
+    ".toml": 1,
+    ".txt": 5,
+    ".yaml": 1,
+    ".yml": 6,
+    "<none>": 1
+  },
+  "head_sha": "b70121db3ef1fad23ef6001234707bcabce21856",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/megamind",
+  "repository_id": 1319899701,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_acquisition.py",
+    "tests/test_alpha_master.py",
+    "tests/test_async.py",
+    "tests/test_collectibles.py",
+    "tests/test_kernel.py",
+    "tests/test_mesh.py",
+    "tests/test_public_surface.py",
+    "tests/test_registry.py",
+    "tests/test_scanner.py",
+    "tests/test_titan.py",
+    "tests/test_tranche.py"
+  ],
+  "tree_digest_phase0": "4425ba6d1a75e0ba43973f90fbfdfd5f7ef9766dc2ae26071213d5231c182b15",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/public-truth.yml"
+  ]
+}

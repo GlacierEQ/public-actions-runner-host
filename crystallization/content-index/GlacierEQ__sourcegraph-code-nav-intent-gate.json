@@ -1,0 +1,49 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 31356,
+    "execution_surfaces": 1,
+    "files_read": 16,
+    "source_files": 5,
+    "test_files": 3,
+    "text_files": 16,
+    "text_lines": 962,
+    "tracked_entries": 16,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "c40001849db07bd7c7910ed1178b668df57f75294b543ca9e63d1406a214f9ef",
+  "execution_surfaces": [
+    "pyproject.toml"
+  ],
+  "extension_counts": {
+    ".json": 2,
+    ".md": 4,
+    ".py": 5,
+    ".toml": 1,
+    ".txt": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "f978d6a126863fbcd176d50e97e6fb8be12eeab1",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/sourcegraph-code-nav-intent-gate",
+  "repository_id": 1329688738,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_code_nav_intent_gate.py"
+  ],
+  "tree_digest_phase0": "61be2f89a689262b3974f3a517275d3fa2a9a7a2de0617f1556e51af0a95953b",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

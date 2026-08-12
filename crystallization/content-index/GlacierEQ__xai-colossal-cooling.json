@@ -1,0 +1,42 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 125011,
+    "files_read": 25,
+    "source_files": 9,
+    "test_files": 1,
+    "text_files": 25,
+    "text_lines": 3226,
+    "tracked_entries": 25,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "ddb6a8b56669fa7d9a6c3a60e98bb5b1917668bd8b500f45fbab4c69eae055e8",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 4,
+    ".md": 9,
+    ".py": 9,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "c97e5f94c37a97b595f053c9f9fb86d565e4fc06",
+  "marker_files": [],
+  "marker_totals": {},
+  "package_scripts": {},
+  "repository": "GlacierEQ/xai-colossal-cooling",
+  "repository_id": 1220244126,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/test_cooling_scenario.py"
+  ],
+  "tree_digest_phase0": "9c234dbd41704db3c834f8dd3a36317b9d0917f0a3d7a43fc10ff0e6d20c0174",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/cooling-model-truth.yml"
+  ]
+}

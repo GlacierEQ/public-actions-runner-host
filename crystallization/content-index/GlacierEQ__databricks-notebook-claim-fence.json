@@ -1,0 +1,131 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 95898,
+    "files_read": 30,
+    "source_files": 12,
+    "test_files": 7,
+    "text_files": 30,
+    "text_lines": 2350,
+    "tracked_entries": 30,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "7d156d318b808547cab6f22d011ff3c1b62a3e65bead7a238a9129f188303f04",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 10,
+    ".md": 5,
+    ".py": 11,
+    ".sql": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "abd179d5e4648907a42ee279cd85c25bbac9f97f",
+  "marker_files": [
+    {
+      "blob_sha": "468bfd2ed3ef79f98c29659ae835a182951daafb",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            18
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "ISSUE_CONTRACT.md"
+    },
+    {
+      "blob_sha": "1ddce006b849725d91eb0f6db2c9064bc55755cd",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            57
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "machine/canonical-position.json"
+    },
+    {
+      "blob_sha": "c7d0adcacbe33efc52a51738bee1e0c3e8f05ce9",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            26
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "machine/evolution-receipts/2026-08-11-policy-quorum-artifact-promotion.json"
+    },
+    {
+      "blob_sha": "e2f44e4dde199ea51285011d9918dbd5dea3bcdd",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            47
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "machine/target-contract.json"
+    },
+    {
+      "blob_sha": "77f14e1501142c44b02bc06a7b12763e8871ee36",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            35
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "tests/test_evolution_contract.py"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 5,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/databricks-notebook-claim-fence",
+  "repository_id": 1328440587,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_canonical_position_contract.py",
+    "tests/test_evolution_contract.py",
+    "tests/test_notebook_fence.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_sql_fixture.py"
+  ],
+  "tree_digest_phase0": "181531e24ab5a6e38da2d386333885b63407150fefa2d63e901dceed7b7eab71",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

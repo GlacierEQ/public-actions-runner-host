@@ -1,0 +1,78 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "bytes_read": 97149,
+    "files_read": 29,
+    "source_files": 11,
+    "test_files": 6,
+    "text_files": 29,
+    "text_lines": 2418,
+    "tracked_entries": 29,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [],
+  "evidence_digest": "b0b0cc2ceca7640fa864088f1a696e30f16a50b7675f7a125355ec51e70116f6",
+  "execution_surfaces": [],
+  "extension_counts": {
+    ".json": 9,
+    ".md": 5,
+    ".mjs": 2,
+    ".py": 9,
+    ".yml": 1,
+    "<none>": 3
+  },
+  "head_sha": "0c930c04ffa473f0a0d93659f6b29e3620b95448",
+  "marker_files": [
+    {
+      "blob_sha": "92f5277fee3ca3a037995cccbecac3df9beaadd5",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            59
+          ],
+          "marker": "NOT_IMPLEMENTED"
+        }
+      ],
+      "path": "machine/canonical-position.json"
+    },
+    {
+      "blob_sha": "0b0d54408826e6312f4569565bd2bf0cbc596a4b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            24
+          ],
+          "marker": "SKIP_ALL"
+        }
+      ],
+      "path": "tests/test_promotion_authority.py"
+    }
+  ],
+  "marker_totals": {
+    "NOT_IMPLEMENTED": 1,
+    "SKIP_ALL": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/anthropic-constitutional-tool-transcript",
+  "repository_id": 1328440251,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    ".github/workflows/tests.yml",
+    "tests/test_adversarial.py",
+    "tests/test_canonical_position_contract.py",
+    "tests/test_evolution_contract.py",
+    "tests/test_promotion_authority.py",
+    "tests/test_transcript.py"
+  ],
+  "tree_digest_phase0": "a0a53b4802c98d1675fc1f97b6e6334328c79817f7ce72dff50bf9643bd36e16",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/tests.yml"
+  ]
+}

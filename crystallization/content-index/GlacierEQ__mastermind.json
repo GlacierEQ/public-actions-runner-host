@@ -1,0 +1,73 @@
+{
+  "completion_claim_allowed": false,
+  "counts": {
+    "binary_files": 12,
+    "bytes_read": 237130,
+    "deployment_files": 1,
+    "execution_surfaces": 2,
+    "files_read": 46,
+    "source_files": 13,
+    "test_files": 4,
+    "text_files": 34,
+    "text_lines": 2771,
+    "tracked_entries": 46,
+    "workflow_files": 1
+  },
+  "coverage_complete": true,
+  "default_branch": "main",
+  "deployment_files": [
+    "Dockerfile"
+  ],
+  "evidence_digest": "d2e5dad8be49bf9069ab6544a80408636c43617a9b58e7da40e07730ee69bf2d",
+  "execution_surfaces": [
+    "Dockerfile",
+    "setup.py"
+  ],
+  "extension_counts": {
+    ".json": 2,
+    ".jsonl": 2,
+    ".md": 12,
+    ".py": 13,
+    ".pyc": 12,
+    ".txt": 1,
+    ".yaml": 1,
+    ".yml": 1,
+    "<none>": 2
+  },
+  "head_sha": "dcab9475d668f2fba66b58d1ff45609b46132530",
+  "marker_files": [
+    {
+      "blob_sha": "1c64cc955878e695b770df6951abf20fbadf218b",
+      "markers": [
+        {
+          "count": 1,
+          "lines": [
+            9
+          ],
+          "marker": "PLACEHOLDER"
+        }
+      ],
+      "path": "quality.md"
+    }
+  ],
+  "marker_totals": {
+    "PLACEHOLDER": 1
+  },
+  "package_scripts": {},
+  "repository": "GlacierEQ/mastermind",
+  "repository_id": 1120543712,
+  "schema": "glaciereq.crystallization.public-content-scan.v1",
+  "sensitive_named_paths": [],
+  "status": "CONTENT_SCANNED",
+  "test_files": [
+    "tests/__init__.py",
+    "tests/__pycache__/__init__.cpython-314.pyc",
+    "tests/__pycache__/test_runtime.cpython-314-pytest-9.1.1.pyc",
+    "tests/test_runtime.py"
+  ],
+  "tree_digest_phase0": "eb903d2a00933a74fa939d46c507b87dfa8174868d79b31f11a2eaf2ec76f9b5",
+  "unreadable": [],
+  "workflow_files": [
+    ".github/workflows/ci.yml"
+  ]
+}
