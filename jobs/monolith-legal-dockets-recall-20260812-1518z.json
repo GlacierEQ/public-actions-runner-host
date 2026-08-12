@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-legal-dockets-recall-20260812-1518z",
+  "pillar": "C",
+  "action": "code.monolith.validate-legal-live-reconciliation",
+  "source_ref": "e8610e6251c6050b30663f2b05f6e5e9ef32d89b"
+}
