@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-docs-main-17d7-final-02",
+  "pillar": "B",
+  "action": "docs.monolith.validate-integrity",
+  "source_ref": "17d7bda536be71d9d2406759a970d8068f8df1d1"
+}
