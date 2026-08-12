@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-cli-crystallization-20260812-1954z",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "6fa364b838eca29216b975f62aa4f4f3bc3919db"
+}
