@@ -60,6 +60,56 @@
       "approval_required": false
     },
     {
+      "pillar": "C",
+      "action": "coreweave-state-fusion-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/coreweave-state-fusion",
+      "legacy_event": "coreweave-state-fusion-ci",
+      "adapter": "python-ci",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "coreweave-temporal-router-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/coreweave-temporal-router",
+      "legacy_event": "coreweave-temporal-router-ci",
+      "adapter": "python-ci",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "coreweave-circuit-breaker-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/coreweave-circuit-breaker",
+      "legacy_event": "coreweave-circuit-breaker-ci",
+      "adapter": "python-ci",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "coreweave-shadow-monitor-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/coreweave-shadow-monitor",
+      "legacy_event": "coreweave-shadow-monitor-ci",
+      "adapter": "python-ci",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "coreweave-entropy-engine-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/coreweave-entropy-engine",
+      "legacy_event": "coreweave-entropy-engine-ci",
+      "adapter": "python-ci",
+      "gate": "standard",
+      "approval_required": false
+    },
+    {
       "pillar": "F",
       "action": "master-strand-inventory",
       "source_event": "infra-gateway",
