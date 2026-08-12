@@ -1,0 +1,6 @@
+{
+  "job_id": "MonolithCodeCanary03",
+  "pillar": "C",
+  "action": "code.monolith.validate-atlases",
+  "source_ref": "d0c8b16d9f33b26622eddf4faa34fc0f31d3ef1b"
+}
