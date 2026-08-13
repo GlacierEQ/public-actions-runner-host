@@ -1,0 +1,6 @@
+{
+  "job_id": "canon-verify-20260812-007",
+  "pillar": "E",
+  "action": "memory.constellation.verify-operator-code",
+  "source_ref": "8d391bbd933542a2985f1a764273865b6f63a172"
+}
