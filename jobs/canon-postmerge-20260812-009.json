@@ -1,0 +1,6 @@
+{
+  "job_id": "canon-postmerge-20260812-009",
+  "pillar": "E",
+  "action": "memory.constellation.verify-operator-code",
+  "source_ref": "6164f59e1fbb240e68839335bf5ef3981c50cf34"
+}
