@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 
 REPO = re.compile(r"^GlacierEQ/[A-Za-z0-9_.-]+$")
+PUBLIC_WORKLOAD_SENTINEL = "__APEX_PUBLIC_CREDENTIAL_FREE__"
 SECRET_ENV = {
     "APEX_CONTROL_TOKEN",
     "APEX_PRIVATE_READ_TOKEN",
@@ -176,7 +177,8 @@ def main() -> int:
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise SystemExit("WORKLOAD_CHECKOUT_BLOCK: plan file is invalid") from error
 
-    token = os.environ.get("APEX_WORKLOAD_TOKEN") or None
+    raw_token = os.environ.get("APEX_WORKLOAD_TOKEN", "")
+    token = None if raw_token in {"", PUBLIC_WORKLOAD_SENTINEL} else raw_token
     try:
         workspace = runner_workspace_path(args.workspace)
         prepare_runner_workspace(workspace)
