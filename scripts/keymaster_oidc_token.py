@@ -153,7 +153,9 @@ def _request_id(repository: str, operation: str) -> str:
     return f"gha-{run_id}-{attempt}-{safe_repo}-{operation}"[:256]
 
 
-def _write_outputs(token: str, expires_at: str, receipt_id: object, *, mask: bool = True) -> None:
+def _write_outputs(
+    token: str, expires_at: str, receipt_id: object, *, mask: bool = True
+) -> None:
     output_path = os.environ.get("GITHUB_OUTPUT", "").strip()
     if not output_path:
         raise TokenBrokerError("github_output_unavailable")
