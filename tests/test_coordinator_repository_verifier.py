@@ -6,6 +6,19 @@ from pathlib import Path
 from scripts import action_face_catalog_runner as runner
 
 
+def coordinator_plan() -> dict[str, object]:
+    return {
+        "job_id": "coordinator-proof-test",
+        "pillar": "H",
+        "action": "anthropic-agent-coordinator-ci",
+        "adapter": "constellation-memory-verify",
+        "task": "test",
+        "source_repo": "GlacierEQ/anthropic-agent-coordinator",
+        "source_ref": "a" * 40,
+        "target_repo": "GlacierEQ/anthropic-agent-coordinator",
+    }
+
+
 def test_coordinator_action_uses_repository_owned_verifier() -> None:
     catalog = json.loads(Path("config/action-face-actions.json").read_text(encoding="utf-8"))
     action = next(
@@ -37,10 +50,7 @@ def test_repository_owned_verifier_binds_resolved_sha(tmp_path, monkeypatch) -> 
         return 0
 
     monkeypatch.setattr(runner, "run_sequence", fake_run_sequence)
-    plan = {
-        "job_id": "coordinator-proof-test",
-        "source_repo": "GlacierEQ/anthropic-agent-coordinator",
-    }
+    plan = coordinator_plan()
 
     assert runner.constellation_memory_verify(plan, workspace, result_path) == 0
     assert observed["commands"] == [["bash", "scripts/ci/verify.sh"]]
@@ -60,11 +70,9 @@ def test_repository_owned_verifier_fails_closed_without_exact_sha(
     result_path = tmp_path / "result.json"
     monkeypatch.delenv("APEX_RESOLVED_SOURCE_SHA", raising=False)
 
-    plan = {
-        "job_id": "coordinator-proof-test",
-        "source_repo": "GlacierEQ/anthropic-agent-coordinator",
-    }
-    assert runner.constellation_memory_verify(plan, workspace, result_path) != 0
+    assert runner.constellation_memory_verify(
+        coordinator_plan(), workspace, result_path
+    ) != 0
     result = json.loads(result_path.read_text(encoding="utf-8"))
     assert result["status"] == "blocked"
     assert "resolved source SHA" in result["reason"]
