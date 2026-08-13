@@ -23,6 +23,8 @@ ALLOWED_PERMISSIONS = {"contents", "actions"}
 ALLOWED_LEVELS = {"read", "write"}
 REPOSITORY_PART = re.compile(r"^[A-Za-z0-9_.-]+$")
 SAFE_BROKER_ERROR = re.compile(r"^[a-z0-9_]{1,128}$")
+PUBLIC_WORKLOAD_SENTINEL = "__APEX_PUBLIC_CREDENTIAL_FREE__"
+PUBLIC_CREDENTIAL_FREE_WORKLOADS = {"GlacierEQ/anthropic-agent-coordinator"}
 
 
 class TokenBrokerError(RuntimeError):
@@ -151,13 +153,16 @@ def _request_id(repository: str, operation: str) -> str:
     return f"gha-{run_id}-{attempt}-{safe_repo}-{operation}"[:256]
 
 
-def _write_outputs(token: str, expires_at: str, receipt_id: object) -> None:
+def _write_outputs(
+    token: str, expires_at: str, receipt_id: object, *, mask: bool = True
+) -> None:
     output_path = os.environ.get("GITHUB_OUTPUT", "").strip()
     if not output_path:
         raise TokenBrokerError("github_output_unavailable")
     if "\n" in token or "\r" in token:
         raise TokenBrokerError("token_contains_control_character")
-    print(f"::add-mask::{token}")
+    if mask:
+        print(f"::add-mask::{token}")
     try:
         with Path(output_path).open("a", encoding="utf-8") as handle:
             handle.write(f"token={token}\n")
@@ -165,6 +170,29 @@ def _write_outputs(token: str, expires_at: str, receipt_id: object) -> None:
             handle.write(f"receipt_id={receipt_id}\n")
     except OSError as error:
         raise TokenBrokerError("github_output_write_failed") from error
+
+
+def _public_workload_bypass(
+    repository: str,
+    operation: str,
+    permissions: dict[str, str],
+) -> bool:
+    """Return a non-secret sentinel only for the explicitly public read-only workload."""
+
+    if operation != "public-action-workload":
+        return False
+    if repository not in PUBLIC_CREDENTIAL_FREE_WORKLOADS:
+        return False
+    if permissions != {"contents": "read"}:
+        raise TokenBrokerError("public_workload_permission_exceeds_read")
+    _write_outputs(
+        PUBLIC_WORKLOAD_SENTINEL,
+        "credential-free",
+        "public-workload-no-token",
+        mask=False,
+    )
+    print(f"KEYMASTER_PUBLIC_WORKLOAD_OK: {repository} requires no credential")
+    return True
 
 
 def main() -> int:
@@ -178,12 +206,16 @@ def main() -> int:
     operation = args.operation.strip()
     if not operation or len(operation) > 256:
         raise TokenBrokerError("invalid_request")
+    permissions = _permissions(args.permission)
+
+    if _public_workload_bypass(repository, operation, permissions):
+        return 0
 
     oidc = _oidc_token()
     body = json.dumps(
         {
             "repository": repository,
-            "permissions": _permissions(args.permission),
+            "permissions": permissions,
             "operation": operation,
             "request_id": _request_id(repository, operation),
         },

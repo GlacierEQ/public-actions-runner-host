@@ -11,6 +11,7 @@ import urllib.request
 API_URL = "https://api.github.com/installation/token"
 API_VERSION = "2026-03-10"
 TOKEN_ENV = "GITHUB_INSTALLATION_TOKEN"
+PUBLIC_WORKLOAD_SENTINEL = "__APEX_PUBLIC_CREDENTIAL_FREE__"
 
 
 class RevocationError(RuntimeError):
@@ -27,6 +28,9 @@ _OPENER = urllib.request.build_opener(_RejectRedirects())
 
 def main() -> int:
     token = os.environ.get(TOKEN_ENV, "").strip()
+    if token == PUBLIC_WORKLOAD_SENTINEL:
+        print("No GitHub installation token was minted for the public workload; revocation not required.")
+        return 0
     if not token:
         raise RevocationError("github_installation_token_missing")
     if "\n" in token or "\r" in token:

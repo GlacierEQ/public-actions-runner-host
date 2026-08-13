@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Checkout one approved workload without persisting or parsing submodule credentials."""
+"""Checkout one approved workload without persisting credentials."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 
 REPO = re.compile(r"^GlacierEQ/[A-Za-z0-9_.-]+$")
+PUBLIC_WORKLOAD_SENTINEL = "__APEX_PUBLIC_CREDENTIAL_FREE__"
 SECRET_ENV = {
     "APEX_CONTROL_TOKEN",
     "APEX_PRIVATE_READ_TOKEN",
@@ -48,6 +49,11 @@ def credential_environment(token: str) -> dict[str, str]:
     return env
 
 
+def fetch_environment(token: str | None) -> dict[str, str]:
+    """Use process-only auth when supplied, otherwise a credential-free environment."""
+    return credential_environment(token) if token else sanitized_environment()
+
+
 def run_git(
     command: list[str],
     *,
@@ -80,7 +86,7 @@ def checkout_repository(
     source_repo: str,
     source_ref: str,
     workspace: Path,
-    token: str,
+    token: str | None = None,
     *,
     remote_url: str | None = None,
 ) -> str:
@@ -115,7 +121,7 @@ def checkout_repository(
             "origin",
             source_ref,
         ],
-        env=credential_environment(token),
+        env=fetch_environment(token),
         timeout=300,
     )
     run_git(
@@ -131,8 +137,10 @@ def checkout_repository(
 
     config_path = workspace / ".git/config"
     config = config_path.read_text(encoding="utf-8")
-    if token in config or "extraheader" in config.lower():
+    if token and token in config:
         raise CheckoutError("workload credential persisted in Git configuration")
+    if "extraheader" in config.lower():
+        raise CheckoutError("workload credential header persisted in Git configuration")
     return resolved_sha
 
 
@@ -169,7 +177,8 @@ def main() -> int:
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise SystemExit("WORKLOAD_CHECKOUT_BLOCK: plan file is invalid") from error
 
-    token = os.environ.get("APEX_WORKLOAD_TOKEN", "")
+    raw_token = os.environ.get("APEX_WORKLOAD_TOKEN", "")
+    token = None if raw_token in {"", PUBLIC_WORKLOAD_SENTINEL} else raw_token
     try:
         workspace = runner_workspace_path(args.workspace)
         prepare_runner_workspace(workspace)
@@ -182,9 +191,10 @@ def main() -> int:
     except CheckoutError as error:
         raise SystemExit(f"WORKLOAD_CHECKOUT_BLOCK: {error}") from error
 
+    auth_mode = "credentialed" if token else "credential-free"
     print(
         "WORKLOAD_CHECKOUT_OK: "
-        f"{plan.get('source_repo')}@{resolved_sha} without persisted credentials"
+        f"{plan.get('source_repo')}@{resolved_sha} {auth_mode} without persisted credentials"
     )
     return 0
 
