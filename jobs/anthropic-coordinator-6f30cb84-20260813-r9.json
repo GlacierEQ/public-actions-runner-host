@@ -1,0 +1,6 @@
+{
+  "job_id": "anthropic-coordinator-6f30cb84-20260813-r9",
+  "pillar": "H",
+  "action": "anthropic-agent-coordinator-ci",
+  "source_ref": "6f30cb84e03b8e6448538ef734089e4b8cf171ee"
+}
