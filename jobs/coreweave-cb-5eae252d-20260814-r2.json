@@ -1,0 +1,6 @@
+{
+  "job_id": "coreweave-cb-5eae252d-20260814-r2",
+  "pillar": "C",
+  "action": "coreweave-circuit-breaker-ci",
+  "source_ref": "5eae252de6c1573a6f0b64c5f7043980fe5264b2"
+}
