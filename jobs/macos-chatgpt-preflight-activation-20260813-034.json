@@ -1,0 +1,6 @@
+{
+  "job_id": "macos-chatgpt-preflight-activation-20260813-034",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "8b2ff7227933148b9df7409bca6c03b7f934c269"
+}
