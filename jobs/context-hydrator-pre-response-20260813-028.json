@@ -1,0 +1,6 @@
+{
+  "job_id": "context-hydrator-pre-response-20260813-028",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "5f7144c5a64c1b8a9aba5053cf20f21db903854f"
+}
