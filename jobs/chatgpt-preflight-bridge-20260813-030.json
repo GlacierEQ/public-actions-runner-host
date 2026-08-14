@@ -1,0 +1,6 @@
+{
+  "job_id": "chatgpt-preflight-bridge-20260813-030",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "9808cabf8ea0edc1dca1a943665148aaf88d387d"
+}
