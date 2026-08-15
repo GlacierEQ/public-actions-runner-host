@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-counter-strength-pr110-26a1cb8e",
+  "pillar": "C",
+  "action": "code.monolith.validate-atlases",
+  "source_ref": "26a1cb8ebcfb0606ae639f32d0a24fc3cd09a9dc"
+}
