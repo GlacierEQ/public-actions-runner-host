@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-function-atlas-chunks-pr110-1126dd04",
+  "pillar": "C",
+  "action": "code.monolith.validate-atlases",
+  "source_ref": "1126dd048a370983bc0d346eb33871d7d58911ef"
+}
