@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glaciereq.local/schemas/apex-boot-core-result.schema.json",
+  "title": "APEX boot-core exact validation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "job_id",
+    "pillar",
+    "action",
+    "target_repository",
+    "source_repository",
+    "source_ref",
+    "resolved_source_sha",
+    "executed_source_sha",
+    "mode",
+    "human_project_direction_authority",
+    "execution_law",
+    "projection_authority",
+    "commands",
+    "projection_manifest_sha256",
+    "status"
+  ],
+  "properties": {
+    "schema": {"const": "glaciereq.action-face.code.apex-boot-core.validate.result.v1"},
+    "job_id": {"type": "string", "minLength": 1},
+    "pillar": {"const": "C"},
+    "action": {"const": "code.apex-boot-core.validate"},
+    "target_repository": {"const": "GlacierEQ/apex-boot-core"},
+    "source_repository": {"const": "GlacierEQ/apex-boot-core"},
+    "source_ref": {"type": "string", "minLength": 7},
+    "resolved_source_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "executed_source_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "mode": {"const": "APEX"},
+    "human_project_direction_authority": {"const": "Casey Barton"},
+    "execution_law": {"const": "MAXIMUM_COHERENT_ADVANCE"},
+    "projection_authority": {"const": "NON_AUTHORITY"},
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "argv",
+          "exit_code",
+          "passed",
+          "duration_ms",
+          "stdout_sha256",
+          "stderr_sha256",
+          "stdout_tail",
+          "stderr_tail"
+        ],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "argv": {"type": "array", "items": {"type": "string"}},
+          "exit_code": {"type": "integer"},
+          "passed": {"type": "boolean"},
+          "duration_ms": {"type": "number", "minimum": 0},
+          "stdout_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "stderr_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "stdout_tail": {"type": "string"},
+          "stderr_tail": {"type": "string"}
+        }
+      }
+    },
+    "projection_manifest_sha256": {
+      "anyOf": [
+        {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        {"type": "null"}
+      ]
+    },
+    "status": {"enum": ["passed", "failed"]}
+  }
+}
