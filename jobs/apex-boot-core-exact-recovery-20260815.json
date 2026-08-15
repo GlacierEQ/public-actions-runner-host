@@ -1,0 +1,6 @@
+{
+  "job_id": "apex-boot-core-exact-recovery-20260815",
+  "pillar": "C",
+  "action": "code.apex-boot-core.validate",
+  "source_ref": "apex/operator-authority-recovery-20260815"
+}
