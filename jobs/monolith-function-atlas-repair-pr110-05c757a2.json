@@ -1,0 +1,6 @@
+{
+  "job_id": "monolith-function-atlas-repair-pr110-05c757a2",
+  "pillar": "C",
+  "action": "code.monolith.validate-atlases",
+  "source_ref": "05c757a23b30b1306a5f37f0ff6fb54f56e9ddcf"
+}
