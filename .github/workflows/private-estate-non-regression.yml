@@ -1,0 +1,44 @@
+name: APEX Private Estate Non-Regression
+
+on:
+  workflow_dispatch:
+    inputs:
+      workload_repo:
+        description: Private GlacierEQ repository to inspect
+        required: true
+        default: GlacierEQ/computer-user
+        type: string
+      workload_ref:
+        description: Branch/ref to inspect
+        required: true
+        default: main
+        type: string
+  schedule:
+    - cron: "*/20 * * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  scheduled-watch:
+    if: github.event_name == 'schedule'
+    strategy:
+      fail-fast: false
+      matrix:
+        workload_repo:
+          - GlacierEQ/computer-user
+          - GlacierEQ/Pro_Code
+          - GlacierEQ/monolith
+    uses: ./.github/workflows/private-estate-non-regression-reusable.yml
+    with:
+      workload_repo: ${{ matrix.workload_repo }}
+      workload_ref: main
+    secrets: inherit
+
+  dispatched-watch:
+    if: github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/private-estate-non-regression-reusable.yml
+    with:
+      workload_repo: ${{ inputs.workload_repo }}
+      workload_ref: ${{ inputs.workload_ref }}
+    secrets: inherit
