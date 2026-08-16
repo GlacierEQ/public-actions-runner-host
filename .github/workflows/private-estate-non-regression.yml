@@ -34,6 +34,9 @@ jobs:
           - GlacierEQ/computer-user
           - GlacierEQ/Pro_Code
           - GlacierEQ/monolith
+          - GlacierEQ/SUPERLUMINAL_CASE_MATRIX
+          - GlacierEQ/xai-colossus-microcode
+          - GlacierEQ/xai-colossus-waterplant
     uses: ./.github/workflows/private-estate-non-regression-reusable.yml
     with:
       workload_repo: ${{ matrix.workload_repo }}
