@@ -103,16 +103,6 @@ jobs:
             state=failure
             description="APEX capability contraction/corruption detected"
           fi
-          python3 - <<'PY' > /tmp/status.json
-          import json, os
-          print(json.dumps({
-              "state": os.environ["state"] if "state" in os.environ else "error",
-              "target_url": os.environ["RUN_URL"],
-              "description": os.environ["description"] if "description" in os.environ else "APEX enforcement",
-              "context": "APEX/estate-non-regression",
-          }))
-          PY
-          # Export shell values for the Python payload without leaking the token.
           python3 - "$state" "$description" <<'PY' > /tmp/status.json
           import json, os, sys
           print(json.dumps({
@@ -134,7 +124,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: private-estate-non-regression-${{ strategy.job-index || 0 }}
+          name: private-estate-non-regression
           path: |
             apex-private-non-regression.json
             apex-private-non-regression.err
