@@ -15,13 +15,18 @@ on:
         type: string
   schedule:
     - cron: "*/20 * * * *"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/private-estate-non-regression.yml"
+      - ".github/workflows/private-estate-non-regression-reusable.yml"
 
 permissions:
   contents: read
 
 jobs:
-  scheduled-watch:
-    if: github.event_name == 'schedule'
+  estate-watch:
+    if: github.event_name == 'schedule' || github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
