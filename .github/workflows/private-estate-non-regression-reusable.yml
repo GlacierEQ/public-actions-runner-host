@@ -24,17 +24,33 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
-      - name: Require GitHub App configuration
+      - name: Probe GitHub App configuration
+        id: config
         env:
           APP_CLIENT_ID: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$APP_CLIENT_ID" || { echo "APEX_RUNNER_APP_CLIENT_ID is required" >&2; exit 78; }
-          test -n "$APP_PRIVATE_KEY" || { echo "APEX_RUNNER_APP_PRIVATE_KEY is required" >&2; exit 78; }
+          configured=true
+          missing=()
+          if [[ -z "$APP_CLIENT_ID" ]]; then configured=false; missing+=(APEX_RUNNER_APP_CLIENT_ID); fi
+          if [[ -z "$APP_PRIVATE_KEY" ]]; then configured=false; missing+=(APEX_RUNNER_APP_PRIVATE_KEY); fi
+          echo "configured=$configured" >> "$GITHUB_OUTPUT"
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            printf 'missing=%s\n' "$(IFS=,; echo "${missing[*]}")" >> "$GITHUB_OUTPUT"
+            {
+              echo "## APEX private estate watchdog"
+              echo
+              echo "- Workload: ${{ inputs.workload_repo }}"
+              echo "- State: BLOCKED_CONFIGURATION"
+              echo "- Missing runner configuration: $(IFS=,; echo "${missing[*]}")"
+              echo "- No private workload was read and no capability verdict was emitted."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Mint one-repository workload token
+        if: steps.config.outputs.configured == 'true'
         id: workload-token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
@@ -46,6 +62,7 @@ jobs:
           permission-statuses: write
 
       - name: Checkout enforcement implementation
+        if: steps.config.outputs.configured == 'true'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: GlacierEQ/apex-control-plane
@@ -55,6 +72,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout private workload
+        if: steps.config.outputs.configured == 'true'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: ${{ inputs.workload_repo }}
@@ -65,6 +83,7 @@ jobs:
           persist-credentials: false
 
       - name: Run non-regression against exact private head
+        if: steps.config.outputs.configured == 'true'
         id: enforce
         shell: bash
         run: |
@@ -87,6 +106,7 @@ jobs:
           exit 0
 
       - name: Publish exact-SHA commit status
+        if: steps.config.outputs.configured == 'true'
         env:
           GH_TOKEN: ${{ steps.workload-token.outputs.token }}
           WORKLOAD_REPO: ${{ inputs.workload_repo }}
@@ -121,7 +141,7 @@ jobs:
             --data-binary @/tmp/status.json
 
       - name: Upload bounded enforcement receipt
-        if: always()
+        if: always() && steps.config.outputs.configured == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: private-estate-non-regression
@@ -132,6 +152,7 @@ jobs:
           retention-days: 14
 
       - name: Enforce result after status publication
+        if: steps.config.outputs.configured == 'true'
         shell: bash
         env:
           EXIT_CODE: ${{ steps.enforce.outputs.exit_code }}
