@@ -1,0 +1,44 @@
+name: Recovery private token probe
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/recovery-private-token-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PRIVATE_TOKEN: ${{ secrets.APEX_PRIVATE_READ_TOKEN }}
+    steps:
+      - name: Probe token without exposing it
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${PRIVATE_TOKEN:-}" ]; then
+            echo 'APEX_PRIVATE_READ_TOKEN_PRESENT=false'
+            exit 0
+          fi
+          echo 'APEX_PRIVATE_READ_TOKEN_PRESENT=true'
+          code="$(curl -sS -o /tmp/repo.json -w '%{http_code}' \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer ${PRIVATE_TOKEN}" \
+            -H 'X-GitHub-Api-Version: 2026-03-10' \
+            https://api.github.com/repos/GlacierEQ/Z-BACKUP-apex-vault)"
+          echo "CROSS_REPO_GET_HTTP=${code}"
+          if [ "$code" = 200 ]; then
+            python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/repo.json'))
+          print('CROSS_REPO_PRIVATE_READ=true')
+          perms=d.get('permissions') or {}
+          print('ADMIN_PERMISSION=' + str(bool(perms.get('admin'))).lower())
+          print('PUSH_PERMISSION=' + str(bool(perms.get('push'))).lower())
+          PY
+          else
+            echo 'CROSS_REPO_PRIVATE_READ=false'
+          fi
