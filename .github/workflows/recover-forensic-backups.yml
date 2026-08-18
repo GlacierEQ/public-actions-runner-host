@@ -1,0 +1,94 @@
+name: Recover forensic backups at full history strength
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/recover_deleted_glaciereq_repos.py
+      - tests/test_repository_recovery.py
+      - .github/workflows/recover-forensic-backups.yml
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: forensic-backup-recovery
+  cancel-in-progress: false
+
+jobs:
+  verify-recovery-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Compile recovery engine
+        run: python3 -m py_compile scripts/recover_deleted_glaciereq_repos.py
+      - name: Install pytest
+        run: python3 -m pip install --disable-pip-version-check pytest
+      - name: Prove identity-safe recovery semantics
+        run: python3 -m pytest -q tests/test_repository_recovery.py
+
+  recover-forensics:
+    needs: verify-recovery-engine
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      GITHUB_TOKEN: ${{ github.token }}
+      RECOVERY_RECEIPT: forensic-recovery-receipt.json
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Report credential class without exposing it
+        shell: bash
+        run: |
+          if [ -n "${GH_PAT:-}" ]; then
+            echo 'RECOVERY_CREDENTIAL=GH_PAT'
+          else
+            echo 'RECOVERY_CREDENTIAL=GITHUB_TOKEN_DETECTION_ONLY'
+          fi
+
+      - name: Recover forensic repository frontier
+        id: recover
+        continue-on-error: true
+        run: python3 scripts/recover_deleted_glaciereq_repos.py --forensics
+
+      - name: Publish forensic recovery receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: forensic-repository-recovery-${{ github.run_id }}
+          path: forensic-recovery-receipt.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Summarize exact recovery state
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os
+          path='forensic-recovery-receipt.json'
+          if not os.path.exists(path):
+              raise SystemExit('forensic recovery receipt missing')
+          d=json.load(open(path,encoding='utf-8'))
+          counts=d.get('counts',{})
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:
+              f.write('# Forensic repository recovery\n\n')
+              f.write(f"Targets: **{d.get('target_count')}**\n\n")
+              f.write(f"Credential class: **{d.get('token_source')}**\n\n")
+              for k,v in sorted(counts.items()):
+                  f.write(f"- `{k}`: **{v}**\n")
+              f.write('\nOriginal repository objects are preserved; no repository is recreated, overwritten, force-pushed, or silently merged.\n')
+          PY
+
+      - name: Require successful mutation when administration credential exists
+        if: steps.recover.outcome == 'failure' && env.GH_PAT != ''
+        run: exit 1
