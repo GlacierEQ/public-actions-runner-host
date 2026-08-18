@@ -1,0 +1,71 @@
+name: Recover deleted GlacierEQ repositories
+
+on:
+  push:
+    paths:
+      - scripts/recover_deleted_glaciereq_repos.py
+      - .github/workflows/recover-deleted-glaciereq-repos.yml
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: read
+
+group: repository-recovery
+
+concurrency:
+  group: repository-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover-and-reactivate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      GITHUB_TOKEN: ${{ github.token }}
+      RECOVERY_RECEIPT: repo-recovery-receipt.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify recovery credential path
+        shell: bash
+        run: |
+          if [ -n "$GH_PAT" ]; then
+            echo "Recovery credential: GH_PAT present"
+          else
+            echo "Recovery credential: GH_PAT absent; repository-scoped GITHUB_TOKEN will only provide detection and may not permit cross-repository activation"
+          fi
+
+      - name: Activate every restored casualty at full history strength
+        run: python3 scripts/recover_deleted_glaciereq_repos.py
+
+      - name: Publish recovery receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: glaciereq-repository-recovery-${{ github.run_id }}
+          path: repo-recovery-receipt.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Recovery summary
+        if: always()
+        shell: bash
+        run: |
+          if [ -f repo-recovery-receipt.json ]; then
+            python3 - <<'PY'
+          import json, os
+          d=json.load(open('repo-recovery-receipt.json'))
+          counts=d.get('counts',{})
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:
+              f.write('# GlacierEQ repository recovery\n\n')
+              f.write(f"Casualties tracked: **{d.get('casualty_count')}**\n\n")
+              for k,v in sorted(counts.items()):
+                  f.write(f"- `{k}`: **{v}**\n")
+              f.write('\nThe workflow never deletes, force-pushes, overwrites, or recreates a missing repository. It preserves original Git history and activates repositories after GitHub restoration.\n')
+          PY
+          fi
