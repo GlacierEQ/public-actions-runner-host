@@ -1,31 +1,34 @@
 #!/usr/bin/env python3
-"""Restore-adjacent activation for the Aug 2026 GlacierEQ repository casualty set.
+"""Full-history recovery activator for the Aug 2026 GlacierEQ repository casualty wave.
 
-This script intentionally DOES NOT create replacement repositories. GitHub's supported
-personal-account deleted-repository restore path is the GitHub UI. Recreating a missing
-namespace before restoring risks losing the original repository history as the primary
-recovery path.
+The one operation this script deliberately does not fake is GitHub's deleted-repository
+restore. GitHub restores personal-account repositories through the account UI; creating a
+replacement namespace first can sacrifice the original repository object/history path.
 
-Once GitHub restores an original repository, this script:
+After an original repository exists again, this activator restores operating posture:
   * unarchives it;
-  * removes the historical Z-BACKUP- prefix when the clean target is free;
-  * if the clean target already exists, preserves both histories and renames the restored
-    repository to <target>-recovered-full (or a deterministic numbered variant);
-  * emits a machine-readable recovery receipt.
+  * strips the historical ``Z-BACKUP-`` prefix when the clean namespace is free;
+  * preserves BOTH histories on namespace collision by using ``-recovered-full``;
+  * can also reactivate the surviving Z-BACKUP repositories in the same pass;
+  * emits a machine-readable receipt.
 
-No repository is deleted, force-pushed, merged, or overwritten by this script.
+It never deletes a repository, force-pushes, overwrites an existing repository, or merges
+histories without an explicit later reconciliation step.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
+import shutil
+import subprocess
 import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from typing import Any
 
 OWNER = "GlacierEQ"
@@ -78,6 +81,30 @@ CASUALTIES = [
     "grok-build",
 ]
 
+# These survived the deletion wave but remain archived under the destructive Z-BACKUP
+# lifecycle naming. Full activation removes that lifecycle posture too.
+SURVIVING_Z_BACKUPS = [
+    "Z-BACKUP-mastermind-colossus",
+    "Z-BACKUP-apex-vault",
+    "Z-BACKUP-apex-gateway",
+    "Z-BACKUP-apex-command-center",
+    "Z-BACKUP-APEX-NEXUS-AUTOMATION",
+    "Z-BACKUP-apex-ci-guardian",
+    "Z-BACKUP-aspen-grove-unified",
+    "Z-BACKUP-FEDERAL-FORENSIC-REPAIR-OMNIBUS",
+    "Z-BACKUP-aspen-grove-omni-bridge",
+    "Z-BACKUP-APEX-LEGAL-WARFARE-ORCHESTRATOR",
+    "Z-BACKUP-file-commander",
+    "Z-BACKUP-Digital-Forensics-Report",
+    "Z-BACKUP-digital-forensics-labs",
+    "Z-BACKUP-ios-forensics-mcp",
+    "Z-BACKUP-DesktopCommanderMCP",
+    "Z-BACKUP-Elcomsoft-Phone-Breaker-Mobile-Forensic-Analysis",
+]
+
+_TOKEN: str | None = None
+_TOKEN_SOURCE: str | None = None
+
 
 @dataclass
 class Result:
@@ -90,14 +117,46 @@ class Result:
     detail: str | None = None
 
 
-def token() -> str:
-    value = os.environ.get("GH_PAT") or os.environ.get("GITHUB_TOKEN") or ""
-    if not value:
-        raise SystemExit("No GH_PAT or GITHUB_TOKEN available")
-    return value
+def resolve_token() -> tuple[str, str]:
+    """Resolve an authenticated user credential without ever printing it.
+
+    Priority is an explicit cross-repository PAT, then a local ``gh auth token``. The
+    workflow-scoped GITHUB_TOKEN is last because it normally cannot administer sibling
+    repositories; it remains useful for casualty detection in public contexts.
+    """
+    global _TOKEN, _TOKEN_SOURCE
+    if _TOKEN:
+        return _TOKEN, _TOKEN_SOURCE or "cached"
+
+    for env_name in ("GH_PAT", "APEX_PRIVATE_READ_TOKEN"):
+        value = os.environ.get(env_name, "").strip()
+        if value:
+            _TOKEN, _TOKEN_SOURCE = value, env_name
+            return value, env_name
+
+    if not os.environ.get("GITHUB_ACTIONS") and shutil.which("gh"):
+        proc = subprocess.run(
+            ["gh", "auth", "token"],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        value = proc.stdout.strip()
+        if proc.returncode == 0 and value:
+            _TOKEN, _TOKEN_SOURCE = value, "gh auth token"
+            return value, "gh auth token"
+
+    value = os.environ.get("GITHUB_TOKEN", "").strip()
+    if value:
+        _TOKEN, _TOKEN_SOURCE = value, "GITHUB_TOKEN"
+        return value, "GITHUB_TOKEN"
+
+    raise SystemExit("No authenticated GitHub credential found (GH_PAT, local gh auth, or GITHUB_TOKEN)")
 
 
 def api(method: str, path: str, body: dict[str, Any] | None = None) -> tuple[int, Any, dict[str, str]]:
+    auth, _ = resolve_token()
     url = f"{API}{path}"
     data = None if body is None else json.dumps(body).encode("utf-8")
     req = urllib.request.Request(
@@ -106,7 +165,7 @@ def api(method: str, path: str, body: dict[str, Any] | None = None) -> tuple[int
         method=method,
         headers={
             "Accept": "application/vnd.github+json",
-            "Authorization": f"Bearer {token()}",
+            "Authorization": f"Bearer {auth}",
             "X-GitHub-Api-Version": API_VERSION,
             "User-Agent": "GlacierEQ-repository-recovery",
             "Content-Type": "application/json",
@@ -186,7 +245,7 @@ def activate(source: str) -> Result:
     if target_status != 200:
         return Result(source, desired, "TARGET_LOOKUP_FAILED", source_archived_before=archived_before, detail=f"HTTP {target_status}: {target}")
 
-    # Preserve both histories. Remove the Z-BACKUP prefix without overwriting an active target.
+    # Never replace a live clean namespace. Both histories survive; reconciliation comes later.
     recovered = available_recovery_name(desired)
     pstatus, payload = patch_repo(source, name=recovered, archived=False)
     if pstatus == 200:
@@ -209,9 +268,25 @@ def activate(source: str) -> Result:
     )
 
 
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser()
+    p.add_argument(
+        "--full",
+        action="store_true",
+        help="Also reactivate/rename every surviving Z-BACKUP repository, not only deleted-wave casualties.",
+    )
+    return p.parse_args()
+
+
 def main() -> int:
+    args = parse_args()
+    _, token_source = resolve_token()
+    targets = list(CASUALTIES)
+    if args.full or os.environ.get("RECOVERY_FULL") == "1":
+        targets.extend(name for name in SURVIVING_Z_BACKUPS if name not in targets)
+
     results: list[Result] = []
-    for name in CASUALTIES:
+    for name in targets:
         result = activate(name)
         results.append(result)
         print(json.dumps(asdict(result), sort_keys=True))
@@ -222,9 +297,13 @@ def main() -> int:
         counts[r.state] = counts.get(r.state, 0) + 1
 
     receipt = {
-        "schema": "glaciereq.repository-recovery.v1",
+        "schema": "glaciereq.repository-recovery.v2",
         "owner": OWNER,
+        "token_source": token_source,
+        "full_activation": bool(args.full or os.environ.get("RECOVERY_FULL") == "1"),
         "casualty_count": len(CASUALTIES),
+        "surviving_z_backup_count": len(SURVIVING_Z_BACKUPS),
+        "target_count": len(targets),
         "counts": counts,
         "results": [asdict(r) for r in results],
     }
@@ -232,7 +311,7 @@ def main() -> int:
     with open(out, "w", encoding="utf-8") as fh:
         json.dump(receipt, fh, indent=2, sort_keys=True)
         fh.write("\n")
-    print(json.dumps({"receipt": out, "counts": counts}, sort_keys=True))
+    print(json.dumps({"receipt": out, "counts": counts, "token_source": token_source}, sort_keys=True))
 
     hard_fail = any(
         r.state in {
