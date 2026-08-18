@@ -5,14 +5,16 @@ on:
     paths:
       - scripts/recover_deleted_glaciereq_repos.py
       - .github/workflows/recover-deleted-glaciereq-repos.yml
+  pull_request:
+    paths:
+      - scripts/recover_deleted_glaciereq_repos.py
+      - .github/workflows/recover-deleted-glaciereq-repos.yml
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
 
 permissions:
   contents: read
-
-group: repository-recovery
 
 concurrency:
   group: repository-recovery
