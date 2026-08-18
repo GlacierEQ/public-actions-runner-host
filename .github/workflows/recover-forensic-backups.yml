@@ -7,6 +7,13 @@ on:
       - scripts/recover_deleted_glaciereq_repos.py
       - tests/test_repository_recovery.py
       - .github/workflows/recover-forensic-backups.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - .recovery/forensic-proof-trigger
+      - scripts/recover_deleted_glaciereq_repos.py
+      - tests/test_repository_recovery.py
+      - .github/workflows/recover-forensic-backups.yml
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
