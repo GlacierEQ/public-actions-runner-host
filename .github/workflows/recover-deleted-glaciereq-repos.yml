@@ -1,3 +1,4 @@
+# execution probe: verify recovery credential and casualty-state engine
 name: Recover deleted GlacierEQ repositories
 
 on:
