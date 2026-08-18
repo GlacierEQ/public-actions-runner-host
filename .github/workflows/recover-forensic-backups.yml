@@ -96,6 +96,24 @@ jobs:
               f.write('\nOriginal repository objects are preserved; no repository is recreated, overwritten, force-pushed, or silently merged.\n')
           PY
 
-      - name: Require successful mutation when administration credential exists
-        if: steps.recover.outcome == 'failure' && env.GH_PAT != ''
-        run: exit 1
+      - name: Require perfect recovery when administration credential exists
+        if: env.GH_PAT != ''
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open('forensic-recovery-receipt.json',encoding='utf-8'))
+          results=d.get('results',[])
+          incomplete={
+              'RESTORE_REQUIRED','LOOKUP_FAILED','UNARCHIVE_FAILED','RENAME_FAILED',
+              'TARGET_LOOKUP_FAILED','COLLISION_RENAME_FAILED'
+          }
+          bad=[r for r in results if r.get('state') in incomplete]
+          if bad:
+              for r in bad:
+                  print(f"INCOMPLETE {r.get('source')}: {r.get('state')}")
+              raise SystemExit(f"perfect forensic recovery incomplete: {len(bad)} target(s)")
+          if len(results) != d.get('forensic_target_count'):
+              raise SystemExit('forensic target count mismatch')
+          print('PERFECT_FORENSIC_RECOVERY=true')
+          PY
