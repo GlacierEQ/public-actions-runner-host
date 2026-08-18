@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -8,6 +9,9 @@ MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "recover_deleted
 spec = importlib.util.spec_from_file_location("repo_recovery", MODULE_PATH)
 assert spec and spec.loader
 recovery = importlib.util.module_from_spec(spec)
+# dataclasses resolves forward-annotation metadata through sys.modules while the module
+# executes. Register the module exactly as a normal import would before exec_module().
+sys.modules[spec.name] = recovery
 spec.loader.exec_module(recovery)
 
 
