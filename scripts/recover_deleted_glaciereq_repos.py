@@ -218,10 +218,11 @@ def repo(name: str) -> tuple[int, Any]:
     return status, payload
 
 
-def patch_repo(name: str, **changes: Any) -> tuple[int, Any]:
+def patch_repo(repo_name: str, **changes: Any) -> tuple[int, Any]:
+    """Patch repository metadata without colliding with GitHub's ``name`` field."""
     status, payload, _ = api(
         "PATCH",
-        f"/repos/{OWNER}/{urllib.parse.quote(name, safe='')}",
+        f"/repos/{OWNER}/{urllib.parse.quote(repo_name, safe='')}",
         changes,
     )
     return status, payload
