@@ -26,8 +26,8 @@ def test_same_repository_id_redirect_is_not_collision(monkeypatch):
             return 200, {"id": 1014553287, "name": "Z-BACKUP-Digital-Forensics-Report", "archived": True}
         raise AssertionError(name)
 
-    def fake_patch(name, **changes):
-        calls.append((name, changes))
+    def fake_patch(repo_name, **changes):
+        calls.append((repo_name, changes))
         return 200, {"id": 1014553287, "name": "Digital-Forensics-Report", "archived": False}
 
     monkeypatch.setattr(recovery, "repo", fake_repo)
@@ -59,8 +59,8 @@ def test_true_different_id_collision_preserves_both_histories(monkeypatch):
             return 404, {"message": "Not Found"}
         raise AssertionError(name)
 
-    def fake_patch(name, **changes):
-        calls.append((name, changes))
+    def fake_patch(repo_name, **changes):
+        calls.append((repo_name, changes))
         return 200, {"id": 111, "name": "example-recovered-full", "archived": False}
 
     monkeypatch.setattr(recovery, "repo", fake_repo)
