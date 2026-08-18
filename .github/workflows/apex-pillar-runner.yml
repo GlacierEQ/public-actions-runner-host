@@ -105,11 +105,11 @@ jobs:
         id: authorize
         run: python3 scripts/action_face_authorize.py
 
-      - name: Assert canonical public action face
+      - name: Map public action-face alignment
         id: identity
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python3 scripts/action_face_guard.py
+        run: python3 scripts/action_face_alignment.py
 
       - name: Validate and normalize strict job envelope
         id: plan

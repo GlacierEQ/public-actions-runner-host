@@ -22,18 +22,18 @@ jobs:
       PYTHONPATH: .
 
     steps:
-      - name: Checkout canonical public action face
+      - name: Checkout public action face
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
           fetch-depth: 1
 
-      - name: Assert canonical public action face
+      - name: Map public action-face alignment
         env:
           GITHUB_TOKEN: ${{ github.token }}
           APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
           APEX_EXPECTED_VISIBILITY: public
-        run: python3 scripts/action_face_guard.py
+        run: python3 scripts/action_face_alignment.py
 
       - name: Require GitHub App bridge configuration
         env:

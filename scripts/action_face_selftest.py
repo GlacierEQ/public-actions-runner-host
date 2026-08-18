@@ -129,7 +129,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "name: APEX Public Action Face",
         "runs-on: ubuntu-latest",
         "scripts/action_face_authorize.py",
-        "scripts/action_face_guard.py",
+        "scripts/action_face_alignment.py",
         "scripts/action_face_control_plane_guard.py",
         "scripts/action_face_bind_checkout.py",
         ".apex-postrun-control/scripts/action_face_pipeline_result.py",

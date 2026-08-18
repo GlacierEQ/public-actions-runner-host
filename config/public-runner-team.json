@@ -5,7 +5,7 @@
   "execution_mode": "github-hosted",
   "runner_policy": {
     "allowed_runner_prefixes": ["ubuntu-", "windows-", "macos-"],
-    "canonical_runner": "ubuntu-latest",
+    "preferred_runner": "ubuntu-latest",
     "self_hosted_allowed": false,
     "private_runner_references_allowed": false
   },

@@ -11,7 +11,7 @@ on:
       - "registry/**"
       - "scripts/action_face_*.py"
       - "scripts/apex_catalog_runner.py"
-      - "scripts/public_runner_team_guard.py"
+      - "scripts/public_runner_team_map.py"
       - "scripts/workload_isolation.py"
       - "security/RUNNER_HARDENING_RECEIPT_2026-08-03.md"
   pull_request:
@@ -24,7 +24,7 @@ on:
       - "registry/**"
       - "scripts/action_face_*.py"
       - "scripts/apex_catalog_runner.py"
-      - "scripts/public_runner_team_guard.py"
+      - "scripts/public_runner_team_map.py"
       - "scripts/workload_isolation.py"
       - "security/RUNNER_HARDENING_RECEIPT_2026-08-03.md"
   workflow_dispatch:
@@ -45,5 +45,5 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: Enforce runner policy
-        run: python3 scripts/public_runner_team_guard.py
+      - name: Map runner topology
+        run: python3 scripts/public_runner_team_map.py

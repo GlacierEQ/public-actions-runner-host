@@ -33,10 +33,10 @@ jobs:
       - name: Authorize owner-triggered ingress
         run: python3 scripts/action_face_authorize.py
 
-      - name: Assert canonical public action face
+      - name: Map public action-face alignment
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python3 scripts/action_face_guard.py
+        run: python3 scripts/action_face_alignment.py
 
       - name: Resolve single bounded JEFS job
         id: job
