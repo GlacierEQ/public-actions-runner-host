@@ -1,0 +1,170 @@
+{
+  "schema": "glaciereq.forensic-repository-recovery-frontier.v1",
+  "owner": "GlacierEQ",
+  "objective": "Restore original repository objects and full Git history, remove Z-BACKUP lifecycle naming, unarchive, then counter-engineer capability forward without overwriting divergent history.",
+  "source_anchors": {
+    "monolith_inventory_commit": "294af1b35f3ee5bc2c220eb39755533c10727b0b",
+    "inventory_date": "2026-08-10",
+    "webhook_wiring_date": "2026-06-19",
+    "current_authenticated_readback_date": "2026-08-18"
+  },
+  "invariants": [
+    "Never create an empty replacement while the original GitHub repository is restorable.",
+    "Never force-push or overwrite a divergent repository history.",
+    "Repository numeric identity decides whether a clean-name lookup is a redirect or a true collision.",
+    "Same numeric ID means preserve the original object and rename it cleanly.",
+    "Different numeric IDs mean preserve both histories for later capability reconciliation.",
+    "Recovery is incomplete while any target remains deleted, archived, Z-BACKUP-prefixed, or mutation-blocked."
+  ],
+  "targets": [
+    {
+      "source": "Z-BACKUP-FEDERAL-FORENSIC-REPAIR-OMNIBUS",
+      "desired": "FEDERAL-FORENSIC-REPAIR-OMNIBUS",
+      "state": "LIVE_ARCHIVED_RENAMED_ORIGINAL",
+      "repository_id": 1111364372,
+      "visibility": "private",
+      "default_branch": "main",
+      "recovery_action": "RENAME_AND_UNARCHIVE_SAME_OBJECT"
+    },
+    {
+      "source": "Z-BACKUP-Digital-Forensics-Report",
+      "desired": "Digital-Forensics-Report",
+      "state": "LIVE_ARCHIVED_RENAMED_ORIGINAL",
+      "repository_id": 1014553287,
+      "visibility": "public",
+      "default_branch": "master",
+      "recovery_action": "RENAME_AND_UNARCHIVE_SAME_OBJECT"
+    },
+    {
+      "source": "Z-BACKUP-digital-forensics-labs",
+      "desired": "digital-forensics-labs",
+      "state": "LIVE_ARCHIVED_RENAMED_ORIGINAL",
+      "repository_id": 1014551358,
+      "visibility": "public",
+      "default_branch": "master",
+      "recovery_action": "RENAME_AND_UNARCHIVE_SAME_OBJECT"
+    },
+    {
+      "source": "Z-BACKUP-ios-forensics-mcp",
+      "desired": "ios-forensics-mcp",
+      "state": "LIVE_ARCHIVED_RENAMED_ORIGINAL",
+      "repository_id": 1070124552,
+      "visibility": "public",
+      "default_branch": "main",
+      "recovery_action": "RENAME_AND_UNARCHIVE_SAME_OBJECT"
+    },
+    {
+      "source": "Z-BACKUP-DesktopCommanderMCP",
+      "desired": "DesktopCommanderMCP",
+      "state": "LIVE_ARCHIVED_RENAMED_ORIGINAL",
+      "repository_id": 1030023514,
+      "visibility": "public",
+      "default_branch": "main",
+      "recovery_action": "RENAME_AND_UNARCHIVE_SAME_OBJECT"
+    },
+    {
+      "source": "Z-BACKUP-Elcomsoft-Phone-Breaker-Mobile-Forensic-Analysis",
+      "desired": "Elcomsoft-Phone-Breaker-Mobile-Forensic-Analysis",
+      "state": "LIVE_ARCHIVED_RENAMED_ORIGINAL",
+      "repository_id": 1070128862,
+      "visibility": "public",
+      "default_branch": "main",
+      "recovery_action": "RENAME_AND_UNARCHIVE_SAME_OBJECT"
+    },
+    {
+      "source": "Z-BACKUP-Federal-Forensic-Framework",
+      "desired": "Federal-Forensic-Framework",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": null,
+      "historical_updated_at": "2026-05-26T00:10:23Z",
+      "historical_description": "A federally forensic-organized repository for digital evidence handling, analysis, and reporting. Structured for chain-of-custody, integrity, and reproducibility in cybersecurity and legal investigations.",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    },
+    {
+      "source": "Z-BACKUP-Federal-Forensic-MCP-Master",
+      "desired": "Federal-Forensic-MCP-Master",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": null,
+      "historical_updated_at": "2026-05-26T00:10:25Z",
+      "historical_description": "A federally compliant, forensic-grade MCP Master Node integrating evidence acquisition, forensic analysis, chain-of-custody, reporting, and memory layers.",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    },
+    {
+      "source": "Z-BACKUP-android-forensics",
+      "desired": "android-forensics",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": "Java",
+      "historical_updated_at": "2026-05-26T00:08:03Z",
+      "historical_description": "Open source Android Forensics app and framework",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    },
+    {
+      "source": "Z-BACKUP-forensic_transcriber",
+      "desired": "forensic_transcriber",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": "Python",
+      "historical_updated_at": "2026-05-26T00:14:18Z",
+      "historical_description": "forensic level transcription tools",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    },
+    {
+      "source": "Z-BACKUP-mba-desktop-forensics",
+      "desired": "mba-desktop-forensics",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": "Python",
+      "historical_updated_at": "2026-05-26T00:06:05Z",
+      "historical_description": "",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    },
+    {
+      "source": "Z-BACKUP-sharepoint-forensic-mastermind",
+      "desired": "sharepoint-forensic-mastermind",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": "Python",
+      "historical_updated_at": "2026-05-26T00:06:55Z",
+      "historical_description": "AI-powered forensic document intelligence with auto-organization, psycho-social analysis, and legal artifact generation for Case 1FDV-23-0001009",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    },
+    {
+      "source": "Z-BACKUP-desktop-commander-mcp",
+      "desired": "desktop-commander-mcp",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": null,
+      "historical_updated_at": "2026-05-26T00:10:40Z",
+      "historical_description": "Critical MCP server enabling shell execution and system access for deployment orchestration",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    },
+    {
+      "source": "Z-BACKUP-apex-mcp-server",
+      "desired": "apex-mcp-server",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": "JavaScript",
+      "historical_updated_at": "2026-05-26T00:06:51Z",
+      "historical_description": "APEX iPhone 16 Pro Max MCP - Forensic Ecosystem",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    },
+    {
+      "source": "Z-BACKUP-ULTIMATE-REPAIR-APEX",
+      "desired": "ULTIMATE-REPAIR-APEX",
+      "state": "RESTORE_REQUIRED",
+      "historical_visibility": "private",
+      "historical_language": "Python",
+      "historical_updated_at": "2026-05-26T00:11:21Z",
+      "historical_description": "Forensic-grade boot recovery system with GPG-signed commits, SHA-256 verification, evidence-chain integrity, and Windows/macOS/Linux multi-boot repair tooling.",
+      "recovery_action": "RESTORE_ORIGINAL_THEN_RENAME_AND_UNARCHIVE"
+    }
+  ],
+  "counts": {
+    "targets": 15,
+    "live_archived_renamed_originals": 6,
+    "restore_required": 9
+  }
+}
