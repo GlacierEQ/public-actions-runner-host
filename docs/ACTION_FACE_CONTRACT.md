@@ -1,67 +1,80 @@
 # APEX Public Action Face Contract
 
-**Status:** Active architecture; runtime activation blocked until public visibility and canary evidence exist.
+**Status:** Active technical architecture; operational activation requires live provider evidence.  
+**Project-direction authority:** **OPERATOR**
 
-## Canonical roles
+## Purpose
 
-| Role | Repository | Required visibility | GitHub Actions |
-|---|---|---:|---:|
-| Public action face / execution plane | `GlacierEQ/public-actions-runner-host` | Public | Sole execution owner |
-| Private control brain / approvals / receipts | `GlacierEQ/llm-runner-teams` | Private | Forbidden |
-| Private workload repositories | Catalog-approved `GlacierEQ/*` repositories | Private or public | Forbidden when private |
-| Canonical architecture | `GlacierEQ/AKOS` | Private | Policy only |
+`GlacierEQ/public-actions-runner-host` provides a hardened public GitHub Actions execution surface for Operator-directed workloads. This contract defines technical identity, ingress, token, isolation, replay, receipt, and disclosure controls.
 
-## Prime rule
+It does **not** appoint this repository, AKOS, the private receipt plane, a workflow, a catalog, CI, or a receipt as project authority. Current routing is a technical implementation choice and may be replaced or composed under Operator direction when a stronger verified execution path exists.
 
-> Every GitHub-hosted execution run, workflow badge, sanitized public status, and runner-facing event belongs to `GlacierEQ/public-actions-runner-host`.
+## Current technical roles
 
-The private control plane defines policy, approvals, and immutable receipts. It may not own executable workflow YAML, overwrite a prior result, or become the visible or billed Actions owner.
-
-## Governing sequence
+| Surface | Repository | Technical responsibility | Explicit non-authority |
+|---|---|---|---|
+| Public action face | `GlacierEQ/public-actions-runner-host` | Current public GitHub Actions execution and sanitized status surface | Does not own project direction or peer lifecycle |
+| Private receipt/control plane | `GlacierEQ/llm-runner-teams` | Policies used by this execution path, approvals, append-oriented detailed receipts | Storage/approval records do not become project authority |
+| Workload repositories | Operator-selected/catalog-admitted `GlacierEQ/*` repositories | Source/workload implementation | Admission does not subordinate the repository |
+| AKOS | `GlacierEQ/AKOS` | Optional architecture/cognition/verification peer | Does not govern this repository or the estate |
 
 ```text
-authorize principal
-  -> verify immutable public repository identity
-  -> require dedicated least-privilege bridge credentials
-  -> verify private non-executing append-only control plane
-  -> validate strict metadata-only envelope
-  -> reject duplicate immutable job ID
-  -> verify private dual approval where required
-  -> ephemeral catalog-approved checkout
-  -> isolated adapter on ubuntu-latest
-  -> immutable detailed private receipt
-  -> truthful sanitized public status
-  -> governed release result
+selection != ownership
+routing != sovereignty
+receipt != project authority
+technical permission != project direction
 ```
+
+## Execution sequence
+
+```text
+Operator-directed operation
+  -> authorize principal for this technical route
+  -> verify exact public execution-repository identity
+  -> obtain least-privilege short-lived credentials
+  -> validate receipt/control-plane invariants required by this route
+  -> validate strict metadata-only envelope
+  -> reject replayed job ID
+  -> verify required approval evidence for the requested operation
+  -> ephemeral allowed workload checkout
+  -> isolated adapter on ubuntu-latest
+  -> detailed private receipt
+  -> truthful sanitized public status
+  -> technical result
+```
+
+The sequence validates this execution path. Passing it does not grant future project authority or authorize unrelated repository actions.
 
 ## Repository identity lock
 
-Execution is valid only when GitHub reports all of the following:
+A run claiming to be this action-face implementation is valid only when GitHub reports the expected technical identity:
 
 - full name `GlacierEQ/public-actions-runner-host`;
 - repository ID `1265621488`;
 - owner login `GlacierEQ`;
 - owner ID `194243768`;
 - public visibility;
-- default branch `main`;
-- not private, archived, disabled, or forked.
+- configured execution branch `main`;
+- repository is not archived, disabled, or forked.
+
+These fields prevent impersonation of this execution route. They do not make `main`, this repository, or this contract the Operator's permanent project hierarchy.
 
 ## Authorized ingress
 
-The authorized-actor policy binds login, numeric GitHub actor ID, and allowed event roles.
+The authorized-actor policy binds login, numeric GitHub actor ID, and allowed event roles for this technical execution surface.
 
-Permitted ingress types:
+Permitted ingress types include:
 
-- owner-created public issue with `OWNER` association;
+- owner-created public issue with the required association;
 - owner `workflow_dispatch`;
 - owner-authenticated `repository_dispatch`;
 - owner push of one bounded `jobs/<job_id>.json` file.
 
-An issue being public does not make its author an execution principal.
+An issue being public does not make its author an execution principal. Technical ingress authorization applies only to the requested operation and does not create project-direction authority.
 
 ## Strict envelope contract
 
-Only these fields are permitted:
+Only these fields are admitted by the current planner:
 
 ```text
 job_id
@@ -75,19 +88,23 @@ approval_id
 
 Controls include:
 
-- maximum canonical envelope size of 4096 bytes;
+- maximum envelope size of 4096 bytes;
 - strings only;
 - field-specific length limits;
 - unknown-field rejection;
 - control-character rejection;
 - hardened source-ref validation;
-- catalog-derived repository allowlist;
-- catalog actions may not override repository or task;
-- approval IDs accepted only for pillars G and I;
+- catalog-derived repository allowlist for this route;
+- catalog actions may not silently override repository or task;
+- approval IDs accepted only where the configured operation requires them;
 - one queue file directly under `jobs/`, no symlink or traversal;
 - queue filename must match the enclosed job ID.
 
+Catalog admission describes what this runner can execute safely. It does not rank, retire, suppress, publish, or govern repositories.
+
 ## Public events
+
+Current event names include:
 
 ```text
 case-evidence
@@ -107,101 +124,75 @@ apex-verification
 action-face-canary
 ```
 
+Event names are routing metadata only.
+
 ## Credential contract
 
-The public action face uses GitHub OIDC to request two short-lived, single-repository installation tokens from the Keymaster bridge:
+The action face uses GitHub OIDC to request two short-lived, single-repository installation tokens from the Keymaster bridge:
 
-- a control token scoped to `GlacierEQ/llm-runner-teams` with `contents:write`, used only to claim job IDs, read approvals and policies, and create immutable receipts;
-- a workload token scoped to the catalog-approved source repository with `contents:read`, used only for the ephemeral source checkout.
+- a control token scoped to `GlacierEQ/llm-runner-teams` with the minimum permissions needed by this route;
+- a workload token scoped to the selected source repository with `contents:read` for ephemeral checkout.
 
-Static `APEX_PRIVATE_READ_TOKEN`, static `APEX_CONTROL_TOKEN`, and `GH_PAT` fallbacks are forbidden. Tokens are minted only after strict planning and control-plane checks, are never exposed to workload code, and must be revoked before governed release can succeed.
+Static broad-token fallbacks are forbidden for this path. Tokens are minted after strict planning and control-plane checks, are never exposed to workload code, and are revoked after use.
 
-Both checkouts use an immutable checkout action revision and `persist-credentials: false`. Installation-token values and `GITHUB_TOKEN` are removed from workload process environments.
+Both checkouts use immutable action revisions and `persist-credentials: false`. Installation-token values and `GITHUB_TOKEN` are removed from workload process environments.
 
-## Private control-plane invariants
+Credential possession or repository admin permission is a technical capability boundary, never project-direction authority.
 
-Before workload planning, the action face verifies that `GlacierEQ/llm-runner-teams`:
+## Private receipt/control-plane invariants
 
-1. remains the correct private, enabled, non-forked repository on `main`;
-2. contains no `.yml` or `.yaml` executable workflow;
-3. has an active no-private-actions policy;
-4. points execution to this public repository;
-5. forbids Actions in private workloads;
-6. has an active one-job-one-receipt result policy;
-7. forbids receipt overwrite and deletion;
-8. requires provenance and payload-hash fields.
+Before workload planning, the action face verifies the properties this route depends on, including that `GlacierEQ/llm-runner-teams` remains appropriately restricted, avoids unintended private Actions execution, and preserves append-oriented receipt semantics.
+
+Failure of those checks blocks **this execution route's claim**. It does not make the control plane the project sovereign, and it does not prove that no other Operator-authorized route can execute the objective.
 
 ## Replay and receipt integrity
 
-One job ID equals one immutable private path:
+One job ID maps to one detailed receipt path for this route:
 
 ```text
 results/<job_id>.json
 ```
 
-The public runner checks for an existing receipt before checkout. A duplicate is rejected as a replay. The publish bridge independently refuses an existing path.
+The runner checks for an existing receipt before checkout and refuses accidental overwrite. A receipt binds material execution identity such as payload digest, publication time, run/attempt, runner revision, actor identity, source repository/ref, action/task/adapter/pillar, status, and findings.
 
-A receipt binds:
-
-- canonical payload SHA-256;
-- publication timestamp;
-- workflow run ID and attempt;
-- public runner commit SHA;
-- execution repository;
-- trigger actor and actor ID;
-- workload repository and source ref;
-- action, task, adapter, pillar, status, and detailed findings.
-
-Workload success without receipt success is not release success.
+Workload success without required receipt publication means this route cannot claim a completed governed execution. A receipt proves the event and scope it records; it does not grant authority over future work.
 
 ## Public/private output boundary
 
-Public output is restricted to:
-
-```text
-job ID
-pillar
-action
-task
-state
-private receipt state
-public run URL
-```
-
-Protected source contents, evidence, legal narratives, document contents, prompts, messages, credentials, and detailed output remain private.
+Public output is restricted to the minimum safe execution status. Protected source contents, evidence, legal narratives, document contents, prompts, messages, credentials, and detailed output remain private unless the Operator intentionally authorizes another disclosure path.
 
 ## Canary gate
 
-`action-face-canary` must pass before target verification. It validates:
+`action-face-canary` validates this implementation's technical safety properties, including syntax/contracts, immutable action pinning, planner rejection paths, authorized identity, secret isolation, subprocess isolation, catalog consistency, and replay controls.
 
-- Python syntax and JSON contracts;
-- schema/planner field alignment;
-- immutable checkout pinning;
-- `ubuntu-latest` ownership;
-- absence of `self-hosted`, `GH_PAT`, version-tag checkout, and third-party script-action drift;
-- catalog uniqueness;
-- strict planner positive/negative paths;
-- authorized numeric identity and intruder denial;
-- secret isolation;
-- subprocess output isolation;
-- replay-guard presence.
+After canary success, `apex-verification` may run the target quality/function/security/hardening suite when that route is selected.
 
-After canary success, `apex-verification` may run the target quality/function/security/hardening suite.
+A green canary or CI result proves the tested mechanism only. It does not authorize a different project action.
 
-## Release-blocking drift
+## Route-blocking drift
 
-- Public action face is private or its immutable identity changes.
-- Private control plane becomes public, forked, archived, disabled, or gains executable workflow YAML.
-- Dedicated bridge secrets are unavailable or over-broad.
-- A private repository owns the Actions run.
-- An unauthorized principal reaches planning.
-- An unknown or oversized envelope is accepted.
-- Workload code receives bridge credentials.
-- A prior private receipt can be overwritten or deleted.
-- Detailed results are published publicly.
-- A dual-gated operation lacks matching private approval.
-- The canary or private result publication fails.
+This execution route must fail closed when its required identity/security invariants fail, for example when:
 
-## Result ownership
+- public action-face identity no longer matches the expected technical identity;
+- required receipt/control-plane restrictions are violated;
+- credentials are unavailable, over-broad, or exposed to workload code;
+- an unauthorized principal reaches planning;
+- an unknown/oversized envelope is accepted;
+- an immutable receipt can be overwritten unexpectedly;
+- restricted detailed results are published publicly;
+- an operation requiring approval lacks matching evidence;
+- required canary or receipt publication fails.
 
-The public action face owns execution identity and sanitized status. The private control plane owns detailed truth, approvals, and append-only receipts. AKOS owns the architecture. No layer may silently assume another layer's role.
+These are route-level safety failures, not project-direction decisions.
+
+## Ownership language boundary
+
+Avoid using `owns` to mean project decision rights. The accurate model is:
+
+- this repository **implements** the current public action-face execution path;
+- the private receipt plane **stores** detailed receipts/approval records used by that path;
+- AKOS **may support** architecture, cognition, and verification;
+- workload repositories **retain their own implementation state**;
+- the **Operator retains project direction**.
+
+No layer may silently convert technical responsibility into authority over another layer.
