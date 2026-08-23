@@ -1,30 +1,32 @@
 # APEX Public Action Face
 
-`GlacierEQ/public-actions-runner-host` is the **sole GitHub Actions execution face** for the APEX/GlacierEQ system.
+`GlacierEQ/public-actions-runner-host` implements the current hardened **public GitHub Actions execution route** for APEX/GlacierEQ workloads.
+
+**Project direction: OPERATOR.** This repository is an execution surface, not the project sovereign. AKOS, this runner, the private receipt plane, CI, catalogs, topology, and receipts cannot acquire project-direction authority from being selected, persisted, or verified.
 
 ```text
-authorized external ingress
-  -> immutable public repository identity check
+OPERATOR-DIRECTED OPERATION
+  -> exact public execution-route identity check
   -> strict metadata-only envelope
   -> GitHub Actions OIDC identity
   -> Keymaster broker
   -> short-lived one-repository installation tokens
-  -> private control-plane invariant check
+  -> required private receipt/control-plane checks
   -> duplicate-job replay guard
-  -> ephemeral catalog-approved workload checkout
-  -> isolated allowlisted adapter on ubuntu-latest
-  -> immutable detailed private receipt
+  -> ephemeral allowlisted workload checkout
+  -> isolated adapter on ubuntu-latest
+  -> detailed private receipt
   -> explicit installation-token revocation
   -> truthful sanitized public status
 ```
 
-## Start the canonical bridge
+## Start the current OIDC bridge
 
-The canonical `APEX Public Action Face` does **not** require a repository-stored GitHub App Client ID, private key, PAT, HMAC secret, or PEM handoff.
+The current `APEX Public Action Face` does **not** require a repository-stored GitHub App Client ID, private key, PAT, HMAC secret, or PEM handoff for its primary token-mint path.
 
-The workflow requests a GitHub Actions OIDC identity (`id-token: write`) and exchanges it with the Keymaster broker. Keymaster validates the exact repository/workflow/actor claims, resolves the centrally managed GitHub App identity behind Vault references, and mints only the short-lived one-repository token required for the current operation. The public runner never receives the App private key.
+The workflow requests a GitHub Actions OIDC identity (`id-token: write`) and exchanges it with the Keymaster broker. Keymaster validates the expected repository/workflow/actor claims, resolves the managed GitHub App identity behind secret-store references, and mints only the short-lived one-repository token required for the current operation. The public runner never receives the App private key.
 
-The older launcher and GitHub App Manifest bootstrap remain in this repository only for the dedicated legacy App-bridge canary/recovery lane:
+The older launcher and GitHub App Manifest bootstrap remain only for the dedicated legacy App-bridge canary/recovery lane:
 
 ```text
 START_APEX_RUNNER_BRIDGE.cmd
@@ -33,42 +35,42 @@ python github-app/bootstrap_apex_github_app.py
 .github/workflows/apex-github-app-bridge-canary.yml
 ```
 
-That legacy lane still preserves the original no-manual-key property, but its `APEX_RUNNER_APP_CLIENT_ID` and `APEX_RUNNER_APP_PRIVATE_KEY` configuration is **not consumed by the canonical APEX Public Action Face**. See [Automated Owner Bootstrap](github-app/ACTIVATION.md) only when working on that compatibility canary or recovery path.
+That legacy lane is compatibility/recovery infrastructure. It is not a source of project authority.
 
-## Canonical split
+## Current technical split
 
-| Plane | Repository | Responsibility | GitHub Actions |
+| Surface | Repository | Technical responsibility | Non-authority boundary |
 |---|---|---|---|
-| Public execution / action face | `GlacierEQ/public-actions-runner-host` | Workflows, runs, badges, sanitized status, allowlisted execution | Sole owner |
-| Private control / runner teams | `GlacierEQ/llm-runner-teams` | Policy, pillars, approvals, append-only private receipts | Forbidden |
-| Canonical architecture | `GlacierEQ/AKOS` | Governing policy and routing truth | Policy only |
+| Public execution route | `GlacierEQ/public-actions-runner-host` | Actions runs, sanitized status, allowlisted execution | Does not own project direction or peer lifecycle |
+| Private receipt/control plane | `GlacierEQ/llm-runner-teams` | Policies used by this route, approvals, append-oriented detailed receipts | Storage/approval does not create sovereignty |
+| AKOS | `GlacierEQ/AKOS` | Optional architecture/cognition/verification support | Does not govern this runner or the estate |
+| Workload repositories | Operator-selected/route-admitted repos | Workload implementation | Admission does not subordinate them |
 
-## Fail-closed identity
+```text
+selection != ownership
+routing != sovereignty
+receipt != project authority
+technical_permission != project_direction
+```
 
-The public runner binds:
+## Fail-closed execution identity
 
-- repository full name and immutable repository ID;
-- owner login and numeric owner ID;
-- public visibility;
-- exact canonical workflow identity;
-- GitHub actor identity;
-- accepted event/ref boundary;
-- `main` as the canonical execution branch.
+The public runner binds the exact identity required to prove that a run came from this implementation, including repository/owner identity, visibility, expected workflow, actor identity, accepted event/ref boundary, and the configured execution branch.
 
-A mismatch blocks token minting and workload checkout.
+A mismatch blocks **this route** from claiming a valid run. These technical identity checks do not make the configured branch or repository a permanent project hierarchy.
 
 ## Authorized ingress
 
-Execution ingress is limited to the repository owner identity recorded in `config/authorized-actors.json`.
+Execution ingress is limited to identities and event roles admitted by `config/authorized-actors.json` for this route.
 
-Supported routes:
+Supported routes include:
 
 - owner-created `[APEX JOB] <job_id>` public issue;
 - owner `workflow_dispatch`;
 - owner-authenticated `repository_dispatch`;
 - owner push of one bounded `jobs/<job_id>.json` envelope.
 
-Public issue author association, actor login, event role, and GitHub numeric actor ID are validated. Anonymous or unauthorized public issue authors are never execution principals.
+Public issue authors are not execution principals merely because the issue is public.
 
 ## Strict job envelope
 
@@ -84,38 +86,17 @@ task
 approval_id
 ```
 
-Unknown fields, control characters, conflicting pillar declarations, oversized payloads, path traversal, arbitrary repositories, and catalog-action overrides are rejected before checkout.
+Unknown fields, control characters, conflicting declarations, oversized payloads, path traversal, arbitrary repositories, and catalog-action overrides are rejected before checkout.
 
-Catalog actions choose their own approved repository and adapter. Base tasks may target only repositories already present in the catalog-derived allowlist.
+Catalog admission says what this runner can execute safely. It does not rank, publish, suppress, retire, merge, or govern repositories.
 
 ## Supported lanes
 
-| Pillar | Domain | Primary event |
-|---|---|---|
-| A | Case and Evidence | `case-evidence` |
-| B | Document Processing | `document-processing` |
-| C | Coding and Deploy | `coding-deploy` |
-| D | Evolution and Optimization | `evolution-optimize` |
-| E | Memory and Intelligence | `memory-sync` |
-| F | Infrastructure and Gateway | `infra-gateway` |
-| G | Federal Case Operations | `case-ops` |
-| H | Orchestration and Swarm | `orchestrate` |
-| I | International Case Operations | `intl-case-ops` |
-
-Additional execution events:
-
-```text
-media-queue
-whisperx-exec
-gateway-ci
-comet-agent-ci
-apex-verification
-action-face-canary
-```
+Current event/routing lanes include case/evidence, document processing, coding/deploy, evolution/optimization, memory, infrastructure, orchestration, and verification workloads. Their names are routing metadata, not project hierarchy.
 
 ## Keymaster OIDC credential bridge
 
-No broad PAT fallback is allowed. The canonical workflow has **zero GitHub App credentials stored for its own token-mint path**.
+No broad PAT fallback is allowed for the primary path.
 
 ```text
 GitHub-hosted runner
@@ -125,74 +106,47 @@ GitHub-hosted runner
   -> one repository + minimum permissions
   -> short-lived installation token
   -> operation
-  -> explicit DELETE /installation/token
+  -> explicit token revocation
 ```
 
-At runtime the workflow mints two separate tokens:
+At runtime the workflow mints narrowly scoped tokens for the receipt/control-plane repository and the selected workload repository. Workload code does not receive the App private key or runtime tokens. Checkouts use immutable action revisions and `persist-credentials: false`.
 
-| Runtime token | Scope | Permission |
-|---|---|---|
-| `APEX_CONTROL_TOKEN` | `GlacierEQ/llm-runner-teams` only | Contents read/write for claims, approvals, and immutable receipts |
-| `APEX_PRIVATE_READ_TOKEN` | Exactly one catalog-approved workload repository | Contents read only |
+Possessing a token or admin permission is a technical capability boundary, never project-direction authority.
 
-Repository identity, permission, and operation are bound together by tests. Workload repository data is passed to the mint command through an environment variable rather than shell template interpolation. Both checkout operations use immutable action revisions and `persist-credentials: false`. Neither App private-key material nor runtime tokens are exposed to the workload process.
+## Private receipt/control-plane gate
 
-Both minted tokens are explicitly revoked after publication/status handling. A required revocation failure is part of the governed release failure condition.
+Before planning a workload, the public face verifies the restrictions this route depends on in `GlacierEQ/llm-runner-teams`, including private/non-executing control-plane behavior and append-oriented result handling.
 
-See `config/required-secrets.json` for the canonical OIDC contract. `github-app/bridge-contract.json` now explicitly describes the **legacy App-bridge canary/recovery** path rather than the canonical runner.
+Failure blocks this route's verification claim. It does **not** prove that the Operator's objective is invalid or that no other authorized route can execute it.
 
-## Private control-plane gate
+## Replay and receipt integrity
 
-Before planning a workload, the public face verifies that `GlacierEQ/llm-runner-teams`:
-
-- remains private, enabled, non-forked, and on `main`;
-- contains no executable private workflow YAML;
-- has an active no-private-actions policy;
-- points execution to this public repository;
-- has an active append-only result policy;
-- forbids result overwrite and deletion.
-
-## Immutable result receipts
-
-One job ID produces one private receipt:
+One job ID produces one detailed private receipt path for this route:
 
 ```text
 results/<job_id>.json
 ```
 
-A duplicate job ID is blocked before workload checkout. Publishing an existing result path is forbidden.
+A duplicate job ID is rejected before workload checkout. Receipts bind the execution identity, relevant source revision, actor/run identity, payload digest, and result scope.
 
-Each receipt binds:
-
-```text
-payload SHA-256
-publication timestamp
-workflow run ID
-workflow run attempt
-public runner commit SHA
-execution repository
-trigger actor and actor ID
-source repository and source ref
-```
-
-Successful workload execution without successful private publication remains a blocked release state.
+A receipt proves the event it records. Persistence of a receipt does not create future permission or project authority.
 
 ## Canary before workload trust
 
-Activation is two-stage:
+Activation remains two-stage:
 
-1. `action-face-canary` verifies syntax, JSON contracts, schema alignment, immutable checkout pinning, secret isolation, workflow invariants, catalog uniqueness, strict planning, and authorization denial paths.
-2. `apex-verification` runs the target quality/function/security/hardening suite only after the canary passes.
+1. `action-face-canary` tests syntax/contracts, immutable action pinning, secret isolation, workflow invariants, catalog consistency, strict planning, identity rejection paths, and replay controls.
+2. `apex-verification` runs the selected target quality/function/security/hardening suite after the route's canary requirements are satisfied.
 
-See [Canary Protocol](docs/CANARY_PROTOCOL.md).
+A green gate proves the tested mechanism only. It does not become a project decision-maker.
 
 ## Public truth boundary
 
-Public status contains only identifiers, lane, outcome, private-receipt state, and run URL. Evidence, legal narratives, source contents, prompts, messages, credentials, document contents, and detailed logs remain private.
+Public status contains only the minimum safe execution metadata. Evidence, legal narratives, source contents, prompts, messages, credentials, document contents, and detailed logs remain private unless separately authorized for disclosure.
 
 ## Core files
 
-- [Canonical workflow](.github/workflows/apex-pillar-runner.yml)
+- [Execution workflow](.github/workflows/apex-pillar-runner.yml)
 - `scripts/keymaster_oidc_token.py` — OIDC-to-Keymaster exchange
 - `scripts/revoke_github_installation_token.py` — explicit token revocation
 - [Required Secrets/Auth Contract](config/required-secrets.json)
@@ -204,12 +158,14 @@ Public status contains only identifiers, lane, outcome, private-receipt state, a
 - [Strict Envelope Schema](config/job-envelope.schema.json)
 - [Primary Action Catalog](config/pillar-actions.json)
 - [Action-Face Catalog](config/action-face-actions.json)
-- [Legacy One-click Windows launcher](START_APEX_RUNNER_BRIDGE.cmd)
 - [Legacy App-bridge Bootstrap](github-app/ACTIVATION.md)
-- [Legacy App-bridge Contract](github-app/bridge-contract.json)
 
 ## Current activation condition
 
-The canonical OIDC/Keymaster implementation is code-complete only when its repository CI and review gates are green; **operational activation additionally requires a real APEX Public Action Face run that successfully mints both narrow tokens through Keymaster, checks out the exact private workload revision, executes and publishes the governed result, revokes both tokens, and leaves the private receipt.**
+The OIDC/Keymaster implementation is code-complete only when its repository checks are green; **operational activation additionally requires a real action-face run that successfully mints the narrow tokens, checks out the exact selected workload revision, executes, publishes the required private receipt, revokes the tokens, and leaves truthful readback evidence.**
 
-Until that live receipt exists, do not describe the OIDC path as operationally complete.
+Until that live receipt exists, do not describe the path as operationally complete.
+
+## Governing implementation principle
+
+**Security controls constrain how this route executes. They do not acquire authority to redefine what the Operator is trying to accomplish.**
