@@ -1,8 +1,6 @@
 name: APEX Public Action Face
 
 on:
-  issues:
-    types: [opened]
   pull_request:
     types: [opened, synchronize, reopened]
     branches: [main]
@@ -69,18 +67,14 @@ on:
 permissions:
   id-token: write
   contents: read
-  issues: write
 
 concurrency:
-  group: apex-public-${{ github.event_name }}-${{ github.event.client_payload.job_id || inputs.job_id || github.event.issue.number || github.event.pull_request.number || github.sha }}
+  group: apex-public-${{ github.event_name }}-${{ github.event.client_payload.job_id || inputs.job_id || github.event.pull_request.number || github.sha }}
   cancel-in-progress: false
 
 jobs:
   execute:
     if: >-
-      (github.event_name != 'issues' ||
-       (github.event.issue.user.login == github.repository_owner &&
-        github.event.issue.author_association == 'OWNER')) &&
       (github.event_name != 'pull_request' ||
        (github.event.pull_request.user.login == github.repository_owner &&
         github.event.pull_request.author_association == 'OWNER' &&
@@ -116,9 +110,7 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "issues" ]; then
-            python3 scripts/action_face_issue_plan.py
-          elif [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             python3 scripts/action_face_pull_request_plan.py
           elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
             python3 scripts/action_face_push_plan.py
@@ -133,15 +125,6 @@ jobs:
               --task "${{ inputs.task }}" \
               --approval-id "${{ inputs.approval_id }}"
           fi
-
-      - name: Close invalid public issue without execution
-        if: always() && github.event_name == 'issues' && steps.plan.outcome == 'failure'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          STATUS_MODE: rejected
-          AUTH_REASON: strict metadata envelope validation failed
-        run: python3 scripts/action_face_issue_status.py
 
       - name: Require GitHub OIDC Keymaster bridge
         if: steps.plan.outcome == 'success'
@@ -320,59 +303,3 @@ jobs:
             --job-id "${{ steps.plan.outputs.job_id }}" \
             --result ".apex-results/${{ steps.plan.outputs.job_id }}.json" \
             --expected-file-sha256 "${{ steps.postrun_guard.outputs.result_file_sha256 }}"
-
-      - name: Publish truthful sanitized issue status
-        if: always() && github.event_name == 'issues' && steps.plan.outcome == 'success' && steps.postrun_integrity.outcome == 'success'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          STATUS_MODE: result
-          JOB_ID: ${{ steps.plan.outputs.job_id }}
-          PILLAR: ${{ steps.plan.outputs.pillar }}
-          ACTION_NAME: ${{ steps.plan.outputs.action }}
-          TASK: ${{ steps.plan.outputs.task }}
-          REPLAY_OUTCOME: ${{ steps.replay.outcome }}
-          RUNNER_OUTCOME: ${{ steps.runner.outcome }}
-          PIPELINE_RESULT_OUTCOME: ${{ steps.synthesize.outcome }}
-          PIPELINE_RESULT_SYNTHESIZED: ${{ steps.synthesize.outputs.synthesized }}
-          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
-        run: python3 .apex-postrun-control/scripts/action_face_issue_status.py
-
-      - name: Revoke private workload token
-        if: always() && steps.workload_token.outcome == 'success'
-        id: workload_token_revoke
-        continue-on-error: true
-        env:
-          GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}
-        run: python3 scripts/revoke_github_installation_token.py
-
-      - name: Revoke private control token
-        if: always() && steps.control_token.outcome == 'success'
-        id: control_token_revoke
-        continue-on-error: true
-        env:
-          GITHUB_INSTALLATION_TOKEN: ${{ steps.control_token.outputs.token }}
-        run: python3 scripts/revoke_github_installation_token.py
-
-      - name: Enforce governed release result
-        if: >-
-          always() &&
-          (steps.plan.outcome == 'failure' ||
-           steps.app_config.outcome == 'failure' ||
-           steps.control_token.outcome == 'failure' ||
-           steps.control.outcome == 'failure' ||
-           steps.replay.outcome == 'failure' ||
-           steps.approval.outcome == 'failure' ||
-           steps.workload_token.outcome == 'failure' ||
-           steps.checkout.outcome == 'failure' ||
-           steps.bind.outcome == 'failure' ||
-           steps.runner.outcome != 'success' ||
-           steps.postrun_checkout.outcome == 'failure' ||
-           steps.postrun_integrity.outcome == 'failure' ||
-           steps.synthesize.outcome == 'failure' ||
-           steps.synthesize.outputs.synthesized == 'true' ||
-           steps.postrun_guard.outcome == 'failure' ||
-           steps.publish.outcome == 'failure' ||
-           (steps.workload_token.outcome == 'success' && steps.workload_token_revoke.outcome != 'success') ||
-           (steps.control_token.outcome == 'success' && steps.control_token_revoke.outcome != 'success'))
-        run: exit 1
