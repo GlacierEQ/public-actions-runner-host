@@ -63,14 +63,14 @@ A mismatch blocks **this route** from claiming a valid run. These technical iden
 
 Execution ingress is limited to identities and event roles admitted by `config/authorized-actors.json` for this route.
 
-Supported routes include:
+Supported machine-job routes are:
 
-- owner-created `[APEX JOB] <job_id>` public issue;
 - owner `workflow_dispatch`;
 - owner-authenticated `repository_dispatch`;
-- owner push of one bounded `jobs/<job_id>.json` envelope.
+- owner push of one bounded `jobs/<job_id>.json` envelope;
+- owner-controlled pull request carrying a bounded `jobs/<job_id>.json` envelope into `main`.
 
-Public issue authors are not execution principals merely because the issue is public.
+`[APEX JOB] <job_id>` GitHub issues are **retired as machine transport**. The issue tracker is a human work surface, not the durable machine-job ledger. Legacy issue submissions are rejected before workload execution and disposed without rewriting the underlying execution outcome. Historical issue-transport records are preserved under `jobs/archive/`.
 
 ## Strict job envelope
 
@@ -149,6 +149,9 @@ Public status contains only the minimum safe execution metadata. Evidence, legal
 - [Execution workflow](.github/workflows/apex-pillar-runner.yml)
 - `scripts/keymaster_oidc_token.py` — OIDC-to-Keymaster exchange
 - `scripts/revoke_github_installation_token.py` — explicit token revocation
+- `scripts/action_face_issue_plan.py` — fail-closed rejection boundary for retired issue transport
+- `scripts/archive_apex_job_issues.py` — archive-first migration for historical machine issue records
+- `jobs/archive/` — durable historical issue-transport archive
 - [Required Secrets/Auth Contract](config/required-secrets.json)
 - [Action Face Contract](docs/ACTION_FACE_CONTRACT.md)
 - [Public Runner Security](docs/PUBLIC_RUNNER_SECURITY.md)
