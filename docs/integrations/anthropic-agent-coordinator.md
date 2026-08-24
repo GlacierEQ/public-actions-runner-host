@@ -14,7 +14,9 @@
 
 The catalog fixes the workload repository and adapter. A dispatch may choose only the source ref; it cannot override the repository, task, or executable command.
 
-## Metadata-only dispatch
+## Machine-job transport
+
+Use a metadata-only `repository_dispatch` for direct execution:
 
 ```json
 {
@@ -27,24 +29,11 @@ The catalog fixes the workload repository and adapter. A dispatch may choose onl
 }
 ```
 
-The same request may be submitted through an owner-created public issue titled:
+For repository-native transport, commit the strict metadata envelope under `jobs/<job_id>.json`; the public action face already watches `jobs/*.json` on owner-controlled `push` and `pull_request` events.
 
-```text
-[APEX JOB] coordinator-ci-20260730-001
-```
+`[APEX JOB]` GitHub issues are retired as a machine transport. The issue tracker is a human work surface, not the durable machine-job ledger. Historical issue-transport records are archived under `jobs/archive/`, and terminal machine-job issue records are disposed without rewriting the underlying execution outcome.
 
-The issue body must contain the metadata-only job envelope itself, without the repository-dispatch wrapper:
-
-```json
-{
-  "job_id": "coordinator-ci-20260730-001",
-  "pillar": "H",
-  "action": "anthropic-agent-coordinator-ci",
-  "source_ref": "wave-1/coordinator-promotion-rebased-2026-07-30"
-}
-```
-
-Do not include source code, prompts, credentials, test logs, or private evidence in the public payload.
+Do not include source code, prompts, credentials, test logs, or private evidence in a public payload or job envelope.
 
 ## Execution boundary
 
