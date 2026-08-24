@@ -1,0 +1,51 @@
+name: Archive APEX Job Issues
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/archive-apex-job-issues.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: archive-apex-job-issues
+  cancel-in-progress: false
+
+jobs:
+  archive-and-retire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact migration source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Compile migration before mutation
+        run: python3 -m py_compile scripts/archive_apex_job_issues.py
+
+      - name: Archive records, retire tracker entries, and verify zero-open
+        id: migrate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ARCHIVE_BRANCH: main
+        run: python3 scripts/archive_apex_job_issues.py
+
+      - name: Assert verified migration outputs
+        env:
+          CAPTURED_COUNT: ${{ steps.migrate.outputs.captured_count }}
+          CLOSED_COUNT: ${{ steps.migrate.outputs.closed_count }}
+          REMAINING_OPEN: ${{ steps.migrate.outputs.remaining_open }}
+          ARCHIVE_PATH: ${{ steps.migrate.outputs.archive_path }}
+        run: |
+          test -n "$ARCHIVE_PATH"
+          test "$REMAINING_OPEN" = "0"
+          test "$CAPTURED_COUNT" = "$CLOSED_COUNT"
+          echo "Verified archive: $ARCHIVE_PATH"
+          echo "Verified tracker retirement count: $CLOSED_COUNT"
