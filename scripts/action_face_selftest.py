@@ -158,6 +158,10 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         "vars.APEX_RUNNER_APP_CLIENT_ID",
         "AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}",
         "python3 scripts/apex_pillar_runner.py publish",
+        "issues:",
+        "github.event.issue",
+        "action_face_issue_plan.py",
+        "action_face_issue_status.py",
     ]
     missing = [item for item in required_workflow if item not in workflow]
     forbidden = [item for item in forbidden_workflow if item in workflow]
@@ -216,8 +220,8 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
         and "action_face_issue_plan.py" in path.read_text(encoding="utf-8")
     ]
     record(
-        "single-issue-ingress",
-        not retired.exists() and issue_ingress == ["apex-pillar-runner.yml"],
+        "retired-issue-ingress-absent",
+        not retired.exists() and issue_ingress == [],
         f"ingress={issue_ingress}",
     )
 
@@ -452,25 +456,13 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             "; ".join(specialized_results),
         )
 
-        issue_event = temporary_path / "issue.json"
-        issue_event.write_text(
-            json.dumps(
-                {
-                    "issue": {
-                        "user": {"login": "GlacierEQ", "id": 194243768},
-                        "author_association": "OWNER",
-                    }
-                }
-            ),
-            encoding="utf-8",
-        )
         auth_env = {
             **os.environ,
             "GITHUB_REPOSITORY": "GlacierEQ/public-actions-runner-host",
-            "GITHUB_EVENT_NAME": "issues",
+            "GITHUB_EVENT_NAME": "workflow_dispatch",
             "GITHUB_ACTOR": "GlacierEQ",
             "GITHUB_ACTOR_ID": "194243768",
-            "GITHUB_EVENT_PATH": str(issue_event),
+            "GITHUB_EVENT_PATH": str(manual_event),
             "GITHUB_OUTPUT": str(auth_output),
         }
         for secret_name in SENSITIVE_ENV:
@@ -485,17 +477,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             timeout=30,
             check=False,
             shell=False,
-        )
-        issue_event.write_text(
-            json.dumps(
-                {
-                    "issue": {
-                        "user": {"login": "intruder", "id": 999},
-                        "author_association": "NONE",
-                    }
-                }
-            ),
-            encoding="utf-8",
         )
         unauthorized = subprocess.run(
             [sys.executable, "scripts/action_face_authorize.py"],
