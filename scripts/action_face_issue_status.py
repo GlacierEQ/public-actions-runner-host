@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post a sanitized public issue status and optionally close the issue."""
+"""Post a sanitized public issue status and close terminal machine-job issues."""
 from __future__ import annotations
 
 import json
@@ -71,18 +71,24 @@ def main() -> int:
         synthesized = clean("synthesized", os.environ.get("PIPELINE_RESULT_SYNTHESIZED", ""))
         publish_outcome = clean("publish", os.environ.get("PUBLISH_OUTCOME", ""))
 
+        # Every result branch below is terminal for the issue transport record.
+        # The tracker disposition must not rewrite execution truth: successful
+        # execution is `completed`; every blocked/failed/non-executed terminal
+        # outcome is `not_planned` while its exact public state remains in the
+        # status comment and the detailed immutable result remains private.
+        close = True
+        close_reason = "not_planned"
+
         if replay_outcome == "failure":
             public_state = "replay blocked"
             private_sink = "existing immutable claim or result preserved"
-            close = True
-            close_reason = "not_planned"
         elif synthesized == "true" and publish_outcome == "success":
             public_state = "pipeline blocked"
             private_sink = "synthesized blocked lifecycle result recorded privately"
         elif runner_outcome == "success" and synthesized == "false" and publish_outcome == "success":
             public_state = "completed"
             private_sink = "adapter result recorded privately"
-            close = True
+            close_reason = "completed"
         elif runner_outcome == "failure" and publish_outcome == "success":
             public_state = "execution failed"
             private_sink = "failure recorded privately"
