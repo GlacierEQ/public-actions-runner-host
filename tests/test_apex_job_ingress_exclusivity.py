@@ -23,7 +23,7 @@ def workflow_step_block(workflow: str, name: str) -> str:
     return workflow[start:] if end < 0 else workflow[start:end]
 
 
-def test_only_canonical_workflow_owns_apex_job_issue_ingress() -> None:
+def test_no_workflow_owns_retired_apex_job_issue_ingress() -> None:
     assert CANONICAL.is_file()
     assert not RETIRED.exists()
 
@@ -33,7 +33,12 @@ def test_only_canonical_workflow_owns_apex_job_issue_ingress() -> None:
         for name, text in workflows.items()
         if "issues:" in text and "action_face_issue_plan.py" in text
     ]
-    assert ingress == ["apex-pillar-runner.yml"]
+    assert ingress == []
+    canonical = CANONICAL.read_text(encoding="utf-8")
+    assert "issues:" not in canonical
+    assert "github.event.issue" not in canonical
+    assert "action_face_issue_plan.py" not in canonical
+    assert "action_face_issue_status.py" not in canonical
 
 
 def test_no_workflow_contains_retired_fail_open_executor() -> None:
@@ -51,9 +56,10 @@ def test_no_workflow_contains_retired_fail_open_executor() -> None:
             )
 
 
-def test_canonical_issue_ingress_separates_source_and_receipt_authority() -> None:
+def test_supported_ingress_separates_source_and_receipt_authority() -> None:
     text = CANONICAL.read_text(encoding="utf-8")
-    assert "permissions:\n  id-token: write\n  contents: read\n  issues: write" in text
+    assert "permissions:\n  id-token: write\n  contents: read" in text
+    assert "issues: write" not in text
 
     control = workflow_step_block(text, "Mint one-repository private control token")
     assert "--repository GlacierEQ/llm-runner-teams" in control
