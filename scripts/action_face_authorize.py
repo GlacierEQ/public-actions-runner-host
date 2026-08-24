@@ -41,7 +41,6 @@ def main() -> int:
         for record in actor_records
         if isinstance(record, dict) and record.get("login")
     }
-    issue_associations = set(config.get("authorized_issue_associations") or [])
     pr_associations = set(config.get("authorized_pull_request_associations") or [])
     expected_owner = str(config.get("repository_owner") or "")
 
@@ -59,15 +58,7 @@ def main() -> int:
     principal = actor
     principal_id = actor_id
     association = ""
-    if event_name == "issues":
-        issue = event.get("issue") or {}
-        user = issue.get("user") or {}
-        principal = str(user.get("login") or actor)
-        principal_id = str(user.get("id") or actor_id)
-        association = str(issue.get("author_association") or "")
-        if association not in issue_associations:
-            deny(f"issue association {clean(association)} is not authorized")
-    elif event_name == "pull_request":
+    if event_name == "pull_request":
         pull_request = event.get("pull_request") or {}
         user = pull_request.get("user") or {}
         base = pull_request.get("base") or {}
