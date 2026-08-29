@@ -275,6 +275,16 @@
       "adapter": "aspen-memory-federation-ci",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "akos-upward-semantics-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/AKOS",
+      "legacy_event": "akos-upward-semantics-ci",
+      "adapter": "akos-upward-semantics-ci",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
