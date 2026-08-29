@@ -301,7 +301,13 @@ def aspen_memory_federation_ci(
         [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_promotion_authority.py", "-v"],
         [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_federation_authority_semantics.py", "-v"],
     ]
-    return run_sequence(plan, workspace, result_path, commands)
+    return run_sequence(
+        plan,
+        workspace,
+        result_path,
+        commands,
+        extra_env={"PYTHONPATH": str(workspace)},
+    )
 
 
 def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
