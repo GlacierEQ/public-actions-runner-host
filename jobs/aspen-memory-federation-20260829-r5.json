@@ -1,0 +1,6 @@
+{
+  "job_id": "aspen-memory-federation-20260829-r5",
+  "pillar": "C",
+  "action": "aspen-memory-federation-ci",
+  "source_ref": "3b474c3592287c8ef814d67269dbe09ac0e77d37"
+}
