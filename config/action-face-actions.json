@@ -265,6 +265,16 @@
       "adapter": "constellation-memory-verify",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "aspen-memory-federation-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/aspen-grove-memory",
+      "legacy_event": "aspen-memory-federation-ci",
+      "adapter": "aspen-memory-federation-ci",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
