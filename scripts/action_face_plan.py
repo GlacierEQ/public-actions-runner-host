@@ -55,6 +55,7 @@ ADAPTER_TASK = {
     "monolith_legal_live_validate": "test",
     "monolith_company_registry_validate": "test",
     "casey_legal_mcp_validate": "test",
+    "aspen-memory-federation-ci": "test",
 }
 ALLOWED_KEYS = {
     "job_id",
