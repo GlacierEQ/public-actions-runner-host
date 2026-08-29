@@ -267,6 +267,43 @@ def python_ci(plan: dict, workspace: Path, result_path: Path) -> int:
     return run_sequence(plan, workspace, result_path, commands)
 
 
+
+def aspen_memory_federation_ci(
+    plan: dict, workspace: Path, result_path: Path
+) -> int:
+    """Verify Aspen memory authority/federation semantics through the public face.
+
+    This is a read-only proof route. Failure affects this verification claim only;
+    it does not acquire project or runtime veto authority.
+    """
+    workspace = workspace.resolve()
+    result_path = result_path.resolve()
+    required = [
+        workspace / "src" / "promotion_authority.py",
+        workspace / "tests" / "test_promotion_authority.py",
+        workspace / "tests" / "test_federation_authority_semantics.py",
+        workspace / "docs" / "MEMORY_FEDERATION_LAW.md",
+        workspace / "machine" / "excellence-state.json",
+        workspace / "machine" / "promotion_authority.json",
+        workspace / ".glaciereq" / "aspen-grove.node.json",
+    ]
+    missing = [p.relative_to(workspace).as_posix() for p in required if not p.is_file()]
+    if missing:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="required Aspen federation proof surfaces are missing: " + ", ".join(missing),
+            global_veto=False,
+        )
+    commands = [
+        [sys.executable, "-m", "compileall", "-q", "src", "scripts", "tests"],
+        [sys.executable, "-m", "unittest", "tests.test_promotion_authority", "-v"],
+        [sys.executable, "-m", "unittest", "tests.test_federation_authority_semantics", "-v"],
+    ]
+    return run_sequence(plan, workspace, result_path, commands)
+
+
 def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -497,6 +534,8 @@ def main() -> int:
         return run_selftest(plan, workspace, result_path)
     if adapter == "apex-verify":
         return apex_verify(plan, workspace, result_path)
+    if adapter == "aspen-memory-federation-ci":
+        return aspen_memory_federation_ci(plan, workspace, result_path)
     if adapter == "node-ci":
         return node_ci(plan, workspace, result_path)
     if adapter == "python-ci":
