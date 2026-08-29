@@ -56,6 +56,7 @@ ADAPTER_TASK = {
     "monolith_company_registry_validate": "test",
     "casey_legal_mcp_validate": "test",
     "aspen-memory-federation-ci": "test",
+    "akos-upward-semantics-ci": "test",
 }
 ALLOWED_KEYS = {
     "job_id",
