@@ -310,6 +310,42 @@ def aspen_memory_federation_ci(
     )
 
 
+
+def akos_upward_semantics_ci(
+    plan: dict, workspace: Path, result_path: Path
+) -> int:
+    """Prove AKOS routing/topology semantics without granting verifier sovereignty."""
+    workspace = workspace.resolve()
+    result_path = result_path.resolve()
+    required = [
+        workspace / "tools" / "validate_apex_capability_evolution.py",
+        workspace / "tools" / "build_apex_capability_estate_graph.py",
+        workspace / "tests" / "test_upward_capability_semantics.py",
+        workspace / "OPERATOR_APEX_TRANSFORMATION_LAW.md",
+    ]
+    missing = [p.relative_to(workspace).as_posix() for p in required if not p.is_file()]
+    if missing:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="required AKOS upward-semantics surfaces are missing: " + ", ".join(missing),
+            global_veto=False,
+        )
+    commands = [
+        [sys.executable, "-m", "py_compile", "tools/validate_apex_capability_evolution.py"],
+        [sys.executable, "-m", "py_compile", "tools/build_apex_capability_estate_graph.py"],
+        [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_upward_capability_semantics.py", "-v"],
+    ]
+    return run_sequence(
+        plan,
+        workspace,
+        result_path,
+        commands,
+        extra_env={"PYTHONPATH": str(workspace) + os.pathsep + str(workspace / "tools")},
+    )
+
+
 def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -542,6 +578,8 @@ def main() -> int:
         return apex_verify(plan, workspace, result_path)
     if adapter == "aspen-memory-federation-ci":
         return aspen_memory_federation_ci(plan, workspace, result_path)
+    if adapter == "akos-upward-semantics-ci":
+        return akos_upward_semantics_ci(plan, workspace, result_path)
     if adapter == "node-ci":
         return node_ci(plan, workspace, result_path)
     if adapter == "python-ci":
