@@ -298,8 +298,8 @@ def aspen_memory_federation_ci(
         )
     commands = [
         [sys.executable, "-m", "compileall", "-q", "src", "scripts", "tests"],
-        [sys.executable, "-m", "unittest", "tests.test_promotion_authority", "-v"],
-        [sys.executable, "-m", "unittest", "tests.test_federation_authority_semantics", "-v"],
+        [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_promotion_authority.py", "-v"],
+        [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_federation_authority_semantics.py", "-v"],
     ]
     return run_sequence(plan, workspace, result_path, commands)
 
