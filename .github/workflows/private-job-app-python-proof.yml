@@ -1,0 +1,129 @@
+name: APEX Private Job-App Python Proof
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "jobs/job-app-python-proof-*.json"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout public runner face
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Resolve exact private workload SHA
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          job_file="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- 'jobs/job-app-python-proof-*.json' | tail -1)"
+          test -n "$job_file"
+          source_sha="$(python3 - "$job_file" <<'PY'
+          import json, re, sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          sha = str(data.get("source_sha", "")).strip()
+          if not re.fullmatch(r"[0-9a-f]{40}", sha):
+              raise SystemExit("source_sha must be an exact lowercase 40-character SHA")
+          if data.get("repository") != "GlacierEQ/job-app":
+              raise SystemExit("proof request repository is not allowlisted")
+          print(sha)
+          PY
+          )"
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Require scoped GitHub App configuration
+        id: config
+        env:
+          APP_CLIENT_ID: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$APP_CLIENT_ID"
+          test -n "$APP_PRIVATE_KEY"
+
+      - name: Mint one-repository read token
+        id: workload-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+          owner: GlacierEQ
+          repositories: job-app
+          permission-contents: read
+          permission-statuses: write
+
+      - name: Checkout exact private job-app head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: GlacierEQ/job-app
+          ref: ${{ steps.request.outputs.source_sha }}
+          token: ${{ steps.workload-token.outputs.token }}
+          path: workload
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind checkout identity
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ steps.request.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C workload rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git -C workload status --porcelain --untracked-files=no)"
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Compile exact runtime and adversarial tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd workload
+          python -m py_compile             tools/application_flight_deck.py             tools/application_integrity_ledger.py             tools/application_execution_engine.py             tools/application_package_preflight.py             tools/dynamic_job_build_bridge.py             tests/test_application_flight_deck.py             tests/test_application_integrity_ledger.py             tests/test_application_execution_engine.py             tests/test_dynamic_job_build_bridge.py
+
+      - name: Execute private application runtime suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd workload
+          python -m unittest             tests.test_application_flight_deck             tests.test_application_integrity_ledger             tests.test_application_execution_engine             tests.test_dynamic_job_build_bridge
+
+      - name: Emit bounded proof receipt
+        if: success()
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.request.outputs.source_sha }}
+          PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          body = {
+              "schema": "glaciereq.private-job-app-python-proof.v1",
+              "repository": "GlacierEQ/job-app",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "python_version": os.environ["PYTHON_VERSION"],
+              "compiled": True,
+              "tests_passed": True,
+          }
+          body["receipt_sha256"] = hashlib.sha256(
+              json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
+          ).hexdigest()
+          print(json.dumps(body, sort_keys=True))
+          PY
