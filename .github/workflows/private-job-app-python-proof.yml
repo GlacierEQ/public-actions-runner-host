@@ -1,6 +1,11 @@
 name: APEX Private Job-App Python Proof
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+    paths:
+      - "jobs/job-app-python-proof-*.json"
   push:
     branches: [main]
     paths:
@@ -22,6 +27,7 @@ jobs:
       - name: Checkout public runner face
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 1
 
@@ -30,7 +36,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          job_file="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- 'jobs/job-app-python-proof-*.json' | tail -1)"
+          request_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          job_file="$(git diff-tree --no-commit-id --name-only -r "$request_sha" -- 'jobs/job-app-python-proof-*.json' | tail -1)"
           test -n "$job_file"
           source_sha="$(python3 - "$job_file" <<'PY'
           import json, re, sys
