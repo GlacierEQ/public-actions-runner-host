@@ -1,0 +1,185 @@
+name: Ignite FILEBOSS Buildkite
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fileboss-buildkite-ignition
+  cancel-in-progress: true
+
+jobs:
+  ignite:
+    if: github.event_name != 'issues' || github.event.issue.title == 'APEX IGNITE FILEBOSS FROM PUBLIC RUNNER'
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    env:
+      BUILDKITE_API_TOKEN: ${{ secrets.BUILDKITE_API_TOKEN }}
+      DROPBOX_ACCESS_TOKEN: ${{ secrets.DROPBOX_ACCESS_TOKEN }}
+
+    steps:
+      - name: Require Buildkite credential without disclosure
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${BUILDKITE_API_TOKEN:-}" ]]; then
+            echo "::error::BUILDKITE_API_TOKEN is not available to this public execution boundary."
+            exit 64
+          fi
+          echo "BUILDKITE_API_TOKEN_PRESENT=true"
+          if [[ -n "${DROPBOX_ACCESS_TOKEN:-}" ]]; then
+            echo "DROPBOX_ACCESS_TOKEN_PRESENT=true"
+          else
+            echo "DROPBOX_ACCESS_TOKEN_PRESENT=false"
+          fi
+
+      - name: Reconcile FILEBOSS pipeline and trigger Buildkite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, sys, urllib.request, urllib.error
+
+          API="https://api.buildkite.com/v2"
+          ORG="casey-1"
+          DONOR="job-app-helix"
+          token=os.environ["BUILDKITE_API_TOKEN"]
+
+          def req(method, path, payload=None):
+              data=None if payload is None else json.dumps(payload).encode()
+              r=urllib.request.Request(
+                  API+path,
+                  data=data,
+                  method=method,
+                  headers={
+                      "Authorization":f"Bearer {token}",
+                      "Accept":"application/json",
+                      "Content-Type":"application/json",
+                      "User-Agent":"GlacierEQ-public-runner-FILEBOSS-ignition/1",
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(r, timeout=60) as resp:
+                      raw=resp.read()
+                      return json.loads(raw) if raw else None
+              except urllib.error.HTTPError as e:
+                  body=e.read().decode(errors="replace")
+                  raise RuntimeError(f"{method} {path} HTTP {e.code}: {body}") from e
+
+          meta=req("GET","/access-token")
+          scopes=set(meta.get("scopes") or [])
+          required={"read_pipelines","write_pipelines","write_builds"}
+          missing=sorted(required-scopes)
+          if missing:
+              raise SystemExit("Buildkite token missing required scopes: "+", ".join(missing))
+
+          donor=req("GET",f"/organizations/{ORG}/pipelines/{DONOR}")
+          cluster_id=donor.get("cluster_id")
+          if not cluster_id:
+              raise SystemExit("Donor pipeline has no cluster_id; refusing to guess")
+
+          pipelines=req("GET",f"/organizations/{ORG}/pipelines?per_page=100")
+          existing=None
+          for p in pipelines:
+              repo=(p.get("repository") or "").lower().replace(".git","")
+              if repo.endswith("glaciereq/fileboss"):
+                  existing=p
+                  break
+
+          configuration='''steps:
+            - label: ":pipeline: Load FILEBOSS maintained pipeline"
+              command: "buildkite-agent pipeline upload .buildkite/pipeline.yml"
+          '''
+          desired={
+              "name":"FILEBOSS Evidence Transcription",
+              "repository":"git@github.com:GlacierEQ/FILEBOSS.git",
+              "cluster_id":cluster_id,
+              "configuration":configuration,
+              "default_branch":"main",
+              "branch_configuration":"main",
+              "cancel_running_branch_builds":False,
+              "skip_queued_branch_builds":False,
+              "visibility":"private",
+          }
+
+          if existing:
+              slug=existing["slug"]
+              pipeline=req("PATCH",f"/organizations/{ORG}/pipelines/{slug}",desired)
+              mutation="RECONCILED"
+          else:
+              pipeline=req("POST",f"/organizations/{ORG}/pipelines",desired)
+              slug=pipeline["slug"]
+              mutation="CREATED"
+
+          # Best-effort secret check/provisioning. Never emit the secret value.
+          secret_status="UNCHECKED"
+          if "read_secret_details" in scopes:
+              secrets=req("GET",f"/organizations/{ORG}/clusters/{cluster_id}/secrets?per_page=100")
+              match=next((s for s in secrets if s.get("key")=="DROPBOX_ACCESS_TOKEN"),None)
+              if match:
+                  secret_status="PRESENT"
+              elif os.getenv("DROPBOX_ACCESS_TOKEN") and "write_secrets" in scopes:
+                  req("POST",f"/organizations/{ORG}/clusters/{cluster_id}/secrets",{
+                      "key":"DROPBOX_ACCESS_TOKEN",
+                      "value":os.environ["DROPBOX_ACCESS_TOKEN"],
+                      "description":"Dropbox corpus access for GlacierEQ/FILEBOSS evidence transcription",
+                  })
+                  secret_status="CREATED"
+              else:
+                  secret_status="MISSING_NOT_PROVISIONED"
+
+          build=req("POST",f"/organizations/{ORG}/pipelines/{slug}/builds",{
+              "commit":"HEAD",
+              "branch":"main",
+              "message":"APEX: full-corpus evidence transcription",
+              "env":{
+                  "APEX_EXECUTION_SURFACE":"buildkite",
+                  "APEX_IGNITION_SOURCE":"public-actions-runner-host",
+              },
+              "meta_data":{
+                  "apex_mission":"full-corpus-evidence-transcription",
+                  "source_repository":"GlacierEQ/FILEBOSS",
+              },
+          })
+
+          receipt={
+              "schema":"apex.fileboss.public-runner-buildkite-ignition.v1",
+              "status":"BUILD_TRIGGERED",
+              "organization":ORG,
+              "pipeline":{
+                  "mutation":mutation,
+                  "slug":pipeline.get("slug"),
+                  "id":pipeline.get("id"),
+                  "cluster_id":pipeline.get("cluster_id"),
+                  "repository":pipeline.get("repository"),
+                  "web_url":pipeline.get("web_url"),
+              },
+              "dropbox_secret_status":secret_status,
+              "build":{
+                  "number":build.get("number"),
+                  "id":build.get("id"),
+                  "state":build.get("state"),
+                  "branch":build.get("branch"),
+                  "commit":build.get("commit"),
+                  "web_url":build.get("web_url"),
+              },
+              "secrets":{"values_exposed":False},
+          }
+          assert receipt["build"]["number"], receipt
+          print(json.dumps(receipt,indent=2))
+          with open("/tmp/fileboss-buildkite-ignition.json","w") as f:
+              json.dump(receipt,f,indent=2)
+              f.write("\n")
+          PY
+
+      - name: Upload non-secret ignition receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: fileboss-buildkite-ignition
+          path: /tmp/fileboss-buildkite-ignition.json
+          if-no-files-found: error
+          retention-days: 30
