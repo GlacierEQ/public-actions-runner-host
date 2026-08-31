@@ -1,0 +1,6 @@
+{
+  "job_id": "hybrid-memory-router-20260831-001",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "d0ebb610876c08aa10a22c6d44525edef0209270"
+}
