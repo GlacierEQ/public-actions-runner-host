@@ -1,0 +1,37 @@
+name: Fetch Verified Whisper Model
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fetch-verified-whisper-model
+  cancel-in-progress: false
+
+jobs:
+  fetch-model:
+    if: github.event_name != 'issues' || github.event.issue.title == 'APEX FETCH VERIFIED WHISPER MODEL'
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - name: Download official tiny.en q5_1 model
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fL             --retry 4 --retry-delay 2             -o /tmp/ggml-tiny.en-q5_1.bin             https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.en-q5_1.bin
+          test "$(stat -c %s /tmp/ggml-tiny.en-q5_1.bin)" = "32166155"
+          echo "c77c5766f1cef09b6b7d47f21b546cbddd4157886b3b5d6d4f709e91e66c7c2b  /tmp/ggml-tiny.en-q5_1.bin" | sha256sum -c -
+          sha256sum /tmp/ggml-tiny.en-q5_1.bin
+
+      - name: Upload verified model
+        uses: actions/upload-artifact@v4
+        with:
+          name: ggml-tiny.en-q5_1.bin
+          path: /tmp/ggml-tiny.en-q5_1.bin
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
