@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-main-baseline-20260831-001",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "37f282a977d8b41d06642475651cd1e44b943727"
+}
