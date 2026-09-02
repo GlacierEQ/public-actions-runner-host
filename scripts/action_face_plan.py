@@ -84,6 +84,7 @@ ACTION = re.compile(
 CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
 IMMUTABLE_SOURCE_ACTIONS = {
+    "udc-supabase-bridge-ci",
     "memory.constellation.verify-operator-code",
     "code.monolith.validate-atlases",
     "code.monolith.validate-legal-live-reconciliation",
@@ -179,6 +180,22 @@ def _reconcile_domain_contract(action: str, entry: dict) -> None:
         fail("hierarchical action source writes are not forbidden")
 
 
+
+def infer_catalog_pillar(action: str) -> str:
+    """Derive the pillar only when a catalog action has one unique binding."""
+    if not action:
+        return ""
+    if not ACTION.fullmatch(action):
+        fail("action name is invalid")
+    matches = [item for item in catalog_actions() if item.get("action") == action]
+    if len(matches) != 1:
+        fail("catalog action pillar is ambiguous or unregistered")
+    pillar = str(matches[0].get("pillar", "")).upper()
+    if pillar not in base.ALLOWED_TASKS:
+        fail("catalog action has invalid pillar")
+    return pillar
+
+
 def resolve_action(action: str, pillar: str) -> dict | None:
     """Resolve one catalog action while enforcing the active domain contract."""
     if not action:
@@ -236,10 +253,14 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
         payload = validate_shape(manual)
         event_pillar = ""
 
+    action = payload.get("action", "")
     declared_pillar = payload.get("pillar", "").upper()
+    inferred_pillar = infer_catalog_pillar(action) if action and not event_pillar and not declared_pillar else ""
     if event_pillar and declared_pillar and declared_pillar != event_pillar:
         fail("payload pillar conflicts with the ingress event")
-    pillar = event_pillar or declared_pillar
+    if inferred_pillar and declared_pillar and inferred_pillar != declared_pillar:
+        fail("payload pillar conflicts with the catalog action")
+    pillar = event_pillar or declared_pillar or inferred_pillar
     if pillar not in base.ALLOWED_TASKS:
         fail("unknown or missing pillar")
 
@@ -247,7 +268,6 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
     if not base.JOB_ID.fullmatch(job_id):
         fail("job_id must be 8-64 safe characters")
 
-    action = payload.get("action", "")
     entry = resolve_action(action, pillar)
     source_ref = payload.get("source_ref", "main")
     validate_ref(source_ref)
