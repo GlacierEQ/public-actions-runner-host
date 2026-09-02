@@ -288,7 +288,7 @@
     },
     {
       "pillar": "C",
-      "action": "code.udc.validate-supabase-bridge",
+      "action": "udc-supabase-bridge-ci",
       "source_event": "coding-deploy",
       "target_repo": "GlacierEQ/UDC",
       "legacy_event": "udc-supabase-bridge-ci",
