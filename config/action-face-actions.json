@@ -285,6 +285,16 @@
       "adapter": "akos-upward-semantics-ci",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "code.udc.validate-supabase-bridge",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/UDC",
+      "legacy_event": "udc-supabase-bridge-ci",
+      "adapter": "node-ci",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
