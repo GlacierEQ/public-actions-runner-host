@@ -653,7 +653,11 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 }
             )
 
-    gates = ["core-function-atlas", "three-structure-zero-loss"]
+    gates = ["core-function-atlas"]
+    if any(
+        "tests/test_three_structure_residue.py" in command for command in sequence
+    ):
+        gates.append("three-structure-zero-loss")
     for surface in OPTIONAL_SURFACES:
         if enabled_surfaces[surface["key"]]:
             gates.append(surface["gate"])
