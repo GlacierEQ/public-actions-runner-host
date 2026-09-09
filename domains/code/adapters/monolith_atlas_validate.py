@@ -1,4 +1,4 @@
-"""Run the fixed Monolith atlas gates that cannot allocate private runners."""
+"""Run the fixed Monolith atlas and current-architecture gates that cannot allocate private runners."""
 
 from __future__ import annotations
 
@@ -31,6 +31,11 @@ CORE_REQUIRED_PATHS = (
     "scripts/query_monolith.py",
     "tests/test_monolith_command_atlas.py",
     "tests/test_query_monolith.py",
+    "scripts/build_three_structure_residue.py",
+    "tests/test_three_structure_residue.py",
+    "catalog/ARCHITECTURE_CURRENT.json",
+    "catalog/RECLASSIFICATION_LEDGER.jsonl",
+    "catalog/HIERARCHICAL_MESH_MAP.json",
     "catalog/library.json",
     "catalog/monolith_command_atlas.json",
     "status/MONOLITH_COMMAND_ATLAS.md",
@@ -283,6 +288,8 @@ def commands(
     compile_targets = [
         "scripts/validate_function_atlas.py",
         "tests/test_function_atlas.py",
+        "scripts/build_three_structure_residue.py",
+        "tests/test_three_structure_residue.py",
     ]
     for surface in OPTIONAL_SURFACES:
         if enabled[surface["key"]]:
@@ -363,6 +370,7 @@ def commands(
                 "-q",
                 "tests/test_monolith_command_atlas.py",
                 "tests/test_query_monolith.py",
+                "tests/test_three_structure_residue.py",
             ],
         ]
     )
@@ -524,7 +532,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 result_path,
                 "blocked",
                 reason=(
-                    "required Monolith atlas files are missing: "
+                    "required Monolith atlas/current-architecture files are missing: "
                     + ", ".join(missing_core)
                 ),
             )
@@ -650,7 +658,7 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
                 }
             )
 
-    gates = ["core-function-atlas"]
+    gates = ["core-function-atlas", "three-structure-zero-loss"]
     for surface in OPTIONAL_SURFACES:
         if enabled_surfaces[surface["key"]]:
             gates.append(surface["gate"])
