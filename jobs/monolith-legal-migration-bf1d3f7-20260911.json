@@ -1,0 +1,5 @@
+{
+  "job_id": "monolith-legal-migration-bf1d3f7-20260911",
+  "action": "code.monolith.validate-atlases",
+  "source_ref": "bf1d3f723d3c7cc782ee96dd89c101d4710aafa0"
+}
