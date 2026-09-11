@@ -1,0 +1,6 @@
+{
+  "job_id": "casebuilder4000-9e7dca3-20260911-r2",
+  "pillar": "C",
+  "action": "casebuilder4000-ci",
+  "source_ref": "9e7dca3d1bb64a472bbafdd1b3222ce4b0e98d4e"
+}
