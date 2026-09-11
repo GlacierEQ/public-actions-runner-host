@@ -295,6 +295,16 @@
       "adapter": "node-ci",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "casebuilder4000-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/Casebuilder4000",
+      "legacy_event": "casebuilder4000-ci",
+      "adapter": "python-ci",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
