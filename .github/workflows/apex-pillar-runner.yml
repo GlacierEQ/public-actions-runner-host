@@ -192,6 +192,9 @@ jobs:
           if [ "$APEX_ACTION" = "docket-sync" ]; then
             permission="contents=write"
             operation="jefs-docket-acquisition"
+          elif [ "$APEX_ACTION" = "library-links-public-publish" ]; then
+            permission="contents=write"
+            operation="library-registry-rebuild"
           fi
           python3 scripts/keymaster_oidc_token.py \
             --repository "$APEX_WORKLOAD_REPOSITORY" \
@@ -231,6 +234,30 @@ jobs:
             .apex-plan.json \
             workload \
             ".apex-results/${{ steps.plan.outputs.job_id }}.json"
+
+      - name: Publish verified Library registry projections
+        if: steps.plan.outputs.action == 'library-links-public-publish' && steps.runner.outcome == 'success' && steps.bind.outcome == 'success'
+        id: library_publish
+        continue-on-error: true
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}
+          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd workload
+            export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+            python3 scripts/rebuild_registry.py
+            git diff --check -- registry/index.json registry/top_shelf.json
+            git diff --stat -- registry/index.json registry/top_shelf.json
+          )
+          python3 scripts/library_registry_publish.py \
+            --workspace workload \
+            --source-ref "$APEX_RESOLVED_SOURCE_SHA" \
+            --message "Rebuild knowledge registry"
+          git -C workload restore --worktree -- registry/index.json registry/top_shelf.json
+          test -z "$(git -C workload status --porcelain --untracked-files=no)"
 
       - name: Checkout fresh post-run control source
         if: always() && steps.plan.outcome == 'success' && steps.replay.outcome == 'success'
@@ -333,6 +360,7 @@ jobs:
            steps.checkout.outcome == 'failure' ||
            steps.bind.outcome == 'failure' ||
            steps.runner.outcome != 'success' ||
+           (steps.plan.outputs.action == 'library-links-public-publish' && steps.library_publish.outcome != 'success') ||
            steps.postrun_checkout.outcome == 'failure' ||
            steps.postrun_integrity.outcome == 'failure' ||
            steps.synthesize.outcome == 'failure' ||
