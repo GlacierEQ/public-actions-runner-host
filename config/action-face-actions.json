@@ -36,6 +36,7 @@
     {"pillar":"C","action":"udc-supabase-bridge-ci","source_event":"coding-deploy","target_repo":"GlacierEQ/UDC","legacy_event":"udc-supabase-bridge-ci","adapter":"node-ci","gate":"standard","approval_required":false},
     {"pillar":"C","action":"casebuilder4000-ci","source_event":"coding-deploy","target_repo":"GlacierEQ/Casebuilder4000","legacy_event":"casebuilder4000-ci","adapter":"python-ci","gate":"standard","approval_required":false},
     {"pillar":"C","action":"genius-fusion-public-ci","source_event":"coding-deploy","target_repo":"GlacierEQ/genius-fusion","legacy_event":"genius-fusion-public-ci","adapter":"constellation-memory-verify","gate":"standard","approval_required":false},
-    {"pillar":"C","action":"library-links-public-verify","source_event":"coding-deploy","target_repo":"GlacierEQ/library-of-links","legacy_event":"library-links-public-verify","adapter":"constellation-memory-verify","gate":"standard","approval_required":false}
+    {"pillar":"C","action":"library-links-public-verify","source_event":"coding-deploy","target_repo":"GlacierEQ/library-of-links","legacy_event":"library-links-public-verify","adapter":"constellation-memory-verify","gate":"standard","approval_required":false},
+    {"pillar":"C","action":"library-links-public-publish","source_event":"coding-deploy","target_repo":"GlacierEQ/library-of-links","legacy_event":"library-links-public-publish","adapter":"constellation-memory-verify","gate":"standard","approval_required":false}
   ]
 }
