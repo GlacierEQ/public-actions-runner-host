@@ -7,7 +7,6 @@ from pathlib import Path
 import library_registry_publish as publisher
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "apex-pillar-runner.yml"
 CATALOG = ROOT / "config" / "action-face-actions.json"
