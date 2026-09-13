@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Atomically publish generated Library-of-Links registry projections at an exact head."""
+
 from __future__ import annotations
 
 import argparse
@@ -35,7 +36,9 @@ def request(method: str, path: str, token: str, payload: dict | None = None) -> 
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")[:2000]
-        raise RuntimeError(f"GitHub API {method} {path} failed: HTTP {exc.code}: {body}") from exc
+        raise RuntimeError(
+            f"GitHub API {method} {path} failed: HTTP {exc.code}: {body}"
+        ) from exc
 
 
 def main() -> int:
