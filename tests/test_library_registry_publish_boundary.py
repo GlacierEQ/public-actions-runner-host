@@ -50,22 +50,34 @@ def test_workflow_grants_write_only_to_cataloged_library_publish_action() -> Non
     assert "steps.plan.outputs.action == 'library-links-public-publish'" in workflow
     assert "steps.runner.outcome == 'success'" in workflow
     assert "steps.bind.outcome == 'success'" in workflow
-    assert "GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}" in workflow
-    assert "git -C workload restore --worktree -- registry/index.json registry/top_shelf.json" in workflow
+    assert (
+        "GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}"
+        in workflow
+    )
+    assert (
+        "git -C workload restore --worktree -- registry/index.json registry/top_shelf.json"
+        in workflow
+    )
     assert "steps.library_publish.outcome != 'success'" in workflow
 
 
-def test_publisher_refuses_when_provider_head_moved(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_publisher_refuses_when_provider_head_moved(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     workspace = _generated_workspace(tmp_path)
     expected = "a" * 40
     observed: list[tuple[str, str, dict | None]] = []
 
-    def fake_request(method: str, path: str, token: str, payload: dict | None = None) -> dict:
+    def fake_request(
+        method: str, path: str, token: str, payload: dict | None = None
+    ) -> dict:
         observed.append((method, path, payload))
         assert token == "scoped-token"
         if method == "GET" and path == "/git/ref/heads/main":
             return {"object": {"sha": "b" * 40}}
-        raise AssertionError(f"unexpected request after moved-head check: {method} {path}")
+        raise AssertionError(
+            f"unexpected request after moved-head check: {method} {path}"
+        )
 
     monkeypatch.setenv("GITHUB_INSTALLATION_TOKEN", "scoped-token")
     monkeypatch.setattr(publisher, "request", fake_request)
@@ -96,7 +108,9 @@ def test_publisher_updates_only_generated_projections_and_reads_back(
     calls: list[tuple[str, str, dict | None]] = []
     ref_reads = 0
 
-    def fake_request(method: str, path: str, token: str, payload: dict | None = None) -> dict:
+    def fake_request(
+        method: str, path: str, token: str, payload: dict | None = None
+    ) -> dict:
         nonlocal ref_reads
         calls.append((method, path, payload))
         assert token == "scoped-token"
