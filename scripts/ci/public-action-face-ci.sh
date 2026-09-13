@@ -47,6 +47,7 @@ OWNED_FILES=(
   scripts/action_face_publish_verified.py
   scripts/action_face_selftest.py
   scripts/keymaster_oidc_token.py
+  scripts/library_registry_publish.py
   scripts/monolith_evolution_adapter.py
   scripts/workload_isolation.py
   tests/conftest.py
@@ -55,6 +56,7 @@ OWNED_FILES=(
   tests/test_bounded_file_receipts.py
   tests/test_isolated_catalog_runner_import.py
   tests/test_keymaster_oidc_token.py
+  tests/test_library_registry_publish_boundary.py
   tests/test_mega_pdf_function_genome_recovery.py
   tests/test_monolith_atlas_optional_category.py
   tests/test_monolith_legal_live_safe_path.py
@@ -76,6 +78,7 @@ FORMAT_FILES=(
   scripts/action_face_postrun_guard.py
   scripts/action_face_publish_verified.py
   scripts/keymaster_oidc_token.py
+  scripts/library_registry_publish.py
   scripts/monolith_evolution_adapter.py
   scripts/workload_isolation.py
   tests/conftest.py
@@ -84,6 +87,7 @@ FORMAT_FILES=(
   tests/test_bounded_file_receipts.py
   tests/test_isolated_catalog_runner_import.py
   tests/test_keymaster_oidc_token.py
+  tests/test_library_registry_publish_boundary.py
   tests/test_mega_pdf_function_genome_recovery.py
   tests/test_monolith_atlas_optional_category.py
   tests/test_monolith_legal_live_safe_path.py
