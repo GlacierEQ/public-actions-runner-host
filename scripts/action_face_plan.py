@@ -180,7 +180,6 @@ def _reconcile_domain_contract(action: str, entry: dict) -> None:
         fail("hierarchical action source writes are not forbidden")
 
 
-
 def infer_catalog_pillar(action: str) -> str:
     """Derive the pillar only when a catalog action has one unique binding."""
     if not action:
@@ -294,9 +293,11 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
     if not base.REPO.fullmatch(source_repo):
         fail("source_repo must be an approved GlacierEQ repository")
 
-    approval_required = pillar in {"G", "I"} or bool(
-        entry and entry.get("approval_required")
-    )
+    # Approval is consequence-specific, never inferred from organizational pillar.
+    # Catalog entries must opt in explicitly when an action itself crosses a
+    # consequential boundary. Routine validation/build/package work inherits the
+    # active mission authority carried by the job.
+    approval_required = bool(entry and entry.get("approval_required"))
     approval_id = payload.get("approval_id", "")
     if approval_required and not base.JOB_ID.fullmatch(approval_id):
         fail("this action requires a valid private approval_id")
