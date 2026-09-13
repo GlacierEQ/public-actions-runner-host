@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,9 +73,20 @@ def test_supported_ingress_separates_source_and_receipt_authority() -> None:
     assert '--repository "$APEX_WORKLOAD_REPOSITORY"' in workload
     assert 'permission="contents=read"' in workload
     assert 'operation="public-action-workload"' in workload
-    assert 'if [ "$APEX_ACTION" = "docket-sync" ]; then' in workload
-    assert workload.count('permission="contents=write"') == 1
-    assert 'operation="jefs-docket-acquisition"' in workload
+
+    privileged = re.findall(
+        r'(?:if|elif) \[ "\$APEX_ACTION" = "([^"]+)" \]; then\n'
+        r'\s+permission="contents=write"\n'
+        r'\s+operation="([^"]+)"',
+        workload,
+    )
+    assert privileged == [
+        ("docket-sync", "jefs-docket-acquisition"),
+        ("library-links-public-publish", "library-registry-rebuild"),
+    ]
+    assert workload.count('permission="contents=write"') == len(privileged)
+    assert workload.count('operation="jefs-docket-acquisition"') == 1
+    assert workload.count('operation="library-registry-rebuild"') == 1
     assert '--permission "$permission"' in workload
     assert '--operation "$operation"' in workload
     assert '--repository "${{ steps.plan.outputs.source_repo }}"' not in workload
