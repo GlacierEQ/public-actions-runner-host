@@ -4,9 +4,8 @@ import json
 import sys
 from pathlib import Path
 
-import pytest
-
 import library_registry_publish as publisher
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
