@@ -50,23 +50,22 @@ def test_international_pillar_does_not_create_blanket_approval_gate(tmp_path, mo
     assert plan["approval_required"] == "false"
 
 
-def test_explicit_destructive_action_still_requires_approval(tmp_path, monkeypatch):
+def test_extinction_legacy_alias_is_read_only_and_needs_no_destructive_approval(
+    tmp_path, monkeypatch
+):
     monkeypatch.chdir(ROOT)
-    module = _module()
+    plan = _module().build_plan(
+        _event(tmp_path),
+        {
+            "job_id": "strand-lineage-probe",
+            "pillar": "F",
+            "action": "master-strand-extinction",
+        },
+    )
 
-    try:
-        module.build_plan(
-            _event(tmp_path),
-            {
-                "job_id": "strand-extinction-probe",
-                "pillar": "F",
-                "action": "master-strand-extinction",
-            },
-        )
-    except SystemExit as exc:
-        assert "requires a valid private approval_id" in str(exc)
-    else:
-        raise AssertionError("explicit destructive action must require approval")
+    assert plan["approval_required"] == "false"
+    assert plan["approval_id"] == ""
+    assert plan["adapter"] == "master-strand-inventory"
 
 
 def test_planner_never_infers_approval_from_pillar_category():
@@ -78,4 +77,7 @@ def test_planner_never_infers_approval_from_pillar_category():
     extinction = next(
         item for item in catalog["actions"] if item["action"] == "master-strand-extinction"
     )
-    assert extinction["approval_required"] is True
+    assert extinction["approval_required"] is False
+    assert extinction["gate"] == "elevated"
+    assert extinction["adapter"] == "master-strand-inventory"
+    assert extinction["semantics"] == "LEGACY_ALIAS_READ_ONLY_LINEAGE_AUDIT"
