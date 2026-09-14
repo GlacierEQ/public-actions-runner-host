@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Inventory and extinguish resolved GitHub branches without losing unique work.
+"""Audit GlacierEQ branch lineage without deleting remote refs.
 
-This trusted control adapter runs only in the public execution plane. It never
-passes write credentials into a checked-out workload. Apply mode deletes only
-non-default branches whose head contains no commits absent from the repository's
-canonical default branch. Unique progress remains blocked for later
-ABSORB/TRANSPLANT/QUARANTINE resolution.
+This adapter preserves the useful estate-wide inventory, comparison, provenance,
+and receipt machinery of the former master-strand extinction path while retiring
+its destructive authority. Commit containment is overlap evidence only. A donor
+branch remains ACTIVE_IN_MESH unless whole-donor UNIQUE_CONTRIBUTION=0 is proven
+outside this adapter; even then its terminal representation is preserved lineage,
+not remote-ref deletion.
 """
 from __future__ import annotations
 
 import argparse
-import base64
-import hashlib
 import json
 import os
 import re
@@ -28,13 +27,12 @@ OWNER = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
 REPO = re.compile(r"^[A-Za-z0-9_.-]{1,100}$")
 BRANCH = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,254}$")
 JOB_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{7,63}$")
-CONTROL_REPO = os.environ.get("APEX_CONTROL_REPO", "GlacierEQ/llm-runner-teams")
 API_ROOT = "https://api.github.com"
-USER_AGENT = "apex-master-strand-extinction/1.0"
+USER_AGENT = "apex-master-strand-lineage-audit/2.0"
 
 
 class ExtinctionError(RuntimeError):
-    pass
+    """Compatibility exception name retained for existing Action Face callers."""
 
 
 @dataclass(frozen=True)
@@ -48,16 +46,20 @@ class BranchDecision:
     behind_by: int
     compare_status: str
     disposition: str
-    delete_ready: bool
+    delete_ready: bool = False
     deleted: bool = False
     delete_status: str | None = None
     blocker: str | None = None
+    unique_contribution_state: str = "CANDIDATE_UNVERIFIED"
+    lineage_state: str = "ACTIVE_IN_MESH"
 
 
 class GitHubAPI:
+    """Read-only GitHub adapter for estate branch lineage observation."""
+
     def __init__(self, token: str):
         if not token:
-            raise ExtinctionError("GitHub token is required")
+            raise ExtinctionError("GitHub read token is required")
         self.token = token
 
     def request(
@@ -65,18 +67,18 @@ class GitHubAPI:
         path: str,
         *,
         method: str = "GET",
-        payload: dict[str, Any] | None = None,
         allow_status: Iterable[int] = (),
     ) -> tuple[Any, dict[str, str], int]:
+        if method != "GET":
+            raise ExtinctionError(
+                "Master-strand lineage audit is read-only; provider mutation is prohibited"
+            )
         url = path if path.startswith("https://") else f"{API_ROOT}{path}"
-        body = json.dumps(payload).encode("utf-8") if payload is not None else None
-        request = urllib.request.Request(url, data=body, method=method)
+        request = urllib.request.Request(url, method="GET")
         request.add_header("Accept", "application/vnd.github+json")
         request.add_header("Authorization", f"Bearer {self.token}")
         request.add_header("X-GitHub-Api-Version", "2022-11-28")
         request.add_header("User-Agent", USER_AGENT)
-        if body is not None:
-            request.add_header("Content-Type", "application/json")
         try:
             with urllib.request.urlopen(request, timeout=60) as response:
                 raw = response.read()
@@ -87,17 +89,16 @@ class GitHubAPI:
             if exc.code in set(allow_status):
                 data = json.loads(raw.decode("utf-8")) if raw else None
                 return data, dict(exc.headers.items()), exc.code
-            message = ""
             try:
                 message = str(json.loads(raw.decode("utf-8")).get("message", ""))
-            except Exception:  # noqa: BLE001
+            except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
                 message = raw.decode("utf-8", errors="replace")[:500]
             raise ExtinctionError(
-                f"GitHub API {method} {path} failed with {exc.code}: {message}"
+                f"GitHub API GET {path} failed with {exc.code}: {message}"
             ) from exc
-        except Exception as exc:  # noqa: BLE001
+        except (OSError, urllib.error.URLError) as exc:
             raise ExtinctionError(
-                f"GitHub API {method} {path} failed: {type(exc).__name__}: {exc}"
+                f"GitHub API GET {path} failed: {type(exc).__name__}: {exc}"
             ) from exc
 
     def pages(self, path: str) -> list[dict[str, Any]]:
@@ -139,40 +140,6 @@ class GitHubAPI:
             raise ExtinctionError(f"Compare response is malformed for {full_name}:{head}")
         return data
 
-    def delete_branch(self, full_name: str, branch: str) -> int:
-        encoded = urllib.parse.quote(branch, safe="/")
-        _, _, status = self.request(
-            f"/repos/{full_name}/git/refs/heads/{encoded}",
-            method="DELETE",
-            allow_status=(404, 422),
-        )
-        return status
-
-
-class ControlPlane:
-    def __init__(self, token: str):
-        if not token:
-            raise ExtinctionError("APEX_CONTROL_TOKEN is required")
-        self.api = GitHubAPI(token)
-
-    def approval(self, approval_id: str) -> dict[str, Any]:
-        encoded = urllib.parse.quote(f"approvals/{approval_id}.json", safe="/")
-        data, _, _ = self.api.request(
-            f"/repos/{CONTROL_REPO}/contents/{encoded}?ref=main"
-        )
-        if not isinstance(data, dict) or not isinstance(data.get("content"), str):
-            raise ExtinctionError("Approval record is malformed")
-        try:
-            decoded = base64.b64decode(data["content"]).decode("utf-8")
-            payload = json.loads(decoded)
-        except Exception as exc:  # noqa: BLE001
-            raise ExtinctionError(
-                f"Approval record is invalid: {type(exc).__name__}"
-            ) from exc
-        if not isinstance(payload, dict):
-            raise ExtinctionError("Approval record must be a JSON object")
-        return payload
-
 
 def validate_identity(owner: str, job_id: str, approval_id: str | None) -> None:
     if not OWNER.fullmatch(owner):
@@ -181,33 +148,6 @@ def validate_identity(owner: str, job_id: str, approval_id: str | None) -> None:
         raise ExtinctionError("job_id must be 8-64 safe characters")
     if approval_id and not JOB_ID.fullmatch(approval_id):
         raise ExtinctionError("approval_id must be 8-64 safe characters")
-
-
-def validate_approval(
-    approval: dict[str, Any],
-    *,
-    job_id: str,
-    approval_id: str,
-    owner: str,
-    mode: str,
-) -> None:
-    expected = {
-        "approval_id": approval_id,
-        "job_id": job_id,
-        "pillar": "F",
-        "action": "master-strand-extinction",
-        "owner": owner,
-        "mode": mode,
-    }
-    if approval.get("approved") is not True:
-        raise ExtinctionError("Approval is not active")
-    for field, value in expected.items():
-        if approval.get(field) != value:
-            raise ExtinctionError(f"Approval field {field} does not match this job")
-    if approval.get("delete_resolved_only") is not True:
-        raise ExtinctionError("Approval must require delete_resolved_only")
-    if approval.get("preserve_unique_progress") is not True:
-        raise ExtinctionError("Approval must require preserve_unique_progress")
 
 
 def branch_decision(
@@ -243,9 +183,10 @@ def branch_decision(
             ahead_by=ahead_by,
             behind_by=behind_by,
             compare_status=status,
-            disposition="ALIVE",
-            delete_ready=False,
-            blocker="default branch is the canonical working face",
+            disposition="DEFAULT_BRANCH",
+            blocker="default branch is an active lineage node",
+            unique_contribution_state="NOT_APPLICABLE",
+            lineage_state="ACTIVE_IN_MESH",
         )
 
     if ahead_by == 0:
@@ -258,8 +199,13 @@ def branch_decision(
             ahead_by=ahead_by,
             behind_by=behind_by,
             compare_status=status,
-            disposition="DISCARD",
-            delete_ready=True,
+            disposition="PRESERVE_DRAINED_LINEAGE_CANDIDATE",
+            blocker=(
+                "Git commit containment establishes overlap only; whole-donor "
+                "UNIQUE_CONTRIBUTION=0 has not been independently proven"
+            ),
+            unique_contribution_state="CANDIDATE_UNVERIFIED",
+            lineage_state="ACTIVE_IN_MESH",
         )
 
     return BranchDecision(
@@ -272,43 +218,33 @@ def branch_decision(
         behind_by=behind_by,
         compare_status=status,
         disposition="ABSORB_OR_TRANSPLANT",
-        delete_ready=False,
         blocker=(
             f"branch contains {ahead_by} commit(s) not present on {default_branch}; "
-            "integrate or transplant the functional delta before deletion"
+            "preserve and integrate its unique contributions"
         ),
+        unique_contribution_state="NONZERO_COMMIT_DELTA_CONFIRMED",
+        lineage_state="ACTIVE_IN_MESH",
     )
 
 
 def run(owner: str, mode: str, job_id: str, approval_id: str | None) -> dict[str, Any]:
+    """Run a read-only estate branch-lineage audit.
+
+    ``apply`` remains accepted only as a compatibility input for existing Action Face
+    callers. It is translated to read-only audit semantics and cannot acquire write
+    credentials or delete refs.
+    """
     validate_identity(owner, job_id, approval_id)
     if mode not in {"inventory", "apply"}:
         raise ExtinctionError("mode must be inventory or apply")
 
-    read_token = os.environ.get("APEX_PRIVATE_READ_TOKEN", "")
-    write_token = os.environ.get("APEX_BRANCH_WRITE_TOKEN", "")
-    token = write_token if mode == "apply" else (read_token or write_token)
+    requested_mode = mode
+    effective_mode = "inventory"
+    token = os.environ.get("APEX_PRIVATE_READ_TOKEN", "") or os.environ.get(
+        "APEX_BRANCH_WRITE_TOKEN", ""
+    )
     if not token:
-        required = "APEX_BRANCH_WRITE_TOKEN" if mode == "apply" else "APEX_PRIVATE_READ_TOKEN"
-        raise ExtinctionError(f"{required} is required")
-
-    approval_sha256 = None
-    if mode == "apply":
-        if not approval_id:
-            raise ExtinctionError("apply mode requires approval_id")
-        approval = ControlPlane(os.environ.get("APEX_CONTROL_TOKEN", "")).approval(
-            approval_id
-        )
-        validate_approval(
-            approval,
-            job_id=job_id,
-            approval_id=approval_id,
-            owner=owner,
-            mode=mode,
-        )
-        approval_sha256 = hashlib.sha256(
-            json.dumps(approval, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest()
+        raise ExtinctionError("APEX_PRIVATE_READ_TOKEN or legacy read-capable token is required")
 
     api = GitHubAPI(token)
     repositories = api.owned_repositories(owner)
@@ -333,19 +269,7 @@ def run(owner: str, mode: str, job_id: str, approval_id: str | None) -> dict[str
 
         for branch in branch_records:
             try:
-                decision = branch_decision(api, repository, branch)
-                if mode == "apply" and decision.delete_ready:
-                    status = api.delete_branch(full_name, decision.branch)
-                    deleted = status in {204, 404}
-                    decision = BranchDecision(
-                        **{
-                            **asdict(decision),
-                            "deleted": deleted,
-                            "delete_status": str(status),
-                            "blocker": None if deleted else f"delete returned status {status}",
-                        }
-                    )
-                decisions.append(decision)
+                decisions.append(branch_decision(api, repository, branch))
             except ExtinctionError as exc:
                 errors.append(
                     {
@@ -355,27 +279,26 @@ def run(owner: str, mode: str, job_id: str, approval_id: str | None) -> dict[str
                     }
                 )
 
-    nondefault = [item for item in decisions if item.disposition != "ALIVE"]
-    delete_ready = [item for item in nondefault if item.delete_ready]
-    deleted = [item for item in nondefault if item.deleted]
-    unique = [item for item in nondefault if not item.delete_ready]
-
-    status = "completed"
-    if errors:
-        status = "partial"
-    if mode == "apply" and delete_ready and len(deleted) != len(delete_ready):
-        status = "partial"
+    nondefault = [item for item in decisions if item.disposition != "DEFAULT_BRANCH"]
+    overlap_only = [
+        item
+        for item in nondefault
+        if item.disposition == "PRESERVE_DRAINED_LINEAGE_CANDIDATE"
+    ]
+    unique = [item for item in nondefault if item.ahead_by > 0]
+    status = "partial" if errors else "completed"
 
     return {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "job_id": job_id,
-        "action": "master-strand-extinction",
-        "mode": mode,
+        "action": "master-strand-lineage-audit",
+        "legacy_action_alias": "master-strand-extinction",
+        "requested_mode": requested_mode,
+        "mode": effective_mode,
         "owner": owner,
         "status": status,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "approval_id": approval_id,
-        "approval_sha256": approval_sha256,
         "provenance": {
             "workflow_run_id": os.environ.get("GITHUB_RUN_ID", ""),
             "workflow_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
@@ -384,13 +307,20 @@ def run(owner: str, mode: str, job_id: str, approval_id: str | None) -> dict[str
             "trigger_actor": os.environ.get("GITHUB_ACTOR", ""),
             "trigger_actor_id": os.environ.get("GITHUB_ACTOR_ID", ""),
         },
+        "anti_replacement": {
+            "remote_ref_deletion_authority": False,
+            "commit_containment_is_overlap_only": True,
+            "whole_donor_zero_unique_contribution_required_for_retirement": True,
+            "drained_terminal_state": "PRESERVE_DRAINED_LINEAGE",
+        },
         "summary": {
             "repositories_scanned": len(repositories),
             "branches_seen": len(decisions),
             "nondefault_branches": len(nondefault),
-            "delete_ready": len(delete_ready),
-            "deleted": len(deleted),
-            "unique_progress_branches": len(unique),
+            "overlap_only_candidates": len(overlap_only),
+            "active_unique_progress_branches": len(unique),
+            "delete_ready": 0,
+            "deleted": 0,
             "repositories_default_not_main": len(defaults_not_main),
             "errors": len(errors),
         },
@@ -398,8 +328,8 @@ def run(owner: str, mode: str, job_id: str, approval_id: str | None) -> dict[str
         "decisions": [asdict(item) for item in decisions],
         "errors": errors,
         "truth_boundary": (
-            "Apply mode deletes only branches with zero commits absent from the current "
-            "default branch. Unique progress is never deleted by this adapter."
+            "Commit containment, merge state, age, or default-branch ancestry are overlap "
+            "evidence only. This adapter cannot delete refs."
         ),
     }
 
@@ -425,14 +355,17 @@ def main() -> int:
         exit_code = 0 if result["status"] == "completed" else 2
     except ExtinctionError as exc:
         result = {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "job_id": args.job_id,
-            "action": "master-strand-extinction",
-            "mode": args.mode,
+            "action": "master-strand-lineage-audit",
+            "legacy_action_alias": "master-strand-extinction",
+            "requested_mode": args.mode,
+            "mode": "inventory",
             "owner": args.owner,
             "status": "blocked",
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "exact_blocker": str(exc),
+            "anti_replacement": {"remote_ref_deletion_authority": False},
             "provenance": {
                 "workflow_run_id": os.environ.get("GITHUB_RUN_ID", ""),
                 "workflow_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
@@ -444,11 +377,16 @@ def main() -> int:
     output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     summary = result.get("summary", {})
     print(
-        f"master-strand {args.mode}: status={result['status']} "
+        f"master-strand lineage audit: status={result['status']} "
         f"repos={summary.get('repositories_scanned', 0)} "
         f"nondefault={summary.get('nondefault_branches', 0)} "
-        f"deleted={summary.get('deleted', 0)}"
+        "deleted=0"
     )
+    if args.mode == "apply":
+        print(
+            "legacy apply request translated to read-only lineage audit; ref deletion authority is retired",
+            file=sys.stderr,
+        )
     return exit_code
 
 
