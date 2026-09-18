@@ -57,6 +57,7 @@ ADAPTER_TASK = {
     "casey_legal_mcp_validate": "test",
     "aspen-memory-federation-ci": "test",
     "akos-upward-semantics-ci": "test",
+    "apex-operator-semantics-ci": "test",
 }
 ALLOWED_KEYS = {
     "job_id",
@@ -96,6 +97,7 @@ IMMUTABLE_SOURCE_ACTIONS = {
     "docs.monolith.validate-integrity",
     "analysis.monolith.estate-health",
     "mega-pdf-function-genome",
+    "mega-skills-apex-operator-semantics-ci",
 }
 
 
