@@ -346,6 +346,16 @@
       "adapter": "apex-operator-semantics-ci",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "apex-genius-runtime-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/apex-boot-core",
+      "legacy_event": "apex-genius-runtime-ci",
+      "adapter": "apex-genius-runtime-ci",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
