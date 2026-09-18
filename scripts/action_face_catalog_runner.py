@@ -435,6 +435,95 @@ print("APEX_OPERATOR_SEMANTICS_RUNTIME_VERIFIED", receipt.digest)
     )
 
 
+
+def apex_genius_runtime_ci(
+    plan: dict, workspace: Path, result_path: Path
+) -> int:
+    """Verify the exact APEX source selected Genius as runtime family.
+
+    This route verifies composition and provenance only. Runtime selection
+    remains Operator routing metadata and never transfers project authority.
+    """
+    workspace = workspace.resolve()
+    result_path = result_path.resolve()
+    required = [
+        workspace / "runtime" / "contracts" / "runtime_contract.json",
+        workspace / "runtime" / "contracts" / "genius_runtime.json",
+        workspace / "runtime" / "contract_validation.py",
+        workspace / "scripts" / "runtime_cli.py",
+        workspace / "scripts" / "apex_selfcheck.py",
+        workspace / "tests" / "test_contract_validation.py",
+    ]
+    missing = [p.relative_to(workspace).as_posix() for p in required if not p.is_file()]
+    if missing:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="required Genius runtime selection surfaces are missing: " + ", ".join(missing),
+            global_veto=False,
+        )
+
+    genius_sha = "aaa84b757d89cb8f0eee89fc4f7c4c3bd6edad27"
+    verification = r"""
+import json
+import sys
+from pathlib import Path
+sys.path.insert(0, ".")
+from runtime.contract_validation import validate_runtime_semantics
+
+root = Path(".")
+contracts = root / "runtime" / "contracts"
+errors = validate_runtime_semantics(contracts)
+assert not errors, errors
+runtime = json.loads((contracts / "runtime_contract.json").read_text(encoding="utf-8"))
+genius = json.loads((contracts / "genius_runtime.json").read_text(encoding="utf-8"))
+
+assert runtime["selected_runtime_source"] == "GlacierEQ/Genius-Mastery"
+assert runtime["selected_runtime_commit"] == "aaa84b757d89cb8f0eee89fc4f7c4c3bd6edad27"
+assert runtime["selection_confers_project_authority"] is False
+assert runtime["operator_authority"]["authority_holder"] == "OPERATOR"
+assert runtime["default_executor"] == "GlacierEQ/computer-user"
+
+assert genius["selected_family"] == "Genius"
+assert genius["selected_entrypoint"] == "GlacierEQ/Genius-Mastery"
+assert genius["selected_commit"] == "aaa84b757d89cb8f0eee89fc4f7c4c3bd6edad27"
+assert genius["authority_holder"] == "OPERATOR"
+assert genius["topology"] == "HOLOGRAPHIC_POLYCENTRIC_MESH"
+assert genius["selection_confers_project_authority"] is False
+assert genius["transition_law"]["gate_semantic"] == "ENRICHMENT_TRANSITION"
+assert genius["transition_law"]["may_stop_mission"] is False
+assert genius["transition_law"]["local_block_changes_route_not_objective"] is True
+assert genius["transition_law"]["mission_changes_only_by"] == "OPERATOR"
+
+nodes = genius["composed_runtime_nodes"]
+assert nodes["code"] == "GlacierEQ/Genius-Code"
+assert nodes["verification"] == "GlacierEQ/Genius-Verification"
+assert nodes["fusion"] == "GlacierEQ/genius-fusion"
+assert nodes["boot_and_receipt_compatibility"] == "GlacierEQ/apex-boot-core"
+assert nodes["durable_execution"] == "GlacierEQ/computer-user"
+
+print("GENIUS_RUNTIME_SELECTION_VERIFIED", genius["selected_commit"])
+"""
+    commands = [
+        [sys.executable, "-m", "compileall", "-q", "runtime", "scripts"],
+        [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py", "-v"],
+        [sys.executable, "scripts/runtime_cli.py", "validate-contract"],
+        [sys.executable, "-c", verification],
+    ]
+    return run_sequence(
+        plan,
+        workspace,
+        result_path,
+        commands,
+        extra_env={
+            "APEX_RUNTIME_SELECTED_REPOSITORY": "GlacierEQ/Genius-Mastery",
+            "APEX_RUNTIME_SELECTED_COMMIT": genius_sha,
+            "PYTHONPATH": str(workspace),
+        },
+    )
+
+
 def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -671,6 +760,8 @@ def main() -> int:
         return akos_upward_semantics_ci(plan, workspace, result_path)
     if adapter == "apex-operator-semantics-ci":
         return apex_operator_semantics_ci(plan, workspace, result_path)
+    if adapter == "apex-genius-runtime-ci":
+        return apex_genius_runtime_ci(plan, workspace, result_path)
     if adapter == "node-ci":
         return node_ci(plan, workspace, result_path)
     if adapter == "python-ci":
