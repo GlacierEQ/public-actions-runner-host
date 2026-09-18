@@ -346,6 +346,95 @@ def akos_upward_semantics_ci(
     )
 
 
+
+def apex_operator_semantics_ci(
+    plan: dict, workspace: Path, result_path: Path
+) -> int:
+    """Verify Operator semantics on the exact mega-skills workload SHA.
+
+    This is a read-only enrichment/proof route. Negative findings localize
+    repair work; the verifier never acquires project-direction authority.
+    """
+    workspace = workspace.resolve()
+    result_path = result_path.resolve()
+    required = [
+        workspace / "skills" / "apex-boot-core" / "resources" / "operator_semantics.json",
+        workspace / "skills" / "apex-boot-core" / "scripts" / "operator_semantics.py",
+        workspace / "skills" / "apex-boot-core" / "scripts" / "boot_watchdog.py",
+        workspace / "skills" / "apex-boot-core" / "scripts" / "this_skill.py",
+        workspace / "skills" / "apex-boot-core" / "tests" / "test_operator_semantics.py",
+        workspace / "skills" / "apex-boot-core" / "SKILL.md",
+    ]
+    missing = [p.relative_to(workspace).as_posix() for p in required if not p.is_file()]
+    if missing:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="required APEX Operator-semantics surfaces are missing: " + ", ".join(missing),
+            global_veto=False,
+        )
+
+    verification = r"""
+import sys
+sys.path.insert(0, "skills/apex-boot-core/scripts")
+from boot_watchdog import ApexBootCore
+
+core = ApexBootCore()
+receipt = core.boot()
+binding = receipt.pre_reasoning_binding
+assert binding["authority_holder"] == "OPERATOR"
+assert binding["exclusive_project_direction_authority"] is True
+assert binding["machine_project_direction_authority"] is False
+assert binding["topology_model"] == "HOLOGRAPHIC_POLYCENTRIC_MESH"
+assert binding["single_root"] is False
+assert binding["gate_semantic"] == "ENRICHMENT_TRANSITION"
+assert binding["gate_may_stop_mission"] is False
+assert binding["local_block_changes_route"] is True
+assert binding["local_block_changes_objective"] is False
+assert binding["mission_changes_only_by"] == "OPERATOR"
+assert receipt.enrichment_summary["semantic"] == "LEVEL_UP"
+assert receipt.enrichment_summary["mission_continues"] is True
+assert receipt.enrichment_summary["machine_veto"] is False
+assert receipt.gates
+assert all(g["level_up"] is True for g in receipt.gates)
+assert all(g["mission_stop"] is False for g in receipt.gates)
+audit = core.audit_interpretation(
+    "A failed gate blocks the mission and APEX Boot Core is the sole authority."
+)
+rules = {f["rule"] for f in audit["findings"]}
+assert "GATE_AS_MISSION_VETO" in rules
+assert "NON_OPERATOR_SOLE_AUTHORITY" in rules
+assert audit["mission_continues"] is True
+assert audit["creates_authority"] is False
+print("APEX_OPERATOR_SEMANTICS_RUNTIME_VERIFIED", receipt.digest)
+"""
+    commands = [
+        [sys.executable, "-m", "compileall", "-q", "skills/apex-boot-core"],
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "skills/apex-boot-core/tests",
+            "-p",
+            "test_operator_semantics.py",
+            "-v",
+        ],
+        [sys.executable, "-c", verification],
+    ]
+    return run_sequence(
+        plan,
+        workspace,
+        result_path,
+        commands,
+        extra_env={
+            "PYTHONPATH": str(workspace / "skills" / "apex-boot-core" / "scripts")
+        },
+    )
+
+
 def apex_verify(plan: dict, workspace: Path, result_path: Path) -> int:
     workspace = workspace.resolve()
     result_path = result_path.resolve()
@@ -580,6 +669,8 @@ def main() -> int:
         return aspen_memory_federation_ci(plan, workspace, result_path)
     if adapter == "akos-upward-semantics-ci":
         return akos_upward_semantics_ci(plan, workspace, result_path)
+    if adapter == "apex-operator-semantics-ci":
+        return apex_operator_semantics_ci(plan, workspace, result_path)
     if adapter == "node-ci":
         return node_ci(plan, workspace, result_path)
     if adapter == "python-ci":
