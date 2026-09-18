@@ -1,0 +1,11 @@
+{
+  "schema": "glaciereq.merge-authority.operable-patch.v5",
+  "gate": "OPERABLE",
+  "intent": "reprove_on_fabric_write_path",
+  "captured_at": "2026-09-18T01:07:13.737Z",
+  "implementation_source_sha": "e6781ad22ca437f7e6676b31d8a799d0c585485d",
+  "target_repository": "GlacierEQ/public-actions-runner-host",
+  "target_branch": "operability/merge-authority-v5-20260917",
+  "receipt_branch": "receipts/merge-authority-v5-20260917",
+  "note": "Disposable proof only; main must remain untouched."
+}
