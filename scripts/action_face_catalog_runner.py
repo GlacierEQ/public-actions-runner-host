@@ -347,6 +347,98 @@ def akos_upward_semantics_ci(
 
 
 
+
+def operator_context_first_ci(
+    plan: dict, workspace: Path, result_path: Path
+) -> int:
+    """Verify context/history hydration is enforced before Operator dispatch."""
+    workspace = workspace.resolve()
+    result_path = result_path.resolve()
+    required = [
+        workspace / "scripts" / "operator_mission_kernel.py",
+        workspace / "skills" / "casey-operator-execution-kernel" / "skill.py",
+        workspace / "skills" / "casey-operator-execution-kernel" / "OPERATOR_INVARIANTS.json",
+        workspace / "tests" / "test_operator_execution_kernel.py",
+    ]
+    missing = [p.relative_to(workspace).as_posix() for p in required if not p.is_file()]
+    if missing:
+        return catalog.write_result(
+            plan,
+            result_path,
+            "blocked",
+            reason="required context-first Operator surfaces are missing: " + ", ".join(missing),
+            global_veto=False,
+        )
+
+    verification = r"""
+import json
+import sys
+from pathlib import Path
+sys.path.insert(0, "scripts")
+from operator_mission_kernel import run_operator_mission_kernel
+
+missing = run_operator_mission_kernel("context_gate", {})
+assert missing["valid"] is False
+assert "turn_context_hydration_missing" in missing["reasons"]
+
+partial = {
+    "context_hydration": {
+        "status": "PARTIAL",
+        "attempted": True,
+        "before_interpretation": True,
+        "silent_prompt_only_fallback_forbidden": True,
+        "sources": ["conversation-history", "durable-project-state"],
+        "failures": [],
+        "unknowns": ["one source not yet available"],
+    }
+}
+accepted = run_operator_mission_kernel("context_gate", partial)
+assert accepted["valid"] is True
+assert accepted["mission_continues_if_partial_or_unavailable"] is True
+
+dispatch = dict(partial)
+dispatch.update({
+    "scope": {"mode": "specialized", "lane": "engineering"},
+    "continuation_hydrated": True,
+    "candidates": [{
+        "id": "runtime-work",
+        "lane": "engineering",
+        "source_state_hydrated": True,
+        "authorized": True,
+        "executable": True,
+        "substantive": True,
+        "operator_impact": 1.0,
+    }],
+})
+selected = run_operator_mission_kernel("dispatch_gate", dispatch)
+assert selected["dispatch_allowed"] is True
+assert selected["hydration_valid"] is True
+
+invariants = json.loads(
+    Path("skills/casey-operator-execution-kernel/OPERATOR_INVARIANTS.json")
+    .read_text(encoding="utf-8")
+)
+hydration = invariants["context_hydration"]
+assert hydration["required_every_substantive_turn_and_run"] is True
+assert hydration["before_interpretation"] is True
+assert hydration["silent_prompt_only_fallback_forbidden"] is True
+assert hydration["unavailable_does_not_erase_mission"] is True
+print("CONTEXT_FIRST_OPERATOR_RUNTIME_VERIFIED")
+"""
+    commands = [
+        [sys.executable, "-m", "compileall", "-q", "scripts/operator_mission_kernel.py", "skills/casey-operator-execution-kernel"],
+        [sys.executable, "tests/test_operator_execution_kernel.py", "-v"],
+        [sys.executable, "-c", verification],
+    ]
+    return run_sequence(
+        plan,
+        workspace,
+        result_path,
+        commands,
+        extra_env={"PYTHONPATH": str(workspace / "scripts")},
+    )
+
+
 def apex_operator_semantics_ci(
     plan: dict, workspace: Path, result_path: Path
 ) -> int:
@@ -763,6 +855,8 @@ def main() -> int:
         return akos_upward_semantics_ci(plan, workspace, result_path)
     if adapter == "apex-operator-semantics-ci":
         return apex_operator_semantics_ci(plan, workspace, result_path)
+    if adapter == "operator-context-first-ci":
+        return operator_context_first_ci(plan, workspace, result_path)
     if adapter == "apex-genius-runtime-ci":
         return apex_genius_runtime_ci(plan, workspace, result_path)
     if adapter == "node-ci":
