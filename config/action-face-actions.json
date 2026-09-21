@@ -356,6 +356,16 @@
       "adapter": "apex-genius-runtime-ci",
       "gate": "standard",
       "approval_required": false
+    },
+    {
+      "pillar": "C",
+      "action": "mega-skills-context-first-ci",
+      "source_event": "coding-deploy",
+      "target_repo": "GlacierEQ/mega-skills",
+      "legacy_event": "mega-skills-context-first-ci",
+      "adapter": "operator-context-first-ci",
+      "gate": "standard",
+      "approval_required": false
     }
   ]
 }
