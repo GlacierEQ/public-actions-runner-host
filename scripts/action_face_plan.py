@@ -58,6 +58,7 @@ ADAPTER_TASK = {
     "aspen-memory-federation-ci": "test",
     "akos-upward-semantics-ci": "test",
     "apex-operator-semantics-ci": "test",
+    "operator-context-first-ci": "test",
     "apex-genius-runtime-ci": "test",
 }
 ALLOWED_KEYS = {
@@ -99,6 +100,7 @@ IMMUTABLE_SOURCE_ACTIONS = {
     "analysis.monolith.estate-health",
     "mega-pdf-function-genome",
     "mega-skills-apex-operator-semantics-ci",
+    "mega-skills-context-first-ci",
     "apex-genius-runtime-ci",
 }
 
