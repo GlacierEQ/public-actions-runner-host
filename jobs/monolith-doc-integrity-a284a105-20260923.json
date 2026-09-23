@@ -1,0 +1,5 @@
+{
+  "job_id": "monolith-doc-integrity-a284a105-20260923",
+  "action": "docs.monolith.validate-integrity",
+  "source_ref": "a284a10533458a3b8029ce045e6a6860b02620be"
+}
