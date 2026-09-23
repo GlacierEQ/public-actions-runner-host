@@ -83,6 +83,21 @@ CATEGORY_REQUIRED_PATHS = (
     "catalog/category_heads.json",
     "foundations/category-heads.md",
 )
+CAPABILITY_GRAPH_REQUIRED_PATHS = (
+    "scripts/validate_capability_graph.py",
+    "tests/test_capability_graph.py",
+    "catalog/capability_graph.json",
+    "catalog/legal_projection_contract.json",
+    "catalog/casebuilder4000_runtime.json",
+    "scripts/validate_faceted_estate_topology.py",
+    "tests/test_faceted_estate_topology.py",
+    "scripts/audit_capability_recovery.py",
+    "tests/test_capability_recovery_audit.py",
+    "scripts/estate_semantic_regression.py",
+    "tests/test_estate_semantic_regression_classifier.py",
+    "scripts/validate_verification_plane.py",
+    "tests/test_verification_plane.py",
+)
 
 OPTIONAL_SURFACES = (
     {
@@ -181,6 +196,78 @@ OPTIONAL_SURFACES = (
         "test_pattern": "test_category_heads.py",
         "gate": "category-head-hierarchy",
     },
+    {
+        "key": "capability_graph",
+        "label": "typed-capability-graph",
+        "required_paths": CAPABILITY_GRAPH_REQUIRED_PATHS,
+        "compile_targets": (
+            "scripts/validate_capability_graph.py",
+            "tests/test_capability_graph.py",
+            "scripts/validate_faceted_estate_topology.py",
+            "tests/test_faceted_estate_topology.py",
+            "scripts/audit_capability_recovery.py",
+            "tests/test_capability_recovery_audit.py",
+            "scripts/estate_semantic_regression.py",
+            "tests/test_estate_semantic_regression_classifier.py",
+            "scripts/validate_verification_plane.py",
+            "tests/test_verification_plane.py",
+        ),
+        "validator": "scripts/validate_capability_graph.py",
+        "test_pattern": "test_capability_graph.py",
+        "gate": "typed-capability-graph",
+    },
+    {
+        "key": "faceted_topology",
+        "label": "faceted-estate-topology",
+        "required_paths": (
+            "catalog/faceted_estate_topology.json",
+            "catalog/ontology_non_collapse_invariant.json",
+            "scripts/validate_faceted_estate_topology.py",
+            "tests/test_faceted_estate_topology.py",
+        ),
+        "compile_targets": (
+            "scripts/validate_faceted_estate_topology.py",
+            "tests/test_faceted_estate_topology.py",
+        ),
+        "validator": "scripts/validate_faceted_estate_topology.py",
+        "test_pattern": "test_faceted_estate_topology.py",
+        "gate": "faceted-estate-topology",
+    },
+    {
+        "key": "capability_recovery",
+        "label": "capability-recovery",
+        "required_paths": (
+            "scripts/audit_capability_recovery.py",
+            "tests/test_capability_recovery_audit.py",
+            "scripts/estate_semantic_regression.py",
+            "tests/test_estate_semantic_regression_classifier.py",
+        ),
+        "compile_targets": (
+            "scripts/audit_capability_recovery.py",
+            "tests/test_capability_recovery_audit.py",
+            "scripts/estate_semantic_regression.py",
+            "tests/test_estate_semantic_regression_classifier.py",
+        ),
+        "validator": "scripts/audit_capability_recovery.py",
+        "test_pattern": "test_capability_recovery_audit.py",
+        "gate": "capability-recovery",
+    },
+    {
+        "key": "verification_plane",
+        "label": "verification-plane",
+        "required_paths": (
+            "catalog/verification_plane.json",
+            "scripts/validate_verification_plane.py",
+            "tests/test_verification_plane.py",
+        ),
+        "compile_targets": (
+            "scripts/validate_verification_plane.py",
+            "tests/test_verification_plane.py",
+        ),
+        "validator": "scripts/validate_verification_plane.py",
+        "test_pattern": "test_verification_plane.py",
+        "gate": "public-verification-plane",
+    },
 )
 COMMAND_ATLAS_GENERATOR = "scripts/build_monolith_command_atlas.py"
 COMMAND_ATLAS_REPAIR_INPUTS = (
@@ -267,6 +354,10 @@ def commands(
     include_colossus: bool = True,
     include_spacex: bool = True,
     include_pro_control: bool = True,
+    include_capability_graph: bool = True,
+    include_faceted_topology: bool = True,
+    include_capability_recovery: bool = True,
+    include_verification_plane: bool = True,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
@@ -279,6 +370,10 @@ def commands(
         "spacex": include_spacex,
         "pro_control": include_pro_control,
         "category_heads": include_category_heads,
+        "capability_graph": include_capability_graph,
+        "faceted_topology": include_faceted_topology,
+        "capability_recovery": include_capability_recovery,
+        "verification_plane": include_verification_plane,
     }
     compile_targets = [
         "scripts/validate_function_atlas.py",
@@ -562,6 +657,10 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             enabled_surfaces["colossus"],
             enabled_surfaces["spacex"],
             enabled_surfaces["pro_control"],
+            enabled_surfaces["capability_graph"],
+            enabled_surfaces["faceted_topology"],
+            enabled_surfaces["capability_recovery"],
+            enabled_surfaces["verification_plane"],
         )
         steps: list[dict] = []
         status = "completed"
