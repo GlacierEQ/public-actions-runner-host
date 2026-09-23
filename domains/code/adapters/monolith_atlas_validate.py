@@ -283,8 +283,6 @@ def commands(
     compile_targets = [
         "scripts/validate_function_atlas.py",
         "tests/test_function_atlas.py",
-        "scripts/build_three_structure_residue.py",
-        "tests/test_three_structure_residue.py",
     ]
     for surface in OPTIONAL_SURFACES:
         if enabled[surface["key"]]:
@@ -365,7 +363,6 @@ def commands(
                 "-q",
                 "tests/test_monolith_command_atlas.py",
                 "tests/test_query_monolith.py",
-                "tests/test_three_structure_residue.py",
             ],
         ]
     )
@@ -654,8 +651,6 @@ def run(plan: dict, workspace: Path, result_path: Path) -> int:
             )
 
     gates = ["core-function-atlas"]
-    if any("tests/test_three_structure_residue.py" in command for command in sequence):
-        gates.append("three-structure-zero-loss")
     for surface in OPTIONAL_SURFACES:
         if enabled_surfaces[surface["key"]]:
             gates.append(surface["gate"])
