@@ -299,7 +299,7 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     assert before["checkout_inode"] == after["checkout_inode"]
 
     sequence = real_commands(result_path, "RunnerJob01")
-    assert len(sequence) == 27
+    assert len(sequence) == 35
     assert any("scripts/validate_function_atlas.py" in command for command in sequence)
     assert any(
         "scripts/validate_connector_fabric.py" in command for command in sequence
@@ -329,6 +329,11 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
         "scripts/build_monolith_command_atlas.py" in command for command in sequence
     )
     assert any("tests/test_query_monolith.py" in command for command in sequence)
+    assert any("scripts/validate_capability_graph.py" in command for command in sequence)
+    assert any("test_capability_graph.py" in command for command in sequence)
+    assert any("scripts/validate_faceted_estate_topology.py" in command for command in sequence)
+    assert any("scripts/audit_capability_recovery.py" in command for command in sequence)
+    assert any("scripts/validate_verification_plane.py" in command for command in sequence)
 
 
 def test_code_runner_fails_when_private_source_mutates(
