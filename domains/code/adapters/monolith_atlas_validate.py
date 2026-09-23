@@ -354,10 +354,10 @@ def commands(
     include_colossus: bool = True,
     include_spacex: bool = True,
     include_pro_control: bool = True,
-    include_capability_graph: bool = True,
-    include_faceted_topology: bool = True,
-    include_capability_recovery: bool = True,
-    include_verification_plane: bool = True,
+    include_capability_graph: bool = False,
+    include_faceted_topology: bool = False,
+    include_capability_recovery: bool = False,
+    include_verification_plane: bool = False,
 ) -> list[list[str]]:
     venv = result_path.resolve().parent / f"venv-{job_id}"
     python = venv / "bin" / "python"
