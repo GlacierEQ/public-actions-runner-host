@@ -17,6 +17,8 @@ import subprocess
 import sys
 import tempfile
 from collections.abc import Callable
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -108,22 +110,23 @@ def _checkout_with_token(
     repository: str,
     source_sha: str,
     path: Path,
-    token: str,
+    token: str | None,
 ) -> str:
     if path.exists():
         shutil.rmtree(path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    basic = base64.b64encode(f"x-access-token:{token}".encode()).decode()
     env = os.environ.copy()
-    env.update(
-        {
-            "GIT_CONFIG_COUNT": "1",
-            "GIT_CONFIG_KEY_0": "http.https://github.com/.extraheader",
-            "GIT_CONFIG_VALUE_0": f"AUTHORIZATION: basic {basic}",
-            "GIT_TERMINAL_PROMPT": "0",
-        }
-    )
+    env["GIT_TERMINAL_PROMPT"] = "0"
+    if token:
+        basic = base64.b64encode(f"x-access-token:{token}".encode()).decode()
+        env.update(
+            {
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "http.https://github.com/.extraheader",
+                "GIT_CONFIG_VALUE_0": f"AUTHORIZATION: basic {basic}",
+            }
+        )
     remote = f"https://github.com/{repository}.git"
     _run(["git", "init", "-q", str(path)], env=env)
     _run(["git", "-C", str(path), "remote", "add", "origin", remote], env=env)
@@ -146,6 +149,32 @@ def _checkout_with_token(
     if status:
         raise RuntimeError(f"dependency checkout is not clean: {repository}")
     return observed
+
+
+def _is_public_repository(repository: str) -> bool:
+    request = urllib.request.Request(
+        f"https://api.github.com/repos/{repository}",
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "GlacierEQ-public-action-face",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=15) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        if exc.code in {403, 404}:
+            return False
+        raise RuntimeError(
+            f"repository visibility probe failed for {repository}: HTTP {exc.code}"
+        ) from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(
+            f"repository visibility probe failed for {repository}: {exc.reason}"
+        ) from exc
+    return payload.get("private") is False
 
 
 def _mint_via_keymaster(repository: str) -> str:
@@ -197,8 +226,9 @@ def materialize(
     *,
     root: Path,
     mint: Callable[[str], str] = _mint_via_keymaster,
-    checkout: Callable[[str, str, Path, str], str] = _checkout_with_token,
+    checkout: Callable[[str, str, Path, str | None], str] = _checkout_with_token,
     revoke: Callable[[str], None] = _revoke_token,
+    is_public: Callable[[str], bool] = _is_public_repository,
 ) -> list[dict[str, str]]:
     validated = validate_dependencies(dependencies)
     root.mkdir(parents=True, exist_ok=True)
@@ -207,8 +237,10 @@ def materialize(
     for item in validated:
         repository = item["repository"]
         source_sha = item["source_sha"]
-        token = mint(repository)
+        token: str | None = None
         try:
+            if not is_public(repository):
+                token = mint(repository)
             path = root / repository.split("/", 1)[1]
             observed = checkout(repository, source_sha, path, token)
             staged.append(
@@ -219,8 +251,9 @@ def materialize(
                 }
             )
         finally:
-            revoke(token)
-            token = ""
+            if token:
+                revoke(token)
+                token = ""
     return staged
 
 
