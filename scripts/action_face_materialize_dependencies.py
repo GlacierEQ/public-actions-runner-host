@@ -8,7 +8,6 @@ then exposes only local paths through APEX_DEPENDENCY_MANIFEST.
 from __future__ import annotations
 
 import argparse
-import base64
 import json
 import os
 import re
@@ -118,26 +117,43 @@ def _checkout_with_token(
 
     env = os.environ.copy()
     env["GIT_TERMINAL_PROMPT"] = "0"
-    if token:
-        basic = base64.b64encode(f"x-access-token:{token}".encode()).decode()
-        env.update(
-            {
-                "GIT_CONFIG_COUNT": "1",
-                "GIT_CONFIG_KEY_0": "http.https://github.com/.extraheader",
-                "GIT_CONFIG_VALUE_0": f"AUTHORIZATION: basic {basic}",
-            }
+    askpass_dir: tempfile.TemporaryDirectory[str] | None = None
+    try:
+        if token:
+            askpass_dir = tempfile.TemporaryDirectory(prefix="apex-git-askpass-")
+            askpass = Path(askpass_dir.name) / "askpass.sh"
+            askpass.write_text(
+                "#!/bin/sh\n"
+                "case \"$1\" in\n"
+                "  *Username*) printf '%s\\n' \"$APEX_GIT_USERNAME\" ;;\n"
+                "  *Password*) printf '%s\\n' \"$APEX_GIT_PASSWORD\" ;;\n"
+                "  *) exit 1 ;;\n"
+                "esac\n",
+                encoding="utf-8",
+            )
+            askpass.chmod(0o700)
+            env.update(
+                {
+                    "GIT_ASKPASS": str(askpass),
+                    "APEX_GIT_USERNAME": "x-access-token",
+                    "APEX_GIT_PASSWORD": token,
+                }
+            )
+
+        remote = f"https://github.com/{repository}.git"
+        _run(["git", "init", "-q", str(path)], env=env)
+        _run(["git", "-C", str(path), "remote", "add", "origin", remote], env=env)
+        _run(
+            ["git", "-C", str(path), "fetch", "--depth=1", "origin", source_sha],
+            env=env,
         )
-    remote = f"https://github.com/{repository}.git"
-    _run(["git", "init", "-q", str(path)], env=env)
-    _run(["git", "-C", str(path), "remote", "add", "origin", remote], env=env)
-    _run(
-        ["git", "-C", str(path), "fetch", "--depth=1", "origin", source_sha],
-        env=env,
-    )
-    _run(
-        ["git", "-C", str(path), "checkout", "-q", "--detach", "FETCH_HEAD"],
-        env=env,
-    )
+        _run(
+            ["git", "-C", str(path), "checkout", "-q", "--detach", "FETCH_HEAD"],
+            env=env,
+        )
+    finally:
+        if askpass_dir is not None:
+            askpass_dir.cleanup()
     observed = _run(["git", "-C", str(path), "rev-parse", "HEAD"]).lower()
     if observed != source_sha:
         raise RuntimeError(
