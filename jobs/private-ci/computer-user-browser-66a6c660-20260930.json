@@ -1,0 +1,11 @@
+{
+  "schema": "glaciereq.private-ci-relay.v1",
+  "job_id": "computer-user-browser-66a6c660-20260930",
+  "workload_repo": "GlacierEQ/computer-user",
+  "workload_ref": "66a6c660eb292c090c3a07e7d7a7d358f04f3cb0",
+  "verify_script": "scripts/ci/browser_agent_verify.py",
+  "language": "python",
+  "python_version": "3.12",
+  "timeout_minutes": 10,
+  "status_context": "APEX/browser-agent-regression"
+}
