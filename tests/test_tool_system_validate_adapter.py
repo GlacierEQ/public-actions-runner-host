@@ -93,12 +93,14 @@ def test_isolated_environment_is_allowlisted(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch.setenv("AKOS_POLICY_SHA256", "secret-digest")
     monkeypatch.setenv("GITHUB_TOKEN", "secret-token")
     monkeypatch.setenv("UNRELATED_SECRET", "secret")
+    monkeypatch.setenv("APEX_DEPENDENCY_MANIFEST", "/tmp/staged-dependencies.json")
     env = adapter.isolated_env()
     assert env["PATH"] == "/usr/bin"
     assert env["CI"] == "true"
     assert "AKOS_POLICY_SHA256" not in env
     assert "GITHUB_TOKEN" not in env
     assert "UNRELATED_SECRET" not in env
+    assert env["APEX_DEPENDENCY_MANIFEST"] == "/tmp/staged-dependencies.json"
 
 
 def test_canonical_job_normalizes_to_fixed_execution_identity() -> None:
@@ -262,6 +264,7 @@ def test_action_face_planner_binds_canonical_code_action(tmp_path: Path) -> None
     assert plan["source_repo"] == adapter.EXPECTED_REPOSITORY
     assert plan["target_repo"] == adapter.EXPECTED_REPOSITORY
     assert plan["task"] == "test"
+    assert plan["dependency_manifest"] == "scripts/ci/private_dependencies.json"
 
 
 def test_catalog_runner_direct_entrypoint_imports_domain_adapter() -> None:
@@ -277,3 +280,16 @@ def test_catalog_runner_direct_entrypoint_imports_domain_adapter() -> None:
     assert process.returncode != 0
     assert "usage: action_face_catalog_runner.py" in output
     assert "ModuleNotFoundError" not in output
+
+
+
+def test_action_face_workflow_stages_dependencies_before_adapter() -> None:
+    workflow = (
+        ROOT / ".github" / "workflows" / "apex-pillar-runner.yml"
+    ).read_text(encoding="utf-8")
+
+    prepare = workflow.index("Materialize declared private CI dependencies")
+    execute = workflow.index("Execute isolated public action adapter")
+    assert prepare < execute
+    assert "scripts/action_face_prepare_dependencies.py" in workflow
+    assert "APEX_DEPENDENCY_MANIFEST: ${{ steps.dependencies.outputs.manifest }}" in workflow
