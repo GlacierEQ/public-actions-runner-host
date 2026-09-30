@@ -95,7 +95,7 @@ def test_defaults_are_bounded(tmp_path: Path):
 
 
 
-def test_public_relay_workflow_has_credential_failover():
+def test_public_relay_workflow_uses_oidc_keymaster_for_private_checkout():
     workflow = (
         Path(__file__).resolve().parents[1]
         / ".github"
@@ -103,7 +103,9 @@ def test_public_relay_workflow_has_credential_failover():
         / "private-ci-relay.yml"
     ).read_text(encoding="utf-8")
 
-    assert "continue-on-error: true" in workflow
-    assert "secrets.APEX_PRIVATE_READ_TOKEN || secrets.GH_PAT" in workflow
-    assert "steps.workload_token.outputs.token || secrets.APEX_PRIVATE_READ_TOKEN || secrets.GH_PAT" in workflow
-    assert "steps.workload_token.outputs.token || secrets.GH_PAT" in workflow
+    assert "id-token: write" in workflow
+    assert "scripts/keymaster_oidc_token.py" in workflow
+    assert "--operation private-ci-relay" in workflow
+    assert "--permission contents=read" in workflow
+    assert "token: ${{ steps.workload_token.outputs.token }}" in workflow
+    assert "persist-credentials: false" in workflow
