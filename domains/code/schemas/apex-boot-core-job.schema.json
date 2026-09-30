@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glaciereq.local/schemas/apex-boot-core-job.schema.json",
+  "title": "APEX boot-core exact validation job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["job_id", "pillar", "action", "source_ref"],
+  "properties": {
+    "job_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,128}$"},
+    "pillar": {"const": "C"},
+    "action": {"const": "code.apex-boot-core.validate"},
+    "source_ref": {"type": "string", "minLength": 7, "maxLength": 255}
+  }
+}
