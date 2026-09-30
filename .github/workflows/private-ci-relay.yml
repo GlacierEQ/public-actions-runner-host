@@ -101,6 +101,18 @@ jobs:
           test -z "$(git -C workload status --porcelain --untracked-files=no)"
           echo "resolved_sha=$resolved" >> "$GITHUB_OUTPUT"
 
+      - name: Materialize workload-declared read dependencies
+        shell: bash
+        env:
+          APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.workload_repo }}
+        run: |
+          set -euo pipefail
+          python3 scripts/action_face_materialize_dependencies.py \
+            --workload-dir workload \
+            --source-repo "$APEX_WORKLOAD_REPOSITORY" \
+            --staging-root .apex-dependencies \
+            --manifest-out .apex-dependencies/manifest.json
+
       - name: Set up Python
         if: steps.plan.outputs.language == 'python'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
