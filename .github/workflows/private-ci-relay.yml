@@ -1,0 +1,211 @@
+name: GlacierEQ Private CI Relay
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "jobs/private-ci/*.json"
+  workflow_dispatch:
+    inputs:
+      job_file:
+        description: Job envelope under jobs/private-ci/
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: private-ci-relay-${{ github.event_name }}-${{ github.event.head_commit.id || inputs.job_file || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  verify-private-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout public runner host
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Resolve job envelope
+        id: job_file
+        shell: bash
+        env:
+          DISPATCH_JOB_FILE: ${{ inputs.job_file || '' }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$DISPATCH_JOB_FILE" ]]; then
+            candidate="$DISPATCH_JOB_FILE"
+          else
+            mapfile -t changed < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- 'jobs/private-ci/*.json')
+            if [[ ${#changed[@]} -ne 1 ]]; then
+              printf 'Expected exactly one private CI job file in triggering commit; got %s\n' "${#changed[@]}" >&2
+              printf '%s\n' "${changed[@]:-}" >&2
+              exit 2
+            fi
+            candidate="${changed[0]}"
+          fi
+          case "$candidate" in
+            jobs/private-ci/*.json) ;;
+            *) echo "job_file must be under jobs/private-ci/" >&2; exit 2 ;;
+          esac
+          test -f "$candidate"
+          echo "path=$candidate" >> "$GITHUB_OUTPUT"
+
+      - name: Validate private CI job
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/private_ci_relay_plan.py             --job "${{ steps.job_file.outputs.path }}"             --github-output "$GITHUB_OUTPUT"
+
+      - name: Mint one-repository private workload token through Keymaster
+        id: workload_token
+        shell: bash
+        env:
+          APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.workload_repo }}
+        run: |
+          set -euo pipefail
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || { echo "GitHub OIDC request URL unavailable" >&2; exit 2; }
+          test -n "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" || { echo "GitHub OIDC request token unavailable" >&2; exit 2; }
+          python3 scripts/keymaster_oidc_token.py \
+            --repository "$APEX_WORKLOAD_REPOSITORY" \
+            --permission contents=read \
+            --operation private-ci-relay
+      - name: Checkout exact private workload
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: ${{ steps.plan.outputs.workload_repo }}
+          ref: ${{ steps.plan.outputs.workload_ref }}
+          token: ${{ steps.workload_token.outputs.token }}
+          path: workload
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact private source
+        id: bind
+        shell: bash
+        env:
+          REQUESTED_REF: ${{ steps.plan.outputs.workload_ref }}
+        run: |
+          set -euo pipefail
+          resolved="$(git -C workload rev-parse HEAD)"
+          if [[ "$REQUESTED_REF" =~ ^[0-9a-fA-F]{40}$ ]] && [[ "${resolved,,}" != "${REQUESTED_REF,,}" ]]; then
+            echo "Exact SHA mismatch: requested=$REQUESTED_REF resolved=$resolved" >&2
+            exit 2
+          fi
+          test -z "$(git -C workload status --porcelain --untracked-files=no)"
+          echo "resolved_sha=$resolved" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Python
+        if: steps.plan.outputs.language == 'python'
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ steps.plan.outputs.python_version }}
+          check-latest: false
+
+      - name: Set up Node
+        if: steps.plan.outputs.language == 'typescript' || steps.plan.outputs.language == 'javascript'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ steps.plan.outputs.node_version }}
+          check-latest: false
+
+      - name: Execute repository-owned verification
+        id: verify
+        shell: bash
+        env:
+          VERIFY_SCRIPT: ${{ steps.plan.outputs.verify_script }}
+          TIMEOUT_MINUTES: ${{ steps.plan.outputs.timeout_minutes }}
+        run: |
+          set -uo pipefail
+          cd workload
+          test -f "$VERIFY_SCRIPT"
+          case "$VERIFY_SCRIPT" in
+            scripts/ci/*|.github/verification/*) ;;
+            *) echo "verification path escaped allowlist" >&2; exit 2 ;;
+          esac
+
+          mkdir -p ../relay-artifacts
+          set +e
+          if [[ "$VERIFY_SCRIPT" == *.py ]]; then
+            timeout "${TIMEOUT_MINUTES}m" python3 "$VERIFY_SCRIPT"               > >(tee ../relay-artifacts/stdout.log)               2> >(tee ../relay-artifacts/stderr.log >&2)
+          else
+            timeout "${TIMEOUT_MINUTES}m" bash "$VERIFY_SCRIPT"               > >(tee ../relay-artifacts/stdout.log)               2> >(tee ../relay-artifacts/stderr.log >&2)
+          fi
+          status=$?
+          set -e
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Write bounded CI receipt
+        if: always() && steps.bind.outputs.resolved_sha != ''
+        shell: bash
+        env:
+          JOB_ID: ${{ steps.plan.outputs.job_id }}
+          WORKLOAD_REPO: ${{ steps.plan.outputs.workload_repo }}
+          REQUESTED_REF: ${{ steps.plan.outputs.workload_ref }}
+          RESOLVED_SHA: ${{ steps.bind.outputs.resolved_sha }}
+          VERIFY_SCRIPT: ${{ steps.plan.outputs.verify_script }}
+          EXIT_CODE: ${{ steps.verify.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          mkdir -p relay-artifacts
+          python3 - <<'PY' > relay-artifacts/receipt.json
+          import json, os
+          print(json.dumps({
+              "schema": "glaciereq.private-ci-relay.receipt.v1",
+              "job_id": os.environ["JOB_ID"],
+              "workload_repo": os.environ["WORKLOAD_REPO"],
+              "requested_ref": os.environ["REQUESTED_REF"],
+              "resolved_sha": os.environ["RESOLVED_SHA"],
+              "verify_script": os.environ["VERIFY_SCRIPT"],
+              "exit_code": int(os.environ.get("EXIT_CODE") or -1),
+              "runner_repository": os.environ["GITHUB_REPOSITORY"],
+              "runner_sha": os.environ["GITHUB_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Record exact private source in step summary
+        if: always() && steps.bind.outputs.resolved_sha != ''
+        shell: bash
+        env:
+          WORKLOAD_REPO: ${{ steps.plan.outputs.workload_repo }}
+          REQUESTED_REF: ${{ steps.plan.outputs.workload_ref }}
+          RESOLVED_SHA: ${{ steps.bind.outputs.resolved_sha }}
+          VERIFY_SCRIPT: ${{ steps.plan.outputs.verify_script }}
+          EXIT_CODE: ${{ steps.verify.outputs.exit_code }}
+        run: |
+          {
+            echo "## GlacierEQ Private CI Relay"
+            echo
+            echo "- Repository: $WORKLOAD_REPO"
+            echo "- Requested ref: $REQUESTED_REF"
+            echo "- Resolved SHA: $RESOLVED_SHA"
+            echo "- Verification: $VERIFY_SCRIPT"
+            echo "- Exit code: $EXIT_CODE"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload verification receipt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: private-ci-relay-${{ steps.plan.outputs.job_id || github.run_id }}
+          path: relay-artifacts/**
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Enforce verification result
+        if: always()
+        shell: bash
+        env:
+          EXIT_CODE: ${{ steps.verify.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          test -n "$EXIT_CODE"
+          test "$EXIT_CODE" = "0"
