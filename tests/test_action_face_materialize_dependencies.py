@@ -85,10 +85,12 @@ def test_materializer_checks_out_each_dependency_then_revokes_its_token(
         [
             {
                 "repository": "GlacierEQ/AKOS",
+                "source_ref": "main",
                 "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
             },
             {
                 "repository": "GlacierEQ/apex-control-plane",
+                "source_ref": "main",
                 "source_sha": "b" * 40,
             },
         ],
@@ -117,6 +119,7 @@ def test_materializer_revokes_token_even_when_checkout_fails(tmp_path: Path) -> 
     with pytest.raises(RuntimeError, match="checkout failed"):
         deps.materialize(
             [{"repository": "GlacierEQ/AKOS", "source_sha": "a" * 40}],
+            "source_ref": "main",
             root=tmp_path,
             mint=lambda _repo: "ephemeral",
             checkout=checkout,
@@ -130,9 +133,13 @@ def test_materializer_revokes_token_even_when_checkout_fails(tmp_path: Path) -> 
     "value",
     [
         {"repository": "OtherOrg/AKOS", "source_sha": "a" * 40},
+        "source_ref": "main",
         {"repository": "GlacierEQ/../AKOS", "source_sha": "a" * 40},
+        "source_ref": "main",
         {"repository": "GlacierEQ/AKOS", "source_sha": "../main"},
+        "source_ref": "main",
         {"repository": "GlacierEQ/AKOS", "source_sha": "MAIN"},
+        "source_ref": "main",
     ],
 )
 def test_materializer_rejects_untrusted_dependency_specs(value: dict) -> None:
@@ -144,6 +151,7 @@ def test_materialized_dependencies_cannot_equal_primary_workload() -> None:
     with pytest.raises(ValueError, match="primary workload"):
         deps.validate_dependencies(
             [{"repository": "GlacierEQ/computer-user", "source_sha": "a" * 40}],
+            "source_ref": "main",
             source_repo="GlacierEQ/computer-user",
         )
 
@@ -177,6 +185,7 @@ def test_public_dependency_uses_no_token(tmp_path: Path) -> None:
 
     staged = deps.materialize(
         [{"repository": "GlacierEQ/pro-code", "source_sha": "a" * 40}],
+        "source_ref": "main",
         root=tmp_path,
         is_public=lambda _repo: True,
         mint=lambda _repo: (_ for _ in ()).throw(AssertionError("token must not be minted")),
@@ -193,6 +202,7 @@ def test_private_dependency_uses_ephemeral_token(tmp_path: Path) -> None:
 
     deps.materialize(
         [{"repository": "GlacierEQ/AKOS", "source_sha": "b" * 40}],
+        "source_ref": "main",
         root=tmp_path,
         is_public=lambda _repo: False,
         mint=lambda repo: calls.append(("mint", repo)) or "ephemeral",
