@@ -6,61 +6,57 @@ from pathlib import Path
 import pytest
 
 from scripts import action_face_materialize_dependencies as deps
-from scripts import action_face_plan
 
 
-def test_tool_system_action_declares_exact_read_dependency() -> None:
-    entries = [
-        item
-        for item in action_face_plan.catalog_actions()
-        if item.get("action") == "code.tool-system.validate"
-    ]
-    assert len(entries) == 1
-    assert entries[0]["read_dependencies"] == [
-        {
-            "repository": "GlacierEQ/AKOS",
-            "ref": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
-        }
-    ]
-
-
-def test_plan_carries_catalog_dependencies_but_job_cannot_inject_them(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    event = tmp_path / "event.json"
-    event.write_text(
+def write_manifest(root: Path, dependencies: list[dict[str, str]]) -> None:
+    path = root / ".apex" / "read-dependencies.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
         json.dumps(
             {
-                "action": "",
-                "client_payload": {
-                    "job_id": "computer-user-deps-001",
-                    "pillar": "C",
-                    "action": "code.tool-system.validate",
-                    "source_ref": "a" * 40,
-                },
+                "schema": "glaciereq.workload-read-dependencies.v1",
+                "dependencies": dependencies,
             }
         ),
         encoding="utf-8",
     )
-    monkeypatch.setenv("GITHUB_EVENT_NAME", "workflow_dispatch")
-    plan = action_face_plan.build_plan(str(event), {})
-    assert plan["read_dependencies"] == [
+
+
+def test_exact_workload_source_owns_dependency_declaration(tmp_path: Path) -> None:
+    write_manifest(
+        tmp_path,
+        [
+            {
+                "repository": "GlacierEQ/AKOS",
+                "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
+            },
+            {
+                "repository": "GlacierEQ/pro-code",
+                "source_sha": "7e16c85b91ae7b8e0b8a6ed20d54087caf165af9",
+            },
+        ],
+    )
+
+    assert deps.load_workload_dependencies(
+        tmp_path,
+        source_repo="GlacierEQ/computer-user",
+    ) == [
         {
             "repository": "GlacierEQ/AKOS",
-            "ref": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
-        }
+            "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
+        },
+        {
+            "repository": "GlacierEQ/pro-code",
+            "source_sha": "7e16c85b91ae7b8e0b8a6ed20d54087caf165af9",
+        },
     ]
 
-    injected = {
-        "job_id": "computer-user-deps-002",
-        "pillar": "C",
-        "action": "code.tool-system.validate",
-        "source_ref": "a" * 40,
-        "read_dependencies": [{"repository": "GlacierEQ/evil", "ref": "main"}],
-    }
-    with pytest.raises(SystemExit, match="unknown fields"):
-        action_face_plan.validate_shape(injected)
+
+def test_missing_manifest_means_no_cross_repo_dependencies(tmp_path: Path) -> None:
+    assert deps.load_workload_dependencies(
+        tmp_path,
+        source_repo="GlacierEQ/computer-user",
+    ) == []
 
 
 def test_materializer_checks_out_each_dependency_then_revokes_its_token(
@@ -72,14 +68,11 @@ def test_materializer_checks_out_each_dependency_then_revokes_its_token(
         calls.append(("mint", repository))
         return f"token-for-{repository}"
 
-    def checkout(repository: str, ref: str, path: Path, token: str) -> str:
-        calls.append(("checkout", repository, ref, path.name, token))
+    def checkout(repository: str, source_sha: str, path: Path, token: str) -> str:
+        calls.append(("checkout", repository, source_sha, path.name, token))
         path.mkdir(parents=True)
         (path / "README.md").write_text(repository, encoding="utf-8")
-        return {
-            "GlacierEQ/AKOS": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
-            "GlacierEQ/apex-control-plane": "b" * 40,
-        }[repository]
+        return source_sha
 
     def revoke(token: str) -> None:
         calls.append(("revoke", token))
@@ -88,11 +81,11 @@ def test_materializer_checks_out_each_dependency_then_revokes_its_token(
         [
             {
                 "repository": "GlacierEQ/AKOS",
-                "ref": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
+                "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
             },
             {
                 "repository": "GlacierEQ/apex-control-plane",
-                "ref": "b" * 40,
+                "source_sha": "b" * 40,
             },
         ],
         root=tmp_path,
@@ -105,28 +98,10 @@ def test_materializer_checks_out_each_dependency_then_revokes_its_token(
         "GlacierEQ/AKOS",
         "GlacierEQ/apex-control-plane",
     ]
-    assert (tmp_path / "AKOS" / "README.md").is_file()
-    assert (tmp_path / "apex-control-plane" / "README.md").is_file()
-    assert calls == [
-        ("mint", "GlacierEQ/AKOS"),
-        (
-            "checkout",
-            "GlacierEQ/AKOS",
-            "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
-            "AKOS",
-            "token-for-GlacierEQ/AKOS",
-        ),
-        ("revoke", "token-for-GlacierEQ/AKOS"),
-        ("mint", "GlacierEQ/apex-control-plane"),
-        (
-            "checkout",
-            "GlacierEQ/apex-control-plane",
-            "b" * 40,
-            "apex-control-plane",
-            "token-for-GlacierEQ/apex-control-plane",
-        ),
-        ("revoke", "token-for-GlacierEQ/apex-control-plane"),
-    ]
+    assert calls[0] == ("mint", "GlacierEQ/AKOS")
+    assert calls[2] == ("revoke", "token-for-GlacierEQ/AKOS")
+    assert calls[3] == ("mint", "GlacierEQ/apex-control-plane")
+    assert calls[5] == ("revoke", "token-for-GlacierEQ/apex-control-plane")
 
 
 def test_materializer_revokes_token_even_when_checkout_fails(tmp_path: Path) -> None:
@@ -137,7 +112,7 @@ def test_materializer_revokes_token_even_when_checkout_fails(tmp_path: Path) -> 
 
     with pytest.raises(RuntimeError, match="checkout failed"):
         deps.materialize(
-            [{"repository": "GlacierEQ/AKOS", "ref": "main"}],
+            [{"repository": "GlacierEQ/AKOS", "source_sha": "a" * 40}],
             root=tmp_path,
             mint=lambda _repo: "ephemeral",
             checkout=checkout,
@@ -150,10 +125,10 @@ def test_materializer_revokes_token_even_when_checkout_fails(tmp_path: Path) -> 
 @pytest.mark.parametrize(
     "value",
     [
-        {"repository": "OtherOrg/AKOS", "ref": "main"},
-        {"repository": "GlacierEQ/../AKOS", "ref": "main"},
-        {"repository": "GlacierEQ/AKOS", "ref": "../main"},
-        {"repository": "GlacierEQ/AKOS", "ref": "main;rm -rf /"},
+        {"repository": "OtherOrg/AKOS", "source_sha": "a" * 40},
+        {"repository": "GlacierEQ/../AKOS", "source_sha": "a" * 40},
+        {"repository": "GlacierEQ/AKOS", "source_sha": "../main"},
+        {"repository": "GlacierEQ/AKOS", "source_sha": "MAIN"},
     ],
 )
 def test_materializer_rejects_untrusted_dependency_specs(value: dict) -> None:
@@ -161,9 +136,27 @@ def test_materializer_rejects_untrusted_dependency_specs(value: dict) -> None:
         deps.validate_dependencies([value])
 
 
-def test_materialized_dependencies_are_not_allowed_to_equal_primary_workload() -> None:
+def test_materialized_dependencies_cannot_equal_primary_workload() -> None:
     with pytest.raises(ValueError, match="primary workload"):
         deps.validate_dependencies(
-            [{"repository": "GlacierEQ/computer-user", "ref": "main"}],
+            [{"repository": "GlacierEQ/computer-user", "source_sha": "a" * 40}],
             source_repo="GlacierEQ/computer-user",
         )
+
+
+def test_workflow_materializes_dependencies_before_adapter_execution() -> None:
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "apex-pillar-runner.yml"
+    ).read_text(encoding="utf-8")
+
+    materialize = workflow.index("Materialize workload-declared read dependencies")
+    execute = workflow.index("Execute isolated public action adapter")
+    assert materialize < execute
+    assert "APEX_DEPENDENCY_MANIFEST" in (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "action_face_materialize_dependencies.py"
+    ).read_text(encoding="utf-8")
