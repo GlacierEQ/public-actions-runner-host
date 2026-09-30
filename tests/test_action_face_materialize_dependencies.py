@@ -160,3 +160,44 @@ def test_workflow_materializes_dependencies_before_adapter_execution() -> None:
         / "scripts"
         / "action_face_materialize_dependencies.py"
     ).read_text(encoding="utf-8")
+
+
+
+def test_public_dependency_uses_no_token(tmp_path: Path) -> None:
+    calls: list[tuple] = []
+
+    def checkout(repository: str, source_sha: str, path: Path, token: str | None) -> str:
+        calls.append(("checkout", repository, token))
+        path.mkdir(parents=True)
+        return source_sha
+
+    staged = deps.materialize(
+        [{"repository": "GlacierEQ/pro-code", "source_sha": "a" * 40}],
+        root=tmp_path,
+        is_public=lambda _repo: True,
+        mint=lambda _repo: (_ for _ in ()).throw(AssertionError("token must not be minted")),
+        checkout=checkout,
+        revoke=lambda _token: (_ for _ in ()).throw(AssertionError("nothing to revoke")),
+    )
+
+    assert staged[0]["repository"] == "GlacierEQ/pro-code"
+    assert calls == [("checkout", "GlacierEQ/pro-code", None)]
+
+
+def test_private_dependency_uses_ephemeral_token(tmp_path: Path) -> None:
+    calls: list[tuple] = []
+
+    deps.materialize(
+        [{"repository": "GlacierEQ/AKOS", "source_sha": "b" * 40}],
+        root=tmp_path,
+        is_public=lambda _repo: False,
+        mint=lambda repo: calls.append(("mint", repo)) or "ephemeral",
+        checkout=lambda repo, sha, path, token: calls.append(("checkout", repo, token)) or sha,
+        revoke=lambda token: calls.append(("revoke", token)),
+    )
+
+    assert calls == [
+        ("mint", "GlacierEQ/AKOS"),
+        ("checkout", "GlacierEQ/AKOS", "ephemeral"),
+        ("revoke", "ephemeral"),
+    ]
