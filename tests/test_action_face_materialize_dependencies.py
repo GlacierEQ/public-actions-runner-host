@@ -9,12 +9,12 @@ from scripts import action_face_materialize_dependencies as deps
 
 
 def write_manifest(root: Path, dependencies: list[dict[str, str]]) -> None:
-    path = root / ".apex" / "read-dependencies.json"
+    path = root / "scripts" / "ci" / "private_dependencies.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
             {
-                "schema": "glaciereq.workload-read-dependencies.v1",
+                "schema": "glaciereq.ci-private-dependencies.v1",
                 "dependencies": dependencies,
             }
         ),
@@ -28,10 +28,12 @@ def test_exact_workload_source_owns_dependency_declaration(tmp_path: Path) -> No
         [
             {
                 "repository": "GlacierEQ/AKOS",
+                "source_ref": "main",
                 "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
             },
             {
                 "repository": "GlacierEQ/pro-code",
+                "source_ref": "main",
                 "source_sha": "7e16c85b91ae7b8e0b8a6ed20d54087caf165af9",
             },
         ],
@@ -43,10 +45,12 @@ def test_exact_workload_source_owns_dependency_declaration(tmp_path: Path) -> No
     ) == [
         {
             "repository": "GlacierEQ/AKOS",
+            "source_ref": "main",
             "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
         },
         {
             "repository": "GlacierEQ/pro-code",
+            "source_ref": "main",
             "source_sha": "7e16c85b91ae7b8e0b8a6ed20d54087caf165af9",
         },
     ]
