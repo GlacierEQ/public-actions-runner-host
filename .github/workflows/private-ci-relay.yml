@@ -172,36 +172,25 @@ jobs:
           }, indent=2, sort_keys=True))
           PY
 
-      - name: Publish exact-SHA verification status
+      - name: Record exact private source in step summary
         if: always() && steps.bind.outputs.resolved_sha != ''
         shell: bash
         env:
-          GH_TOKEN: ${{ steps.workload_token.outputs.token }}
           WORKLOAD_REPO: ${{ steps.plan.outputs.workload_repo }}
+          REQUESTED_REF: ${{ steps.plan.outputs.workload_ref }}
           RESOLVED_SHA: ${{ steps.bind.outputs.resolved_sha }}
+          VERIFY_SCRIPT: ${{ steps.plan.outputs.verify_script }}
           EXIT_CODE: ${{ steps.verify.outputs.exit_code }}
-          STATUS_CONTEXT: ${{ steps.plan.outputs.status_context }}
-          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          set -euo pipefail
-          if [[ "$EXIT_CODE" == "0" ]]; then
-            state=success
-            description="Public CI relay verification passed"
-          else
-            state=failure
-            description="Public CI relay verification failed"
-          fi
-          python3 - "$state" "$description" <<'PY' > /tmp/status.json
-          import json, os, sys
-          print(json.dumps({
-              "state": sys.argv[1],
-              "target_url": os.environ["RUN_URL"],
-              "description": sys.argv[2],
-              "context": os.environ["STATUS_CONTEXT"],
-          }))
-          PY
-          curl --fail-with-body --silent --show-error             -X POST             -H "Authorization: Bearer $GH_TOKEN"             -H "Accept: application/vnd.github+json"             -H "X-GitHub-Api-Version: 2022-11-28"             "https://api.github.com/repos/$WORKLOAD_REPO/statuses/$RESOLVED_SHA"             --data-binary @/tmp/status.json
-
+          {
+            echo "## GlacierEQ Private CI Relay"
+            echo
+            echo "- Repository: $WORKLOAD_REPO"
+            echo "- Requested ref: $REQUESTED_REF"
+            echo "- Resolved SHA: $RESOLVED_SHA"
+            echo "- Verification: $VERIFY_SCRIPT"
+            echo "- Exit code: $EXIT_CODE"
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload verification receipt
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
