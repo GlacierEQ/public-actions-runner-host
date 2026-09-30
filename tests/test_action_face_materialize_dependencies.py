@@ -8,6 +8,14 @@ import pytest
 from scripts import action_face_materialize_dependencies as deps
 
 
+def dep(repository: str, sha: str = "a" * 40) -> dict[str, str]:
+    return {
+        "repository": repository,
+        "source_ref": "main",
+        "source_sha": sha,
+    }
+
+
 def write_manifest(root: Path, dependencies: list[dict[str, str]]) -> None:
     path = root / "scripts" / "ci" / "private_dependencies.json"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -23,37 +31,22 @@ def write_manifest(root: Path, dependencies: list[dict[str, str]]) -> None:
 
 
 def test_exact_workload_source_owns_dependency_declaration(tmp_path: Path) -> None:
-    write_manifest(
-        tmp_path,
-        [
-            {
-                "repository": "GlacierEQ/AKOS",
-                "source_ref": "main",
-                "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
-            },
-            {
-                "repository": "GlacierEQ/pro-code",
-                "source_ref": "main",
-                "source_sha": "7e16c85b91ae7b8e0b8a6ed20d54087caf165af9",
-            },
-        ],
-    )
+    expected = [
+        dep(
+            "GlacierEQ/AKOS",
+            "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
+        ),
+        dep(
+            "GlacierEQ/pro-code",
+            "7e16c85b91ae7b8e0b8a6ed20d54087caf165af9",
+        ),
+    ]
+    write_manifest(tmp_path, expected)
 
     assert deps.load_workload_dependencies(
         tmp_path,
         source_repo="GlacierEQ/computer-user",
-    ) == [
-        {
-            "repository": "GlacierEQ/AKOS",
-            "source_ref": "main",
-            "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
-        },
-        {
-            "repository": "GlacierEQ/pro-code",
-            "source_ref": "main",
-            "source_sha": "7e16c85b91ae7b8e0b8a6ed20d54087caf165af9",
-        },
-    ]
+    ) == expected
 
 
 def test_missing_manifest_means_no_cross_repo_dependencies(tmp_path: Path) -> None:
@@ -72,10 +65,14 @@ def test_materializer_checks_out_each_dependency_then_revokes_its_token(
         calls.append(("mint", repository))
         return f"token-for-{repository}"
 
-    def checkout(repository: str, source_sha: str, path: Path, token: str) -> str:
+    def checkout(
+        repository: str,
+        source_sha: str,
+        path: Path,
+        token: str | None,
+    ) -> str:
         calls.append(("checkout", repository, source_sha, path.name, token))
         path.mkdir(parents=True)
-        (path / "README.md").write_text(repository, encoding="utf-8")
         return source_sha
 
     def revoke(token: str) -> None:
@@ -83,21 +80,17 @@ def test_materializer_checks_out_each_dependency_then_revokes_its_token(
 
     manifest = deps.materialize(
         [
-            {
-                "repository": "GlacierEQ/AKOS",
-                "source_ref": "main",
-                "source_sha": "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
-            },
-            {
-                "repository": "GlacierEQ/apex-control-plane",
-                "source_ref": "main",
-                "source_sha": "b" * 40,
-            },
+            dep(
+                "GlacierEQ/AKOS",
+                "6c91b098292c08c49a88f4e98ab9cb2f850013e1",
+            ),
+            dep("GlacierEQ/apex-control-plane", "b" * 40),
         ],
         root=tmp_path,
         mint=mint,
         checkout=checkout,
         revoke=revoke,
+        is_public=lambda _repo: False,
     )
 
     assert [item["repository"] for item in manifest] == [
@@ -118,12 +111,12 @@ def test_materializer_revokes_token_even_when_checkout_fails(tmp_path: Path) -> 
 
     with pytest.raises(RuntimeError, match="checkout failed"):
         deps.materialize(
-            [{"repository": "GlacierEQ/AKOS", "source_sha": "a" * 40}],
-            "source_ref": "main",
+            [dep("GlacierEQ/AKOS")],
             root=tmp_path,
             mint=lambda _repo: "ephemeral",
             checkout=checkout,
             revoke=revoked.append,
+            is_public=lambda _repo: False,
         )
 
     assert revoked == ["ephemeral"]
@@ -132,14 +125,18 @@ def test_materializer_revokes_token_even_when_checkout_fails(tmp_path: Path) -> 
 @pytest.mark.parametrize(
     "value",
     [
-        {"repository": "OtherOrg/AKOS", "source_sha": "a" * 40},
-        "source_ref": "main",
-        {"repository": "GlacierEQ/../AKOS", "source_sha": "a" * 40},
-        "source_ref": "main",
-        {"repository": "GlacierEQ/AKOS", "source_sha": "../main"},
-        "source_ref": "main",
-        {"repository": "GlacierEQ/AKOS", "source_sha": "MAIN"},
-        "source_ref": "main",
+        dep("OtherOrg/AKOS"),
+        dep("GlacierEQ/../AKOS"),
+        {
+            "repository": "GlacierEQ/AKOS",
+            "source_ref": "../main",
+            "source_sha": "a" * 40,
+        },
+        {
+            "repository": "GlacierEQ/AKOS",
+            "source_ref": "main",
+            "source_sha": "MAIN",
+        },
     ],
 )
 def test_materializer_rejects_untrusted_dependency_specs(value: dict) -> None:
@@ -150,8 +147,7 @@ def test_materializer_rejects_untrusted_dependency_specs(value: dict) -> None:
 def test_materialized_dependencies_cannot_equal_primary_workload() -> None:
     with pytest.raises(ValueError, match="primary workload"):
         deps.validate_dependencies(
-            [{"repository": "GlacierEQ/computer-user", "source_sha": "a" * 40}],
-            "source_ref": "main",
+            [dep("GlacierEQ/computer-user")],
             source_repo="GlacierEQ/computer-user",
         )
 
@@ -174,23 +170,30 @@ def test_workflow_materializes_dependencies_before_adapter_execution() -> None:
     ).read_text(encoding="utf-8")
 
 
-
 def test_public_dependency_uses_no_token(tmp_path: Path) -> None:
     calls: list[tuple] = []
 
-    def checkout(repository: str, source_sha: str, path: Path, token: str | None) -> str:
+    def checkout(
+        repository: str,
+        source_sha: str,
+        path: Path,
+        token: str | None,
+    ) -> str:
         calls.append(("checkout", repository, token))
         path.mkdir(parents=True)
         return source_sha
 
     staged = deps.materialize(
-        [{"repository": "GlacierEQ/pro-code", "source_sha": "a" * 40}],
-        "source_ref": "main",
+        [dep("GlacierEQ/pro-code")],
         root=tmp_path,
         is_public=lambda _repo: True,
-        mint=lambda _repo: (_ for _ in ()).throw(AssertionError("token must not be minted")),
+        mint=lambda _repo: (_ for _ in ()).throw(
+            AssertionError("token must not be minted")
+        ),
         checkout=checkout,
-        revoke=lambda _token: (_ for _ in ()).throw(AssertionError("nothing to revoke")),
+        revoke=lambda _token: (_ for _ in ()).throw(
+            AssertionError("nothing to revoke")
+        ),
     )
 
     assert staged[0]["repository"] == "GlacierEQ/pro-code"
@@ -201,12 +204,14 @@ def test_private_dependency_uses_ephemeral_token(tmp_path: Path) -> None:
     calls: list[tuple] = []
 
     deps.materialize(
-        [{"repository": "GlacierEQ/AKOS", "source_sha": "b" * 40}],
-        "source_ref": "main",
+        [dep("GlacierEQ/AKOS", "b" * 40)],
         root=tmp_path,
         is_public=lambda _repo: False,
         mint=lambda repo: calls.append(("mint", repo)) or "ephemeral",
-        checkout=lambda repo, sha, path, token: calls.append(("checkout", repo, token)) or sha,
+        checkout=lambda repo, sha, path, token: calls.append(
+            ("checkout", repo, token)
+        )
+        or sha,
         revoke=lambda token: calls.append(("revoke", token)),
     )
 
@@ -215,7 +220,6 @@ def test_private_dependency_uses_ephemeral_token(tmp_path: Path) -> None:
         ("checkout", "GlacierEQ/AKOS", "ephemeral"),
         ("revoke", "ephemeral"),
     ]
-
 
 
 def test_private_checkout_uses_git_askpass_without_token_in_command(
@@ -249,7 +253,8 @@ def test_private_checkout_uses_git_askpass_without_token_in_command(
     serialized = "\n".join(" ".join(command) for command, _env in calls)
     assert "super-secret-token" not in serialized
     fetch_env = next(
-        env for command, env in calls
+        env
+        for command, env in calls
         if command[:3] == ["git", "-C", str(target)] and "fetch" in command
     )
     assert fetch_env is not None
