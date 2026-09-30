@@ -1,0 +1,6 @@
+{
+  "job_id": "computer-user-ci-20260929-008",
+  "pillar": "C",
+  "action": "code.tool-system.validate",
+  "source_ref": "67033a444012ffdfd903dd459304647913d7b557"
+}
