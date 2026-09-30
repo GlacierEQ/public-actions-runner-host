@@ -109,3 +109,22 @@ def test_public_relay_workflow_uses_oidc_keymaster_for_private_checkout():
     assert "--permission contents=read" in workflow
     assert "token: ${{ steps.workload_token.outputs.token }}" in workflow
     assert "persist-credentials: false" in workflow
+
+
+
+def test_private_ci_relay_materializes_workload_declared_dependencies_before_verify():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "private-ci-relay.yml"
+    ).read_text(encoding="utf-8")
+
+    materialize = workflow.index("Materialize workload-declared read dependencies")
+    verify = workflow.index("Execute repository-owned verification")
+    assert materialize < verify
+    assert "scripts/action_face_materialize_dependencies.py" in workflow
+    assert "--workload-dir workload" in workflow
+    assert "--source-repo \"$APEX_WORKLOAD_REPOSITORY\"" in workflow
+    assert "--staging-root .apex-dependencies" in workflow
+    assert "--manifest-out .apex-dependencies/manifest.json" in workflow
