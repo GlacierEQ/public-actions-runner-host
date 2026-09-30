@@ -219,6 +219,34 @@ def resolve_action(action: str, pillar: str) -> dict | None:
     return entry
 
 
+def catalog_read_dependencies(entry: dict | None, source_repo: str) -> list[dict[str, str]]:
+    if not entry:
+        return []
+    raw = entry.get("read_dependencies", [])
+    if raw in (None, ""):
+        return []
+    if not isinstance(raw, list) or len(raw) > 8:
+        fail("catalog read_dependencies must be a list of at most 8 entries")
+
+    normalized: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for item in raw:
+        if not isinstance(item, dict) or set(item) != {"repository", "ref"}:
+            fail("catalog read dependency must contain only repository and ref")
+        repository = str(item.get("repository") or "")
+        ref = str(item.get("ref") or "")
+        if not base.REPO.fullmatch(repository) or not repository.startswith("GlacierEQ/"):
+            fail("catalog read dependency repository is invalid")
+        if repository == source_repo:
+            fail("catalog read dependency cannot equal the primary workload")
+        if repository in seen:
+            fail("catalog read dependency repositories must be unique")
+        validate_ref(ref)
+        seen.add(repository)
+        normalized.append({"repository": repository, "ref": ref})
+    return normalized
+
+
 def validate_ref(value: str) -> None:
     if not base.REF.fullmatch(value):
         fail("invalid source_ref")
@@ -321,6 +349,7 @@ def build_plan(event_path: str, manual: dict[str, str]) -> dict:
         "action": str(entry["action"]) if entry else "",
         "adapter": str(entry["adapter"]) if entry else "",
         "target_repo": str(entry["target_repo"]) if entry else "",
+        "read_dependencies": catalog_read_dependencies(entry, source_repo),
     }
     plan.update(execution_provenance())
     return plan
