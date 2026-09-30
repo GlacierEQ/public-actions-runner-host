@@ -92,3 +92,18 @@ def test_defaults_are_bounded(tmp_path: Path):
     assert normalized["node_version"] == "22"
     assert normalized["timeout_minutes"] == 20
     assert normalized["status_context"] == "APEX/public-ci-relay"
+
+
+
+def test_public_relay_workflow_has_credential_failover():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "private-ci-relay.yml"
+    ).read_text(encoding="utf-8")
+
+    assert "continue-on-error: true" in workflow
+    assert "secrets.APEX_PRIVATE_READ_TOKEN || secrets.GH_PAT" in workflow
+    assert "steps.workload_token.outputs.token || secrets.APEX_PRIVATE_READ_TOKEN || secrets.GH_PAT" in workflow
+    assert "steps.workload_token.outputs.token || secrets.GH_PAT" in workflow
