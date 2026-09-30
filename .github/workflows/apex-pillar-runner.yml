@@ -221,8 +221,21 @@ jobs:
             --plan .apex-plan.json \
             --workspace workload
 
+      - name: Materialize workload-declared read dependencies
+        if: steps.bind.outcome == 'success'
+        id: dependencies
+        continue-on-error: true
+        env:
+          APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.source_repo }}
+        run: |
+          python3 scripts/action_face_materialize_dependencies.py \
+            --workload-dir workload \
+            --source-repo "$APEX_WORKLOAD_REPOSITORY" \
+            --staging-root .apex-dependencies \
+            --manifest-out .apex-dependencies/manifest.json
+
       - name: Execute isolated public action adapter
-        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.checkout.outcome == 'success' && steps.bind.outcome == 'success'
+        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.checkout.outcome == 'success' && steps.bind.outcome == 'success' && steps.dependencies.outcome == 'success'
         id: runner
         continue-on-error: true
         env:
@@ -359,6 +372,7 @@ jobs:
            steps.workload_token.outcome == 'failure' ||
            steps.checkout.outcome == 'failure' ||
            steps.bind.outcome == 'failure' ||
+           steps.dependencies.outcome == 'failure' ||
            steps.runner.outcome != 'success' ||
            (steps.plan.outputs.action == 'library-links-public-publish' && steps.library_publish.outcome != 'success') ||
            steps.postrun_checkout.outcome == 'failure' ||
