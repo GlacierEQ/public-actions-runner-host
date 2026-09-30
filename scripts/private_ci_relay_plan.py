@@ -102,6 +102,7 @@ def normalize(payload: object) -> dict[str, object]:
         "schema": SCHEMA,
         "job_id": job_id,
         "workload_repo": workload_repo,
+        "workload_repo_name": workload_repo.split("/", 1)[1],
         "workload_ref": workload_ref,
         "verify_script": verify_script,
         "language": language,
