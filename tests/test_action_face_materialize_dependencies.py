@@ -201,3 +201,45 @@ def test_private_dependency_uses_ephemeral_token(tmp_path: Path) -> None:
         ("checkout", "GlacierEQ/AKOS", "ephemeral"),
         ("revoke", "ephemeral"),
     ]
+
+
+
+def test_private_checkout_uses_git_askpass_without_token_in_command(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[tuple[list[str], dict[str, str] | None]] = []
+
+    def fake_run(
+        command: list[str],
+        *,
+        cwd: Path | None = None,
+        env: dict[str, str] | None = None,
+    ) -> str:
+        calls.append((command, env))
+        if command[-2:] == ["rev-parse", "HEAD"]:
+            return "a" * 40
+        if "status" in command:
+            return ""
+        return ""
+
+    monkeypatch.setattr(deps, "_run", fake_run)
+    target = tmp_path / "AKOS"
+    deps._checkout_with_token(
+        "GlacierEQ/AKOS",
+        "a" * 40,
+        target,
+        "super-secret-token",
+    )
+
+    serialized = "\n".join(" ".join(command) for command, _env in calls)
+    assert "super-secret-token" not in serialized
+    fetch_env = next(
+        env for command, env in calls
+        if command[:3] == ["git", "-C", str(target)] and "fetch" in command
+    )
+    assert fetch_env is not None
+    assert fetch_env["GIT_TERMINAL_PROMPT"] == "0"
+    assert fetch_env["GIT_ASKPASS"]
+    assert fetch_env["APEX_GIT_USERNAME"] == "x-access-token"
+    assert fetch_env["APEX_GIT_PASSWORD"] == "super-secret-token"
