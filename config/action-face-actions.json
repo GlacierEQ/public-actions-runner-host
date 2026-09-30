@@ -165,7 +165,13 @@
       "legacy_event": "tool-system-validate",
       "adapter": "tool-system-validate",
       "gate": "standard",
-      "approval_required": false
+      "approval_required": false,
+      "read_dependencies": [
+        {
+          "repository": "GlacierEQ/AKOS",
+          "ref": "6c91b098292c08c49a88f4e98ab9cb2f850013e1"
+        }
+      ]
     },
     {
       "pillar": "C",
