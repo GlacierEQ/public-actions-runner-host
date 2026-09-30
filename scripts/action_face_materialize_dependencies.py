@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Materialize exact read-only private dependencies for one trusted workload.
 
-The exact workload source owns .apex/read-dependencies.json. The public runner
-satisfies that declaration generically with short-lived one-repository tokens,
+The exact workload source owns scripts/ci/private_dependencies.json. The public
+runner satisfies that existing declaration with short-lived one-repository tokens,
 then exposes only local paths through APEX_DEPENDENCY_MANIFEST.
 """
 from __future__ import annotations
@@ -21,8 +21,8 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-SOURCE_MANIFEST = ".apex/read-dependencies.json"
-SOURCE_SCHEMA = "glaciereq.workload-read-dependencies.v1"
+SOURCE_MANIFEST = "scripts/ci/private_dependencies.json"
+SOURCE_SCHEMA = "glaciereq.ci-private-dependencies.v1"
 STAGED_SCHEMA = "glaciereq.ci-staged-dependencies.v1"
 REPO_RE = re.compile(r"^GlacierEQ/[A-Za-z0-9_.-]+$")
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
@@ -46,9 +46,16 @@ def validate_dependencies(
     output: list[dict[str, str]] = []
     seen: set[str] = set()
     for item in raw:
-        if not isinstance(item, dict) or set(item) != {"repository", "source_sha"}:
-            _fail("each dependency must contain only repository and source_sha")
+        if not isinstance(item, dict) or set(item) != {
+            "repository",
+            "source_ref",
+            "source_sha",
+        }:
+            _fail(
+                "each dependency must contain only repository, source_ref, and source_sha"
+            )
         repository = str(item.get("repository") or "").strip()
+        source_ref = str(item.get("source_ref") or "").strip()
         source_sha = str(item.get("source_sha") or "").strip().lower()
         if not REPO_RE.fullmatch(repository):
             _fail("dependency repository must be an exact GlacierEQ repository")
@@ -56,10 +63,18 @@ def validate_dependencies(
             _fail("dependency cannot equal the primary workload")
         if repository in seen:
             _fail("dependency repositories must be unique")
+        if not source_ref or len(source_ref) > 200 or ".." in source_ref:
+            _fail("dependency source_ref is invalid")
         if not SHA_RE.fullmatch(source_sha):
             _fail("dependency source_sha must be an exact lowercase commit SHA")
         seen.add(repository)
-        output.append({"repository": repository, "source_sha": source_sha})
+        output.append(
+            {
+                "repository": repository,
+                "source_ref": source_ref,
+                "source_sha": source_sha,
+            }
+        )
     return output
 
 
@@ -252,6 +267,7 @@ def materialize(
 
     for item in validated:
         repository = item["repository"]
+        source_ref = item["source_ref"]
         source_sha = item["source_sha"]
         token: str | None = None
         try:
@@ -262,6 +278,7 @@ def materialize(
             staged.append(
                 {
                     "repository": repository,
+                    "source_ref": source_ref,
                     "source_sha": observed,
                     "path": str(path.resolve()),
                 }
