@@ -152,10 +152,16 @@ jobs:
           retention-days: 14
 
       - name: Enforce result after status publication
-        if: steps.config.outputs.configured == 'true'
+        if: always()
         shell: bash
         env:
+          CONFIGURED: ${{ steps.config.outputs.configured }}
           EXIT_CODE: ${{ steps.enforce.outputs.exit_code }}
         run: |
           set -euo pipefail
+          if [[ "$CONFIGURED" != "true" ]]; then
+            echo "::error title=Private estate not verified::GitHub App configuration is missing or not proven; private read and verification steps were skipped." >&2
+            exit 2
+          fi
+          test -n "$EXIT_CODE"
           test "$EXIT_CODE" = "0"
