@@ -6,10 +6,12 @@ on:
     branches: [main]
     paths:
       - jobs/*.json
+      - '!jobs/encrypted-courier-*.json'
   push:
     branches: [main]
     paths:
       - jobs/*.json
+      - '!jobs/encrypted-courier-*.json'
   repository_dispatch:
     types:
       - case-evidence
