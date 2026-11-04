@@ -1,0 +1,11 @@
+{
+  "schema": "glaciereq.private-ci-relay.v1",
+  "job_id": "glaciereq-memory-gateway-7b21faa-20261104",
+  "workload_repo": "GlacierEQ/glaciereq-memory-gateway",
+  "workload_ref": "7b21faaacc7deb8a02d3819b432ff88e1552e045",
+  "verify_script": "scripts/ci/private_memory_gateway_verify.sh",
+  "language": "python",
+  "python_version": "3.11",
+  "timeout_minutes": 20,
+  "status_context": "GlacierEQ/memory-gateway-public-relay"
+}
