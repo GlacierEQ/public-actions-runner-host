@@ -169,6 +169,18 @@ jobs:
             exit 65
           fi
 
+      - name: Preserve verification outcome for artifact upload
+        if: always() && inputs.upload_artifacts
+        shell: bash
+        env:
+          VERIFICATION_JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 .verification-artifacts
+          printf 'job_status=%s\nrepository=%s\ncommit=%s\nrun_id=%s\n' \
+            "$VERIFICATION_JOB_STATUS" "$GITHUB_REPOSITORY" "$GITHUB_SHA" "$GITHUB_RUN_ID" \
+            > .verification-artifacts/verification-outcome.txt
+
       - name: Upload bounded verification artifacts
         if: always() && inputs.upload_artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
