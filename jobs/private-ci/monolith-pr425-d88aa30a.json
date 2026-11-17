@@ -1,0 +1,11 @@
+{
+  "schema": "glaciereq.private-ci-relay.v1",
+  "job_id": "monolith-pr425-d88aa30a",
+  "workload_repo": "GlacierEQ/monolith",
+  "workload_ref": "d88aa30a76ffbc15f399f321a2c9d9d8bd7db6dd",
+  "verify_script": "scripts/ci/verify_memory_aspen.sh",
+  "language": "python",
+  "python_version": "3.11",
+  "timeout_minutes": 12,
+  "status_context": "GlacierEQ/monolith-pr425-relay"
+}
