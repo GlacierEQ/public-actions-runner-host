@@ -1,11 +1,11 @@
 {
   "schema": "glaciereq.private-ci-relay.v1",
-  "job_id": "monolith-pr425-d88aa30a",
+  "job_id": "monolith-pr425-cbc0fd0b",
   "workload_repo": "GlacierEQ/monolith",
-  "workload_ref": "d88aa30a76ffbc15f399f321a2c9d9d8bd7db6dd",
-  "verify_script": "scripts/ci/verify_memory_aspen.sh",
+  "workload_ref": "cbc0fd0beffd7e377245030bb4a4e1ef44fc5adc",
+  "verify_script": "scripts/ci/verify_pr_gates.sh",
   "language": "python",
   "python_version": "3.11",
-  "timeout_minutes": 12,
-  "status_context": "GlacierEQ/monolith-pr425-relay"
+  "timeout_minutes": 20,
+  "status_context": "GlacierEQ/monolith-pr-relay"
 }
