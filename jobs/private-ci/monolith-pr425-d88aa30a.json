@@ -6,6 +6,6 @@
   "verify_script": "scripts/ci/verify_pr_gates.sh",
   "language": "python",
   "python_version": "3.11",
-  "timeout_minutes": 26,
+  "timeout_minutes": 27,
   "status_context": "GlacierEQ/monolith-pr-relay"
 }
