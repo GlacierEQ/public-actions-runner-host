@@ -1,8 +1,8 @@
 {
   "schema": "glaciereq.private-ci-relay.v1",
-  "job_id": "monolith-pr425-cbc0fd0b",
+  "job_id": "monolith-pr425-038b88b3",
   "workload_repo": "GlacierEQ/monolith",
-  "workload_ref": "cbc0fd0beffd7e377245030bb4a4e1ef44fc5adc",
+  "workload_ref": "038b88b3bba120a88b1633212b703e8ee2800e2e",
   "verify_script": "scripts/ci/verify_pr_gates.sh",
   "language": "python",
   "python_version": "3.11",
