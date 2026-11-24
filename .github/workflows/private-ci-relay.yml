@@ -136,6 +136,8 @@ jobs:
         env:
           VERIFY_SCRIPT: ${{ steps.plan.outputs.verify_script }}
           TIMEOUT_MINUTES: ${{ steps.plan.outputs.timeout_minutes }}
+          # Private source-integrity checks must bind to the workload commit, not the public host commit.
+          GITHUB_SHA: ${{ steps.bind.outputs.resolved_sha }}
         run: |
           set -uo pipefail
           cd workload
