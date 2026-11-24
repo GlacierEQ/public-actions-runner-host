@@ -157,3 +157,16 @@ def test_private_consumers_route_to_public_job_execution_not_billable_reuse():
     assert policy["preferred_entrypoints"] == [
         "GlacierEQ/public-actions-runner-host/.github/workflows/private-ci-relay.yml"
     ]
+
+
+def test_scheduled_private_main_verification_stays_in_public_runner():
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github/workflows/private-ci-relay.yml").read_text(encoding="utf-8")
+    scheduled = root / "jobs/private-ci/apex-boot-core-main.json"
+    job = json.loads(scheduled.read_text(encoding="utf-8"))
+    assert 'cron: "17 * * * *"' in workflow
+    assert "github.event_name == 'schedule'" in workflow
+    assert "jobs/private-ci/apex-boot-core-main.json" in workflow
+    assert job["workload_repo"] == "GlacierEQ/apex-boot-core"
+    assert job["workload_ref"] == "main"
+    assert job["verify_script"] == ".github/verification/apex_semantics.sh"
