@@ -4,18 +4,32 @@
   "visibility": "public",
   "execution_mode": "github-hosted",
   "runner_policy": {
-    "allowed_runner_prefixes": ["ubuntu-", "windows-", "macos-"],
+    "allowed_runner_prefixes": [
+      "ubuntu-",
+      "windows-",
+      "macos-"
+    ],
     "preferred_runner": "ubuntu-latest",
     "self_hosted_allowed": false,
     "private_runner_references_allowed": false
   },
   "consumer_policy": {
     "preferred_entrypoints": [
+      "GlacierEQ/public-actions-runner-host/.github/workflows/private-ci-relay.yml"
+    ],
+    "private_control_plane_workflows_allowed": false,
+    "private_repository_route": {
+      "mode": "public_repo_job_envelope_push",
+      "job_path_prefix": "jobs/private-ci/",
+      "runner_repository": "GlacierEQ/public-actions-runner-host",
+      "workflow": "private-ci-relay.yml"
+    },
+    "reusable_workflows_billed_to_private_caller": true,
+    "public_caller_reusable_entrypoints": [
       "GlacierEQ/public-actions-runner-host/.github/workflows/reusable-ci.yml@main",
       "GlacierEQ/public-actions-runner-host/.github/workflows/reusable-quick-ci.yml@main",
       "GlacierEQ/public-actions-runner-host/.github/workflows/reusable-shared.yml@main"
-    ],
-    "private_control_plane_workflows_allowed": false
+    ]
   },
   "purpose": "Repository-based public execution boundary. This is not an organization self-hosted runner group."
 }
