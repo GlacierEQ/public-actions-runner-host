@@ -1,0 +1,11 @@
+{
+  "schema": "glaciereq.private-ci-relay.v1",
+  "job_id": "apex-boot-core-4fb97b2-20261124",
+  "workload_repo": "GlacierEQ/apex-boot-core",
+  "workload_ref": "4fb97b2029c24c9bc33338d29e04a16674a69145",
+  "verify_script": ".github/verification/apex_semantics.sh",
+  "language": "python",
+  "python_version": "3.12",
+  "timeout_minutes": 20,
+  "status_context": "GlacierEQ/apex-boot-public-relay"
+}
