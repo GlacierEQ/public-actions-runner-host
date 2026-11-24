@@ -170,3 +170,14 @@ def test_scheduled_private_main_verification_stays_in_public_runner():
     assert job["workload_repo"] == "GlacierEQ/apex-boot-core"
     assert job["workload_ref"] == "main"
     assert job["verify_script"] == ".github/verification/apex_semantics.sh"
+
+
+def test_private_verifier_receives_bound_workload_sha_not_public_host_sha():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github/workflows/private-ci-relay.yml"
+    ).read_text(encoding="utf-8")
+    verify = workflow.split("- name: Execute repository-owned verification", 1)[1]
+    verify = verify.split("- name: Write bounded CI receipt", 1)[0]
+    assert "GITHUB_SHA: ${{ steps.bind.outputs.resolved_sha }}" in verify
+    assert "resolved=\"$(git -C workload rev-parse HEAD)\"" in workflow
