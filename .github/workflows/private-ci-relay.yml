@@ -142,12 +142,12 @@ jobs:
             *) echo "verification path escaped allowlist" >&2; exit 2 ;;
           esac
 
-          mkdir -p ../relay-artifacts
+          mkdir -p ../relay-private-logs
           set +e
           if [[ "$VERIFY_SCRIPT" == *.py ]]; then
-            timeout "${TIMEOUT_MINUTES}m" python3 "$VERIFY_SCRIPT"               > >(tee ../relay-artifacts/stdout.log)               2> >(tee ../relay-artifacts/stderr.log >&2)
+            timeout "${TIMEOUT_MINUTES}m" python3 "$VERIFY_SCRIPT"               > ../relay-private-logs/stdout.log 2> ../relay-private-logs/stderr.log
           else
-            timeout "${TIMEOUT_MINUTES}m" bash "$VERIFY_SCRIPT"               > >(tee ../relay-artifacts/stdout.log)               2> >(tee ../relay-artifacts/stderr.log >&2)
+            timeout "${TIMEOUT_MINUTES}m" bash "$VERIFY_SCRIPT"               > ../relay-private-logs/stdout.log 2> ../relay-private-logs/stderr.log
           fi
           status=$?
           set -e
@@ -208,7 +208,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: private-ci-relay-${{ steps.plan.outputs.job_id || github.run_id }}
-          path: relay-artifacts/**
+          path: relay-artifacts/receipt.json
           if-no-files-found: warn
           retention-days: 14
 
