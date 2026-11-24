@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "jobs/private-ci/*.json"
+  schedule:
+    # Public-repository runner checks the private main branch without private Actions minutes.
+    - cron: "17 * * * *"
   workflow_dispatch:
     inputs:
       job_file:
@@ -35,7 +38,7 @@ jobs:
         id: job_file
         shell: bash
         env:
-          DISPATCH_JOB_FILE: ${{ inputs.job_file || '' }}
+          DISPATCH_JOB_FILE: ${{ inputs.job_file || (github.event_name == 'schedule' && 'jobs/private-ci/apex-boot-core-main.json') || '' }}
         run: |
           set -euo pipefail
           if [[ -n "$DISPATCH_JOB_FILE" ]]; then
