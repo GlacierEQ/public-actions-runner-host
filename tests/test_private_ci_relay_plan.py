@@ -128,3 +128,32 @@ def test_private_ci_relay_materializes_workload_declared_dependencies_before_ver
     assert "--source-repo \"$APEX_WORKLOAD_REPOSITORY\"" in workflow
     assert "--staging-root .apex-dependencies" in workflow
     assert "--manifest-out .apex-dependencies/manifest.json" in workflow
+
+
+def test_public_relay_never_streams_or_uploads_private_verifier_output():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "private-ci-relay.yml"
+    ).read_text(encoding="utf-8")
+    assert "tee ../relay-artifacts/" not in workflow
+    assert "relay-private-logs/stdout.log" in workflow
+    assert "relay-private-logs/stderr.log" in workflow
+    assert "path: relay-artifacts/receipt.json" in workflow
+    assert "path: relay-artifacts/**" not in workflow
+
+
+def test_private_consumers_route_to_public_job_execution_not_billable_reuse():
+    config_path = Path(__file__).resolve().parents[1] / "config" / "public-runner-team.json"
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    policy = config["consumer_policy"]
+    route = policy["private_repository_route"]
+    assert policy["reusable_workflows_billed_to_private_caller"] is True
+    assert route["mode"] == "public_repo_job_envelope_push"
+    assert route["job_path_prefix"] == "jobs/private-ci/"
+    assert route["runner_repository"] == "GlacierEQ/public-actions-runner-host"
+    assert route["workflow"] == "private-ci-relay.yml"
+    assert policy["preferred_entrypoints"] == [
+        "GlacierEQ/public-actions-runner-host/.github/workflows/private-ci-relay.yml"
+    ]
