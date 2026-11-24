@@ -1,0 +1,11 @@
+{
+  "schema": "glaciereq.private-ci-relay.v1",
+  "job_id": "computer-user-e93dcc1-20261124",
+  "workload_repo": "GlacierEQ/computer-user",
+  "workload_ref": "e93dcc1e4a99bda53ba65a7db7993329c9912e0a",
+  "verify_script": "scripts/ci/full_verify.sh",
+  "language": "python",
+  "python_version": "3.12",
+  "timeout_minutes": 30,
+  "status_context": "GlacierEQ/computer-user-public-relay"
+}
