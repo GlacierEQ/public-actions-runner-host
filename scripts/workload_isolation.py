@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+try:
+    import fcntl
+except ImportError:  # pragma: no cover
+    fcntl = None  # type: ignore[assignment]
 import hashlib
 import json
 import os
@@ -80,7 +84,13 @@ class CheckoutHandle:
 
     @property
     def proc_path(self) -> Path:
-        return Path(f"/proc/self/fd/{self.fd}")
+        proc_fd = Path(f"/proc/self/fd/{self.fd}")
+        if proc_fd.exists():
+            return proc_fd
+        if fcntl is not None and hasattr(fcntl, "F_GETPATH"):
+            raw = fcntl.fcntl(self.fd, fcntl.F_GETPATH, bytes(1024))
+            return Path(os.fsdecode(raw.split(b"\x00", 1)[0]))
+        return proc_fd
 
     @property
     def pass_fds(self) -> tuple[int, ...]:

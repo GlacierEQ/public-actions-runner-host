@@ -17,7 +17,7 @@ jobs:
         with:
           ref: synthesize/monolith-full-legal-gate-20260808
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Reconcile fixed-command regression with seven-step gate
         shell: python

@@ -58,9 +58,21 @@ def test_no_workflow_contains_retired_fail_open_executor() -> None:
 
 
 def test_supported_ingress_separates_source_and_receipt_authority() -> None:
+    import yaml
+
     text = CANONICAL.read_text(encoding="utf-8")
-    assert "permissions:\n  id-token: write\n  contents: read" in text
+    parsed = yaml.safe_load(text)
     assert "issues: write" not in text
+    assert set(parsed["jobs"]) == {"prepare", "execute", "publish"}
+    assert parsed["jobs"]["prepare"]["permissions"] == {
+        "id-token": "write",
+        "contents": "read",
+    }
+    assert parsed["jobs"]["execute"]["permissions"] == {"contents": "read"}
+    assert parsed["jobs"]["publish"]["permissions"] == {
+        "id-token": "write",
+        "contents": "read",
+    }
 
     control = workflow_step_block(text, "Mint one-repository private control token")
     assert "--repository GlacierEQ/llm-runner-teams" in control
@@ -71,24 +83,9 @@ def test_supported_ingress_separates_source_and_receipt_authority() -> None:
     workload = workflow_step_block(text, "Mint one-repository private workload token")
     assert "APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.source_repo }}" in workload
     assert '--repository "$APEX_WORKLOAD_REPOSITORY"' in workload
-    assert 'permission="contents=read"' in workload
-    assert 'operation="public-action-workload"' in workload
-
-    privileged = re.findall(
-        r'(?:if|elif) \[ "\$APEX_ACTION" = "([^"]+)" \]; then\n'
-        r'\s+permission="contents=write"\n'
-        r'\s+operation="([^"]+)"',
-        workload,
-    )
-    assert privileged == [
-        ("docket-sync", "jefs-docket-acquisition"),
-        ("library-links-public-publish", "library-registry-rebuild"),
-    ]
-    assert workload.count('permission="contents=write"') == len(privileged)
-    assert workload.count('operation="jefs-docket-acquisition"') == 1
-    assert workload.count('operation="library-registry-rebuild"') == 1
-    assert '--permission "$permission"' in workload
-    assert '--operation "$operation"' in workload
+    assert "--permission contents=read" in workload
+    assert "--operation public-action-workload" in workload
+    assert "contents=write" not in workload
     assert '--repository "${{ steps.plan.outputs.source_repo }}"' not in workload
 
     checkout = workflow_step_block(
@@ -120,16 +117,19 @@ def test_keymaster_tokens_are_explicitly_revoked_before_release_completion() -> 
         assert f"GITHUB_INSTALLATION_TOKEN: ${{{{ {source_step} }}}}" in block
         assert "scripts/revoke_github_installation_token.py" in block
 
-    enforce = workflow_step_block(text, "Enforce governed release result")
-    assert "steps.workload_token_revoke.outcome != 'success'" in enforce
-    assert "steps.control_token_revoke.outcome != 'success'" in enforce
+    enforce_prepare = workflow_step_block(text, "Enforce prepare stage invariants")
+    assert "steps.workload_token_revoke.outcome != 'success'" in enforce_prepare
+    assert "steps.control_token_revoke.outcome != 'success'" in enforce_prepare
+
+    enforce_publish = workflow_step_block(text, "Enforce governed release result")
+    assert "steps.publish_control_token_revoke.outcome != 'success'" in enforce_publish
 
 
 def test_workload_secret_and_postrun_boundaries_are_explicit() -> None:
     text = CANONICAL.read_text(encoding="utf-8")
-    assert "steps.plan.outputs.action == 'akos-echo-policy-ci'" in text
+    assert "needs.prepare.outputs.action == 'akos-echo-policy-ci'" in text
     assert "AKOS_POLICY_SHA256: ${{ secrets.AKOS_POLICY_SHA256 }}" not in text
     assert "Verify post-run control, workload, and result integrity" in text
-    assert "--workload-root workload" in text
+    assert "--workload-attestation" in text
     assert "steps.postrun_guard.outcome == 'failure'" in text
     assert "steps.synthesize.outputs.synthesized == 'true'" in text

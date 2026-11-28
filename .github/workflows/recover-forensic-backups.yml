@@ -36,14 +36,17 @@ jobs:
       - name: Compile recovery engine
         run: python3 -m py_compile scripts/recover_deleted_glaciereq_repos.py
       - name: Install pytest
-        run: python3 -m pip install --disable-pip-version-check pytest
+        run: |
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: pytest==8.3.5
       - name: Prove identity-safe recovery semantics
         run: python3 -m pytest -q tests/test_repository_recovery.py
 
   recover-forensics:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: verify-recovery-engine
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment: repository-recovery
     env:
       GH_PAT: ${{ secrets.GH_PAT }}
       GITHUB_TOKEN: ${{ github.token }}

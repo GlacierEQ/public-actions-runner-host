@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -255,11 +256,12 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     source_sha = commit_workspace(workspace)
     result_path = tmp_path / "result.json"
     monkeypatch.setenv("APEX_RESOLVED_SOURCE_SHA", source_sha)
+    true_bin = shutil.which("true") or "/bin/true"
     real_commands = monolith_atlas_validate.commands
     monkeypatch.setattr(
         monolith_atlas_validate,
         "commands",
-        lambda *_: [["/bin/true"]],
+        lambda *_: [[true_bin]],
     )
 
     value = monolith_atlas_validate.run(
@@ -283,7 +285,7 @@ def test_code_runner_reproduces_both_failed_monolith_gates(
     ]
     assert result["steps"] == [
         {
-            "command": ["/bin/true"],
+            "command": [true_bin],
             "exit_code": 0,
             "output_sha256": (
                 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"

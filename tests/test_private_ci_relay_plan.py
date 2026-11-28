@@ -96,15 +96,27 @@ def test_defaults_are_bounded(tmp_path: Path):
 
 
 def test_public_relay_workflow_uses_oidc_keymaster_for_private_checkout():
-    workflow = (
+    import yaml
+
+    workflow_path = (
         Path(__file__).resolve().parents[1]
         / ".github"
         / "workflows"
         / "private-ci-relay.yml"
-    ).read_text(encoding="utf-8")
+    )
+    workflow = workflow_path.read_text(encoding="utf-8")
+    parsed = yaml.safe_load(workflow)
+    jobs = parsed["jobs"]
+    assert set(jobs) == {"stage-private-source", "verify-private-source"}
 
-    assert "id-token: write" in workflow
-    assert "scripts/keymaster_oidc_token.py" in workflow
+    stage = jobs["stage-private-source"]
+    verify = jobs["verify-private-source"]
+    assert stage["permissions"] == {"contents": "read", "id-token": "write"}
+    assert verify["permissions"] == {"contents": "read"}
+    assert "id-token" not in yaml.dump(verify)
+
+    assert "scripts/keymaster_oidc_token.py" in yaml.dump(stage)
+    assert "scripts/keymaster_oidc_token.py" not in yaml.dump(verify)
     assert "--operation private-ci-relay" in workflow
     assert "--permission contents=read" in workflow
     assert "token: ${{ steps.workload_token.outputs.token }}" in workflow
@@ -179,5 +191,5 @@ def test_private_verifier_receives_bound_workload_sha_not_public_host_sha():
     ).read_text(encoding="utf-8")
     verify = workflow.split("- name: Execute repository-owned verification", 1)[1]
     verify = verify.split("- name: Write bounded CI receipt", 1)[0]
-    assert "GITHUB_SHA: ${{ steps.bind.outputs.resolved_sha }}" in verify
+    assert "GITHUB_SHA: ${{ needs.stage-private-source.outputs.resolved_sha }}" in verify
     assert "resolved=\"$(git -C workload rev-parse HEAD)\"" in workflow

@@ -12,14 +12,17 @@ permissions:
   contents: read
 
 jobs:
-  verify-private-mega-pdf:
+  probe-private-mega-pdf:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
     env:
       SOURCE_REPO: GlacierEQ/MEGA-PDF
       SOURCE_REF: ${{ inputs.source_ref }}
-      RESULT_BRANCH: automation/mega-pdf-function-genome-results
       PYTHONPATH: .
+    outputs:
+      source_sha: ${{ steps.bind.outputs.source_sha }}
 
     steps:
       - name: Checkout public action face
@@ -57,7 +60,7 @@ jobs:
           private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
           owner: GlacierEQ
           repositories: GlacierEQ/MEGA-PDF
-          permission-contents: write
+          permission-contents: read
 
       - name: Checkout selected private MEGA-PDF source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -67,16 +70,24 @@ jobs:
           token: ${{ steps.mega-pdf-token.outputs.token }}
           path: workload
           fetch-depth: 1
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Bind exact private source commit
         id: bind
         shell: bash
         run: |
           set -euo pipefail
+          ! grep -qiE 'extraheader|authorization|x-access-token|ghs_' workload/.git/config
+          rm -rf workload/.git/hooks
           source_sha="$(git -C workload rev-parse HEAD)"
           test -n "$source_sha"
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Revoke read-only MEGA-PDF token before workload execution
+        if: always() && steps.mega-pdf-token.outputs.token != ''
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.mega-pdf-token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
@@ -86,7 +97,8 @@ jobs:
 
       - name: Install focused verification dependency
         working-directory: workload
-        run: python -m pip install --disable-pip-version-check pytest==8.3.5
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: pytest==8.3.5
 
       - name: Compile governed control plane
         working-directory: workload
@@ -102,134 +114,123 @@ jobs:
       - name: Ingest real private monorepo Function Genome
         working-directory: workload
         run: >-
+          mkdir -p ../candidate-mega-pdf/artifacts &&
           python -m mega_pdf_control_plane.function_genome
           --root .
-          --output artifacts/function-genome.json
-          --receipts artifacts/probe-receipts.jsonl
-          --summary artifacts/function-genome-summary.md
+          --output ../candidate-mega-pdf/artifacts/function-genome.json
+          --receipts ../candidate-mega-pdf/artifacts/probe-receipts.jsonl
+          --summary ../candidate-mega-pdf/artifacts/function-genome-summary.md
 
-      - name: Verify artifacts, chain, and promotion invariants
-        working-directory: workload
-        shell: bash
-        run: |
-          python - <<'PY'
-          from dataclasses import fields
-          import json
-          from pathlib import Path
-          from mega_pdf_control_plane import ProbeReceipt
-
-          genome_path = Path("artifacts/function-genome.json")
-          receipts_path = Path("artifacts/probe-receipts.jsonl")
-          summary_path = Path("artifacts/function-genome-summary.md")
-          assert genome_path.is_file() and genome_path.stat().st_size > 0
-          assert receipts_path.is_file()
-          assert summary_path.is_file() and summary_path.stat().st_size > 0
-
-          report = json.loads(genome_path.read_text(encoding="utf-8"))
-          summary = report["summary"]
-          assert report["schema_version"] == "mega-pdf-function-genome/v3"
-          assert summary["discovered"] == summary["promoted_to_probed"] + summary["blocked"]
-          assert summary["receipts"] == summary["discovered"]
-          assert summary["approved"] == 0
-          assert summary["defaults_promoted"] == 0
-          assert report["inventory_digest"]
-          assert report["receipt_root"]
-          assert report["receipt_chain_valid"] is True
-
-          rows = [json.loads(line) for line in receipts_path.read_text(encoding="utf-8").splitlines() if line]
-          assert len(rows) == summary["receipts"]
-          allowed = {field.name for field in fields(ProbeReceipt)}
-          receipts = [ProbeReceipt(**{key: value for key, value in row.items() if key in allowed}) for row in rows]
-          assert all(receipt.verify() for receipt in receipts)
-          assert all(
-              receipt.previous_receipt_hash == (receipts[index - 1].receipt_hash if index else None)
-              for index, receipt in enumerate(receipts)
-          )
-          if receipts:
-              assert report["receipt_root"] == receipts[-1].receipt_hash
-          PY
-
-      - name: Write private relay receipt
-        working-directory: workload
+      - name: Verify generated outputs with trusted host validator
         env:
           SOURCE_SHA: ${{ steps.bind.outputs.source_sha }}
-          PUBLIC_RUN_ID: ${{ github.run_id }}
-          PUBLIC_RUN_ATTEMPT: ${{ github.run_attempt }}
-        shell: bash
         run: |
           python - <<'PY'
-          import json
           import os
-          from datetime import datetime, timezone
           from pathlib import Path
-
-          report = json.loads(Path("artifacts/function-genome.json").read_text(encoding="utf-8"))
-          summary = report["summary"]
-          receipt = {
-              "schema_version": "mega-pdf-private-relay/v1",
-              "generated_at": datetime.now(timezone.utc).isoformat(),
-              "source_repo": os.environ["SOURCE_REPO"],
-              "source_ref": os.environ["SOURCE_REF"],
-              "source_sha": os.environ["SOURCE_SHA"],
-              "execution_repo": "GlacierEQ/public-actions-runner-host",
-              "execution_run_id": os.environ["PUBLIC_RUN_ID"],
-              "execution_attempt": os.environ["PUBLIC_RUN_ATTEMPT"],
-              "inventory_digest": report["inventory_digest"],
-              "receipt_root": report["receipt_root"],
-              "receipt_chain_valid": report["receipt_chain_valid"],
-              "discovered": summary["discovered"],
-              "promoted_to_probed": summary["promoted_to_probed"],
-              "blocked": summary["blocked"],
-              "approved": summary["approved"],
-              "defaults_promoted": summary["defaults_promoted"],
-              "parse_failures": len(report.get("parse_failures", [])),
-              "scan_issues": len(report.get("scan_issues", [])),
-          }
-          Path("artifacts/relay-receipt.json").write_text(
-              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
+          from domains.code.adapters.mega_pdf_function_genome import (
+              collect_payload,
+              verify_generated_outputs,
           )
+
+          root = Path("candidate-mega-pdf")
+          sha = os.environ["SOURCE_SHA"]
+          verify_generated_outputs(root, sha)
+          collect_payload(root, sha)
+          (root / "artifacts" / "relay-receipt.json").unlink(missing_ok=True)
           PY
 
-      - name: Publish artifacts to dedicated private results branch
-        working-directory: workload
+      - name: Upload bounded candidate Function Genome artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: mega-pdf-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            candidate-mega-pdf/artifacts/function-genome.json
+            candidate-mega-pdf/artifacts/probe-receipts.jsonl
+            candidate-mega-pdf/artifacts/function-genome-summary.md
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-private-mega-pdf:
+    needs: probe-private-mega-pdf
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      SOURCE_REPO: GlacierEQ/MEGA-PDF
+      SOURCE_REF: ${{ inputs.source_ref }}
+      RESULT_BRANCH: automation/mega-pdf-function-genome-results
+      PYTHONPATH: .
+
+    steps:
+      - name: Checkout trusted public action face
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+          check-latest: false
+
+      - name: Download candidate Function Genome artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: mega-pdf-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: candidate-mega-pdf/artifacts
+
+      - name: Verify candidate artifacts before minting write token
         env:
-          SOURCE_SHA: ${{ steps.bind.outputs.source_sha }}
-        shell: bash
+          SOURCE_SHA: ${{ needs.probe-private-mega-pdf.outputs.source_sha }}
         run: |
-          set -euo pipefail
-          git config user.name "GlacierEQ MEGA-PDF Relay"
-          git config user.email "glacier.equilibrium@gmail.com"
-          git fetch origin "$RESULT_BRANCH:refs/remotes/origin/$RESULT_BRANCH" || true
-          git checkout -B "$RESULT_BRANCH"
-          git add \
-            artifacts/function-genome.json \
-            artifacts/probe-receipts.jsonl \
-            artifacts/function-genome-summary.md \
-            artifacts/relay-receipt.json
-          git commit -m "chore: publish Function Genome receipts for ${SOURCE_SHA}"
-          git push --force-with-lease origin "HEAD:refs/heads/$RESULT_BRANCH"
-
-      - name: Publish sanitized execution summary
-        working-directory: workload
-        shell: bash
-        run: |
-          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
-          import json
+          python - <<'PY'
+          import os
           from pathlib import Path
-          report = json.loads(Path("artifacts/function-genome.json").read_text(encoding="utf-8"))
-          summary = report["summary"]
-          print("## MEGA-PDF Private Verification Relay")
-          print()
-          print("- Private results branch: `automation/mega-pdf-function-genome-results`")
-          print(f"- Discovered: {summary['discovered']}")
-          print(f"- Promoted to PROBED: {summary['promoted_to_probed']}")
-          print(f"- Blocked: {summary['blocked']}")
-          print(f"- Approved: {summary['approved']}")
-          print(f"- Defaults: {summary['defaults_promoted']}")
-          print(f"- Parse failures: {len(report.get('parse_failures', []))}")
-          print(f"- Scan issues: {len(report.get('scan_issues', []))}")
-          print(f"- Inventory digest: `{report['inventory_digest']}`")
-          print(f"- Receipt root: `{report['receipt_root']}`")
-          print("- Private artifacts were not uploaded to this public repository.")
+          from domains.code.adapters.mega_pdf_function_genome import (
+              collect_payload,
+              verify_generated_outputs,
+          )
+
+          root = Path("candidate-mega-pdf")
+          sha = os.environ["SOURCE_SHA"]
+          verify_generated_outputs(root, sha)
+          collect_payload(root, sha)
           PY
+
+      - name: Mint post-execution MEGA-PDF write token
+        id: mega-pdf-write-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.APEX_RUNNER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.APEX_RUNNER_APP_PRIVATE_KEY }}
+          owner: GlacierEQ
+          repositories: GlacierEQ/MEGA-PDF
+          permission-contents: write
+
+      - name: Publish verified artifacts to dedicated private results branch
+        id: publish_results
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.mega-pdf-write-token.outputs.token }}
+          SOURCE_SHA: ${{ needs.probe-private-mega-pdf.outputs.source_sha }}
+        run: |
+          python scripts/mega_pdf_relay_publish.py \
+            --output-root candidate-mega-pdf \
+            --source-ref "$SOURCE_REF" \
+            --source-sha "$SOURCE_SHA" \
+            --result-branch "$RESULT_BRANCH" \
+            --summary-out "$GITHUB_STEP_SUMMARY"
+
+      - name: Revoke post-execution MEGA-PDF write token
+        if: always() && steps.mega-pdf-write-token.outputs.token != ''
+        id: revoke_write_token
+        continue-on-error: true
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.mega-pdf-write-token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
+
+      - name: Enforce write token revocation
+        if: always() && steps.mega-pdf-write-token.outputs.token != '' && steps.revoke_write_token.outcome != 'success'
+        run: exit 1

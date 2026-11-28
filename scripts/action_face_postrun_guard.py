@@ -19,6 +19,8 @@ from workload_isolation import (
 )
 
 SHA = re.compile(r"^[0-9a-f]{40}$")
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+EMPTY_DIFF_SHA256 = hashlib.sha256(b"").hexdigest()
 ALLOWED_STATUS = {"completed", "failed", "blocked", "skipped"}
 
 
@@ -104,11 +106,64 @@ def direct_file_name(path: Path, parent: CheckoutHandle, label: str) -> str:
     return raw.name
 
 
+def verify_attestation_file(
+    runner_handle: CheckoutHandle,
+    attestation_arg: Path,
+    expected_sha: str,
+) -> dict[str, str | int]:
+    raw_path = Path(os.path.abspath(os.fspath(attestation_arg)))
+    parent_handle = open_bound_checkout(
+        raw_path.parent,
+        "workload attestation directory",
+        allowed_parent=runner_handle,
+    )
+    with parent_handle:
+        name = direct_file_name(
+            raw_path, parent_handle, "workload attestation path"
+        )
+        try:
+            raw = read_regular_file(parent_handle, name, max_bytes=65_536)
+        except WorkloadIsolationError as error:
+            fail(str(error))
+        parent_handle.assert_path_identity()
+
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        fail(f"workload attestation is invalid JSON: {type(error).__name__}")
+    if not isinstance(payload, dict):
+        fail("workload attestation must be a JSON object")
+    head = str(payload.get("resolved_source_sha", "")).lower()
+    if head != expected_sha:
+        fail("private workload HEAD does not match the expected commit")
+    if payload.get("tracked_clean") is not True:
+        fail("private workload tracked files changed during workload execution")
+    diff_sha = str(payload.get("tracked_diff_sha256", "")).lower()
+    if not SHA256_RE.fullmatch(diff_sha) or diff_sha != EMPTY_DIFF_SHA256:
+        fail("private workload tracked diff hash indicates source mutation")
+    device = payload.get("checkout_device")
+    inode = payload.get("checkout_inode")
+    if (
+        isinstance(device, bool)
+        or not isinstance(device, int)
+        or isinstance(inode, bool)
+        or not isinstance(inode, int)
+    ):
+        fail("workload attestation device/inode metadata is invalid")
+    return {
+        "head": head,
+        "tracked_diff_sha256": diff_sha,
+        "checkout_device": device,
+        "checkout_inode": inode,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runner-root", required=True)
     parser.add_argument("--control-root", required=True)
-    parser.add_argument("--workload-root", required=True)
+    parser.add_argument("--workload-root", default="")
+    parser.add_argument("--workload-attestation", default="")
     parser.add_argument("--plan", required=True)
     parser.add_argument("--result", required=True)
     parser.add_argument("--job-id", required=True)
@@ -132,17 +187,12 @@ def main() -> int:
             "fresh post-run control",
             allowed_parent=runner_handle,
         )
-        workload_handle = open_bound_checkout(
-            Path(args.workload_root),
-            "private workload",
-            allowed_parent=runner_handle,
-        )
         result_directory_handle = open_bound_checkout(
             Path(args.result).parent,
             "result directory",
             allowed_parent=runner_handle,
         )
-        with control_handle, workload_handle, result_directory_handle:
+        with control_handle, result_directory_handle:
             verify_checkout(runner_handle, workflow_sha, "primary action-face")
             verify_checkout(
                 control_handle,
@@ -231,11 +281,29 @@ def main() -> int:
                     fail("workflow did not provide a valid resolved source SHA")
                 if resolved != expected_resolved:
                     fail("result resolved source SHA does not match checkout binding")
-                workload_attestation = verify_checkout(
-                    workload_handle,
-                    expected_resolved,
-                    "private workload",
-                )
+                if args.workload_root and Path(args.workload_root).exists():
+                    workload_handle = open_bound_checkout(
+                        Path(args.workload_root),
+                        "private workload",
+                        allowed_parent=runner_handle,
+                    )
+                    with workload_handle:
+                        workload_attestation = verify_checkout(
+                            workload_handle,
+                            expected_resolved,
+                            "private workload",
+                        )
+                        workload_handle.assert_path_identity()
+                elif args.workload_attestation:
+                    workload_attestation = verify_attestation_file(
+                        runner_handle,
+                        Path(args.workload_attestation),
+                        expected_resolved,
+                    )
+                else:
+                    fail(
+                        "post-run guard requires --workload-root or --workload-attestation"
+                    )
                 output("workload_verified", "true")
                 output(
                     "workload_tracked_diff_sha256",
@@ -252,7 +320,6 @@ def main() -> int:
 
             runner_handle.assert_path_identity()
             control_handle.assert_path_identity()
-            workload_handle.assert_path_identity()
             result_directory_handle.assert_path_identity()
 
     digest = hashlib.sha256(raw).hexdigest()

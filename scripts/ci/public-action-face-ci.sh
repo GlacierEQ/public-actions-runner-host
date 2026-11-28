@@ -21,7 +21,8 @@ python -m pip install \
   --disable-pip-version-check \
   --only-binary=:all: \
   ruff==0.16.1 \
-  pytest==9.1.1
+  pytest==9.1.1 \
+  pyyaml==6.0.2
 
 python -m json.tool config/action-face-actions.json >/dev/null
 python -m json.tool registry/domains.json >/dev/null
@@ -40,6 +41,7 @@ OWNED_FILES=(
   domains/code/adapters/monolith_atlas_validate.py
   domains/code/adapters/monolith_legal_live_validate.py
   domains/code/adapters/mega_pdf_function_genome.py
+  domains/legal/adapters/jefs_docket_acquire.py
   domains/docs/adapters/monolith_docs_validate.py
   domains/analysis/adapters/monolith_estate_health.py
   scripts/action_face_checkout_workload.py
@@ -47,7 +49,9 @@ OWNED_FILES=(
   scripts/action_face_publish_verified.py
   scripts/action_face_selftest.py
   scripts/keymaster_oidc_token.py
+  scripts/legal_brief_publish.py
   scripts/library_registry_publish.py
+  scripts/mega_pdf_relay_publish.py
   scripts/monolith_evolution_adapter.py
   scripts/workload_isolation.py
   tests/conftest.py
@@ -64,6 +68,7 @@ OWNED_FILES=(
   tests/test_publish_verified_boundary.py
   tests/test_tool_system_validate_adapter.py
   tests/test_specialized_monolith_runners.py
+  tests/test_workflow_security_boundaries.py
   tests/test_workload_isolation.py
 )
 
@@ -72,13 +77,16 @@ FORMAT_FILES=(
   domains/code/adapters/monolith_atlas_validate.py
   domains/code/adapters/monolith_legal_live_validate.py
   domains/code/adapters/mega_pdf_function_genome.py
+  domains/legal/adapters/jefs_docket_acquire.py
   domains/docs/adapters/monolith_docs_validate.py
   domains/analysis/adapters/monolith_estate_health.py
   scripts/action_face_checkout_workload.py
   scripts/action_face_postrun_guard.py
   scripts/action_face_publish_verified.py
   scripts/keymaster_oidc_token.py
+  scripts/legal_brief_publish.py
   scripts/library_registry_publish.py
+  scripts/mega_pdf_relay_publish.py
   scripts/monolith_evolution_adapter.py
   scripts/workload_isolation.py
   tests/conftest.py
@@ -95,6 +103,7 @@ FORMAT_FILES=(
   tests/test_publish_verified_boundary.py
   tests/test_tool_system_validate_adapter.py
   tests/test_specialized_monolith_runners.py
+  tests/test_workflow_security_boundaries.py
   tests/test_workload_isolation.py
 )
 

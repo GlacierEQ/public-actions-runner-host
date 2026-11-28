@@ -7,7 +7,6 @@ on:
       - 'legal-jobs/*.json'
 
 permissions:
-  id-token: write
   contents: read
 
 concurrency:
@@ -15,13 +14,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  acquire:
+  prepare:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
+    permissions:
+      id-token: write
+      contents: read
     env:
       APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
       APEX_EXPECTED_VISIBILITY: public
       APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
+    outputs:
+      job_id: ${{ steps.job.outputs.job_id }}
+      resolved_source_sha: ${{ steps.bind.outputs.resolved_source_sha }}
+      claimed: ${{ steps.claim.outcome == 'success' && 'true' || 'false' }}
+      bundle_sha256: ${{ steps.stage_bundle.outputs.bundle_sha256 }}
 
     steps:
       - name: Checkout public action face
@@ -104,6 +111,7 @@ jobs:
         run: python3 scripts/action_face_control_plane_guard.py
 
       - name: Claim immutable job ID
+        id: claim
         env:
           APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
         run: python3 scripts/apex_pillar_runner.py claim-job --plan .apex-plan.json
@@ -117,17 +125,17 @@ jobs:
             --pillar G \
             --approval-id "${{ steps.job.outputs.approval_id }}"
 
-      - name: Mint one-repository DOCKETS acquisition token
-        id: evidence_token
+      - name: Mint read-only DOCKETS checkout token
+        id: workload_token
         run: |
           python3 scripts/keymaster_oidc_token.py \
             --repository GlacierEQ/DOCKETS \
-            --permission contents=write \
-            --operation jefs-docket-acquisition
+            --permission contents=read \
+            --operation public-action-workload
 
       - name: Checkout exact private DOCKETS source without persisting credentials
         env:
-          APEX_WORKLOAD_TOKEN: ${{ steps.evidence_token.outputs.token }}
+          APEX_WORKLOAD_TOKEN: ${{ steps.workload_token.outputs.token }}
         run: |
           python3 scripts/action_face_checkout_workload.py \
             --plan .apex-plan.json \
@@ -140,23 +148,156 @@ jobs:
             --plan .apex-plan.json \
             --workspace workload
 
-      - name: Acquire JEFS docket rows and official sequence bytes
-        id: acquire
+      - name: Revoke read-only DOCKETS token
+        if: always() && steps.workload_token.outcome == 'success'
+        id: revoke_workload
+        continue-on-error: true
         env:
-          APEX_EVIDENCE_WRITE_TOKEN: ${{ steps.evidence_token.outputs.token }}
-          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
+
+      - name: Revoke private control token
+        if: always() && steps.control_token.outcome == 'success'
+        id: revoke_control
+        continue-on-error: true
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
+
+      - name: Package credential-free JEFS staging bundle
+        id: stage_bundle
+        shell: bash
         run: |
-          mkdir -p .apex-results
+          set -euo pipefail
+          ! grep -qiE 'extraheader|authorization|x-access-token|ghs_' workload/.git/config
+          rm -rf workload/.git/hooks
+          install -d -m 700 .jefs-staging
+          tar -czf .jefs-staging/bundle.tar.gz .apex-plan.json workload
+          digest="$(sha256sum .jefs-staging/bundle.tar.gz | awk '{print $1}')"
+          echo "bundle_sha256=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Upload internal JEFS staging bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: jefs-staging-${{ steps.job.outputs.job_id }}
+          path: .jefs-staging/bundle.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Enforce token revocation
+        if: >-
+          always() &&
+          ((steps.workload_token.outcome == 'success' && steps.revoke_workload.outcome != 'success') ||
+           (steps.control_token.outcome == 'success' && steps.revoke_control.outcome != 'success'))
+        run: exit 1
+
+  acquire:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout trusted public runner host
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Download internal JEFS staging bundle
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: jefs-staging-${{ needs.prepare.outputs.job_id }}
+          path: .jefs-staging
+
+      - name: Verify digest and unpack credential-free bundle
+        shell: bash
+        env:
+          EXPECTED_BUNDLE_SHA256: ${{ needs.prepare.outputs.bundle_sha256 }}
+          EXPECTED_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_BUNDLE_SHA256}  .jefs-staging/bundle.tar.gz" | sha256sum --check --strict -
+          tar --no-same-owner -xzf .jefs-staging/bundle.tar.gz
+          rm -rf .jefs-staging
+          ! grep -qiE 'extraheader|authorization|x-access-token|ghs_' workload/.git/config
+          test "$(git -C workload rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p .apex-results .apex-candidate
+
+      - name: Acquire JEFS docket rows and official sequence bytes without credentials
+        env:
+          APEX_RESOLVED_SOURCE_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
+        run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
           from domains.legal.adapters.jefs_docket_acquire import run
+
           plan = json.loads(Path('.apex-plan.json').read_text(encoding='utf-8'))
-          raise SystemExit(run(plan, Path('workload'), Path('.apex-results') / f"{plan['job_id']}.json"))
+          raise SystemExit(
+              run(
+                  plan,
+                  Path('workload'),
+                  Path('.apex-results') / f"{plan['job_id']}.json",
+                  stage_dir=Path('.apex-candidate/jefs'),
+              )
+          )
           PY
 
+      - name: Attest post-acquisition workload cleanliness
+        env:
+          EXPECTED_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
+          JOB_ID: ${{ needs.prepare.outputs.job_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, shutil
+          from pathlib import Path
+          from scripts.workload_isolation import attest_workspace
+
+          attestation = attest_workspace(Path('workload'), os.environ['EXPECTED_SHA'])
+          Path('.apex-candidate/workload-attestation.json').write_text(
+              json.dumps(attestation, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          shutil.copyfile(
+              Path('.apex-results') / f"{os.environ['JOB_ID']}.json",
+              Path('.apex-candidate/result.json'),
+          )
+          PY
+
+      - name: Upload bounded JEFS candidate outputs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: jefs-candidate-${{ needs.prepare.outputs.job_id }}
+          path: .apex-candidate/
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    if: always() && needs.prepare.outputs.claimed == 'true'
+    needs: [prepare, acquire]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
+      APEX_EXPECTED_VISIBILITY: public
+      APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
+
+    steps:
+      - name: Checkout trusted public action face
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: GlacierEQ/public-actions-runner-host
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
       - name: Checkout fresh post-run control source
-        if: always()
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: GlacierEQ/public-actions-runner-host
@@ -166,34 +307,118 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Verify and publish immutable private result
+      - name: Download staging bundle for plan metadata
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: jefs-staging-${{ needs.prepare.outputs.job_id }}
+          path: .jefs-staging
+
+      - name: Extract verified plan without unpacking workload
+        shell: bash
+        env:
+          EXPECTED_BUNDLE_SHA256: ${{ needs.prepare.outputs.bundle_sha256 }}
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_BUNDLE_SHA256}  .jefs-staging/bundle.tar.gz" | sha256sum --check --strict -
+          tar --no-same-owner -xzf .jefs-staging/bundle.tar.gz .apex-plan.json
+          test ! -e workload
+
+      - name: Download bounded JEFS candidate outputs
+        if: needs.acquire.result == 'success'
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: jefs-candidate-${{ needs.prepare.outputs.job_id }}
+          path: .apex-candidate
+
+      - name: Mint post-acquisition DOCKETS write token
+        if: needs.acquire.result == 'success'
+        id: evidence_token
+        continue-on-error: true
+        run: |
+          python3 .apex-postrun-control/scripts/keymaster_oidc_token.py \
+            --repository GlacierEQ/DOCKETS \
+            --permission contents=write \
+            --operation jefs-docket-acquisition
+
+      - name: Publish staged JEFS docket evidence
+        if: needs.acquire.result == 'success' && steps.evidence_token.outcome == 'success'
+        id: publish_evidence
+        continue-on-error: true
+        env:
+          APEX_EVIDENCE_WRITE_TOKEN: ${{ steps.evidence_token.outputs.token }}
+          JOB_ID: ${{ needs.prepare.outputs.job_id }}
+        run: |
+          mkdir -p .apex-results
+          cp .apex-candidate/result.json ".apex-results/${JOB_ID}.json"
+          python3 -m domains.legal.adapters.jefs_docket_acquire publish \
+            --plan .apex-plan.json \
+            --stage-dir .apex-candidate/jefs \
+            --result ".apex-results/${JOB_ID}.json"
+
+      - name: Synthesize blocked result if acquisition did not complete
         if: always()
         env:
-          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
-          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+          RUNNER_OUTCOME: ${{ needs.acquire.result }}
+          APEX_RESOLVED_SOURCE_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
         run: |
-          result=".apex-results/${{ steps.job.outputs.job_id }}.json"
-          test -f "$result"
+          python3 .apex-postrun-control/scripts/action_face_pipeline_result.py \
+            --plan .apex-plan.json \
+            --result ".apex-results/${{ needs.prepare.outputs.job_id }}.json"
+
+      - name: Mint post-execution private control token
+        if: always()
+        id: control_token
+        continue-on-error: true
+        run: |
+          python3 .apex-postrun-control/scripts/keymaster_oidc_token.py \
+            --repository GlacierEQ/llm-runner-teams \
+            --permission contents=write \
+            --operation jefs-docket-control
+
+      - name: Verify and publish immutable private result
+        if: always() && steps.control_token.outcome == 'success'
+        id: publish_receipt
+        continue-on-error: true
+        env:
+          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: |
+          result=".apex-results/${{ needs.prepare.outputs.job_id }}.json"
           python3 .apex-postrun-control/scripts/action_face_postrun_guard.py \
             --runner-root . \
             --control-root .apex-postrun-control \
-            --workload-root workload \
+            --workload-attestation .apex-candidate/workload-attestation.json \
             --plan .apex-plan.json \
             --result "$result" \
-            --job-id "${{ steps.job.outputs.job_id }}" \
-            --resolved-source-sha "${{ steps.bind.outputs.resolved_source_sha }}"
-          python3 .apex-postrun-control/scripts/apex_pillar_runner.py publish \
-            --job-id "${{ steps.job.outputs.job_id }}" \
-            --result "$result"
+            --job-id "${{ needs.prepare.outputs.job_id }}" \
+            --resolved-source-sha "${{ needs.prepare.outputs.resolved_source_sha }}"
+          digest="$(sha256sum "$result" | awk '{print $1}')"
+          python3 .apex-postrun-control/scripts/action_face_publish_verified.py \
+            --job-id "${{ needs.prepare.outputs.job_id }}" \
+            --result "$result" \
+            --expected-file-sha256 "$digest"
 
-      - name: Revoke DOCKETS acquisition token
+      - name: Revoke DOCKETS write token
         if: always() && steps.evidence_token.outcome == 'success'
+        id: revoke_evidence
+        continue-on-error: true
         env:
           GITHUB_INSTALLATION_TOKEN: ${{ steps.evidence_token.outputs.token }}
-        run: python3 scripts/revoke_github_installation_token.py
+        run: python3 .apex-postrun-control/scripts/revoke_github_installation_token.py
 
       - name: Revoke private control token
         if: always() && steps.control_token.outcome == 'success'
+        id: revoke_control
+        continue-on-error: true
         env:
           GITHUB_INSTALLATION_TOKEN: ${{ steps.control_token.outputs.token }}
-        run: python3 scripts/revoke_github_installation_token.py
+        run: python3 .apex-postrun-control/scripts/revoke_github_installation_token.py
+
+      - name: Enforce governed acquisition outcome
+        if: >-
+          always() &&
+          (needs.acquire.result != 'success' ||
+           steps.publish_evidence.outcome != 'success' ||
+           steps.publish_receipt.outcome != 'success' ||
+           (steps.evidence_token.outcome == 'success' && steps.revoke_evidence.outcome != 'success') ||
+           (steps.control_token.outcome == 'success' && steps.revoke_control.outcome != 'success'))
+        run: exit 1

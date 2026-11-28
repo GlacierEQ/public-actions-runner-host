@@ -67,7 +67,6 @@ on:
         type: string
 
 permissions:
-  id-token: write
   contents: read
 
 concurrency:
@@ -75,7 +74,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  execute:
+  prepare:
     if: >-
       (github.event_name != 'pull_request' ||
        (github.event.pull_request.user.login == github.repository_owner &&
@@ -84,11 +83,35 @@ jobs:
         github.event.pull_request.base.repo.full_name == github.repository &&
         github.event.pull_request.base.ref == 'main'))
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 25
+    permissions:
+      id-token: write
+      contents: read
     env:
       APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
       APEX_EXPECTED_VISIBILITY: public
       APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
+    outputs:
+      job_id: ${{ steps.plan.outputs.job_id }}
+      pillar: ${{ steps.plan.outputs.pillar }}
+      action: ${{ steps.plan.outputs.action }}
+      source_repo: ${{ steps.plan.outputs.source_repo }}
+      resolved_source_sha: ${{ steps.bind.outputs.resolved_source_sha }}
+      claimed: ${{ steps.replay.outcome == 'success' && 'true' || 'false' }}
+      ready_to_execute: ${{ steps.stage_bundle.outputs.ready_to_execute || 'false' }}
+      bundle_sha256: ${{ steps.stage_bundle.outputs.bundle_sha256 }}
+      authorization_outcome: ${{ steps.authorize.outcome }}
+      identity_outcome: ${{ steps.identity.outcome }}
+      credential_outcome: ${{ steps.app_config.outcome }}
+      control_token_outcome: ${{ steps.control_token.outcome }}
+      control_plane_outcome: ${{ steps.control.outcome }}
+      plan_outcome: ${{ steps.plan.outcome }}
+      claim_outcome: ${{ steps.replay.outcome }}
+      approval_outcome: ${{ steps.approval.outcome }}
+      workload_token_outcome: ${{ steps.workload_token.outcome }}
+      checkout_outcome: ${{ steps.checkout.outcome }}
+      bind_outcome: ${{ steps.bind.outcome }}
+      dependencies_outcome: ${{ steps.dependencies.outcome }}
 
     steps:
       - name: Checkout public action face
@@ -187,21 +210,11 @@ jobs:
         continue-on-error: true
         env:
           APEX_WORKLOAD_REPOSITORY: ${{ steps.plan.outputs.source_repo }}
-          APEX_ACTION: ${{ steps.plan.outputs.action }}
         run: |
-          permission="contents=read"
-          operation="public-action-workload"
-          if [ "$APEX_ACTION" = "docket-sync" ]; then
-            permission="contents=write"
-            operation="jefs-docket-acquisition"
-          elif [ "$APEX_ACTION" = "library-links-public-publish" ]; then
-            permission="contents=write"
-            operation="library-registry-rebuild"
-          fi
           python3 scripts/keymaster_oidc_token.py \
             --repository "$APEX_WORKLOAD_REPOSITORY" \
-            --permission "$permission" \
-            --operation "$operation"
+            --permission contents=read \
+            --operation public-action-workload
 
       - name: Checkout catalog-approved workload without persisting credentials
         if: steps.workload_token.outcome == 'success'
@@ -236,27 +249,129 @@ jobs:
             --staging-root .apex-dependencies \
             --manifest-out .apex-dependencies/manifest.json
 
-      - name: Execute isolated public action adapter
-        if: steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.checkout.outcome == 'success' && steps.bind.outcome == 'success' && steps.dependencies.outcome == 'success'
-        id: runner
+      - name: Revoke private workload token
+        if: always() && steps.workload_token.outcome == 'success'
+        id: workload_token_revoke
         continue-on-error: true
         env:
-          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
-          APEX_EVIDENCE_WRITE_TOKEN: ${{ steps.plan.outputs.action == 'docket-sync' && steps.workload_token.outputs.token || '' }}
-          AKOS_POLICY_SHA256: ${{ steps.plan.outputs.action == 'akos-echo-policy-ci' && secrets.AKOS_POLICY_SHA256 || '' }}
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
+
+      - name: Revoke private control token
+        if: always() && steps.control_token.outcome == 'success'
+        id: control_token_revoke
+        continue-on-error: true
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.control_token.outputs.token }}
+        run: python3 scripts/revoke_github_installation_token.py
+
+      - name: Package credential-free staging bundle
+        if: always() && steps.plan.outcome == 'success' && steps.replay.outcome == 'success'
+        id: stage_bundle
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 700 .apex-staging
+          items=(.apex-plan.json)
+          ready="false"
+          if [ "${{ steps.bind.outcome }}" = "success" ] && [ "${{ steps.dependencies.outcome }}" = "success" ]; then
+            if grep -qiE 'extraheader|authorization|x-access-token|ghs_' workload/.git/config; then
+              echo "credential residue detected in workload/.git/config" >&2
+              exit 1
+            fi
+            rm -rf workload/.git/hooks
+            items+=(workload)
+            if [ -d .apex-dependencies ]; then
+              find .apex-dependencies -path '*/.git/config' -exec grep -qiE 'extraheader|authorization|x-access-token|ghs_' {} + && exit 1 || true
+              items+=(.apex-dependencies)
+            fi
+            ready="true"
+          fi
+          tar -czf .apex-staging/bundle.tar.gz "${items[@]}"
+          digest="$(sha256sum .apex-staging/bundle.tar.gz | awk '{print $1}')"
+          echo "bundle_sha256=$digest" >> "$GITHUB_OUTPUT"
+          echo "ready_to_execute=$ready" >> "$GITHUB_OUTPUT"
+
+      - name: Upload internal staging bundle
+        if: always() && steps.stage_bundle.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: apex-staging-${{ steps.plan.outputs.job_id }}
+          path: .apex-staging/bundle.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Enforce prepare stage invariants
+        if: >-
+          always() &&
+          (steps.plan.outcome == 'failure' ||
+           steps.app_config.outcome == 'failure' ||
+           steps.control_token.outcome == 'failure' ||
+           steps.control.outcome == 'failure' ||
+           steps.replay.outcome == 'failure' ||
+           steps.approval.outcome == 'failure' ||
+           steps.workload_token.outcome == 'failure' ||
+           steps.checkout.outcome == 'failure' ||
+           steps.bind.outcome == 'failure' ||
+           steps.dependencies.outcome == 'failure' ||
+           (steps.replay.outcome == 'success' && steps.stage_bundle.outcome != 'success') ||
+           (steps.workload_token.outcome == 'success' && steps.workload_token_revoke.outcome != 'success') ||
+           (steps.control_token.outcome == 'success' && steps.control_token_revoke.outcome != 'success'))
+        run: exit 1
+
+  execute:
+    needs: prepare
+    if: needs.prepare.result == 'success' && needs.prepare.outputs.ready_to_execute == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
+      APEX_EXPECTED_VISIBILITY: public
+
+    steps:
+      - name: Checkout trusted public runner host
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Download internal staging bundle
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: apex-staging-${{ needs.prepare.outputs.job_id }}
+          path: .apex-staging
+
+      - name: Verify and unpack credential-free staging bundle
+        shell: bash
+        env:
+          EXPECTED_BUNDLE_SHA256: ${{ needs.prepare.outputs.bundle_sha256 }}
+          EXPECTED_SOURCE_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_BUNDLE_SHA256}  .apex-staging/bundle.tar.gz" | sha256sum --check --strict -
+          tar --no-same-owner -xzf .apex-staging/bundle.tar.gz
+          ! grep -qiE 'extraheader|authorization|x-access-token|ghs_' workload/.git/config
+          test "$(git -C workload rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          test -z "$(git -C workload status --porcelain --untracked-files=no)"
+          mkdir -p .apex-results .apex-candidate
+
+      - name: Execute isolated public action adapter
+        id: runner
+        env:
+          APEX_RESOLVED_SOURCE_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
+          AKOS_POLICY_SHA256: ${{ needs.prepare.outputs.action == 'akos-echo-policy-ci' && secrets.AKOS_POLICY_SHA256 || '' }}
         run: |
           python3 scripts/action_face_legal_router.py \
             .apex-plan.json \
             workload \
-            ".apex-results/${{ steps.plan.outputs.job_id }}.json"
+            ".apex-results/${{ needs.prepare.outputs.job_id }}.json"
 
-      - name: Publish verified Library registry projections
-        if: steps.plan.outputs.action == 'library-links-public-publish' && steps.runner.outcome == 'success' && steps.bind.outcome == 'success'
-        id: library_publish
-        continue-on-error: true
-        env:
-          GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}
-          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+      - name: Generate candidate Library registry projections
+        if: needs.prepare.outputs.action == 'library-links-public-publish' && steps.runner.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
@@ -267,15 +382,76 @@ jobs:
             git diff --check -- registry/index.json registry/top_shelf.json
             git diff --stat -- registry/index.json registry/top_shelf.json
           )
-          python3 scripts/library_registry_publish.py \
-            --workspace workload \
-            --source-ref "$APEX_RESOLVED_SOURCE_SHA" \
-            --message "Rebuild knowledge registry"
+          install -d -m 700 .apex-candidate/library/registry
+          cp workload/registry/index.json .apex-candidate/library/registry/index.json
+          cp workload/registry/top_shelf.json .apex-candidate/library/registry/top_shelf.json
           git -C workload restore --worktree -- registry/index.json registry/top_shelf.json
           test -z "$(git -C workload status --porcelain --untracked-files=no)"
 
+      - name: Attest post-execution workload cleanliness and stage candidate outputs
+        env:
+          EXPECTED_SOURCE_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
+          JOB_ID: ${{ needs.prepare.outputs.job_id }}
+          ACTION_NAME: ${{ needs.prepare.outputs.action }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import shutil
+          from pathlib import Path
+          from scripts.workload_isolation import attest_workspace
+
+          expected_sha = os.environ["EXPECTED_SOURCE_SHA"]
+          job_id = os.environ["JOB_ID"]
+          attestation = attest_workspace(Path("workload"), expected_sha)
+          candidate = Path(".apex-candidate")
+          candidate.mkdir(parents=True, exist_ok=True)
+          (candidate / "workload-attestation.json").write_text(
+              json.dumps(attestation, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          result_file = Path(".apex-results") / f"{job_id}.json"
+          if not result_file.is_file() or result_file.is_symlink():
+              raise SystemExit("candidate result file missing or unsafe")
+          shutil.copyfile(result_file, candidate / "result.json")
+          jefs_stage = Path(".apex-jefs-staging") / job_id
+          if os.environ.get("ACTION_NAME") == "docket-sync" and jefs_stage.is_dir():
+              shutil.copytree(jefs_stage, candidate / "jefs", symlinks=False)
+          PY
+
+      - name: Upload bounded candidate outputs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: apex-candidate-${{ needs.prepare.outputs.job_id }}
+          path: .apex-candidate/
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: [prepare, execute]
+    if: always() && needs.prepare.outputs.claimed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      APEX_EXECUTION_REPO: GlacierEQ/public-actions-runner-host
+      APEX_EXPECTED_VISIBILITY: public
+      APEX_CONTROL_REPO: GlacierEQ/llm-runner-teams
+
+    steps:
+      - name: Checkout trusted public action face
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: GlacierEQ/public-actions-runner-host
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
       - name: Checkout fresh post-run control source
-        if: always() && steps.plan.outcome == 'success' && steps.replay.outcome == 'success'
         id: postrun_checkout
         continue-on-error: true
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -295,94 +471,215 @@ jobs:
           test "$(git -C .apex-postrun-control rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git -C .apex-postrun-control status --porcelain --untracked-files=no)"
 
+      - name: Download internal staging bundle for plan metadata
+        id: staging_download
+        continue-on-error: true
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: apex-staging-${{ needs.prepare.outputs.job_id }}
+          path: .apex-staging
+
+      - name: Extract verified plan without unpacking workload
+        if: steps.staging_download.outcome == 'success'
+        id: extract_plan
+        continue-on-error: true
+        env:
+          EXPECTED_BUNDLE_SHA256: ${{ needs.prepare.outputs.bundle_sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_BUNDLE_SHA256}  .apex-staging/bundle.tar.gz" | sha256sum --check --strict -
+          tar --no-same-owner -xzf .apex-staging/bundle.tar.gz .apex-plan.json
+          test ! -e workload
+
+      - name: Download bounded candidate outputs
+        if: needs.prepare.outputs.ready_to_execute == 'true'
+        id: candidate_download
+        continue-on-error: true
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: apex-candidate-${{ needs.prepare.outputs.job_id }}
+          path: .apex-candidate
+
+      - name: Validate candidate output structure and size bounds
+        if: steps.candidate_download.outcome == 'success'
+        id: stage_result
+        continue-on-error: true
+        env:
+          JOB_ID: ${{ needs.prepare.outputs.job_id }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import shutil
+          from pathlib import Path
+
+          candidate = Path(".apex-candidate")
+          for item in candidate.rglob("*"):
+              if item.is_symlink():
+                  raise SystemExit(f"symlink rejected in candidate bundle: {item}")
+              if item.is_file() and item.stat().st_size > 25 * 1024 * 1024:
+                  raise SystemExit(f"candidate file exceeds bound: {item}")
+          result_src = candidate / "result.json"
+          if result_src.is_file():
+              results_dir = Path(".apex-results")
+              results_dir.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(result_src, results_dir / f"{os.environ['JOB_ID']}.json")
+          PY
+
       - name: Synthesize governed result when execution did not produce one
-        if: always() && steps.plan.outcome == 'success' && steps.replay.outcome == 'success' && steps.postrun_integrity.outcome == 'success'
+        if: always() && steps.postrun_integrity.outcome == 'success' && steps.extract_plan.outcome == 'success'
         id: synthesize
         continue-on-error: true
         env:
-          AUTHORIZATION_OUTCOME: ${{ steps.authorize.outcome }}
-          IDENTITY_OUTCOME: ${{ steps.identity.outcome }}
-          CREDENTIAL_OUTCOME: ${{ steps.app_config.outcome }}
-          CONTROL_TOKEN_OUTCOME: ${{ steps.control_token.outcome }}
-          CONTROL_PLANE_OUTCOME: ${{ steps.control.outcome }}
-          PLAN_OUTCOME: ${{ steps.plan.outcome }}
-          CLAIM_OUTCOME: ${{ steps.replay.outcome }}
-          APPROVAL_OUTCOME: ${{ steps.approval.outcome }}
-          WORKLOAD_TOKEN_OUTCOME: ${{ steps.workload_token.outcome }}
-          CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
-          BIND_OUTCOME: ${{ steps.bind.outcome }}
-          RUNNER_OUTCOME: ${{ steps.runner.outcome }}
-          APEX_RESOLVED_SOURCE_SHA: ${{ steps.bind.outputs.resolved_source_sha }}
+          AUTHORIZATION_OUTCOME: ${{ needs.prepare.outputs.authorization_outcome }}
+          IDENTITY_OUTCOME: ${{ needs.prepare.outputs.identity_outcome }}
+          CREDENTIAL_OUTCOME: ${{ needs.prepare.outputs.credential_outcome }}
+          CONTROL_TOKEN_OUTCOME: ${{ needs.prepare.outputs.control_token_outcome }}
+          CONTROL_PLANE_OUTCOME: ${{ needs.prepare.outputs.control_plane_outcome }}
+          PLAN_OUTCOME: ${{ needs.prepare.outputs.plan_outcome }}
+          CLAIM_OUTCOME: ${{ needs.prepare.outputs.claim_outcome }}
+          APPROVAL_OUTCOME: ${{ needs.prepare.outputs.approval_outcome }}
+          WORKLOAD_TOKEN_OUTCOME: ${{ needs.prepare.outputs.workload_token_outcome }}
+          CHECKOUT_OUTCOME: ${{ needs.prepare.outputs.checkout_outcome }}
+          BIND_OUTCOME: ${{ needs.prepare.outputs.bind_outcome }}
+          RUNNER_OUTCOME: ${{ needs.execute.result }}
+          APEX_RESOLVED_SOURCE_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
         run: |
           python3 .apex-postrun-control/scripts/action_face_pipeline_result.py \
             --plan .apex-plan.json \
-            --result ".apex-results/${{ steps.plan.outputs.job_id }}.json"
+            --result ".apex-results/${{ needs.prepare.outputs.job_id }}.json"
+
+      - name: Mint post-execution write token for governed artifact publication
+        if: >-
+          needs.execute.result == 'success' &&
+          steps.stage_result.outcome == 'success' &&
+          (needs.prepare.outputs.action == 'library-links-public-publish' ||
+           needs.prepare.outputs.action == 'docket-sync')
+        id: publish_write_token
+        continue-on-error: true
+        env:
+          APEX_WORKLOAD_REPOSITORY: ${{ needs.prepare.outputs.source_repo }}
+          APEX_ACTION: ${{ needs.prepare.outputs.action }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$APEX_ACTION" = "docket-sync" ]; then
+            python3 .apex-postrun-control/scripts/keymaster_oidc_token.py \
+              --repository "$APEX_WORKLOAD_REPOSITORY" \
+              --permission contents=write \
+              --operation jefs-docket-acquisition
+          else
+            python3 .apex-postrun-control/scripts/keymaster_oidc_token.py \
+              --repository "$APEX_WORKLOAD_REPOSITORY" \
+              --permission contents=write \
+              --operation library-registry-rebuild
+          fi
+
+      - name: Publish staged JEFS docket evidence
+        if: >-
+          needs.prepare.outputs.action == 'docket-sync' &&
+          needs.execute.result == 'success' &&
+          steps.publish_write_token.outcome == 'success'
+        id: docket_publish
+        continue-on-error: true
+        env:
+          APEX_EVIDENCE_WRITE_TOKEN: ${{ steps.publish_write_token.outputs.token }}
+        run: |
+          python3 -m domains.legal.adapters.jefs_docket_acquire publish \
+            --plan .apex-plan.json \
+            --stage-dir .apex-candidate/jefs \
+            --result ".apex-results/${{ needs.prepare.outputs.job_id }}.json"
+
+      - name: Mint post-execution private control token
+        if: always() && steps.synthesize.outcome == 'success'
+        id: publish_control_token
+        continue-on-error: true
+        run: |
+          python3 .apex-postrun-control/scripts/keymaster_oidc_token.py \
+            --repository GlacierEQ/llm-runner-teams \
+            --permission contents=write \
+            --operation public-action-control
 
       - name: Verify post-run control, workload, and result integrity
-        if: always() && steps.synthesize.outcome == 'success'
+        if: always() && steps.synthesize.outcome == 'success' && steps.publish_control_token.outcome == 'success'
         id: postrun_guard
         continue-on-error: true
         env:
-          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
+          APEX_CONTROL_TOKEN: ${{ steps.publish_control_token.outputs.token }}
         run: |
           python3 .apex-postrun-control/scripts/action_face_postrun_guard.py \
             --runner-root . \
             --control-root .apex-postrun-control \
-            --workload-root workload \
+            --workload-attestation .apex-candidate/workload-attestation.json \
             --plan .apex-plan.json \
-            --result ".apex-results/${{ steps.plan.outputs.job_id }}.json" \
-            --job-id "${{ steps.plan.outputs.job_id }}" \
-            --resolved-source-sha "${{ steps.bind.outputs.resolved_source_sha }}"
+            --result ".apex-results/${{ needs.prepare.outputs.job_id }}.json" \
+            --job-id "${{ needs.prepare.outputs.job_id }}" \
+            --resolved-source-sha "${{ needs.prepare.outputs.resolved_source_sha }}"
+
+      - name: Publish verified Library registry projections
+        if: >-
+          needs.prepare.outputs.action == 'library-links-public-publish' &&
+          needs.execute.result == 'success' &&
+          steps.postrun_guard.outcome == 'success' &&
+          steps.publish_write_token.outcome == 'success'
+        id: library_publish
+        continue-on-error: true
+        env:
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.publish_write_token.outputs.token }}
+          APEX_RESOLVED_SOURCE_SHA: ${{ needs.prepare.outputs.resolved_source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool .apex-candidate/library/registry/index.json >/dev/null
+          python3 -m json.tool .apex-candidate/library/registry/top_shelf.json >/dev/null
+          python3 .apex-postrun-control/scripts/library_registry_publish.py \
+            --workspace .apex-candidate/library \
+            --source-ref "$APEX_RESOLVED_SOURCE_SHA" \
+            --message "Rebuild knowledge registry"
 
       - name: Return verified detailed result to private control plane
         if: always() && steps.postrun_guard.outcome == 'success'
         id: publish
         continue-on-error: true
         env:
-          APEX_CONTROL_TOKEN: ${{ steps.control_token.outputs.token }}
+          APEX_CONTROL_TOKEN: ${{ steps.publish_control_token.outputs.token }}
         run: |
           python3 .apex-postrun-control/scripts/action_face_publish_verified.py \
-            --job-id "${{ steps.plan.outputs.job_id }}" \
-            --result ".apex-results/${{ steps.plan.outputs.job_id }}.json" \
+            --job-id "${{ needs.prepare.outputs.job_id }}" \
+            --result ".apex-results/${{ needs.prepare.outputs.job_id }}.json" \
             --expected-file-sha256 "${{ steps.postrun_guard.outputs.result_file_sha256 }}"
 
-      - name: Revoke private workload token
-        if: always() && steps.workload_token.outcome == 'success'
-        id: workload_token_revoke
+      - name: Revoke post-execution write token
+        if: always() && steps.publish_write_token.outcome == 'success'
+        id: publish_write_token_revoke
         continue-on-error: true
         env:
-          GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}
-        run: python3 scripts/revoke_github_installation_token.py
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.publish_write_token.outputs.token }}
+        run: python3 .apex-postrun-control/scripts/revoke_github_installation_token.py
 
-      - name: Revoke private control token
-        if: always() && steps.control_token.outcome == 'success'
-        id: control_token_revoke
+      - name: Revoke post-execution private control token
+        if: always() && steps.publish_control_token.outcome == 'success'
+        id: publish_control_token_revoke
         continue-on-error: true
         env:
-          GITHUB_INSTALLATION_TOKEN: ${{ steps.control_token.outputs.token }}
-        run: python3 scripts/revoke_github_installation_token.py
+          GITHUB_INSTALLATION_TOKEN: ${{ steps.publish_control_token.outputs.token }}
+        run: python3 .apex-postrun-control/scripts/revoke_github_installation_token.py
 
       - name: Enforce governed release result
         if: >-
           always() &&
-          (steps.plan.outcome == 'failure' ||
-           steps.app_config.outcome == 'failure' ||
-           steps.control_token.outcome == 'failure' ||
-           steps.control.outcome == 'failure' ||
-           steps.replay.outcome == 'failure' ||
-           steps.approval.outcome == 'failure' ||
-           steps.workload_token.outcome == 'failure' ||
-           steps.checkout.outcome == 'failure' ||
-           steps.bind.outcome == 'failure' ||
-           steps.dependencies.outcome == 'failure' ||
-           steps.runner.outcome != 'success' ||
-           (steps.plan.outputs.action == 'library-links-public-publish' && steps.library_publish.outcome != 'success') ||
+          (needs.prepare.result != 'success' ||
+           needs.execute.result != 'success' ||
+           (needs.prepare.outputs.action == 'library-links-public-publish' && steps.library_publish.outcome != 'success') ||
+           (needs.prepare.outputs.action == 'docket-sync' && steps.docket_publish.outcome != 'success') ||
            steps.postrun_checkout.outcome == 'failure' ||
            steps.postrun_integrity.outcome == 'failure' ||
+           steps.extract_plan.outcome != 'success' ||
            steps.synthesize.outcome == 'failure' ||
            steps.synthesize.outputs.synthesized == 'true' ||
+           steps.publish_control_token.outcome != 'success' ||
            steps.postrun_guard.outcome == 'failure' ||
            steps.publish.outcome == 'failure' ||
-           (steps.workload_token.outcome == 'success' && steps.workload_token_revoke.outcome != 'success') ||
-           (steps.control_token.outcome == 'success' && steps.control_token_revoke.outcome != 'success'))
+           (steps.publish_write_token.outcome == 'success' && steps.publish_write_token_revoke.outcome != 'success') ||
+           (steps.publish_control_token.outcome == 'success' && steps.publish_control_token_revoke.outcome != 'success'))
         run: exit 1

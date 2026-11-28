@@ -19,239 +19,161 @@ on:
   repository_dispatch:
     types: [overleaf-sync]
 
+permissions:
+  contents: read
+
 jobs:
-  compile-and-deploy:
+  compile-pdf:
     runs-on: ubuntu-latest
-    name: Compile LaTeX → Upload PDF → Sync Notion
+    timeout-minutes: 20
+    name: Compile LaTeX to Verified PDF Artifact
+    permissions:
+      contents: read
 
     steps:
-      # ── 1. Checkout ──────────────────────────────────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 1
+          persist-credentials: false
 
-      # ── 2. Detect .tex files ─────────────────────────────────────────────
       - name: Find main TeX file
         id: find_tex
+        env:
+          INPUT_TEX_FILE: ${{ inputs.tex_file }}
         run: |
-          INPUT="${{ github.event.inputs.tex_file }}"
-          if [ -n "$INPUT" ] && [ -f "$INPUT" ]; then
-            TEX_FILE="$INPUT"
-          elif [ -f "main.tex" ]; then
-            TEX_FILE="main.tex"
-          else
-            TEX_FILE=$(find . -name "*.tex" -not -path "*/node_modules/*" | head -1)
-          fi
-          echo "tex_file=$TEX_FILE" >> $GITHUB_OUTPUT
-          echo "tex_dir=$(dirname $TEX_FILE)" >> $GITHUB_OUTPUT
-          echo "tex_base=$(basename $TEX_FILE .tex)" >> $GITHUB_OUTPUT
-          echo "Found: $TEX_FILE"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
 
-      # ── 3. Install Tectonic (fast LaTeX engine) ──────────────────────────
-      - name: Install Tectonic
-        run: |
-          curl --proto '=https' --tlsv1.2 -fsSL \
-            https://drop.yannick.io/tectonic.sh | sh
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          root = Path.cwd().resolve()
+          requested = (os.environ.get("INPUT_TEX_FILE") or "").strip()
+          candidate: Path | None = None
+          if requested:
+              resolved = (root / requested).resolve()
+              if root in resolved.parents and resolved.is_file() and resolved.suffix == ".tex":
+                  candidate = resolved
+          if candidate is None and (root / "main.tex").is_file():
+              candidate = (root / "main.tex").resolve()
+          if candidate is None:
+              found = sorted(
+                  p for p in root.rglob("*.tex")
+                  if "node_modules" not in p.parts and ".git" not in p.parts and not p.is_symlink()
+              )
+              if not found:
+                  raise SystemExit("No .tex source file found")
+              candidate = found[0].resolve()
 
-      # ── 4. Compile LaTeX → PDF ───────────────────────────────────────────
-      - name: Compile LaTeX
-        id: compile
-        working-directory: ${{ steps.find_tex.outputs.tex_dir }}
-        run: |
-          BASE="${{ steps.find_tex.outputs.tex_base }}"
-          tectonic -X compile "${BASE}.tex" --outdir ./output 2>&1 | tee compile.log
-          if [ ! -f "./output/${BASE}.pdf" ]; then
-            echo "ERROR: PDF not generated"
-            cat compile.log
-            exit 1
-          fi
-          echo "pdf_path=${{ steps.find_tex.outputs.tex_dir }}/output/${BASE}.pdf" >> $GITHUB_OUTPUT
-          echo "pdf_name=${BASE}.pdf" >> $GITHUB_OUTPUT
-          echo "compile_log=$(cat compile.log | tail -20 | base64 -w0)" >> $GITHUB_OUTPUT
-          echo "word_count=$(pdftotext ./output/${BASE}.pdf - 2>/dev/null | wc -w || echo 0)" >> $GITHUB_OUTPUT
+          rel = candidate.relative_to(root)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"tex_file={rel.as_posix()}\n")
+              out.write(f"tex_dir={rel.parent.as_posix()}\n")
+              out.write(f"tex_base={candidate.stem}\n")
+          PY
 
-      # ── 5. Install poppler for pdftotext ─────────────────────────────────
       - name: Install poppler-utils
-        run: sudo apt-get install -y poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils
 
-      # ── 6. Upload PDF to Supabase Storage ────────────────────────────────
-      - name: Upload to Supabase
-        id: supabase_upload
+      - name: Install Tectonic from immutable verified release
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 755 "$HOME/.local/bin"
+          curl --proto '=https' --tlsv1.2 -fsSL -o /tmp/tectonic.tar.gz \
+            "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.15.0/tectonic-0.15.0-x86_64-unknown-linux-gnu.tar.gz"
+          echo "875fbbc9ab48560d7776088c608e0beee49197b57ab4a2f6c5385b2c661c842f  /tmp/tectonic.tar.gz" | sha256sum --check --strict -
+          tar -xzf /tmp/tectonic.tar.gz -C "$HOME/.local/bin" tectonic
+          chmod 0755 "$HOME/.local/bin/tectonic"
+          rm -f /tmp/tectonic.tar.gz
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Compile LaTeX and stage bounded brief bundle
+        id: compile
+        env:
+          TEX_DIR: ${{ steps.find_tex.outputs.tex_dir }}
+          TEX_BASE: ${{ steps.find_tex.outputs.tex_base }}
+          CASE_NAME: ${{ inputs.case_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd "$TEX_DIR"
+            tectonic -X compile "${TEX_BASE}.tex" --outdir ./output 2>&1 | tee compile.log
+          )
+          pdf_file="${TEX_DIR}/output/${TEX_BASE}.pdf"
+          test -f "$pdf_file"
+          word_count="$(pdftotext "$pdf_file" - 2>/dev/null | wc -w | tr -d ' ' || echo 0)"
+          install -d -m 700 .brief-staging
+          cp "$pdf_file" .brief-staging/brief.pdf
+          PDF_FILE=".brief-staging/brief.pdf" WORD_COUNT="$word_count" python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+
+          pdf = Path(os.environ["PDF_FILE"])
+          raw = pdf.read_bytes()
+          if len(raw) > 50 * 1024 * 1024:
+              raise SystemExit("compiled PDF exceeds 50 MB ceiling")
+          metadata = {
+              "pdf_name": f"{os.environ['TEX_BASE']}.pdf",
+              "word_count": int(os.environ.get("WORD_COUNT") or 0),
+              "pdf_bytes": len(raw),
+              "pdf_sha256": hashlib.sha256(raw).hexdigest(),
+              "case_name": os.environ.get("CASE_NAME", ""),
+          }
+          Path(".brief-staging/metadata.json").write_text(
+              json.dumps(metadata, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload compiled brief artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: legal-brief-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .brief-staging/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish-brief:
+    needs: compile-pdf
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    name: Publish Verified Brief Metadata and Storage
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout publisher script without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: |
+            scripts/legal_brief_publish.py
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+          check-latest: false
+
+      - name: Download compiled brief artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: legal-brief-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .brief-staging
+
+      - name: Install pinned analytics dependency
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: duckdb==1.2.1
+
+      - name: Publish brief to Supabase, Notion, and MotherDuck
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: |
-          REPO_NAME="${{ github.repository }}"
-          BRANCH="${{ github.ref_name }}"
-          PDF_NAME="${{ steps.compile.outputs.pdf_name }}"
-          PDF_PATH="${{ steps.compile.outputs.pdf_path }}"
-          STORAGE_PATH="case-briefs/${REPO_NAME}/${BRANCH}/${PDF_NAME}"
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          
-          # Upload via Supabase Storage REST API
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
-            -X POST \
-            "${SUPABASE_URL}/storage/v1/object/${STORAGE_PATH}" \
-            -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}" \
-            -H "Content-Type: application/pdf" \
-            --data-binary @"${PDF_PATH}")
-          
-          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-          BODY=$(echo "$RESPONSE" | head -1)
-          
-          # If file exists, update (upsert)
-          if [ "$HTTP_CODE" = "400" ]; then
-            curl -s \
-              -X PUT \
-              "${SUPABASE_URL}/storage/v1/object/${STORAGE_PATH}" \
-              -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}" \
-              -H "Content-Type: application/pdf" \
-              --data-binary @"${PDF_PATH}"
-          fi
-          
-          PDF_URL="${SUPABASE_URL}/storage/v1/object/public/${STORAGE_PATH}"
-          echo "pdf_url=${PDF_URL}" >> $GITHUB_OUTPUT
-          echo "storage_path=${STORAGE_PATH}" >> $GITHUB_OUTPUT
-          echo "timestamp=${TIMESTAMP}" >> $GITHUB_OUTPUT
-          echo "Uploaded: ${PDF_URL}"
-
-      # ── 7. Sync to Notion case database ──────────────────────────────────
-      - name: Sync to Notion
-        env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-        run: |
-          CASE_NAME="${{ github.event.inputs.case_name }}"
-          if [ -z "$CASE_NAME" ]; then
-            CASE_NAME="${{ steps.compile.outputs.pdf_name }}"
-            CASE_NAME="${CASE_NAME%.pdf}"
-          fi
-          PDF_URL="${{ steps.supabase_upload.outputs.pdf_url }}"
-          TIMESTAMP="${{ steps.supabase_upload.outputs.timestamp }}"
-          BRANCH="${{ github.ref_name }}"
-          WORD_COUNT="${{ steps.compile.outputs.word_count }}"
-          COMMIT="${{ github.sha }}"
-          SHORT_COMMIT="${COMMIT:0:7}"
-          REPO="${{ github.repository }}"
-          COMMIT_URL="https://github.com/${REPO}/commit/${COMMIT}"
-          
-          # Search for existing page with this case name
-          SEARCH_RESPONSE=$(curl -s \
-            -X POST \
-            "https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query" \
-            -H "Authorization: Bearer ${NOTION_TOKEN}" \
-            -H "Notion-Version: 2022-06-28" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"filter\": {
-                \"property\": \"Name\",
-                \"title\": { \"equals\": \"${CASE_NAME}\" }
-              }
-            }")
-          
-          PAGE_ID=$(echo "$SEARCH_RESPONSE" | python3 -c \
-            "import sys,json; r=json.load(sys.stdin)['results']; print(r[0]['id'] if r else '')" 2>/dev/null)
-          
-          if [ -n "$PAGE_ID" ]; then
-            # Update existing page
-            curl -s \
-              -X PATCH \
-              "https://api.notion.com/v1/pages/${PAGE_ID}" \
-              -H "Authorization: Bearer ${NOTION_TOKEN}" \
-              -H "Notion-Version: 2022-06-28" \
-              -H "Content-Type: application/json" \
-              -d "{
-                \"properties\": {
-                  \"PDF URL\": { \"url\": \"${PDF_URL}\" },
-                  \"Last Built\": { \"date\": { \"start\": \"${TIMESTAMP}\" } },
-                  \"Branch\": { \"rich_text\": [{ \"text\": { \"content\": \"${BRANCH}\" } }] },
-                  \"Word Count\": { \"number\": ${WORD_COUNT} },
-                  \"Commit\": { \"url\": \"${COMMIT_URL}\" },
-                  \"Status\": { \"select\": { \"name\": \"Built\" } }
-                }
-              }"
-            echo "Updated Notion page: $PAGE_ID"
-          else
-            # Create new page
-            curl -s \
-              -X POST \
-              "https://api.notion.com/v1/pages" \
-              -H "Authorization: Bearer ${NOTION_TOKEN}" \
-              -H "Notion-Version: 2022-06-28" \
-              -H "Content-Type: application/json" \
-              -d "{
-                \"parent\": { \"database_id\": \"${NOTION_DATABASE_ID}\" },
-                \"properties\": {
-                  \"Name\": { \"title\": [{ \"text\": { \"content\": \"${CASE_NAME}\" } }] },
-                  \"PDF URL\": { \"url\": \"${PDF_URL}\" },
-                  \"Last Built\": { \"date\": { \"start\": \"${TIMESTAMP}\" } },
-                  \"Branch\": { \"rich_text\": [{ \"text\": { \"content\": \"${BRANCH}\" } }] },
-                  \"Word Count\": { \"number\": ${WORD_COUNT} },
-                  \"Commit\": { \"url\": \"${COMMIT_URL}\" },
-                  \"Repository\": { \"rich_text\": [{ \"text\": { \"content\": \"${REPO}\" } }] },
-                  \"Status\": { \"select\": { \"name\": \"Built\" } }
-                }
-              }"
-            echo "Created new Notion page for: ${CASE_NAME}"
-          fi
-
-      # ── 8. MotherDuck analytics ───────────────────────────────────────────
-      - name: Log metrics to MotherDuck
-        env:
           MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
-        run: |
-          pip install duckdb --quiet
-          python3 << 'EOF'
-          import duckdb, os, datetime
-          
-          token = os.environ.get('MOTHERDUCK_TOKEN', '')
-          if not token:
-              print('No MOTHERDUCK_TOKEN set, skipping analytics')
-              exit(0)
-          
-          con = duckdb.connect(f'md:legal_briefs?motherduck_token={token}')
-          
-          con.execute("""
-              CREATE TABLE IF NOT EXISTS brief_builds (
-                  build_id      VARCHAR,
-                  repo          VARCHAR,
-                  branch        VARCHAR,
-                  pdf_name      VARCHAR,
-                  pdf_url       VARCHAR,
-                  word_count    INTEGER,
-                  built_at      TIMESTAMP,
-                  commit_sha    VARCHAR
-              )
-          """)
-          
-          con.execute("""
-              INSERT INTO brief_builds VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-          """, [
-              os.environ.get('GITHUB_RUN_ID', ''),
-              os.environ.get('GITHUB_REPOSITORY', ''),
-              os.environ.get('GITHUB_REF_NAME', ''),
-              '${{ steps.compile.outputs.pdf_name }}',
-              '${{ steps.supabase_upload.outputs.pdf_url }}',
-              int('${{ steps.compile.outputs.word_count }}' or 0),
-              datetime.datetime.utcnow(),
-              os.environ.get('GITHUB_SHA', '')
-          ])
-          
-          print('Logged to MotherDuck: legal_briefs.brief_builds')
-          con.close()
-          EOF
-
-      # ── 9. Summary ────────────────────────────────────────────────────────
-      - name: Job Summary
-        run: |
-          echo "## ✅ Legal Brief Pipeline Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| **PDF** | [${{ steps.compile.outputs.pdf_name }}](${{ steps.supabase_upload.outputs.pdf_url }}) |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Words** | ${{ steps.compile.outputs.word_count }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Commit** | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Built** | ${{ steps.supabase_upload.outputs.timestamp }} |" >> $GITHUB_STEP_SUMMARY
+        run: python3 scripts/legal_brief_publish.py --staging-dir .brief-staging

@@ -42,23 +42,46 @@ def test_catalog_binds_publish_action_to_exact_library_repo() -> None:
     ]
 
 
+import yaml
+
+
 def test_workflow_grants_write_only_to_cataloged_library_publish_action() -> None:
-    workflow = WORKFLOW.read_text(encoding="utf-8")
-    assert 'elif [ "$APEX_ACTION" = "library-links-public-publish" ]; then' in workflow
-    assert 'permission="contents=write"' in workflow
-    assert 'operation="library-registry-rebuild"' in workflow
-    assert "steps.plan.outputs.action == 'library-links-public-publish'" in workflow
-    assert "steps.runner.outcome == 'success'" in workflow
-    assert "steps.bind.outcome == 'success'" in workflow
+    workflow_raw = WORKFLOW.read_text(encoding="utf-8")
+    parsed = yaml.safe_load(workflow_raw)
+    jobs = parsed["jobs"]
+    assert {"prepare", "execute", "publish"} <= set(jobs)
+
+    prepare_raw = yaml.dump(jobs["prepare"], width=10000)
+    execute_raw = yaml.dump(jobs["execute"], width=10000)
+    publish_raw = yaml.dump(jobs["publish"], width=10000)
+
+    # prepare only mints contents=read for workload checkout
+    assert "--permission contents=read" in prepare_raw
+    assert 'operation="library-registry-rebuild"' not in prepare_raw
+
+    # execute runs rebuild_registry.py with zero OIDC or installation tokens
+    assert jobs["execute"].get("permissions") == {"contents": "read"}
+    assert "id-token" not in execute_raw
+    assert "GITHUB_INSTALLATION_TOKEN" not in execute_raw
+    assert "python3 scripts/rebuild_registry.py" in execute_raw
     assert (
-        "GITHUB_INSTALLATION_TOKEN: ${{ steps.workload_token.outputs.token }}"
-        in workflow
+        "git diff --check -- registry/index.json registry/top_shelf.json"
+        in execute_raw
     )
     assert (
         "git -C workload restore --worktree -- registry/index.json registry/top_shelf.json"
-        in workflow
+        in execute_raw
     )
-    assert "steps.library_publish.outcome != 'success'" in workflow
+    assert "library_registry_publish.py" not in execute_raw
+
+    # publish mints contents=write post-execution only for library-links-public-publish / docket-sync
+    assert "needs.prepare.outputs.action == 'library-links-public-publish'" in publish_raw
+    assert "needs.execute.result == 'success'" in publish_raw
+    assert "--permission contents=write" in publish_raw
+    assert "--operation library-registry-rebuild" in publish_raw
+    assert "scripts/library_registry_publish.py" in publish_raw
+    assert "rebuild_registry.py" not in publish_raw
+    assert "steps.library_publish.outcome != 'success'" in publish_raw
 
 
 def test_publisher_refuses_when_provider_head_moved(

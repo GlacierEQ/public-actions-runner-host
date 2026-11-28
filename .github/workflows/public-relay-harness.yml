@@ -16,41 +16,112 @@ permissions:
   contents: read
 
 jobs:
-  synthetic-relay:
+  stage-relay-fixture:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      job: ${{ steps.meta.outputs.job }}
+      bundle_sha256: ${{ steps.bundle.outputs.bundle_sha256 }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - id: meta
+      - name: Resolve bounded relay metadata
+        id: meta
+        env:
+          RAW_REPO: ${{ github.event.client_payload.source_repo || 'GlacierEQ/1FDV-23-0001009-FEDERAL-WARFARE' }}
+          RAW_REF: ${{ github.event.client_payload.source_ref || inputs.source_ref }}
+          RAW_JOB: ${{ github.event.client_payload.job_id || inputs.job_id }}
         run: |
-          echo "repo=${{ github.event.client_payload.source_repo || 'GlacierEQ/1FDV-23-0001009-FEDERAL-WARFARE' }}" >> $GITHUB_OUTPUT
-          echo "ref=${{ github.event.client_payload.source_ref || inputs.source_ref }}" >> $GITHUB_OUTPUT
-          echo "job=${{ github.event.client_payload.job_id || inputs.job_id }}" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v4
+          python3 - <<'PY'
+          import os, re
+          repo = os.environ["RAW_REPO"].strip()
+          ref = os.environ["RAW_REF"].strip()
+          job = os.environ["RAW_JOB"].strip()
+          if not re.fullmatch(r"GlacierEQ/[A-Za-z0-9._-]+", repo):
+              raise SystemExit("invalid source_repo")
+          if not re.fullmatch(r"[A-Za-z0-9._/-]{1,128}", ref) or ".." in ref:
+              raise SystemExit("invalid source_ref")
+          if not re.fullmatch(r"[A-Za-z0-9._-]{1,64}", job):
+              raise SystemExit("invalid job_id")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"repo={repo}\nref={ref}\njob={job}\n")
+          PY
+
+      - name: Checkout relay fixture source without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: ${{ steps.meta.outputs.repo }}
           ref: ${{ steps.meta.outputs.ref }}
-          token: ${{ secrets.APEX_PRIVATE_READ_TOKEN || secrets.GH_PAT || github.token }}
+          token: ${{ secrets.APEX_PRIVATE_READ_TOKEN || github.token }}
           path: workload
           fetch-depth: 1
           persist-credentials: false
+
+      - name: Stage credential-free relay harness bundle
+        id: bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf workload/.git
+          install -d -m 700 .relay-harness
+          tar -czf .relay-harness/bundle.tar.gz workload/automation/relay
+          digest="$(sha256sum .relay-harness/bundle.tar.gz | awk '{print $1}')"
+          echo "bundle_sha256=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Upload staged relay bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: relay-harness-bundle-${{ steps.meta.outputs.job }}
+          path: .relay-harness/bundle.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  execute-synthetic-relay:
+    needs: stage-relay-fixture
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Download staged relay bundle
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: relay-harness-bundle-${{ needs.stage-relay-fixture.outputs.job }}
+          path: .relay-harness
+
+      - name: Verify digest and unpack relay fixture
+        shell: bash
+        env:
+          EXPECTED_BUNDLE_SHA256: ${{ needs.stage-relay-fixture.outputs.bundle_sha256 }}
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_BUNDLE_SHA256}  .relay-harness/bundle.tar.gz" | sha256sum --check --strict -
+          tar --no-same-owner -xzf .relay-harness/bundle.tar.gz
+          rm -rf .relay-harness
+
       - name: Run five-record synthetic relay
         run: python3 workload/automation/relay/process_relay.py workload/automation/relay/fixtures/synthetic_records.json relay-audit.json
+
       - name: Verify synthetic result
+        env:
+          JOB_ID: ${{ needs.stage-relay-fixture.outputs.job }}
         run: |
           python3 - <<'PY'
-          import json
-          d=json.load(open('relay-audit.json'))
-          e=d['events']
-          assert d['record_count']==5
-          assert sum(x['status']=='processed' for x in e)==5
-          assert sum(x['status']=='duplicate_skipped' for x in e)==1
-          print({'job_id':'${{ steps.meta.outputs.job }}','status':'completed','records':5,'duplicates':1})
+          import json, os
+          with open('relay-audit.json', encoding='utf-8') as handle:
+              d = json.load(handle)
+          e = d['events']
+          assert d['record_count'] == 5
+          assert sum(x['status'] == 'processed' for x in e) == 5
+          assert sum(x['status'] == 'duplicate_skipped' for x in e) == 1
+          print({'job_id': os.environ['JOB_ID'], 'status': 'completed', 'records': 5, 'duplicates': 1})
           PY
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload synthetic relay receipt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: relay-audit-${{ steps.meta.outputs.job }}
+          name: relay-audit-${{ needs.stage-relay-fixture.outputs.job }}
           path: relay-audit.json
+          if-no-files-found: error
           retention-days: 7

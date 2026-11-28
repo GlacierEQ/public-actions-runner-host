@@ -2,6 +2,14 @@
 
 `GlacierEQ/public-actions-runner-host` implements the current hardened **public GitHub Actions execution route** for APEX/GlacierEQ workloads.
 
+All active workflows run exclusively on ephemeral **GitHub-hosted runners** (`ubuntu-latest` / `ubuntu-slim`) with strict **job-level privilege separation**:
+
+1. **Credentialed Preparation (`prepare` / `stage-*`):** Validates actor/envelope contracts, mints read-only (`contents=read`) workload tokens, checks out pinned commits with `persist-credentials: false`, revokes tokens immediately, and packages a SHA-256-bound credential-free source bundle.
+2. **Unprivileged Execution (`execute` / `verify-*` / `probe-*` / `compile-pdf`):** Runs on a fresh runner with `permissions: contents: read` ONLY — **no `id-token: write`, no installation tokens, and no write secrets** — emitting only bounded candidate artifacts.
+3. **Post-Execution Verification & Publication (`publish` / `publish-*`):** Runs on a fresh trusted runner without importing or executing workload code, validates schemas/digests/bounds, mints short-lived write tokens only after workload execution has terminated, publishes verified artifacts, and explicitly revokes all tokens.
+
+Historical self-hosted container deployment files have been retired and archived under [`legacy/retired-self-hosted-runner/`](legacy/retired-self-hosted-runner/README.md).
+
 **Project direction: OPERATOR.** This repository is an execution surface, not the project sovereign. AKOS, this runner, the private receipt plane, CI, catalogs, topology, and receipts cannot acquire project-direction authority from being selected, persisted, or verified.
 
 ```text
@@ -171,3 +179,7 @@ Until that live receipt exists, do not describe the path as operationally comple
 ## Governing implementation principle
 
 **Security controls constrain how this route executes. They do not acquire authority to redefine what the Operator is trying to accomplish.**
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
